@@ -1,0 +1,17 @@
+.Ccomment { color : 990000 }
+.Cconstructor { color : 0033cc }
+.Cstring { color : aa4444 }
+.Cbar { color : 77aaaa }
+
+.Cand, .Cas, .Cclass, .Cconstraint, .Cexception, .Cexternal, .Cfun, .Cfunction, .Cfunctor, .Cin, .Cinherit, .Cinitializer, .Clet, .Cmethod, .Cmodule, .Cmutable, .Cof, .Cprivate, .Crec, .Ctype, .Cval, .Cvirtual { color : green }
+
+.Cdo, .Cdone, .Cdownto, .Celse, .Cfor, .Cif, .Clazy, .Cmatch, .Cnew, .Cor, .Cthen, .Cto, .Ctry, .Cwhen, .Cwhile, .Cwith { color : 77aaaa }
+
+.Cassert, .Cinclude, .Copen { color : cc9900 }
+
+.Cbegin, .Cend, .Cobject, .Csig, .Cstruct { color : 990099 }
+
+.Craise { color : red }
+
+body { background-color : White }
+tr { background-color : White }

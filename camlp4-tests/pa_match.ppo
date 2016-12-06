@@ -1,0 +1,64 @@
+let expand_match loc e l =
+  match l with
+    [MLast.PaUid (_, "True"), None, e1;
+     (MLast.PaUid (_, "False") | MLast.PaAny _), None, e2] |
+    [MLast.PaUid (_, "False"), None, e2;
+     (MLast.PaUid (_, "True") | MLast.PaAny _), None, e1] ->
+      true, MLast.ExIfe (loc, e, e1, e2)
+  | _ -> false, MLast.ExMat (loc, e, l)
+
+let expand_function loc l =
+  match expand_match loc (MLast.ExLid (loc, "__matchbool")) l with
+    true, e -> MLast.ExFun (loc, [MLast.PaLid (loc, "__matchbool"), None, e])
+  | false, _ -> MLast.ExFun (loc, l)
+
+
+let match_case = Grammar.Entry.create Pcaml.gram "match_case"
+
+let _ =
+  Grammar.extend
+    (let _ = (match_case : 'match_case Grammar.Entry.e) in
+     [Grammar.Entry.obj (Pcaml.expr : 'Pcaml__expr Grammar.Entry.e),
+      Some (Gramext.Level "expr1"),
+      [None, None,
+       [[Gramext.Stoken ("", "function");
+         Gramext.Sopt (Gramext.Stoken ("", "|"));
+         Gramext.Slist1sep
+           (Gramext.Snterm
+              (Grammar.Entry.obj (match_case : 'match_case Grammar.Entry.e)),
+            Gramext.Stoken ("", "|"))],
+        Gramext.action
+          (fun (cases : 'match_case list) _ _
+             (loc : Lexing.position * Lexing.position) ->
+             (expand_function loc cases : 'Pcaml__expr));
+        [Gramext.Stoken ("", "match"); Gramext.Sself;
+         Gramext.Stoken ("", "with"); Gramext.Sopt (Gramext.Stoken ("", "|"));
+         Gramext.Slist1sep
+           (Gramext.Snterm
+              (Grammar.Entry.obj (match_case : 'match_case Grammar.Entry.e)),
+            Gramext.Stoken ("", "|"))],
+        Gramext.action
+          (fun (cases : 'match_case list) _ _ (e : 'Pcaml__expr) _
+             (loc : Lexing.position * Lexing.position) ->
+             (snd (expand_match loc e cases) : 'Pcaml__expr))]];
+      Grammar.Entry.obj (match_case : 'match_case Grammar.Entry.e), None,
+      [None, None,
+       [[Gramext.Snterm
+           (Grammar.Entry.obj (Pcaml.patt : 'Pcaml__patt Grammar.Entry.e));
+         Gramext.Sopt
+           (Gramext.srules
+              [[Gramext.Stoken ("", "when");
+                Gramext.Snterm
+                  (Grammar.Entry.obj
+                     (Pcaml.expr : 'Pcaml__expr Grammar.Entry.e))],
+               Gramext.action
+                 (fun (e : 'Pcaml__expr) _
+                    (loc : Lexing.position * Lexing.position) ->
+                    (e : 'e__1))]);
+         Gramext.Stoken ("", "->");
+         Gramext.Snterm
+           (Grammar.Entry.obj (Pcaml.expr : 'Pcaml__expr Grammar.Entry.e))],
+        Gramext.action
+          (fun (x2 : 'Pcaml__expr) _ (w : 'e__1 option) (x1 : 'Pcaml__patt)
+             (loc : Lexing.position * Lexing.position) ->
+             (x1, w, x2 : 'match_case))]]])

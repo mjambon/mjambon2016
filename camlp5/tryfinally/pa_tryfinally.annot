@@ -1,0 +1,162 @@
+"pa_tryfinally.ml" 2 51 55 "pa_tryfinally.ml" 2 51 61
+type(
+  unit -> string
+)
+ident(
+  def new_id "pa_tryfinally.ml" 10 280 280 "_none_" 1 0 -1
+)
+"pa_tryfinally.ml" 3 65 71 "pa_tryfinally.ml" 3 65 78
+type(
+  int ref
+)
+ident(
+  def counter "pa_tryfinally.ml" 4 90 92 "pa_tryfinally.ml" 6 120 160
+)
+"pa_tryfinally.ml" 3 65 81 "pa_tryfinally.ml" 3 65 84
+type(
+  int -> int ref
+)
+ident(
+  ext_ref Pervasives.ref
+)
+"pa_tryfinally.ml" 3 65 85 "pa_tryfinally.ml" 3 65 86
+type(
+  int
+)
+"pa_tryfinally.ml" 3 65 81 "pa_tryfinally.ml" 3 65 86
+type(
+  int ref
+)
+"pa_tryfinally.ml" 4 90 96 "pa_tryfinally.ml" 4 90 98
+type(
+  unit
+)
+"pa_tryfinally.ml" 5 102 106 "pa_tryfinally.ml" 5 102 110
+type(
+  int ref -> unit
+)
+ident(
+  ext_ref Pervasives.incr
+)
+"pa_tryfinally.ml" 5 102 111 "pa_tryfinally.ml" 5 102 118
+type(
+  int ref
+)
+ident(
+  int_ref counter "pa_tryfinally.ml" 3 65 71 "pa_tryfinally.ml" 3 65 78
+)
+"pa_tryfinally.ml" 5 102 106 "pa_tryfinally.ml" 5 102 118
+type(
+  unit
+)
+"pa_tryfinally.ml" 6 120 124 "pa_tryfinally.ml" 6 120 135
+type(
+  string
+)
+"pa_tryfinally.ml" 6 120 138 "pa_tryfinally.ml" 6 120 151
+type(
+  int -> string
+)
+ident(
+  ext_ref Pervasives.string_of_int
+)
+"pa_tryfinally.ml" 6 120 153 "pa_tryfinally.ml" 6 120 160
+type(
+  int ref
+)
+ident(
+  int_ref counter "pa_tryfinally.ml" 3 65 71 "pa_tryfinally.ml" 3 65 78
+)
+"pa_tryfinally.ml" 6 120 152 "pa_tryfinally.ml" 6 120 160
+type(
+  int
+)
+type(
+  int ref -> int
+)
+ident(
+  ext_ref Pervasives.( ! )
+)
+"pa_tryfinally.ml" 6 120 138 "pa_tryfinally.ml" 6 120 160
+type(
+  string
+)
+"pa_tryfinally.ml" 6 120 124 "pa_tryfinally.ml" 6 120 160
+type(
+  string
+)
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+"pa_tryfinally.ml" 5 102 106 "pa_tryfinally.ml" 6 120 160
+type(
+  string
+)
+"pa_tryfinally.ml" 4 90 92 "pa_tryfinally.ml" 6 120 160
+type(
+  unit -> string
+)
+"pa_tryfinally.ml" 3 65 67 "pa_tryfinally.ml" 6 120 160
+type(
+  unit -> string
+)
+"pa_tryfinally.ml" 10 280 284 "pa_tryfinally.ml" 10 280 290
+type(
+  '_a -> '_b -> '_c -> '_d
+)
+ident(
+  def expand "pa_tryfinally.ml" 27 741 741 "_none_" 1 0 -1
+)
+"pa_tryfinally.ml" 10 280 291 "pa_tryfinally.ml" 10 280 294
+type(
+  '_a
+)
+ident(
+  def loc "pa_tryfinally.ml" 10 280 295 "pa_tryfinally.ml" 14 405 586
+)
+"pa_tryfinally.ml" 10 280 295 "pa_tryfinally.ml" 10 280 297
+type(
+  '_b
+)
+ident(
+  def e1 "pa_tryfinally.ml" 10 280 298 "pa_tryfinally.ml" 14 405 586
+)
+"pa_tryfinally.ml" 10 280 298 "pa_tryfinally.ml" 10 280 300
+type(
+  '_c
+)
+ident(
+  def e2 "pa_tryfinally.ml" 11 303 305 "pa_tryfinally.ml" 14 405 586
+)
+"pa_tryfinally.ml" 11 303 309 "pa_tryfinally.ml" 11 303 311
+type(
+  string
+)
+ident(
+  def id "pa_tryfinally.ml" 12 327 329 "pa_tryfinally.ml" 14 405 586
+)
+"pa_tryfinally.ml" 11 303 314 "pa_tryfinally.ml" 11 303 320
+type(
+  unit -> string
+)
+ident(
+  int_ref new_id "pa_tryfinally.ml" 2 51 55 "pa_tryfinally.ml" 2 51 61
+)
+"pa_tryfinally.ml" 11 303 321 "pa_tryfinally.ml" 11 303 323
+type(
+  unit
+)
+"pa_tryfinally.ml" 11 303 314 "pa_tryfinally.ml" 11 303 323
+type(
+  string
+)
+"pa_tryfinally.ml" 12 327 333 "pa_tryfinally.ml" 12 327 340
+type(
+  '_e
+)
+ident(
+  def id_patt "pa_tryfinally.ml" 13 366 368 "pa_tryfinally.ml" 14 405 586
+)

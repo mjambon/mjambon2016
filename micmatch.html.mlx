@@ -1,0 +1,435 @@
+##
+#load "utils.cmo";;
+#use "topfind";;
+#require "caml2html";;
+#require "mikmatch_pcre";;
+#load "unmix.cmo";;
+#load "print_ocaml.cmo";;
+open Print_ocaml
+open Utils
+open Camlmix
+##
+## let micmatch_version = slurp_command "./micmatch-version" ##
+## let mikmatch_version = slurp_command "./mikmatch-version" ##
+## include_file "doctype" ##
+<html>
+<head>
+## title "Mikmatch: OCaml Pattern Matching + Regexps" ##
+## include_file "charset" ##
+## include_file "stylesheet" ##
+## include_file "ocaml-stylesheet" ##
+## include_file "icon" ##
+## include_file "commonlinks" ##
+</head>
+<body>
+## include_file "hitcounter" ##
+## include_file "start_big_table" ##
+## top_menu ocaml ##
+<h1>Mikmatch ## include_file "2camels" ##<br>
+<span class=title2>OCaml Pattern Matching + Regexps</span></h1>
+
+##
+open Printf
+let link ~url contents = printf "<a href=\"%s\">%s</a>" url contents
+
+let ocamllink =
+  link ~url:"http://caml.inria.fr/"
+let findlib = 
+  link ~url:"http://www.ocaml-programming.de/packages/"
+let ocamlmatch = 
+  link ~url:"http://caml.inria.fr/pub/docs/manual-ocaml/manual014.html"
+let ocamltutorial = 
+  link ~url:"http://www.merjis.com/developers/ocaml_tutorial/"
+let ocamlmakefile = 
+  link ~url:"http://www.ai.univie.ac.at/~markus/home/ocaml_sources.html"
+let regexp_pp = 
+  link ~url:"http://www.yl.is.s.u-tokyo.ac.jp/~oiwa/caml/"
+let pa_ocamllex = 
+  link ~url:"http://www.eleves.ens.fr/home/frisch/soft#paocamllex"
+let ocamllex_tutorial = 
+  link ~url:"http://pllab.kaist.ac.kr/~shoh/ocaml/ocamllex_ocamlyacc/ocamllex-tutorial/index.html"
+let ocamllex = 
+  link ~url:"http://caml.inria.fr/pub/docs/manual-ocaml/manual026.html"
+let ocamllex_regexp = 
+  link ~url:"http://caml.inria.fr/pub/docs/manual-ocaml/manual026.html#htoc132"
+let pcre_ocaml =
+  link ~url:"http://www.ai.univie.ac.at/~markus/home/ocaml_sources.html"
+let pcre =
+  link ~url:"http://www.pcre.org/"
+##
+
+<p>
+<table class=list>
+<tr><td><a href="micmatch-howto.html" class=toc0>Tutorial</a></td></tr>
+<tr><td><a href="micmatch-manual.html" class=toc0>Micmatch reference manual 
+(Camlp5)</a></td></tr>
+<tr><td><a href="mikmatch-manual.html" class=toc0>Mikmatch reference manual 
+(new Camlp4)</a></td></tr>
+<tr><td><a href="#download" class=toc0>Download</a></td></tr>
+<tr><td><a href="micmatch-design.html" class=toc0>Design issues</a></td></tr>
+<tr><td><a href="http://groups.google.com/group/micmatch" class=toc0>Mailing-list</a></td></tr>
+</table>
+
+
+<h2>Mi<i>k</i>match vs. Mi<i>c</i>match</h2>
+
+<p>
+Mi<b>k</b>match and Mi<b>c</b>match refer to two implementations
+of the same thing.
+Mi<b>k</b>match works with the official distribution of Camlp4, while
+Mi<b>c</b>match works with Camlp5 which is based on the 
+original design of Camlp4.
+
+
+<h2>Introduction</h2>
+
+<p>
+The goal of Micmatch is to make text-oriented programs even easier to write, 
+read and run without losing the unique and powerful features of 
+## ocamllink "Objective Caml (OCaml)" ##.
+
+<p>
+Micmatch provides a concise and highly readable syntax for 
+regular expressions, and integrates it into the 
+syntax of OCaml thanks to Camlp4.
+
+<p>
+<table>
+<tr>
+<td>
+The implementation of Micmatch consists essentially of:
+<ol>
+<li> a library which is loaded by the OCaml preprocessor (Camlp4) and defines
+sophisticated "macros", i.e. the modified syntax,
+<li> a traditional library (runtime) which is required 
+by the programs that use the Micmatch syntax,
+<li> a dedicated <code>micmatch</code> command which can be used as 
+a replacement for <code>ocaml</code> in scripts or as an interactive toplevel.
+It performs automatically these steps: preprocessing, compilation 
+and execution.
+</ol>
+</td>
+<td>
+<img src="micmatch-camlp4-pipeline.png" alt="[Micmatch-Camlp4-OCaml pipeline]">
+</td>
+</tr>
+</table>
+
+<p>
+Micmatch is a syntax extension of OCaml which is built on top of 
+existing libraries that provide regular expression engines such as the
+Perl-Compatible Regular Expressions library (PCRE).
+Regular expressions are compiled at the same time as the rest of the program,
+and syntax errors are precisely highlighted just like 
+in the rest of the OCaml program.
+This brings substantial comfort, safety and productivity to the programmer.
+
+<p>
+Micmatch is being actively maintained. 
+Thank you for reporting any bug you may find to 
+micmatch@<a style="display:none">nobody.com@there.com</a>googlegroups.com.
+Comments and suggestions are also highly appreciated.
+
+
+<h2>A taste of Micmatch</h2>
+
+<p>
+Micmatch is a syntax extension of the 
+## ocamlmatch "pattern matching constructs of Objective Caml" ## 
+for matching and extracting substrings with regular expressions.
+Micmatch tries to stay as close as possible to the spirit of
+OCaml.
+
+<p>
+Let's consider the problem of finding if a message starts with hello or not.
+In OCaml, we can only match whole strings using the general pattern-matching
+system like this:
+## print_with ocamltop ##
+# (* Test if msg is Hello or hello *)
+let msg = "hello" in
+match msg with
+    "Hello" | "hello" -> true
+  | _ -> false;;
+- : bool = true
+## () ##
+<p>
+When our data is already structured, say as a list of tokens,
+we can conveniently test the head of the list:
+## print_with ocamltop ##
+# (* Test if the head of a list of tokens is `Hello and
+     return the name of the recipient or None *)
+let msg = [ `Hello; `Who "you"; `Bye ] in
+match msg with
+    `Hello :: `Who name :: _ -> Some name
+  | _ -> None;;
+- : string option = Some "you"
+## () ##
+<p>
+However, OCaml does not provide a simple mechanism 
+to look inside of strings and extract the interesting pieces all 
+in one place.
+Micmatch provides a syntax extension which integrates in-place
+regular expressions into the native pattern-matching of OCaml:
+## print_with ocamltop ##
+# (* Test if the string starts with Hello or hello and return the
+     name of the recipient or None *)
+let msg = "Hello you" in
+match msg with
+    RE ["Hh"]"ello" space+ (alpha+ as name) -> Some name
+  | _ -> None;;
+- : string option = Some "you"
+## () ##
+
+<p>
+Do you like it?
+Many other features are offered by Micmatch! They are described 
+in the following documents:
+<ul>
+<li> the <a href="micmatch-howto.html">tutorial</a>
+<li> the <a href="mikmatch-manual.html">reference manual</a> 
+</ul>
+
+
+
+<h2>Practical issues</h2>
+
+<h3>Installation</h3>
+
+<p>
+The easiest way to install Micmatch is from 
+<a href="http://godi.ocaml-programming.de/">GODI</a>.
+
+<p>
+Alternatively, it can be <a href="#download">downloaded</a> and installed 
+manually using OCaml 3.07, 3.08 or 3.09. 
+See the <code>INSTALL</code> file of
+the <a href="#download">archive</a>.
+
+
+<h3>Compilation with Micmatch as a preprocessor</h3>
+
+<p>
+For scripting (writing one-file programs), 
+you just need to use <code>micmatch</code> as a
+replacement for <code>ocaml</code>. 
+On Unix systems, it is possible to make the scripts self-executable 
+by adding <code>#!/usr/bin/micmatch</code> or 
+<code>#!/usr/bin/env micmatch</code> at the beginning of the file
+like in the following example:
+## ocamlpre (file_contents "comments") ##
+
+<p>
+In programs that are compiled with <code>ocamlc</code> or 
+<code>ocamlopt</code>, the code in the Micmatch syntax must be explicitely
+preprocessed with <code>camlp4o</code> or <code>camlp4r</code> 
+and the library <code>pa_micmatch_pcre.cma</code> before actually compiling. 
+The linking phase requires the Pcre library and the runtime library for
+micmatch (<code>run_micmatch_pcre</code>).
+
+<p>
+The now-<b>recommended approach</b> 
+to compile programs which require some Camlp4
+preprocessing is 
+<a href="http://ocaml-tutorial.org/compiling_ocaml_projects">the one 
+described there</a> which uses 
+<code>ocamlfind</code>, <code>OCamlMakefile</code> and
+<code>camlp4find</code>.
+
+<p>
+If you are interested, 
+commands for compiling and linking with <code>ocamlfind</code> are:
+<pre>
+ocamlfind ocamlopt -c       -syntax camlp4o \
+                            -package micmatch_pcre \
+                                     hello.ml
+
+ocamlfind ocamlopt -o hello -syntax camlp4o \
+                            -package micmatch_pcre \
+                            -linkpkg hello.cmx
+</pre>
+<p>
+Without ocamlfind, where $MICMATCHDIR is the directory where the library
+files have been installed, and $PCREDIR is where 
+PCRE-OCaml has been installed:
+<pre>
+ocamlopt -c       -I $MICMATCHDIR \
+                  -pp "camlp4o -I $MICMATCHDIR pa_micmatch_pcre.cma" \
+                  hello.ml
+
+ocamlopt -o hello -I $MICMATCHDIR -I $PCREDIR\
+                  pcre.cmxa run_micmatch.cmxa hello.cmx
+</pre>
+
+<p>
+A sample <code>Makefile</code> is also available 
+[<a href="micmatch/Makefile.html">view</a>|<a href="micmatch/Makefile">save</a>].
+It uses ## ocamlmakefile "<code>OCamlMakefile</code>" ##.
+
+
+
+<h2 id=download>Download</h2>
+
+
+<h3>Micmatch for OCaml 3.09 + old Camlp4</h3>
+
+<p>
+This software is distributed under a 
+<a href="micmatch-license.txt">BSD license</a>.
+The latest version that works with the old Camlp4 is 0.700.
+<p>
+<table class=light-table>
+## 
+let gz = sprintf "micmatch-%s.tar.gz" micmatch_version
+let bz2 = sprintf "micmatch-%s.tar.bz2" micmatch_version
+##
+## 
+List.iter
+  (fun s ->
+     printf "<tr>\n";
+     printf "<td>";
+     download (sprintf "micmatch-%s.tar.gz" s); 
+     printf "</td>\n";
+     printf "<td>";
+     download (sprintf "micmatch-%s.tar.bz2" s);
+     printf "</td>\n</tr>\n")
+	      [ "0.700"; "0.699-beta"; "0.698-beta"; 
+		"0.697-beta"; "0.696-beta"; "0.695-beta"; "0.694-beta";
+		"0.693-beta"; "0.692-beta"; "0.691-beta"; "0.690-beta";
+		"0.689-beta"; "0.688-beta"; "0.687-beta"; "0.686-beta";
+		"0.685-beta"; "0.684-beta"; "0.683-beta"; "0.682-beta"; 
+		"0.681-beta"; "0.680-beta"; "0.679-beta"; "0.678-beta"; 
+		"0.677-beta"; "0.676-beta" ]
+##
+</table>
+
+
+
+<h3>Micmatch for OCaml 3.09, 3.10 + Camlp5</h3>
+
+
+<p>
+This software is distributed under a 
+<a href="micmatch-license.txt">BSD license</a>.
+The current version is ##= micmatch_version ##.
+The first version that works with Camlp5 is 1.0.0 
+and offers the same exact features as release 0.700.
+See the <a href="micmatch-changes.txt">history of changes</a>.
+<p>
+<table class=light-table>
+<tr style="background-color: #ddd">
+<td>Latest version:</td>
+## 
+let gz = sprintf "micmatch-%s.tar.gz" micmatch_version
+let bz2 = sprintf "micmatch-%s.tar.bz2" micmatch_version
+##
+<td>## download "micmatch.tar.gz" ##</td>
+<td>## download "micmatch.tar.bz2" ##</td>
+<td>## download gz ##</td>
+<td>## download bz2 ##</td>
+</tr>
+## 
+List.iter
+  (fun s ->
+     printf "<tr>\n<td></td><td></td><td></td>\n";
+     printf "<td>";
+     download (sprintf "micmatch-%s.tar.gz" s); 
+     printf "</td>\n";
+     printf "<td>";
+     download (sprintf "micmatch-%s.tar.bz2" s);
+     printf "</td>\n</tr>\n")
+	      [ (* older releases *) ]
+##
+</table>
+
+
+
+
+
+<h3>Mikmatch for OCaml 3.10 + new Camlp4</h3>
+
+<p>
+This software is distributed under a 
+<a href="mikmatch-license.txt">BSD license</a>.
+Mikmatch is the implementation of Micmatch for the "new Camlp4",
+i.e. Camlp4 that ships with the core OCaml distribution starting from 
+version 3.10.
+See the <a href="mikmatch-changes.txt">history of changes</a>.
+
+
+<p>
+<table class=light-table>
+<tr style="background-color: #ddd">
+<td>Latest version:</td>
+## 
+let gz = "mikmatch-1.0.0.tar.gz"
+let bz2 = "mikmatch-1.0.0.tar.bz2"
+##
+<td>## download gz ##</td>
+<td>## download bz2 ##</td>
+</tr>
+</table>
+
+<h3>Mikmatch for OCaml 3.11 + new Camlp4</h3>
+
+<p>
+This software is distributed under a 
+<a href="mikmatch-license.txt">BSD license</a>.
+Mikmatch is the implementation of Micmatch for the "new Camlp4",
+i.e. Camlp4 that ships with the core OCaml distribution starting from 
+version 3.10. This particular version works with Camlp4 3.11.0 and 3.11.1
+and does not work with earlier or later versions.
+See the <a href="mikmatch-changes.txt">history of changes</a>.
+
+
+<p>
+<table class=light-table>
+<tr style="background-color: #ddd">
+<td>Latest version:</td>
+<td>## download "mikmatch-1.0.2.tar.gz" ##</td>
+<td>## download "mikmatch-1.0.2.tar.bz2" ##</td>
+</tr>
+</table>
+
+
+<h3>Mikmatch for OCaml 3.12 + new Camlp4</h3>
+
+<p>
+This software is distributed under a 
+<a href="mikmatch-license.txt">BSD license</a>.
+Mikmatch is the implementation of Micmatch for the "new Camlp4",
+i.e. Camlp4 that ships with the core OCaml distribution starting from 
+version 3.10. This particular version works with Camlp4 3.12
+and does not work with earlier versions.
+See the <a href="mikmatch-changes.txt">history of changes</a>.
+<a href="/releases/mikmatch">Download it here</a>.
+
+
+<h3>Development versions</h3>
+
+<p>
+The <a href="https://github.com/mjambon/mikmatch">development version
+of Mikmatch</a> is hosted on GitHub.
+
+
+<h2>Acknowledgements</h2>
+
+<p>
+Many concepts found in Micmatch were inspired on discussions on
+caml-list@inria.fr and from existing software.
+The following sofware has been important for Micmatch:
+<ul>
+<li> ## ocamllink "Camlp4" ##
+<li> ## ocamllink "OCaml" ##
+<li> ## ocamllex "ocamllex" ##
+<li> ## pa_ocamllex "pa_ocamllex" ##
+<li> Camlp4 utilities from ## regexp_pp "Regexp/OCaml (regexp-pp)" ##
+<li> ## pcre "PCRE" ##
+<li> ## pcre_ocaml "PCRE-OCaml" ##
+</ul>
+<p>
+Thanks to their respective authors.
+
+## camlmix_footer () ##
+## include_file "end_big_table" ##
+</body>
+</html>

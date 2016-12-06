@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="next" href="Micmatch.Fixed.html">
+<link rel="Up" href="Micmatch.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Micmatch" rel="Chapter" href="Micmatch.html"><title>Micmatch.Text</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a href="Micmatch.html">Up</a>
+&nbsp;<a href="Micmatch.Fixed.html">Next</a>
+</div>
+<center><h1>Module <a href="type_Micmatch.Text.html">Micmatch.Text</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> Text: <code class="code">sig</code> <a href="Micmatch.Text.html">..</a> <code class="code">end</code></pre><hr width="100%">
+<br>
+This module provides some general functions which are especially 
+    useful for manipulating text and text files.<br>
+<pre><span class="keyword">val</span> <a name="VALiter_lines_of_channel"></a>iter_lines_of_channel : <code class="type">(string -> unit) -> Pervasives.in_channel -> unit</code></pre><div class="info">
+<code class="code">iter_lines_of_channel f ic</code> reads input channel <code class="code">ic</code>
+      and applies successively the given function <code class="code">f</code> to 
+      each line until the end of file is reached.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALiter_lines_of_file"></a>iter_lines_of_file : <code class="type">(string -> unit) -> string -> unit</code></pre><div class="info">
+<code class="code">iter_lines_of_file f file</code> reads file <code class="code">file</code>
+      and applies successively the given function <code class="code">f</code> to 
+      each line until the end of file is reached.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALlines_of_channel"></a>lines_of_channel : <code class="type">Pervasives.in_channel -> string list</code></pre><div class="info">
+<code class="code">lines_of_channel ic</code> returns the list of the lines that can be 
+      read from input channel <code class="code">ic</code>.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALlines_of_file"></a>lines_of_file : <code class="type">string -> string list</code></pre><div class="info">
+<code class="code">lines_of_file file</code> returns the list of the lines that can be 
+      read from file <code class="code">file</code>.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALchannel_contents"></a>channel_contents : <code class="type">Pervasives.in_channel -> string</code></pre><div class="info">
+<code class="code">channel_contents ic</code> returns the string containing the bytes
+      that can be read from the given input channel <code class="code">ic</code>.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALfile_contents"></a>file_contents : <code class="type">?bin:bool -> string -> string</code></pre><div class="info">
+<code class="code">file_contents file</code> returns the string containing the bytes
+      that can be read from the given file.
+      Option <code class="code">bin</code> specifies if <code class="code">Pervasives.open_in_bin</code> should be
+      used instead of <code class="code">Pervasives.open_in</code> to open the file. Default is
+      <code class="code">false</code>.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALsave"></a>save : <code class="type">string -> string -> unit</code></pre><div class="info">
+<code class="code">save file data</code> stores the string <code class="code">data</code> in <code class="code">file</code>.
+      If the file already exists, its contents is discarded silently.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALsave_lines"></a>save_lines : <code class="type">string -> string list -> unit</code></pre><div class="info">
+<code class="code">save_lines file l</code> saves the given list <code class="code">l</code> of strings in <code class="code">file</code>
+      and adds a newline characters (<code class="code">'\n'</code>) after each of them.
+      If the file already exists, its contents is discarded silently.<br>
+</div>
+<pre><span class="keyword">exception</span> <a name="EXCEPTIONSkip"></a>Skip</pre>
+<div class="info">
+This exception can be used to skip an element of a list being 
+      processed with <code class="code">rev_map</code>, <code class="code">map</code>, <code class="code">fold_left</code>, and <code class="code">fold_right</code>.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALmap"></a>map : <code class="type">('a -> 'b) -> 'a list -> 'b list</code></pre><div class="info">
+Like <code class="code">List.map</code> but it is guaranteed that 
+      the elements of the input list are processed from left to right.
+      Moreover the <code class="code">Skip</code> exception can be used to skip an element
+      of the list.
+      This function runs in constant stack space.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALrev_map"></a>rev_map : <code class="type">('a -> 'b) -> 'a list -> 'b list</code></pre><div class="info">
+Like <code class="code">List.rev_map</code>, but it is guaranteed that 
+      the elements of the input list are processed from left to right.
+      Moreover the <code class="code">Skip</code> exception can be used to skip an element
+      of the list.
+      This function runs in constant stack space and is slightly faster
+      then <code class="code">map</code>.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALfold_left"></a>fold_left : <code class="type">('a -> 'b -> 'a) -> 'a -> 'b list -> 'a</code></pre><div class="info">
+Like <code class="code">List.fold_left</code> 
+      but the <code class="code">Skip</code> exception can be used to skip an element
+      of the list.
+      This function runs in constant stack space.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALfold_right"></a>fold_right : <code class="type">('a -> 'b -> 'b) -> 'a list -> 'b -> 'b</code></pre><div class="info">
+Like <code class="code">List.fold_right</code> 
+      but the <code class="code">Skip</code> exception can be used to skip an element
+      of the list.
+      This function runs in constant stack space.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALmap_lines_of_channel"></a>map_lines_of_channel : <code class="type">(string -> 'a) -> Pervasives.in_channel -> 'a list</code></pre><div class="info">
+<code class="code">map_lines_of_channel f ic</code> is equivalent to
+      <code class="code">map f (lines_of_channel ic)</code> but faster.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALmap_lines_of_file"></a>map_lines_of_file : <code class="type">(string -> 'a) -> string -> 'a list</code></pre><div class="info">
+<code class="code">map_lines_of_file f file</code> is equivalent to
+      <code class="code">map f (lines_of_file file)</code> but faster.<br>
+</div>
+</body></html>

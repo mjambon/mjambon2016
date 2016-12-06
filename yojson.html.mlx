@@ -1,0 +1,147 @@
+##
+#load "utils.cmo";;
+#use "topfind";;
+#require "caml2html";;
+#require "mikmatch_pcre";;
+#load "unmix.cmo";;
+#load "print_ocaml.cmo";;
+#use "yojson-version.ml";;
+open Print_ocaml
+open Utils
+open Camlmix
+##
+## include_file "doctype" ##
+<html>
+<head>
+## title 
+"Yojson"
+##
+## include_file "charset" ##
+## include_file "stylesheet" ##
+## include_file "ocaml-stylesheet" ##
+## include_file "icon" ##
+## include_file "commonlinks" ##
+</head>
+<body>
+## include_file "hitcounter" ##
+## include_file "start_big_table" ##
+## top_menu ocaml ##
+
+##
+open Printf
+##
+
+<h1>Yojson
+## include_file "1camel" ##</h1>
+
+<h2>Introduction</h2>
+
+<p>
+Yojson is an optimized parsing and printing library for the 
+<a href="http://json.org/">JSON</a> format. 
+It addresses a few shortcomings of <a href="json-wheel.html">json-wheel</a>
+including 2x speedup, 
+polymorphic variants and optional syntax for tuples and variants.
+
+<p>
+<code>ydump</code> is a pretty-printing command-line program
+provided with the yojson package.
+
+<p>
+The program <a href="/atdgen"><code>atdgen</code></a>
+can be used to derive OCaml-JSON serializers and deserializers
+from type definitions.
+
+
+<h2>JSON extensions</h2>
+
+<p>
+The yojson implementation follows 
+<a href="http://www.ietf.org/rfc/rfc4627.txt">RFC 4627</a> except
+for the following features.
+These syntax extensions 
+are supported by the yojson readers and can be disabled by the 
+writers when standard JSON is required.
+
+<ul>
+<li> Tuples: like JSON arrays but within parentheses instead of
+square brackets, such as
+<pre>
+(1.23, 4.56)
+</pre>
+
+<li> Variants without argument:
+<pre>
+&lt;"Foo"&gt;
+</pre>
+
+<li> Variants with one argument:
+<pre>
+&lt;"Bar": 123&gt;
+</pre>
+
+<li> Unquoted field names and variants are accepted if they match 
+the pattern [A-Za-z][A-Za-z_0-9]*:
+<pre>
+{ x: &lt;Foo&gt;, "#y": &lt;Bar2&gt; }
+</pre>
+
+<li> Comments:
+<pre>
+/*
+  multiline
+  comment
+*/
+  // end-of-line comment
+</pre>
+
+<li> Special numeric entities:
+<pre>
+[ Infinity, -Infinity, NaN ]
+</pre>
+
+<li> Root node may be any JSON value, not just an array or an object.
+</ul>
+
+<p>
+Note that <code>yojson</code> never checks the encoding of strings.
+All ASCII-compatible encodings including UTF-8
+are supported by yojson readers and writers.
+Non-ASCII-compatible encodings UTF-16BE, UTF-16LE, UTF-32BE and UTF-32LE 
+are not supported.
+"\uXXXX" escape sequences are converted by the readers into the equivalent
+UTF-8 multibyte sequences.
+Characters outside the ASCII range are always written
+as is, as permitted by the JSON standard. Bytes that do not form valid UTF-8
+characters are also output as is. It is the user's responsibility
+to check for the correctness of UTF-8 data when appropriate.
+
+
+
+<h2>Library documentation</h2>
+
+<ul>
+<li> <a href="yojson-doc/Yojson.Safe.html">Documentation of <code>Yojson.Safe</code></a>, the most commonly used module.
+<li> <a href="yojson-doc/index.html">Root</a>
+</ul>
+
+
+<h2>Download</h2>
+
+<p>
+This software was written by Martin Jambon. 
+It is distributed under a 
+<a href="yojson-license.txt">BSD license</a>.
+<a href="/releases/yojson">Download it here</a>.
+</p>
+
+<p>
+The <a href="https://github.com/mjambon/yojson">development version
+of Yojson</a> is hosted on GitHub.
+
+
+
+## camlmix_footer ~years:"2010" () ##
+## include_file "end_big_table" ##
+</body>
+</html>

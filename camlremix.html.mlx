@@ -1,0 +1,65 @@
+##
+#load "utils.cmo";;
+#use "topfind";;
+#require "caml2html";;
+#require "mikmatch_pcre";;
+#load "unmix.cmo";;
+#load "print_ocaml.cmo";;
+open Printf
+open Utils
+##
+## include_file "doctype" ##
+<html>
+<head>
+## title "Camlremix" ##
+## include_file "charset" ##
+## include_file "external-stylesheet" ##
+## include_file "ocaml-stylesheet" ##
+## include_file "icon" ##
+## include_file "commonlinks" ##
+</head>
+<body>
+## include_file "start_big_table" ##
+## empty_menu () ##
+<h1>Camlremix</h1>
+
+<p>
+Camlremix is a general-purpose preprocessor like 
+<a href="/camlmix">Camlmix</a>, but provides
+a slightly different syntax that allows switching to the document mode
+inside of an OCaml block.
+Camlremix is written and maintained by 
+Nadji Gauthier 
+&lt;<a href="mailto:nadji.gauthier/inria.fr">nadji.gauthier/inria.fr</a>&gt;.
+
+<p>
+Example:
+<pre>
+#(
+let get_date () = ("12", "35", "Monday", "23", "April", "2012")
+let formatted_date =
+  let (h, m, weekday, monthday, month, year) = get_date () in
+  @(
+It is ~(h)~:~(m)~ on ~(weekday)~ ~(monthday)~ ~(month)~ ~(year)~.
+)@
+)#
+Hello!
+~( formatted_date )~
+</pre>
+
+<p>
+Result:
+<pre>
+
+Hello!
+It is 12:35 on Monday 23 April 2012.
+</pre>
+
+<p>
+Download ## download "camlremix-1.1.tar.gz" ## or
+## download "camlremix-1.1.tar.bz2" ##.
+
+## camlmix_footer ~years:"2004" () ##
+## include_file "end_big_table" ##
+</body>
+</html>

@@ -1,0 +1,155 @@
+##
+#load "utils.cmo";;
+#use "topfind";;
+#require "caml2html";;
+#require "mikmatch_pcre";;
+#load "unmix.cmo";;
+#load "print_ocaml.cmo";;
+#use "caml2html-version.ml";;
+open Print_ocaml
+open Utils
+open Camlmix
+##
+## include_file "doctype" ##
+<html>
+<head>
+## title "Caml2html" ##
+## include_file "charset" ##
+## include_file "stylesheet" ##
+## include_file "ocaml-stylesheet" ##
+## include_file "icon" ##
+## include_file "commonlinks" ##
+</head>
+<body>
+## include_file "hitcounter" ##
+## include_file "start_big_table" ##
+## top_menu ocaml ##
+<h1>Caml2html ## include_file "1camel" ##</h1>
+
+##
+open Printf
+let link ~url contents = printf "<a href=\"%s\">%s</a>" url contents
+##
+
+
+<h2>Description</h2>
+
+<p>
+The Caml2html package provides an executable and a library 
+that highlight OCaml code by adding some color.
+With the caml2html program, you can produce ready-to-go HTML files
+such as <a href="caml2html_test.html">this one</a>.
+
+<p>
+You can also use the library in a program that makes web pages. See that:
+## print_with ocamlpre ##
+(* This small program is inserted verbatim in the source code of this
+   web page *)
+
+open Printf
+
+let rec fac = function 
+    0 -> 1 
+  | n -> n * fac (n - 1)
+
+let () =
+  for i = 0 to 10 do
+    printf "%i -> %i\n" i (fac i)
+  done
+## () ##
+
+<p>
+See also this 
+<a href="http://mlpost.lri.fr/examples/boxes.ml.html">cool example</a>
+by the authors of <a href="http://mlpost.lri.fr/">MLPost</a>.
+It embeds arbitrary HTML (requires version > 1.3.0) with images
+and javascript.
+
+
+<h2>Quick reference guide</h2>
+
+<p>
+See the <a href="caml2html-help.html">help file which comes with 
+the distribution</a>.
+
+<h3>More about custom comment handlers</h3>
+
+<p>
+Consider a file <code>example.ml</code> containing the following OCaml code:
+<pre>
+(*include disclaimer.html *)
+let f x = 2 * x + 1
+</pre>
+
+<p>
+File <code>disclaimer.html</code> contains this:
+<pre>
+Warning, this is a test!
+</pre>
+
+<p>
+Rendered with <code>caml2html</code> without using 
+the <code>-ext</code> option it gives:
+## print_with ocamlpre ##
+(*include disclaimer.html *)
+let f x = 2 * x + 1
+## () ##
+
+<p>
+We can define a custom comment expander that reads the contents
+of the comment from stdin and outputs some HTML to stdout.
+In our example we want to insert the contents of a file named
+<code>disclaimer.html</code>. This is done by defining a command
+associated with "include", as follows:
+<pre>
+$ caml2html -ext "include: xargs cat" example.ml
+</pre>
+<p>
+The result is:
+<div>
+<div style="margin-left:4em">
+Warning, this is a test!
+</div>
+## print_with ocamlpre ##
+let f x = 2 * x + 1
+## () ##
+</div>
+
+
+<h2>Download</h2>
+
+<p>
+Caml2html was written by S&eacute;bastien Ailleret and is now maintained
+by Martin Jambon (me). It is distributed under a 
+<a href="http://www.gnu.org/licenses/gpl.txt">GPL license</a>.
+<a href="/releases/caml2html">Download it here</a>.
+
+<p>
+The <a href="https://github.com/mjambon/caml2html">development version
+of Caml2html</a> is hosted on GitHub.
+
+
+<h2>LaTeX output</h2>
+
+<p>
+Caml2html provides LaTeX output since version 1.4.0 (<code>-latex</code>)
+and works very similarly to the default HTML mode. It uses LaTeX packages
+<code>alltt</code> and <code>color</code>.
+
+
+<h2>Exporting to other formats</h2>
+
+<p>
+To PostScript, HTML, RTF or ANSI terminal: 
+<a href="http://code.google.com/p/ocaml-enscript/">Ocaml support for Enscript
+(ocaml.st by Janne Hellsten)</a>
+
+<p>
+To PostScript: <a href="http://www.ocaml.info/home/ocaml_sources.html">Ocaml 
+support for a2ps (ocaml.ssh by Markus Mottl)</a>
+
+
+## camlmix_footer () ##
+## include_file "end_big_table" ##
+</body>
+</html>

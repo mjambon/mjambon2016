@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Micmatch.Fixed.html">
+<link rel="next" href="Micmatch.Glob.html">
+<link rel="Up" href="Micmatch.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Micmatch" rel="Chapter" href="Micmatch.html"><title>Micmatch.Directory</title>
+</head>
+<body>
+<div class="navbar"><a href="Micmatch.Fixed.html">Previous</a>
+&nbsp;<a href="Micmatch.html">Up</a>
+&nbsp;<a href="Micmatch.Glob.html">Next</a>
+</div>
+<center><h1>Module <a href="type_Micmatch.Directory.html">Micmatch.Directory</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> Directory: <code class="code">sig</code> <a href="Micmatch.Directory.html">..</a> <code class="code">end</code></pre><hr width="100%">
+<br>
+Basic operations on directories<br>
+<pre><span class="keyword">val</span> <a name="VALlist"></a>list : <code class="type">?absolute:bool -> ?path:bool -> string -> string list</code></pre><div class="info">
+<code class="code">list dir</code> returns the alphabetically sorted list 
+      of the names of the files contained in directory <code class="code">dir</code>. 
+      The special names that refer to the parent directory (e.g. <code class="code">..</code>)
+      and the directory itself (e.g. <code class="code">.</code>) are ignored.
+<p>
+
+      If the option <code class="code">absolute</code> is set to <code class="code">true</code>, the result is a list
+      of absolute file paths, i.e. that do not depend on the current directory
+      which is associated to the process 
+      (default is false; implies <code class="code">path = true</code>).
+<p>
+
+      If the option <code class="code">path</code> is set to <code class="code">true</code>, the result is a list of paths
+      instead of just the file names
+      (default is <code class="code">false</code> except if <code class="code">absolute</code> is explicitely set to <code class="code">true</code>).
+<p>
+
+      Exception <code class="code">Invalid_argument "Directory.list"</code> is raised 
+      if there is an incompatibility between the options.
+      Unspecified exceptions will be raised if the given directory does not 
+      exist or is not readable.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALis_dir"></a>is_dir : <code class="type">?nofollow:bool -> string -> bool</code></pre><div class="info">
+<code class="code">is_dir dir</code> returns true if <code class="code">dir</code> is a directory, false otherwise.
+    The <code class="code">nofollow</code> option is false by default, but if true, 
+    a symbolic link will not be followed. In that case false is returned
+    even if the link points to a valid directory.<br>
+</div>
+</body></html>

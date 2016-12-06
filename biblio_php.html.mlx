@@ -1,0 +1,64 @@
+##
+#use "topfind";;
+#require "caml2html";;
+#require "mikmatch_pcre";;
+#load "unmix.cmo";;
+#load "print_ocaml.cmo";;
+#load "utils.cmo";;
+open Print_ocaml
+open Utils
+open Camlmix
+##
+## include_file "doctype" ##
+<html>
+<head>
+## title "Biblio.php" ##
+## include_file "charset" ##
+## include_file "stylesheet" ##
+## include_file "ocaml-stylesheet" ##
+## include_file "icon" ##
+## include_file "commonlinks" ##
+</head>
+<body>
+## include_file "hitcounter" ##
+## include_file "start_big_table" ##
+## top_menu prog ##
+<h1>Biblio.php download</h1>
+
+<p>
+<b>
+This MediaWiki extension is no longer being maintained.
+See <a href="http://www.mediawiki.org/wiki/Extension:BiblioPlus">BiblioPlus</a>
+for a drop-in replacement that works with newer versions of MediaWiki.
+</b>
+</p>
+
+<p>
+Download ## download "biblio-0.8.1.tar.gz" ## for MediaWiki 1.5, 1.6, 1.7.
+
+<p>
+This is only the download page for the Biblio extension of
+<a href="http://www.mediawiki.org">MediaWiki</a>.
+The main page for Biblio is
+<a href="http://openwetware.org/wiki/Wikiomics:Biblio">http://openwetware.org/wiki/Wikiomics:Biblio</a>.
+<p>
+Here is the list of all available versions:
+##
+(*
+let l = List.rev (Mikmatch.Glob.list [FILTER "Biblio.php-"] @
+		  Mikmatch.Glob.list [FILTER "biblio-" _* ".tar.gz" eos]) in
+*)
+let l = ["Biblio.php-0.5a"; "Biblio.php-0.5b"; "Biblio.php-0.6";
+   "Biblio.php-0.6.1"; "Biblio.php-0.6.2"; "Biblio.php-0.6.3";
+   "Biblio.php-0.7.0"; "Biblio.php-0.7.1"; "Biblio.php-0.7.2";
+   "Biblio.php-0.7.4"; "Biblio.php-0.7.4+1"; "Biblio.php-0.7.5";
+   "Biblio.php-0.7.5+1"; "biblio-0.8.0.tar.gz"; "biblio-0.8.1.tar.gz"]
+in
+List.iter (fun s -> print_string "<br>"; download s) l
+##
+
+
+## camlmix_footer ~years:"2005, 2006" () ##
+## include_file "end_big_table" ##
+</body>
+</html>

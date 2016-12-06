@@ -1,0 +1,144 @@
+
+<!doctype html>
+
+<html>
+<head>
+<title>ocamlscript: natively-compiled OCaml scripts</title>
+<meta http-equiv="content-Type" content="text/html; charset=utf-8">
+
+<link rel="stylesheet" href="/base.css" type="text/css">
+
+<link rel="stylesheet" href="/ocaml.css" type="text/css">
+
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+<link rel="home" href="/">
+<link rel="author" href="/people.html#martin">
+
+</head>
+<body>
+
+<div id="page">
+
+
+<div>
+<table id=top_menu cellspacing=0>
+<tr>
+  <td><a href="/">Main</a></td>
+  <td class="current_topic"><a href="/ocaml.html">Software</a></td>
+  <td><a href="/releases">Downloads</a></td>
+  <td><a href="/other.html">Other</a></td>
+</tr>
+</table>
+</div>
+
+
+
+
+<h1>ocamlscript: natively-compiled OCaml scripts
+<img src="/1camel.png" 
+     title="difficulty = 1 camel (suitable for OCaml beginners)"
+     alt="[difficulty = 1 camel]">
+</h1>
+
+<h2>Introduction</h2>
+
+<p>
+ocamlscript compiles scripts, i.e. one-file programs, into 
+natively-compiled binaries, and executes them.
+
+<p>
+Basically, a script named <code>alpha</code> is compiled into
+<code>alpha.exe</code>. If <code>alpha.exe</code> is more recent
+than <code>alpha</code>, then <code>alpha.exe</code> is executed directly,
+otherwise <code>alpha</code> is recompiled first.
+
+<p>
+Compilation commands reside in the first section of the script. They are
+written in OCaml and consist normally in setting one or two variables.
+
+
+<h2>Documentation</h2>
+
+<p>
+The ocamlscript tool is made of two essential components: a command
+named ocamlscript and a library which is made available in the compilation
+section of the scripts.
+
+<p>
+The basic usage of the ocamlscript command was designed to be intuitive:
+<pre>
+ocamlscript scriptfile.ml
+</pre>
+
+<p>
+Script files do not have to follow the conventions of standard OCaml
+file names. They can also be read from stdin or directly from the command-line.
+Full details on the command-line options are returned by 
+<a href="ocamlscript-help.txt"><code>ocamlscript --help</code></a>.
+
+<p>
+An ocamlscript script differs from a standard OCaml file at its beginning.
+There is an optional first section that instructs ocamlscript on how to
+compile the script. Basically, variables that hold package names
+and additional preprocessing or compilation option can be set.
+A simple script that fetches a web page using the HTTP client provided by
+the netclient package could be:
+<pre><span class="Cnonalphakeyword">#</span>! /usr/bin/env ocamlscript
+<span class="Cconstructor">Ocaml</span><span class="Cnonalphakeyword">.</span>packs <span class="Cnonalphakeyword">:=</span> <span class="Cnonalphakeyword">[</span> <span class="Cstring">"netclient"</span> <span class="Cnonalphakeyword">]</span>
+--
+<span class="Cmatch">match</span> <span class="Cconstructor">Sys</span><span class="Cnonalphakeyword">.</span>argv <span class="Cwith">with</span>
+    <span class="Cnonalphakeyword">[|</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">;</span> url <span class="Cnonalphakeyword">|]</span> <span class="Cnonalphakeyword">-&gt;</span> print_string <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Http_client</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Convenience</span><span class="Cnonalphakeyword">.</span>http_get url<span class="Cnonalphakeyword">)</span>
+  <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> prerr_string <span class="Cstring">"Usage: getpage URL\n"</span><span class="Cnonalphakeyword">;</span> exit 1</pre>
+
+<p>
+For complete details, see the <a href="ocamlscript-doc/index.html">API 
+of the ocamlscript compilation library</a>.
+
+<p>
+For simple examples of original uses of ocamlscript, you can browse 
+<a href="ocamlscript-examples">the collection of examples</a>
+extracted from the distribution of ocamlscript.
+
+<p>
+More documentation, although somewhat incomplete, is given on the 
+<a href="http://ocaml.pbwiki.com/Ocamlscript">wiki site</a>.
+
+
+<h2>Download</h2>
+
+<p>
+This software was written by David Mentr&eacute; and Martin Jambon. 
+It is distributed under a 
+<a href="ocamlscript-license.txt">Boost Software License</a>.
+<a href="/releases/ocamlscript">Download it here</a>.
+
+<p>
+The <a href="https://github.com/mjambon/ocamlscript">development version
+of Ocamlscript</a> is hosted on GitHub.
+
+
+<div id=footer>
+&copy;&nbsp;2007&nbsp;Martin&nbsp;Jambon &lt;<a href="mailto:martin@mjambon.com">martin@mjambon.com</a>&gt;
+</div>
+
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-640255-1";
+urchinTracker();
+</script>
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+<!-- 
+var sc_project=370325; 
+var sc_partition=1; 
+//-->
+</script>
+
+<script type="text/javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><p><a href="http://www.statcounter.com/"><img src="http://c2.statcounter.com/counter.php?sc_project=370325&amp;java=0" alt="counter"></a></p></noscript>
+<!-- End of StatCounter Code -->
+
+</body>
+</html>

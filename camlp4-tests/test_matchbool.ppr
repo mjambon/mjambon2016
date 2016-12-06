@@ -1,0 +1,13 @@
+if 1 = 1 then print_endline "Right" else print_endline "Wrong";
+
+value f __matchbool =
+  if __matchbool then print_endline "Cool" else print_endline "Uncool"
+;
+
+value g =
+  fun
+  [ False when True -> print_endline "Uncool"
+  | _ -> print_endline "Cool" ]
+;
+
+do { f True; g True };

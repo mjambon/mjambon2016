@@ -1,0 +1,17 @@
+JSON pretty-printer
+
+Usage: ./ydump [input file]
+  -o <file>
+          Output file
+  -std 
+          Convert tuples and variants into standard JSON,
+          refuse to print NaN and infinities,
+          require the root node to be either an object or an array.
+  -c 
+          Compact output (default: pretty-printed)
+  -s 
+          Streaming mode: read and write a sequence of JSON values instead of
+          just one.
+  -ob      Experimental
+  -help  Display this list of options
+  --help  Display this list of options

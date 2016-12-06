@@ -1,0 +1,43 @@
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<link rel="Start" href="index.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Dyndyn" rel="Chapter" href="Dyndyn.html"><title>Dyndyn</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a href="index.html">Up</a>
+&nbsp;</div>
+<center><h1>Module <a href="type_Dyndyn.html">Dyndyn</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> Dyndyn: <code class="type">sig  end</code></pre><div class="info">
+This module implements arrays that are extensible from both sides.<br>
+</div>
+<hr width="100%">
+<pre><span class="keyword">type</span> <a name="TYPEt"></a><code class="type">'a</code> t </pre>
+<div class="info">
+The abstract type of double-extensible arrays.
+  They can be considered as mutable double-ended lists as well 
+  as regular arrays. The first index is 0 as in the standard array type.<br>
+</div>
+
+<pre><span class="keyword">val</span> <a name="VALcreate"></a>create : <code class="type">unit -> 'a <a href="Dyndyn.html#TYPEt">t</a></code></pre><div class="info">
+creation of an empty array<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALcompact"></a>compact : <code class="type">'a <a href="Dyndyn.html#TYPEt">t</a> -> unit</code></pre><div class="info">
+resize the array to minimize its memory occupancy<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALadd_first"></a>add_first : <code class="type">'a <a href="Dyndyn.html#TYPEt">t</a> -> 'a -> unit</code></pre><div class="info">
+add an element at the beginning of the list. Index of element <code class="code">i</code>
+   becomes <code class="code">i+1</code>.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALadd_last"></a>add_last : <code class="type">'a <a href="Dyndyn.html#TYPEt">t</a> -> 'a -> unit</code></pre><div class="info">
+add an element at the end of the list<br>
+</div>
+<pre><span class="keyword">exception</span> <a name="EXCEPTIONEmpty"></a>Empty</pre>
+<pre><span class="keyword">exception</span> <a name="EXCEPTIONOut_of_bounds"></a>Out_of_bounds</pre>
+<pre><span class="keyword">val</span> <a name="VALlength"></a>length : <code class="type">'a <a href="Dyndyn.html#TYPEt">t</a> -> int</code></pre><pre><span class="keyword">val</span> <a name="VALget"></a>get : <code class="type">'a <a href="Dyndyn.html#TYPEt">t</a> -> int -> 'a</code></pre><pre><span class="keyword">val</span> <a name="VALget_first"></a>get_first : <code class="type">'a <a href="Dyndyn.html#TYPEt">t</a> -> 'a</code></pre><pre><span class="keyword">val</span> <a name="VALget_last"></a>get_last : <code class="type">'a <a href="Dyndyn.html#TYPEt">t</a> -> 'a</code></pre><pre><span class="keyword">val</span> <a name="VALpop_slice"></a>pop_slice : <code class="type">(int -> 'a -> 'b) -> 'a <a href="Dyndyn.html#TYPEt">t</a> -> int -> int -> unit</code></pre><pre><span class="keyword">val</span> <a name="VALremove_slice"></a>remove_slice : <code class="type">'a <a href="Dyndyn.html#TYPEt">t</a> -> int -> int -> unit</code></pre><pre><span class="keyword">val</span> <a name="VALpop_sub"></a>pop_sub : <code class="type">(int -> 'a -> 'b) -> 'a <a href="Dyndyn.html#TYPEt">t</a> -> int -> int -> unit</code></pre><pre><span class="keyword">val</span> <a name="VALremove_sub"></a>remove_sub : <code class="type">'a <a href="Dyndyn.html#TYPEt">t</a> -> int -> int -> unit</code></pre><pre><span class="keyword">val</span> <a name="VALpop_first"></a>pop_first : <code class="type">'a <a href="Dyndyn.html#TYPEt">t</a> -> 'a</code></pre><pre><span class="keyword">val</span> <a name="VALpop_last"></a>pop_last : <code class="type">'a <a href="Dyndyn.html#TYPEt">t</a> -> 'a</code></pre><pre><span class="keyword">val</span> <a name="VALremove_first"></a>remove_first : <code class="type">'a <a href="Dyndyn.html#TYPEt">t</a> -> unit</code></pre><pre><span class="keyword">val</span> <a name="VALremove_last"></a>remove_last : <code class="type">'a <a href="Dyndyn.html#TYPEt">t</a> -> unit</code></pre><pre><span class="keyword">val</span> <a name="VALiter"></a>iter : <code class="type">('a -> 'b) -> 'a <a href="Dyndyn.html#TYPEt">t</a> -> unit</code></pre><pre><span class="keyword">val</span> <a name="VALiteri"></a>iteri : <code class="type">(int -> 'a -> 'b) -> 'a <a href="Dyndyn.html#TYPEt">t</a> -> unit</code></pre><pre><span class="keyword">val</span> <a name="VALrev_iter"></a>rev_iter : <code class="type">('a -> 'b) -> 'a <a href="Dyndyn.html#TYPEt">t</a> -> unit</code></pre><pre><span class="keyword">val</span> <a name="VALrev_iteri"></a>rev_iteri : <code class="type">(int -> 'a -> 'b) -> 'a <a href="Dyndyn.html#TYPEt">t</a> -> unit</code></pre><pre><span class="keyword">val</span> <a name="VALmap"></a>map : <code class="type">('a -> 'b) -> 'a <a href="Dyndyn.html#TYPEt">t</a> -> 'b <a href="Dyndyn.html#TYPEt">t</a></code></pre><pre><span class="keyword">val</span> <a name="VALmapi"></a>mapi : <code class="type">(int -> 'a -> 'b) -> 'a <a href="Dyndyn.html#TYPEt">t</a> -> 'b <a href="Dyndyn.html#TYPEt">t</a></code></pre><pre><span class="keyword">val</span> <a name="VALiter_slice"></a>iter_slice : <code class="type">(int -> 'a -> 'b) -> 'a <a href="Dyndyn.html#TYPEt">t</a> -> int -> int -> unit</code></pre><pre><span class="keyword">val</span> <a name="VALiter_sub"></a>iter_sub : <code class="type">(int -> 'a -> 'b) -> 'a <a href="Dyndyn.html#TYPEt">t</a> -> int -> int -> unit</code></pre><pre><span class="keyword">val</span> <a name="VALfold_left"></a>fold_left : <code class="type">('a -> 'b -> 'a) -> 'a -> 'b <a href="Dyndyn.html#TYPEt">t</a> -> 'a</code></pre><pre><span class="keyword">val</span> <a name="VALfold_right"></a>fold_right : <code class="type">('a -> 'b -> 'b) -> 'a <a href="Dyndyn.html#TYPEt">t</a> -> 'b -> 'b</code></pre><pre><span class="keyword">val</span> <a name="VALslice"></a>slice : <code class="type">'a <a href="Dyndyn.html#TYPEt">t</a> -> int -> int -> 'a <a href="Dyndyn.html#TYPEt">t</a></code></pre><pre><span class="keyword">val</span> <a name="VALsub"></a>sub : <code class="type">'a <a href="Dyndyn.html#TYPEt">t</a> -> int -> int -> 'a <a href="Dyndyn.html#TYPEt">t</a></code></pre><pre><span class="keyword">val</span> <a name="VALto_list"></a>to_list : <code class="type">'a <a href="Dyndyn.html#TYPEt">t</a> -> 'a list</code></pre><pre><span class="keyword">val</span> <a name="VALto_array"></a>to_array : <code class="type">'a <a href="Dyndyn.html#TYPEt">t</a> -> 'a array</code></pre><pre><span class="keyword">val</span> <a name="VALof_list"></a>of_list : <code class="type">'a list -> 'a <a href="Dyndyn.html#TYPEt">t</a></code></pre><pre><span class="keyword">val</span> <a name="VALof_array"></a>of_array : <code class="type">'a array -> 'a <a href="Dyndyn.html#TYPEt">t</a></code></pre><pre><span class="keyword">val</span> <a name="VALsort"></a>sort : <code class="type">('a -> 'a -> int) -> 'a <a href="Dyndyn.html#TYPEt">t</a> -> unit</code></pre><pre><span class="keyword">val</span> <a name="VALrev"></a>rev : <code class="type">'a <a href="Dyndyn.html#TYPEt">t</a> -> unit</code></pre></body></html>

@@ -1,0 +1,113 @@
+
+<!doctype html>
+
+<html>
+<head>
+<title>Comparison-based approaches to the automated prediction of 
+interesting 3D sites in a protein structure</title>
+<meta http-equiv="content-Type" content="text/html; charset=utf-8">
+
+<link rel="stylesheet" href="/base.css" type="text/css">
+
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+<link rel="home" href="/">
+<link rel="author" href="/people.html#martin">
+
+</head>
+<body>
+
+<div id="page">
+
+
+<div>
+<table id=top_menu cellspacing=0>
+<tr>
+  <td><a href="/">Main</a></td>
+  <td><a href="/ocaml.html">Software</a></td>
+  <td><a href="/releases">Downloads</a></td>
+  <td class="current_topic"><a href="/other.html">Other</a></td>
+</tr>
+</table>
+</div>
+
+
+
+<h1>Comparison-based approaches to the automated prediction of 
+interesting 3D sites in a protein structure<br>
+<span class=title2>A side-by-side comparison of available 
+techniques and tools</span></h1>
+
+
+<p>
+<span style="color:#a00; font-size:120%">[October 27, 2005] 
+This page was transferred to 
+<a href="http://wikiomics.org/wiki/Searching_for_3D_functional_sites_in_a_protein_structure">wikiomics.org</a>, the bioinformatics wiki
+and is evolving there.
+<a href="http://wikiomics.org/wiki/Searching_for_3D_functional_sites_in_a_protein_structure"><img 
+   src="http://wikiomics.org/skins/common/images/wikiomics-ob-135x72.png"
+   alt="Wikiomics - Open Bioinformatics"
+   title="Wikiomics - Open Bioinformatics"
+   style="vertical-align:middle"></a></span>
+
+<p>
+The quality of this document depends on your feedback.
+Please notify me of any erroneous or missing information 
+(email: Martin&nbsp;Jambon &lt;<a href="mailto:martin@mjambon.com">martin@mjambon.com</a>&gt;).
+
+<p>
+For now, only methods which can be used directly on the web are listed, 
+sorry.
+
+<p>
+Also, this document is exclusively restricted to the different ways of
+finding similarities between a given protein structure and some 
+existing or averaged 3D sites. 
+It excludes methods which are based only on the 
+amino acid sequence (such as Prosite search) 
+or which do not return correspondences between 
+3D sites.
+
+<p>
+This table is big. To zoom-out or zoom-in, use the wheel of your mouse while 
+pressing the Ctrl key of your keyboard.
+
+<p>
+<table class=real-table style="font-size:50%">
+<tr><th>Name (alphabetic order)</th><th>Basic elements in the representation of a protein</th><th>Molecular shape is used</th><th>Sites can match partially</th><th>Rigid superposition of sites</th><th>Web server</th><th>Scan protein vs. functional sites online</th><th>Scan site vs. proteins online</th><th>Protein vs. protein comparison online</th><th>Conditions of use</th><th>Major references</th><th>Notes</th></tr>
+<tr><td>PdbFun</td><td>centroid of amino acids</td><td>no</td><td>yes</td><td>yes</td><td><a href="http://pdbfun.uniroma2.it/">http://pdbfun.uniroma2.it/</a></td><td>yes</td><td>yes</td><td>yes</td><td>free access</td><td><a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=pubmed&dopt=Abstract&list_uids=15980442">features and user interface (no details concerning the comparison algorithm in this paper)</a></td><td></td></tr>
+<tr><td>PDBSiteScan</td><td>amino acids represented by the C, C-alpha and N atoms of the main chain</td><td>no</td><td>yes</td><td>yes, using MDM (maximum distance mismatch)</td><td><a href="http://wwwmgs.bionet.nsc.ru/mgs/gnw/pdbsitescan/">http://wwwmgs.bionet.nsc.ru/mgs/gnw/pdbsitescan/</a></td><td>yes</td><td>no</td><td>no</td><td>free access</td><td><a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=pubmed&dopt=Abstract&list_uids=15215447">PDBSiteScan</a>, <a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=pubmed&dopt=Abstract&list_uids=15608173">PDBSite</a></td><td></td></tr>
+<tr><td>PINTS</td><td>selected atoms from lateral chains</td><td>no</td><td>yes</td><td>yes (using RMSD)</td><td><a href="http://www.russell.embl.de/pints/">http://www.russell.embl.de/pints/</a></td><td>yes</td><td>yes</td><td>yes</td><td>web version freely accessible to everyone</td><td><a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=pubmed&dopt=Abstract&list_uids=9642096">method</a>, <a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=pubmed&dopt=Abstract&list_uids=12595245">assessment</a></td><td></td></tr>
+<tr><td>PROCAT/TESS/Jess/Catalytic Site Atlas</td><td>atoms</td><td>no</td><td>no</td><td>yes (using RMSD)</td><td><a href="http://www.ebi.ac.uk/thornton-srv/databases/CSA/">http://www.ebi.ac.uk/thornton-srv/databases/CSA/</a></td><td>yes (catalytic sites)</td><td>no</td><td>no</td><td>free access</td><td><a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=pubmed&dopt=Abstract&list_uids=8762132">original algorithm</a>, <a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=pubmed&dopt=Abstract&list_uids=9385633">faster algorithm (TESS)</a>, <a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=pubmed&dopt=Abstract&list_uids=12967960">Jess algorithm, successor of TESS</a>, <a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=pubmed&dopt=Abstract&list_uids=14681376">CSA</a>, <a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=pubmed&dopt=Abstract&list_uids=12421562">CSA</a>, <a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=pubmed&dopt=Abstract&list_uids=15755451">CSA</a></td><td>Catalytic Site Atlas (CSA) is the successor of the PROCAT webserver and database of templates of catalytic sites</td></tr>
+<tr><td>pvSOAR</td><td>centroids of amino acids forming pockets and the pseudosequence they form (sequence without non-pocket residues)</td><td>yes</td><td>yes</td><td>yes</td><td><a href="http://pvsoar.bioengr.uic.edu/">http://pvsoar.bioengr.uic.edu/</a></td><td>yes (pockets)</td><td>pocket vs. database of pockets</td><td>no</td><td>free access</td><td><a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=pubmed&dopt=Abstract&list_uids=12948498">method and validation</a>, <a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=pubmed&dopt=Abstract&list_uids=15215448">web server</a></td><td></td></tr>
+<tr><td>SiteEngine</td><td>surface exposed functional groups that describe the physico-chemical properties of amino acids</td><td>yes</td><td>yes</td><td>yes (using RMSD)</td><td><a href="http://bioinfo3d.cs.tau.ac.il/SiteEngine/">http://bioinfo3d.cs.tau.ac.il/SiteEngine/</a></td><td>no</td><td>no</td><td>yes (protein vs. site)</td><td>web server open to anyone, downloadable software under the terms of a specific <a href="http://bioinfo3d.cs.tau.ac.il/cgi-bin/pdownload/progdownload.pl/?pname=SiteEngine">license</a></td><td><a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=pubmed&dopt=Abstract&list_uids=15147845">method</a></td><td></td></tr>
+<tr><td>SPASM/RIGOR</td><td>C-alpha or centroid of lateral chains</td><td>no</td><td>yes</td><td>yes (using RMSD)</td><td><a href="http://portray.bmc.uu.se/cgi-bin/spasm/scripts/spasm.pl">http://portray.bmc.uu.se/cgi-bin/spasm/scripts/spasm.pl</a></td><td>yes (RIGOR)</td><td>yes (SPASM)</td><td>no</td><td>free access</td><td><a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=pubmed&dopt=Abstract&list_uids=9917419">method (SPASM and RIGOR)</a>, <a href="http://xray.bmc.uu.se/cgi-bin/gerard/reprint_mailer.pl?pref=64">(reprint)</a></td><td></td></tr>
+<tr><td>SuMo</td><td>selected triplets of functional groups of heterogeneous geometric types, with local molecular shape around each triplet given by surrounding non-H atoms</td><td>yes</td><td>yes</td><td>no</td><td><a href="http://sumo-pbil.ibcp.fr/">http://sumo-pbil.ibcp.fr/</a></td><td>yes</td><td>yes</td><td>yes (expert mode only)</td><td>web version freely accessible to non-profit users, custom installation and services available on demand from <a href="http://www.medit.fr">MEDIT</a></td><td><a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=pubmed&dopt=Abstract&list_uids=12833538">method (about 60% obsolete)</a>, <a href="http://martin.jambon.free.fr/phd.html">detailed method (95% up-to-date)</a>, <a href="http://v3.espacenet.com/textdoc?DB=EPODOC&IDX=WO03104388&F=0&QPN=WO03104388">patent WO03104388</a></td><td></td></tr>
+</table>
+
+
+
+<div id=footer>
+&copy;&nbsp;2005&nbsp;Martin&nbsp;Jambon &lt;<a href="mailto:martin@mjambon.com">martin@mjambon.com</a>&gt;
+</div>
+
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-640255-1";
+urchinTracker();
+</script>
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+<!-- 
+var sc_project=370325; 
+var sc_partition=1; 
+//-->
+</script>
+
+<script type="text/javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><p><a href="http://www.statcounter.com/"><img src="http://c2.statcounter.com/counter.php?sc_project=370325&amp;java=0" alt="counter"></a></p></noscript>
+<!-- End of StatCounter Code -->
+
+</body>
+</html>

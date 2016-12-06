@@ -1,0 +1,239 @@
+## 
+#load "utils.cmo";;
+open Printf
+open Camlmix
+open Utils
+##
+## include_file "doctype" ##
+<html>
+<head>
+## title "Martin Jambon" ##
+## include_file "charset" ##
+## include_file "stylesheet" ##
+## include_file "icon" ##
+## include_file "commonlinks" ##
+
+<script type="text/javascript"
+        src="background/jquery.min.js"></script>
+<script type="text/javascript"
+        src="background/jquery.backstretch.min.js"></script>
+<script type="text/javascript">
+	$.backstretch("background/background.jpg", {speed: 550});
+</script>
+
+</head>
+<body>
+## include_file "start_big_table_transparent" ##
+## top_menu ~here:true home ##
+
+<p class="inline-images social-networks">
+Martin Jambon is on...<br/>
+<img src="https://github.com/favicon.ico" alt="logo" width="16" />
+     <a href="https://github.com/mjambon">GitHub</a> <br/>
+<img src="http://www.linkedin.com/favicon.ico" alt="logo" width="16" />
+     <a href="http://www.linkedin.com/in/mjambon">LinkedIn</a> <br/>
+<img src="https://twitter.com/favicon.ico" alt="logo" width="16" />
+     <a href="https://twitter.com/mjambon">Twitter</a> <br/>
+<img src="http://stackoverflow.com/favicon.ico" alt="logo" width="16" />
+     <a href="http://stackoverflow.com/users/597517/martin-jambon">StackOverflow</a> <br/>
+<img src="https://www.facebook.com/favicon.ico" alt="logo" width="16" />
+     <a href="https://www.facebook.com/0xfff">Facebook</a> <br/>
+<img src="http://www.flickr.com/favicon.ico" alt="logo" width="16" />
+     <a href="http://www.flickr.com/photos/mjambon">Flickr</a> <br/>
+<img src="http://d26ifou2tyrp3u.cloudfront.net/assets/favicon-3578624dbca1eda01ff67d8723f17d5e.ico" alt="logo" width="16" />
+     <a href="http://www.strava.com/athletes/750791">Strava</a> <br/>
+</p>
+
+## 
+let print_news date text =
+  printf "\
+<p class=\"news-item\">
+<span class=\"date\">%s</span><br/>
+%s
+</p>"
+    date text
+
+let news date = print_with (fun text -> print_news date text)
+##
+
+## news "December 27, 2014" ##
+Started a <a href="https://mjambon.github.io/blog/">blog</a>
+
+## news "December 26, 2014" ##
+Updated
+<a href="https://mjambon.github.io/atdgen-doc/">documentation for atdgen</a>
+
+## news "June 23, 2012" ##
+Prototype for unpurple,
+tool that 
+<a href="/purple-fringe/examples.html">removes purple fringing</a>
+from digital photos.
+
+## news "December 13, 2011" ##
+New utility <a href="https://github.com/MyLifeLabs/dutop">dutop</a>
+which displays a "disk usage top" handy for preparing big data cleanups.
+
+## news "November 24, 2011" ##
+New library <a href="https://github.com/MyLifeLabs/nproc">Nproc</a>
+providing multicore support for OCaml and Lwt by implementing
+process pools.
+
+## news "September 9, 2011" ##
+New utility <a href="https://github.com/MyLifeLabs/sampl">sampl</a>:
+like "head" or "tail" but picks 10 random lines from large data files.
+
+## news "August 28, 2011" ##
+New utility <a href="https://github.com/MyLifeLabs/wcl">wcl</a>: 
+"wc -l" for the impatient, 
+with estimation of total line count as it progresses.
+
+## news "July 20, 2011" ##
+Release of <a href="cppo.html">cppo</a> 0.9.1, fast cpp-like preprocessor
+for OCaml. Now supporting calls to external programs for processing
+<code>#ext</code>...<code>#endext</code> sections of source files.
+
+## news "July 2, 2011" ##
+Official release of <a href="/atdgen">Atdgen</a> 1.2.0
+including a tutorial, a validator mode, plugins for OMake and GNU Make,
+and more modularity.
+
+## news "February 23, 2011" ##
+Created <a href="http://upnym.com">Upnym,
+a service for brainstorming startup names</a>.
+Create your own .com domain name now at
+<a href="http://upnym.com">upnym.com</a>.
+
+## news "December 20, 2010" ##
+New release of <a href="atd-biniou-intro.html">Biniou, ATD
+and Atdgen</a> supporting serialization of cyclic values.
+
+## news "September 19, 2010" ##
+Cleaned up and updated Camlp5 tutorial
+<a href="extend-ocaml-syntax.html">"How to extend the syntax
+of Objective Caml, using Camlp5"</a>.
+
+## news "September 9, 2010" ##
+MyLife releases <a href="/atdgen">Atdgen</a>,
+a generator of optimized OCaml code for Biniou and JSON serialization.
+
+## news "August 22, 2010" ##
+MyLife releases <a href="/atdgen">ATD</a>,
+a syntax for cross-language data type definitions.
+
+## news "August 7, 2010" ##
+Releasing <a href="biniou.html">OCaml library for Biniou</a>,
+a new binary format designed for speed and extensibility.
+
+## news "August 7, 2010" ##
+Releasing <a href="yojson.html">Yojson</a>, a JSON runtime library for
+OCaml superseding <a href="json-wheel.html">json-wheel</a>.
+
+## news "June 28, 2010" ##
+LaTeX output for <a href="caml2html.html">caml2html</a>.
+
+## news "November 17, 2009" ##
+First release of <a href="cppo.html">Cppo</a>, the C preprocessor for OCaml.
+
+## news "August 14, 2009" ##
+Bugfix releases of <a href="micmatch.html">Mikmatch</a>, 
+<a href="json-static.html">json-static</a>
+and <a href="caml2html.html">Caml2html</a>.
+
+## news "July 26, 2008" ##
+Releasing <a href="micmatch.html">Mikmatch 1.0.0</a> with a K, 
+implementation of Micmatch that supports 
+the "new Camlp4".
+<a href="micmatch.html">Micmatch 1.0.0</a> now supports Camlp5, based on the
+"old Camlp4".
+
+## news "July 9, 2008" ##
+Releasing new package <a href="easy-format.html">Easy-format 0.9.0</a>: 
+<i>Indentation made easy</i>.
+
+## news "April 7, 2008" ##
+Releasing new package <a href="ocaml.html#tophide">Tophide 1.0.0</a>.
+Recommended for hiding auto-generated identifiers in toplevel sessions,
+much like hidden files for <code>ls</code>.
+
+## news "March 4, 2007" ##
+<a href="ocamlscript.html">Ocamlscript 2.0.0</a> is out. 
+
+## news "February 11, 2007" ##
+<a href="caml2html.html">Caml2html</a> can now show the type 
+of the expression which is under the mouse pointer.
+
+## news "February 4, 2007" ##
+Release of <a href="micmatch.html">micmatch</a> 0.697 
+which now includes experimental support for
+views, i.e. user-defined patterns that match abstract data.
+
+## news "January 19, 2007" ##
+Preview release of <a href="json-static.html">json-static</a>, 
+a syntax extension of OCaml that features automatic conversions between
+untyped <a href="http://www.json.org/">JSON</a> data and OCaml types.
+
+## news "December 3, 2006" ##
+First release of <a href="json-wheel.html">json-wheel</a>, 
+an OCaml implementation of the <a href="http://www.json.org/">JSON</a>
+data format, a "fat-free alternative to XML".
+
+## news "January 21, 2006" ##
+Released <a href="camlmix/">Camlmix 1.3</a>, 
+a multipurpose template processor.
+
+## news "December 5, 2005" ##
+First release of <a href="p4ck.html">P4ck</a>, an experimental system 
+for the quick installation of a dynamic collection of 
+one-file Camlp4 hacks.
+
+## news "October 17, 2005" ##
+First release of <a href="biblio_php.html">Biblio.php</a>, an 
+extension of <a href="http://www.mediawiki.org">MediaWiki</a> 
+for web-based bibliography retrieval and formatting.
+
+## news "May 13, 2005" ##
+<a href="http://martin.jambon.free.fr/search-protein-3D-sites.html">Comparison-based prediction of 
+3D functional sites in protein structures</a>: a comparative table
+of existing approaches.
+
+## news "April 27, 2005" ##
+<a href="extend-ocaml-syntax.html">"How to extend the syntax
+of Objective Caml, using Camlp4"</a>, a web tutorial 
+for advanced OCaml programmers, has been released.
+
+## news "February 3, 2005" ##
+<a href="micmatch.html">Micmatch</a> now has a 
+<a href="micmatch-howto.html">HowTo</a> and many powerful features.
+
+## news "November 11, 2004" ##
+<a href="caml2html.html">Caml2html</a> 
+is now developed and redistributed here. New version 1.2.
+
+## news "August 18, 2004" ##
+<a href="micmatch.html">Micmatch</a> 
+has now a <a href="micmatch-manual.html">reference manual</a>.
+
+## news "August 8, 2004" ##
+<a href="camlmix/">Camlmix</a>&nbsp;1.1 is
+ready and available as a 
+<a href="http://www.ocaml-programming.de/godi/">GODI</a> package.
+
+## news "August 2, 2004" ##
+New package <a href="micmatch.html">Micmatch</a>: a smooth integration of 
+regular expressions in the classic pattern matching of OCaml.
+
+## news "July 4, 2004" ##
+The English version of my <a href="/phd.html">doctoral
+thesis</a> is now available. 
+
+## news "June 8, 2004" ##
+A page about 
+<a href="/icfpcontest2004.html">my participation</a>
+in the ICFP programming contest is available.
+
+## () ##
+
+## camlmix_footer ~years:"2004-2012" () ##
+## include_file "end_big_table" ##
+</body>
+</html>

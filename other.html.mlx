@@ -1,0 +1,40 @@
+## 
+#load "utils.cmo";;
+open Utils
+##
+## include_file "doctype" ##
+<html>
+<head>
+## title "Other" ##
+## include_file "charset" ##
+## include_file "stylesheet" ##
+## include_file "icon" ##
+## include_file "commonlinks" ##
+</head>
+<body>
+## include_file "hitcounter" ##
+## include_file "start_big_table" ##
+## top_menu ~here:true other ##
+<h1>Various documents</h1>
+
+<p>
+<ul>
+<li> <a href="/ocaml.html">Software</a>
+<li> <a href="bedbug-advice.html">Peace, Love and Bedbugs:
+Surviving a Bedbug Infestation</a>
+</ul>
+
+<h1>Aging documents</h1>
+
+<p>
+<ul>
+<li> my scientific <a href="publications.html">publications</a>
+<li> documents about my research in 
+<a href="/bioinformatics.html">bioinformatics, including my PhD</a>
+</ul>
+
+
+## camlmix_footer ~years:"2004-2012" () ##
+## include_file "end_big_table" ##
+</body>
+</html>

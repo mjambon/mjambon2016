@@ -1,0 +1,297 @@
+##
+open Printf
+open Camlmix
+#use "version.ml";;
+#load "../utils.cmo";;
+#use "topfind";;
+#require "caml2html";;
+#require "mikmatch_pcre";;
+#load "../unmix.cmo";;
+#load "../print_ocaml.cmo";;
+#directory "..";;
+open Utils
+open Print_ocaml
+##
+## include_file "../doctype" ##
+<html>
+<head>
+## title "Camlmix" ##
+## include_file "../charset" ##
+## include_file "../stylesheet" ##
+## include_file "../ocaml-stylesheet" ##
+## include_file "../icon" ##
+## include_file "../commonlinks" ##
+</head>
+<body>
+## include_file "../hitcounter" ##
+## include_file "../start_big_table" ##
+## top_menu camlmix ##
+<h1>Camlmix ## include_file "../1camel" ##<br>
+<span class=title2>OCaml-stuffed templates</span></h1>
+
+<p>[<a href="#intro">intro</a>] 
+[<a href="#example">example</a>] 
+[<a href="#advanced">advanced</a>] 
+[<a href="#download">download</a>]
+
+<h2 id=intro>Introduction</h2>
+<p>
+Camlmix is a generic preprocessor which converts text with embedded 
+<a href="http://caml.inria.fr">OCaml</a> into an 
+<a href="http://caml.inria.fr">OCaml</a> program with embedded text.
+It produces text documents from one or several templates.
+Camlmix is <span style="text-decoration: underline"><b>not</b> a 
+<a href="/extend-ocaml-syntax.html">Camlp4 syntax extension</a></span>.
+
+<br>
+The basic syntaxic rules are:
+<ul>
+<li> ## camlmixcode 
+"Some text ### (* Some OCaml statements *) ... ### More text ..." ##
+<li> ## camlmixcode 
+"Some text ###= (* Some OCaml string expression *) ... ### More text ..." ##
+<li> ## camlmixcode 
+"This prints actually 2 # symbols: ####" ##
+</ul>
+
+<p>
+Camlmix does not provide a library for text-processing, but 
+all existing libraries and syntax extensions can be used, such
+as 
+<a href="http://www.eleves.ens.fr/home/frisch/soft.html#HereDoc">HereDoc</a>, 
+<a href="/micmatch.html">Micmatch</a> or 
+<a href="http://www.ocaml-programming.de/packages/documentation/xstrp4/">xstrp4</a>. 
+You can also find some examples of code in the 
+<a href="/toolbox.html">Camlmix Toolbox</a> if you are not familiar with
+I/O in OCaml.
+
+
+<h2 id=example>Example</h2>
+<p>
+The file <code>example.mlx</code> contains the following:
+
+## print_with camlmixpre ##
+###
+open Printf
+let color col s =
+  sprintf "<span style=\"color:%s\">%s</span>" col s
+###
+This is ###= color "red" "red text" ###,
+but that is a ###= color "blue" "blue one" ###.
+## () ##
+
+<p>
+The command
+<pre>
+camlmix example.mlx -o example.html
+</pre>
+<p>
+will produce the following <code>example.html</code> file:
+## print_with htmlpre ##
+This is <span style="color:red">red text</span>,
+but that is a <span style="color:blue">blue one</span>.
+## () ##
+<p>
+This piece of HTML will be displayed as:
+This is <span style="color:red">red text</span>,
+but that is a <span style="color:blue">blue one</span>.
+
+<p>
+You may now have a look at the 
+<a href="index-src.html">Camlmix/HTML colorized source of this web page</a>,
+which was itself made using a Camlmix template.
+
+<p>
+Camlmix also allows you to convert a template into a regular OCaml source file
+which is equipped with a single function named <code>render</code>:
+<pre>
+camlmix example.mlx -c -fun -co example.ml 
+</pre>
+<p>
+The signature of the <code>render</code> function would be:
+## print_with ocamlpre ##
+val render : ?print:(string -> unit) -> 'a -> unit
+## () ##
+<p>
+where the <code>'a</code> parameter stands for the type of the argument which
+is passed to the rendering function. It is available in the template
+under the name <code>param</code>, and its usage determines its
+actual type. The <code>print</code> function is the one which is used
+to handle text. By default, it prints the text onto stdout, but
+it can be replaced by any other function, as long as the user-defined
+code of the template uses it.
+<p>
+The result <code>example.ml</code> is a regular OCaml file which would
+be integrated into a regular OCaml program.
+
+<p>
+The full set of features and options is described in 
+<a href="camlmix-help.txt">the output of <code>camlmix -help</code></a>
+
+
+<h2 id=advanced>Advanced features</h2>
+
+<h3>Directives</h3>
+<p>
+A block of code that starts with an <code>@</code> character will not
+be handled as OCaml code but as a sequence of directives for
+Camlmix.
+<p>
+There is one useful directive: <code>include</code>.
+This mechanism allows the insertion of templates and subtemplates that
+inherit the whole OCaml environment, and possibly modify it. 
+These templates are not only
+parametrized by string variables but also by any type of OCaml data,
+including functions, and even by types and modules!
+<p>
+The <code>include</code> directive reads a file
+(e.g. <code>included.mlx</code>)
+in the Camlmix syntax exactly as if its
+contents was inserted in the current file (e.g. <code>main.mlx</code>):
+<p>
+<code>main.mlx:</code>
+## print_with camlmixpre ##
+###
+let print_counter = (* increments the counter and displays its new value *)
+  let n = ref 0 in
+  fun () -> incr n; print_int !n
+###
+Should be 1: ### print_counter () ###
+Should be 2: ### @include "included.mlx" ###
+Should be 3: ### print_counter () ###
+## () ##
+<p>
+<code>included.mlx:</code>
+## print_with camlmixpre ##
+### print_counter () ###
+## () ## 
+<p>
+<code>camlmix main.mlx</code> returns the following:
+<pre>
+
+Should be 1: 1
+Should be 2: 2
+
+Should be 3: 3
+</pre>
+
+<p>
+This is not totally satisfying because two undesired empty lines were inserted.
+In Camlmix 1.2, you can skip whitespace until the end of the line and the
+newline character by using
+<code>.###</code> instead of <code>###</code> as the closing delimiter.
+This results in the following program:
+## print_with camlmixpre ##
+###
+let print_counter = (* increments the counter and displays its new value *)
+  let n = ref 0 in
+  fun () -> incr n; print_int !n
+.###
+Should be 1: ### print_counter () ###
+Should be 2: ### @include "included.mlx" .###
+Should be 3: ### print_counter () ###
+## () ##
+<p>
+which now produces:
+<pre>
+Should be 1: 1
+Should be 2: 2
+Should be 3: 3
+</pre>
+
+
+<p>
+A <code>skip</code> directive also exists: it ignores the next block of text.
+It is not much useful since the <code>.###</code> delimiter was introduced in
+Camlmix 1.2.
+It was useful when a block of OCaml had to follow a block of directives,
+without printing anything between them:
+## print_with camlmixpre ##
+### @include "somefile.mlx"; skip (* skips the newline character(s) -> *) ###
+### print_something () ###
+## () ##
+
+
+<h3>Runtime hooks</h3>
+<p>
+The OCaml program that is generated from the Camlmix files first defines
+a module called Camlmix. This module contains several variables that are 
+updated automatically and possibly explicitely by the user.
+Its signature is:
+
+##
+let comment s = printf "<p class=comment>\n%s" s
+##
+
+## print_with ocamlpre ##
+module Camlmix :
+  sig
+    val source : string ref
+    val line : int ref
+    val char : int ref  
+## print_with comment ##
+<code>source</code>, <code>line</code> and <code>char</code> 
+refer to the location of the first 
+character of the current block in its source file
+(source file, line number starting from 1, position in the line
+starting from 1). They are updated automatically at the beginning
+of each code block or text block.
+
+## print_with ocamlpre ##
+    val printer : (string -> unit) ref 
+## print_with comment ##
+the function that prints the text blocks
+
+## print_with ocamlpre ##
+    val print_with : (string -> unit) -> unit
+## print_with comment ##
+<code>print_with f</code> prints the next block of text using 
+<code>f</code> instead
+of the current printer.
+Its behavior is undefined if it is called several 
+times in the same OCaml block.
+
+## print_with ocamlpre ##
+    val print_if : bool -> unit
+## print_with comment ##
+<code>print_if cond</code> prints the next block of text only 
+if <code>cond</code> is true.
+It uses <code>print_with</code>.
+
+## print_with ocamlpre ##
+  end
+## () ##
+
+<h3>Command line options</h3>
+
+## Sys.command "camlmix -help > camlmix-help.txt 2>&1" ##
+<p>
+The command line options are returned by 
+<a href="camlmix-help.txt"><code>camlmix -help</code></a>.
+
+
+
+<h2 id=download>Download</h2>
+
+<p>
+Camlmix can be installed automatically from 
+<a href="http://www.ocaml-programming.de/godi/">GODI</a>.
+<p>
+You can also use the traditional way. 
+Just download the source code:
+## download (sprintf "camlmix-%s.tar.bz2" version) ##
+or ## download (sprintf "camlmix-%s.tar.gz" version) ##. 
+It should work on any platform where
+OCaml is available.
+
+<p>
+I would be happy if you send me any positive or negative feedback.
+
+<p>
+Thanks to Nadji Gauthier, Jean-Baptiste Rouquier, Arthur E., Janne Hellsten
+and those that I forget, for their contributions.
+
+## camlmix_footer () ##
+## include_file "../end_big_table" ##
+</body>
+</html>

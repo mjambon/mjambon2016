@@ -1,0 +1,141 @@
+"prog.ml" 2 9 15 "prog.ml" 2 9 16
+type(
+  int array
+)
+ident(
+  def a "prog.ml" 3 37 39 "prog.ml" 6 104 126
+)
+"prog.ml" 2 9 22 "prog.ml" 2 9 25
+type(
+  int
+)
+"prog.ml" 2 9 27 "prog.ml" 2 9 30
+type(
+  int
+)
+"prog.ml" 2 9 19 "prog.ml" 2 9 33
+type(
+  int array
+)
+"prog.ml" 3 37 39 "prog.ml" 3 37 48
+type(
+  (int -> unit) -> int list -> unit
+)
+ident(
+  ext_ref List.iter
+)
+"prog.ml" 4 50 59 "prog.ml" 4 50 60
+type(
+  int
+)
+ident(
+  def i "prog.ml" 4 50 64 "prog.ml" 5 78 101
+)
+"prog.ml" 4 50 64 "prog.ml" 4 50 73
+type(
+  int -> unit
+)
+ident(
+  ext_ref Pervasives.print_int
+)
+"prog.ml" 4 50 74 "prog.ml" 4 50 75
+type(
+  int
+)
+ident(
+  int_ref i "prog.ml" 4 50 59 "prog.ml" 4 50 60
+)
+"prog.ml" 4 50 64 "prog.ml" 4 50 75
+call(
+  stack
+)
+type(
+  unit
+)
+"prog.ml" 5 78 85 "prog.ml" 5 78 98
+type(
+  unit -> unit
+)
+ident(
+  ext_ref Pervasives.print_newline
+)
+"prog.ml" 5 78 99 "prog.ml" 5 78 101
+type(
+  unit
+)
+"prog.ml" 5 78 85 "prog.ml" 5 78 101
+call(
+  tail
+)
+type(
+  unit
+)
+"prog.ml" 4 50 64 "prog.ml" 5 78 101
+type(
+  unit
+)
+"prog.ml" 4 50 54 "prog.ml" 5 78 102
+type(
+  int -> unit
+)
+"prog.ml" 6 104 114 "prog.ml" 6 104 115
+type(
+  int
+)
+"prog.ml" 6 104 116 "prog.ml" 6 104 117
+type(
+  int
+)
+"prog.ml" 6 104 118 "prog.ml" 6 104 119
+type(
+  int
+)
+"prog.ml" 6 104 120 "prog.ml" 6 104 121
+type(
+  int array
+)
+ident(
+  int_ref a "prog.ml" 2 9 15 "prog.ml" 2 9 16
+)
+"prog.ml" 6 104 123 "prog.ml" 6 104 124
+type(
+  int
+)
+"prog.ml" 6 104 120 "prog.ml" 6 104 125
+type(
+  int
+)
+type(
+  int array -> int -> int
+)
+ident(
+  ext_ref Array.get
+)
+"prog.ml" 6 104 109 "prog.ml" 6 104 125
+type(
+  int list
+)
+type(
+  int list
+)
+type(
+  int list
+)
+type(
+  int list
+)
+"prog.ml" 6 104 108 "prog.ml" 6 104 126
+type(
+  int list
+)
+"prog.ml" 3 37 39 "prog.ml" 6 104 126
+call(
+  stack
+)
+type(
+  unit
+)
+"prog.ml" 2 9 11 "prog.ml" 6 104 126
+type(
+  unit
+)

@@ -1,0 +1,479 @@
+
+<!doctype html>
+
+<html>
+<head>
+<title>json-wheel: JSON Library for OCaml</title>
+<meta http-equiv="content-Type" content="text/html; charset=utf-8">
+
+<link rel="stylesheet" href="/base.css" type="text/css">
+
+<link rel="stylesheet" href="/ocaml.css" type="text/css">
+
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+<link rel="home" href="/">
+<link rel="author" href="/people.html#martin">
+
+</head>
+<body>
+
+<div id="page">
+
+
+<div>
+<table id=top_menu cellspacing=0>
+<tr>
+  <td><a href="/">Main</a></td>
+  <td class="current_topic"><a href="/ocaml.html">Software</a></td>
+  <td><a href="/releases">Downloads</a></td>
+  <td><a href="/other.html">Other</a></td>
+</tr>
+</table>
+</div>
+
+
+
+
+<h1>json-wheel: JSON library for OCaml
+<img src="/1camel.png" 
+     title="difficulty = 1 camel (suitable for OCaml beginners)"
+     alt="[difficulty = 1 camel]">
+</h1>
+
+<p>
+<div class="framed">
+Json-wheel is now deprecated. Do not use it in new projects.
+It has been replaced by <a href="yojson.html">Yojson</a>.
+</div>
+
+<h2>Introduction</h2>
+<p>
+From <a href="http://www.json.org/">www.json.org</a>:
+<p style="padding-left:10%;padding-right:10%">
+<i>
+JSON (JavaScript Object Notation) is a lightweight data-interchange format. It is easy for humans to read and write. It is easy for machines to parse and generate. It is based on a subset of the JavaScript Programming Language, Standard ECMA-262 3rd Edition - December 1999.
+</i>
+<p>
+This implementation follows 
+<a href="http://www.ietf.org/rfc/rfc4627.txt">RFC 4627</a>. 
+We use key/value lists to represent JSON objects, 
+and lists to represent JSON arrays. 
+The library also provides pretty-printing and 
+optional support for C-style comments.
+
+
+
+<h2>Documentation</h2>
+
+<p>
+<a href="json-wheel-doc/index.html">Ocamldoc-generated 
+documentation</a> is available.
+
+<h2>Download</h2>
+
+<p>
+This software was written by Mika Illouz and Martin Jambon, 
+with some contributions by Gerd Stolpmann.
+It is distributed under a 
+<a href="json-wheel-license.txt">BSD license</a>.
+The current version is 1.0.6; 
+see <a href="json-wheel-changes.txt">Changes</a>.
+<p>
+<table class="light-table">
+<tr style="background-color: #ddd">
+<td>Latest version:</td>
+
+<td><a href="json-wheel.tar.gz">json-wheel.tar.gz</a></td>
+<td><a href="json-wheel.tar.bz2">json-wheel.tar.bz2</a></td>
+<td><a href="json-wheel-1.0.6.tar.gz">json-wheel-1.0.6.tar.gz</a></td>
+<td><a href="json-wheel-1.0.6.tar.bz2">json-wheel-1.0.6.tar.bz2</a></td>
+</tr>
+<tr>
+<td></td><td></td><td></td>
+<td><a href="json-wheel-1.0.5.tar.gz">json-wheel-1.0.5.tar.gz</a></td>
+<td><a href="json-wheel-1.0.5.tar.bz2">json-wheel-1.0.5.tar.bz2</a></td>
+</tr>
+<tr>
+<td></td><td></td><td></td>
+<td><a href="json-wheel-1.0.4.tar.gz">json-wheel-1.0.4.tar.gz</a></td>
+<td><a href="json-wheel-1.0.4.tar.bz2">json-wheel-1.0.4.tar.bz2</a></td>
+</tr>
+<tr>
+<td></td><td></td><td></td>
+<td><a href="json-wheel-1.0.3.tar.gz">json-wheel-1.0.3.tar.gz</a></td>
+<td><a href="json-wheel-1.0.3.tar.bz2">json-wheel-1.0.3.tar.bz2</a></td>
+</tr>
+<tr>
+<td></td><td></td><td></td>
+<td><a href="json-wheel-1.0.2.tar.gz">json-wheel-1.0.2.tar.gz</a></td>
+<td><a href="json-wheel-1.0.2.tar.bz2">json-wheel-1.0.2.tar.bz2</a></td>
+</tr>
+<tr>
+<td></td><td></td><td></td>
+<td><a href="json-wheel-1.0.1.tar.gz">json-wheel-1.0.1.tar.gz</a></td>
+<td><a href="json-wheel-1.0.1.tar.bz2">json-wheel-1.0.1.tar.bz2</a></td>
+</tr>
+<tr>
+<td></td><td></td><td></td>
+<td><a href="json-wheel-1.0.0.tar.gz">json-wheel-1.0.0.tar.gz</a></td>
+<td><a href="json-wheel-1.0.0.tar.bz2">json-wheel-1.0.0.tar.bz2</a></td>
+</tr>
+
+</table>
+
+<p>
+We also recommend <a href="json-static.html">json-static</a> which greatly
+simplifies the job of converting from generic JSON data to 
+specialized OCaml types (JSON objects <code>-&gt;</code> OCaml objects, etc.).
+
+
+<h2>Notes</h2>
+
+<p>
+The JSON parser, in the default mode, conforms to the specifications 
+of <a href="http://www.ietf.org/rfc/rfc4627.txt">RFC 4627</a>, 
+with only some limitations due to the implementation 
+of the corresponding OCaml types:
+<ul>
+<li> ints that are too large to be represented with the OCaml int type
+  cause an error. The limit depends whether it is a 32-bit or 64-bit
+  platform (see <code>min_int</code> and <code>max_int</code>).
+
+<li> floats may be represented with reduced precision as they must fit
+  into the 8 bytes of the "double" format.
+
+<li> The size of OCaml strings is limited to about 16MB on 32-bit
+  platforms, and much more on 64-bit platforms 
+  (see <code>Sys.max_string_length</code>).
+</ul>
+
+<p>
+The UTF-8 encoding is supported, however no attempt is made at
+checking whether strings are actually valid UTF-8 or not. Therefore, other
+ASCII-compatible encodings such as the ISO 8859 series are supported
+as well.
+
+<h2>JSON equivalents of OCaml types</h2>
+
+<p>
+JSON provides only two kinds of containers which are very flexible, 
+while OCaml provides a greater variety of containers which 
+are more specialized. Here is a suggestion on how you could convert OCaml data
+to JSON, assuming you have a choice.
+
+<p>
+There is now a camlp4 syntax extension, 
+<a href="json-static.html">json-static</a>, that generates converters
+between OCaml and Json_type.t all by itself, using only type declarations.
+It allows the programmer to ignore the middle column of this table:
+
+<p>
+<table class="real-table" style="font-size:70%">
+<tr>
+<th></th>
+<th>OCaml</th>
+<th>Json_type.t</th>
+<th>JSON</th>
+</tr>
+
+<tr>
+<th>Basic types</th>
+<td>
+<pre><span class="Cstring">"abc"</span>
+
+1234
+
+3.14
+
+1.
+
+-1.23e12
+
+<span class="Ctrue">true</span></pre>
+</td>
+<td>
+<pre><span class="Cconstructor">String</span> <span class="Cstring">"abc"</span>
+
+<span class="Cconstructor">Int</span> 1234
+
+<span class="Cconstructor">Float</span> 3.14
+
+<span class="Cconstructor">Float</span> 1.
+
+<span class="Cconstructor">Float</span> <span class="Cnonalphakeyword">(</span>-1.23e12<span class="Cnonalphakeyword">)</span>
+
+<span class="Cconstructor">Bool</span> <span class="Ctrue">true</span></pre>
+</td>
+<td>
+<pre>
+"abc"
+
+1234
+
+3.14
+
+1.0
+
+-1.23e12
+
+true
+</pre>
+</td>
+</tr>
+
+<tr>
+<th>Lists and arrays</th>
+<td>
+<pre><span class="Ccomment">(* List *)</span>
+<span class="Cnonalphakeyword">[</span> <span class="Cstring">"Hello"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"World"</span> <span class="Cnonalphakeyword">]</span>
+
+<span class="Ccomment">(* Array *)</span>
+<span class="Cnonalphakeyword">[|</span> <span class="Cstring">"Hello"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"World"</span> <span class="Cnonalphakeyword">|]</span></pre>
+</td>
+<td>
+<pre><span class="Cconstructor">Array</span> <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">String</span> <span class="Cstring">"Hello"</span><span class="Cnonalphakeyword">;</span>
+        <span class="Cconstructor">String</span> <span class="Cstring">"World"</span> <span class="Cnonalphakeyword">]</span></pre>
+</td>
+<td>
+<pre>
+[ "Hello", "World" ]
+</pre>
+</td>
+</tr>
+
+<tr>
+<th>Tuples</th>
+<td>
+<pre><span class="Cnonalphakeyword">(</span><span class="Cstring">"abc"</span><span class="Cnonalphakeyword">,</span> 1234<span class="Cnonalphakeyword">)</span></pre>
+</td>
+<td>
+<pre><span class="Cconstructor">Array</span> <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">String</span> <span class="Cstring">"abc"</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">Int</span> 1234 <span class="Cnonalphakeyword">]</span></pre>
+</td>
+<td>
+<pre>
+[ "abc", 1234 ]
+</pre>
+</td>
+</tr>
+
+<tr>
+<th>Records, objects</th>
+<td>
+<pre><span class="Ccomment">(* Record *)</span>
+<span class="Cnonalphakeyword">{</span> x <span class="Cnonalphakeyword">=</span> 0<span class="Cnonalphakeyword">;</span> 
+  y <span class="Cnonalphakeyword">=</span> 1<span class="Cnonalphakeyword">;</span> 
+  show <span class="Cnonalphakeyword">=</span> <span class="Ctrue">true</span> <span class="Cnonalphakeyword">}</span>
+
+<span class="Ccomment">(* Object *)</span>
+<span class="Cobject">object</span> 
+  <span class="Cmethod">method</span> x <span class="Cnonalphakeyword">=</span> 0 
+  <span class="Cmethod">method</span> y <span class="Cnonalphakeyword">=</span> 1 
+  <span class="Cmethod">method</span> show <span class="Cnonalphakeyword">=</span> <span class="Ctrue">true</span> 
+<span class="Cend">end</span></pre>
+</td>
+<td>
+<pre><span class="Cconstructor">Object</span> <span class="Cnonalphakeyword">[</span> <span class="Cstring">"x"</span><span class="Cnonalphakeyword">,</span> <span class="Cconstructor">Int</span> 0<span class="Cnonalphakeyword">;</span> 
+         <span class="Cstring">"y"</span><span class="Cnonalphakeyword">,</span> <span class="Cconstructor">Int</span> 1<span class="Cnonalphakeyword">;</span> 
+         <span class="Cstring">"show"</span><span class="Cnonalphakeyword">,</span> <span class="Cconstructor">Bool</span> <span class="Ctrue">true</span> <span class="Cnonalphakeyword">]</span></pre>
+</td>
+<td>
+<pre>
+{ "x": 0,
+  "y": 1,
+  "show": true }
+</pre>
+</td>
+</tr>
+
+<tr>
+<th>Hash tables, association lists, maps</th>
+<td>
+<pre><span class="Ccomment">(* Association list *)</span>
+<span class="Cnonalphakeyword">[</span> <span class="Cstring">"x"</span><span class="Cnonalphakeyword">,</span> 0<span class="Cnonalphakeyword">;</span> 
+  <span class="Cstring">"y"</span><span class="Cnonalphakeyword">,</span> 1 <span class="Cnonalphakeyword">]</span></pre>
+</td>
+<td>
+<pre><span class="Cconstructor">Object</span> <span class="Cnonalphakeyword">[</span> <span class="Cstring">"x"</span><span class="Cnonalphakeyword">,</span> <span class="Cconstructor">Int</span> 0<span class="Cnonalphakeyword">;</span> 
+         <span class="Cstring">"y"</span><span class="Cnonalphakeyword">,</span> <span class="Cconstructor">Int</span> 1 <span class="Cnonalphakeyword">]</span></pre>
+</td>
+<td>
+<pre>
+{ "x": 0,
+  "y": 1 }
+</pre>
+</td>
+</tr>
+<tr>
+
+<th>Options</th>
+<td>
+<pre><span class="Cconstructor">None</span>
+
+<span class="Cconstructor">Some</span> <span class="Cstring">"abc"</span></pre>
+</td>
+<td>
+<pre><span class="Cconstructor">Null</span>
+
+<span class="Cconstructor">String</span> <span class="Cstring">"abc"</span></pre>
+</td>
+<td>
+<pre>
+null
+
+"abc"
+</pre>
+</td>
+</tr>
+
+<tr>
+<th>Sum types (other than options)</th>
+<td>
+<pre><span class="Ccomment">(* No argument *)</span>
+<span class="Cconstructor">A</span>
+
+<span class="Cconstructor">`</span><span class="Cconstructor">A</span>
+
+<span class="Ccomment">(* One argument *)</span>
+<span class="Cconstructor">B</span> <span class="Cstring">"abc"</span>
+
+<span class="Cconstructor">`</span><span class="Cconstructor">B</span> <span class="Cstring">"abc"</span>
+
+<span class="Ccomment">(* One argument of type tuple *)</span>
+<span class="Cconstructor">Coord</span> <span class="Cnonalphakeyword">(</span>123<span class="Cnonalphakeyword">,</span> 456<span class="Cnonalphakeyword">)</span>
+
+<span class="Cconstructor">`</span><span class="Cconstructor">Coord</span> <span class="Cnonalphakeyword">(</span>123<span class="Cnonalphakeyword">,</span> 456<span class="Cnonalphakeyword">)</span>
+
+<span class="Ccomment">(* Several arguments *)</span>
+<span class="Cconstructor">Coord2</span> <span class="Cnonalphakeyword">(</span>123<span class="Cnonalphakeyword">,</span> 456<span class="Cnonalphakeyword">)</span></pre>
+</td>
+<td>
+<pre><span class="Ccomment">(* No argument *)</span>
+<span class="Cconstructor">String</span> <span class="Cstring">"A"</span>
+
+<span class="Ccomment">(* One argument *)</span>
+<span class="Cconstructor">Array</span> <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">String</span> <span class="Cstring">"B"</span><span class="Cnonalphakeyword">,</span>
+        <span class="Cconstructor">String</span> <span class="Cstring">"abc"</span> <span class="Cnonalphakeyword">]</span>
+
+<span class="Ccomment">(* One argument of type tuple *)</span>
+<span class="Cconstructor">Array</span> <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">String</span> <span class="Cstring">"Coord"</span><span class="Cnonalphakeyword">,</span> 
+        <span class="Cconstructor">Array</span> <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">Int</span> 123<span class="Cnonalphakeyword">,</span>
+                <span class="Cconstructor">Int</span> 456 <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+
+<span class="Ccomment">(* Several arguments *)</span>
+<span class="Cconstructor">Array</span> <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">String</span> <span class="Cstring">"Coord2"</span><span class="Cnonalphakeyword">,</span> 
+        <span class="Cconstructor">Int</span> 123<span class="Cnonalphakeyword">,</span> 
+        <span class="Cconstructor">Int</span> 456 <span class="Cnonalphakeyword">]</span></pre>
+</td>
+<td>
+<pre>
+/* No argument */
+"A"
+
+/* One argument */
+[ "B", "abc" ]
+
+/* One argument of type tuple */
+[ "Coord", [ 123, 456 ] ]
+
+/* Several arguments */
+[ "Coord2", 123, 456 ]
+</pre>
+</td>
+</tr>
+
+</table>
+
+
+<h2>JSON vs. <span style="text-decoration: line-through">Freddy</span> XML</h2>
+
+<p>
+The XML to JSON mapping which is proposed by 
+<a href="http://jsonml.org/">JsonML</a> is a good illustration of 
+the flexibility of JSON.
+</p>
+
+<h2>Simple examples</h2>
+
+<p>
+On the OCaml side, here are two examples of the typical operations that
+you would perform:
+<pre><span class="Ccomment">(* Program that builds a JSON object and saves it into a file *)</span>
+<span class="Copen">open</span> <span class="Cconstructor">Json_type</span>
+
+<span class="Clet">let</span> obj <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Object</span> <span class="Cnonalphakeyword">[</span> <span class="Cstring">"x"</span><span class="Cnonalphakeyword">,</span> <span class="Cconstructor">Int</span> 1<span class="Cnonalphakeyword">;</span>
+                   <span class="Cstring">"y"</span><span class="Cnonalphakeyword">,</span> <span class="Cconstructor">Int</span> 2 <span class="Cnonalphakeyword">]</span>
+<span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Json_io</span><span class="Cnonalphakeyword">.</span>save_json <span class="Cstring">"point.js"</span> obj</pre>
+
+<pre><span class="Ccomment">(* Program that reads a JSON object from a file and converts it</span>
+<span class="Ccomment">   into a specialized type. </span>
+<span class="Ccomment">   Uses file "point.js" created by the previous example. *)</span>
+<span class="Copen">open</span> <span class="Cconstructor">Json_type</span>
+<span class="Copen">open</span> <span class="Cconstructor">Json_type</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Browse</span>
+
+<span class="Clet">let</span> json_obj <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Json_io</span><span class="Cnonalphakeyword">.</span>load_json <span class="Cstring">"point.js"</span>
+<span class="Clet">let</span> tbl <span class="Cnonalphakeyword">=</span> make_table <span class="Cnonalphakeyword">(</span>objekt json_obj<span class="Cnonalphakeyword">)</span>
+<span class="Clet">let</span> x <span class="Cnonalphakeyword">=</span> int <span class="Cnonalphakeyword">(</span>field tbl <span class="Cstring">"x"</span><span class="Cnonalphakeyword">)</span>
+<span class="Clet">let</span> y <span class="Cnonalphakeyword">=</span> int <span class="Cnonalphakeyword">(</span>field tbl <span class="Cstring">"y"</span><span class="Cnonalphakeyword">)</span>
+<span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Printf</span><span class="Cnonalphakeyword">.</span>printf <span class="Cstring">"x = %i\ny = %i\n"</span> x y</pre>
+
+<p>
+Maybe you are using JSON to communicate between a web page and a HTTP server
+that serves JSON data. There are two options for reading pure JSON data:
+<ul>
+<li> Use <code>eval</code>, after adding parentheses around the JSON code: <code>eval('(' + responseText + ')')</code>,
+<li> or use a proper JSON parser for JavaScript, 
+which is considered more secure, 
+but really you are requesting stuff only from your own server anyway.
+</ul>
+<p>
+Read more about this at <a href="http://www.json.org/js.html">json.org</a>.
+
+<p>
+Now, one of the most exciting features of asynchronous HTTP requests from
+JavaScript (or "AJAX" if you like the term), is to request information 
+from other websites than your own and include it in your pages. 
+Well, this is disabled by 
+the web browsers... probably just to annoy programmers, since you can emulate 
+the same functionality, with unfortunately even less safety.
+The principle is the following: 
+<ol>
+<li> The client-side javascript creates a URL that should return the data that
+we need from a server.
+<li> Then it inserts a script element, e.g.
+<code>&lt;script type="text/javascript" src="http://example.com/query?x=123&amp;y=true" /&gt;</code> anywhere in the document.
+<li> You guessed it, the server must serve real javascript code that will
+be magically downloaded and executed (if not already cached by the browser).
+Normally it would be a simple callback performed on JSON data.
+</ol>
+<p>
+For more information, visit the
+<a href="http://developer.yahoo.com/common/json.html">Yahoo! Web Services page 
+on JSON</a>.
+
+
+
+<div id=footer>
+&copy;&nbsp;2006, 2009&nbsp;Martin&nbsp;Jambon &lt;<a href="mailto:martin@mjambon.com">martin@mjambon.com</a>&gt;
+</div>
+
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-640255-1";
+urchinTracker();
+</script>
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+<!-- 
+var sc_project=370325; 
+var sc_partition=1; 
+//-->
+</script>
+
+<script type="text/javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><p><a href="http://www.statcounter.com/"><img src="http://c2.statcounter.com/counter.php?sc_project=370325&amp;java=0" alt="counter"></a></p></noscript>
+<!-- End of StatCounter Code -->
+
+</body>
+</html>

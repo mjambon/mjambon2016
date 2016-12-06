@@ -1,0 +1,354 @@
+"prog.ml" 1 0 30 "prog.ml" 1 0 37
+type(
+  string
+)
+type(
+  string
+)
+ident(
+  int_ref *sth* "prog.ml" 1 0 30 "prog.ml" 1 0 37
+)
+type(
+  string option
+)
+type(
+  string option
+)
+type(
+  string
+)
+ident(
+  def *sth* "prog.ml" 1 0 30 "prog.ml" 1 0 37
+)
+"prog.ml" 1 0 15 "prog.ml" 1 0 37
+type(
+  ?foo:string -> bar:string -> ?n:int -> unit -> bob
+)
+type(
+  bar:string -> ?n:int -> unit -> bob
+)
+type(
+  string
+)
+ident(
+  int_ref foo "prog.ml" 1 0 15 "prog.ml" 1 0 37
+)
+type(
+  string
+)
+type(
+  string option
+)
+ident(
+  int_ref *opt* "prog.ml" 1 0 15 "prog.ml" 1 0 37
+)
+type(
+  string
+)
+type(
+  string option
+)
+ident(
+  def *opt* "prog.ml" 1 0 15 "prog.ml" 1 0 37
+)
+"prog.ml" 2 39 47 "prog.ml" 2 39 59
+type(
+  bar:string -> ?n:int -> unit -> bob
+)
+type(
+  string
+)
+ident(
+  int_ref bar "prog.ml" 2 39 47 "prog.ml" 2 39 59
+)
+type(
+  string
+)
+ident(
+  def bar "prog.ml" 3 61 69 "prog.ml" 3 61 88
+)
+"prog.ml" 3 61 87 "prog.ml" 3 61 88
+type(
+  int
+)
+type(
+  int
+)
+ident(
+  int_ref *sth* "prog.ml" 3 61 87 "prog.ml" 3 61 88
+)
+type(
+  int option
+)
+type(
+  int option
+)
+type(
+  int
+)
+ident(
+  def *sth* "prog.ml" 3 61 87 "prog.ml" 3 61 88
+)
+"prog.ml" 3 61 69 "prog.ml" 3 61 88
+type(
+  ?n:int -> unit -> bob
+)
+type(
+  unit -> bob
+)
+type(
+  int
+)
+ident(
+  int_ref n "prog.ml" 3 61 69 "prog.ml" 3 61 88
+)
+type(
+  int
+)
+type(
+  int option
+)
+ident(
+  int_ref *opt* "prog.ml" 3 61 69 "prog.ml" 3 61 88
+)
+type(
+  int
+)
+type(
+  int option
+)
+ident(
+  def *opt* "prog.ml" 3 61 69 "prog.ml" 3 61 88
+)
+"prog.ml" 1 0 0 "prog.ml" 3 61 90
+type(
+  unit -> bob
+)
+type(
+  bob
+)
+type(
+  unit
+)
+type(
+  ?foo:string -> bar:string -> ?n:int -> unit -> bob
+)
+ident(
+  def create_bob "prog.ml" 1 0 0 --
+)
+"prog.ml" 5 92 135 "prog.ml" 5 92 147
+type(
+  ?x:weird option -> unit -> weird
+)
+ident(
+  int_ref create_weird "prog.ml" 5 92 92 "prog.ml" 5 92 162
+)
+"prog.ml" 5 92 151 "prog.ml" 5 92 155
+type(
+  weird option
+)
+"prog.ml" 5 92 156 "prog.ml" 5 92 158
+type(
+  unit
+)
+"prog.ml" 5 92 134 "prog.ml" 5 92 159
+call(
+  stack
+)
+type(
+  weird
+)
+"prog.ml" 5 92 128 "prog.ml" 5 92 160
+type(
+  weird option
+)
+type(
+  weird option
+)
+ident(
+  int_ref *sth* "prog.ml" 5 92 128 "prog.ml" 5 92 160
+)
+type(
+  weird option option
+)
+type(
+  weird option option
+)
+type(
+  weird option
+)
+ident(
+  def *sth* "prog.ml" 5 92 128 "prog.ml" 5 92 160
+)
+"prog.ml" 5 92 109 "prog.ml" 5 92 160
+type(
+  ?x:weird option -> unit -> weird
+)
+type(
+  unit -> weird
+)
+type(
+  weird option
+)
+ident(
+  int_ref x "prog.ml" 5 92 109 "prog.ml" 5 92 160
+)
+type(
+  weird option
+)
+type(
+  weird option option
+)
+ident(
+  int_ref *opt* "prog.ml" 5 92 109 "prog.ml" 5 92 160
+)
+type(
+  weird option
+)
+type(
+  weird option option
+)
+ident(
+  def *opt* "prog.ml" 5 92 109 "prog.ml" 5 92 160
+)
+"prog.ml" 5 92 92 "prog.ml" 5 92 162
+type(
+  unit -> weird
+)
+type(
+  weird
+)
+type(
+  unit
+)
+type(
+  ?x:weird option -> unit -> weird
+)
+ident(
+  def create_weird "prog.ml" 5 92 92 --
+)
+"prog.ml" 8 172 178 "prog.ml" 8 172 179
+type(
+  bob
+)
+ident(
+  def x "prog.ml" 9 212 214 "prog.ml" 10 230 274
+)
+"prog.ml" 8 172 182 "prog.ml" 8 172 192
+type(
+  ?foo:string -> bar:string -> ?n:int -> unit -> bob
+)
+ident(
+  int_ref create_bob "prog.ml" 1 0 0 "prog.ml" 3 61 90
+)
+"prog.ml" 8 172 198 "prog.ml" 8 172 205
+type(
+  string
+)
+"prog.ml" 8 172 206 "prog.ml" 8 172 208
+type(
+  unit
+)
+"prog.ml" 8 172 182 "prog.ml" 8 172 208
+call(
+  stack
+)
+type(
+  bob
+)
+"prog.ml" 9 212 214 "prog.ml" 9 212 215
+type(
+  bob
+)
+ident(
+  int_ref x "prog.ml" 8 172 178 "prog.ml" 8 172 179
+)
+"prog.ml" 9 212 214 "prog.ml" 9 212 217
+type(
+  unit
+)
+"prog.ml" 9 212 221 "prog.ml" 9 212 222
+type(
+  bob
+)
+ident(
+  int_ref x "prog.ml" 8 172 178 "prog.ml" 8 172 179
+)
+"prog.ml" 9 212 221 "prog.ml" 9 212 224
+type(
+  int
+)
+"prog.ml" 9 212 227 "prog.ml" 9 212 228
+type(
+  int
+)
+"prog.ml" 9 212 221 "prog.ml" 9 212 228
+type(
+  int
+)
+type(
+  int -> int -> int
+)
+ident(
+  ext_ref Pervasives.( + )
+)
+"prog.ml" 10 230 232 "prog.ml" 10 230 245
+type(
+  (string -> string -> int -> unit, out_channel, unit) format ->
+  string -> string -> int -> unit
+)
+ident(
+  ext_ref Printf.printf
+)
+"prog.ml" 10 230 246 "prog.ml" 10 230 258
+type(
+  (string -> string -> int -> unit, out_channel, unit) format
+)
+"prog.ml" 10 230 259 "prog.ml" 10 230 260
+type(
+  bob
+)
+ident(
+  int_ref x "prog.ml" 8 172 178 "prog.ml" 8 172 179
+)
+"prog.ml" 10 230 259 "prog.ml" 10 230 264
+type(
+  string
+)
+"prog.ml" 10 230 265 "prog.ml" 10 230 266
+type(
+  bob
+)
+ident(
+  int_ref x "prog.ml" 8 172 178 "prog.ml" 8 172 179
+)
+"prog.ml" 10 230 265 "prog.ml" 10 230 270
+type(
+  string
+)
+"prog.ml" 10 230 271 "prog.ml" 10 230 272
+type(
+  bob
+)
+ident(
+  int_ref x "prog.ml" 8 172 178 "prog.ml" 8 172 179
+)
+"prog.ml" 10 230 271 "prog.ml" 10 230 274
+type(
+  int
+)
+"prog.ml" 10 230 232 "prog.ml" 10 230 274
+call(
+  stack
+)
+type(
+  unit
+)
+"prog.ml" 9 212 214 "prog.ml" 10 230 274
+type(
+  unit
+)
+"prog.ml" 8 172 174 "prog.ml" 10 230 274
+type(
+  unit
+)

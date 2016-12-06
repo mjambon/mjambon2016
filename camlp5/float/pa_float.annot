@@ -1,0 +1,2442 @@
+"pa_float.ml" 9 331 339 "pa_float.ml" 9 331 350
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  def subst_float "pa_float.ml" 9 331 331 --
+)
+"pa_float.ml" 9 331 351 "pa_float.ml" 9 331 355
+type(
+  MLast.expr
+)
+ident(
+  def expr "pa_float.ml" 10 358 360 "pa_float.ml" 66 3028 3072
+)
+"pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+type(
+  MLast.loc
+)
+"pa_float.ml" 10 358 370 "pa_float.ml" 10 358 387
+type(
+  MLast.expr -> MLast.loc
+)
+ident(
+  ext_ref MLast.loc_of_expr
+)
+"pa_float.ml" 10 358 388 "pa_float.ml" 10 358 392
+type(
+  MLast.expr
+)
+ident(
+  int_ref expr "pa_float.ml" 9 331 351 "pa_float.ml" 9 331 355
+)
+"pa_float.ml" 10 358 370 "pa_float.ml" 10 358 392
+type(
+  MLast.loc
+)
+"pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+type(
+  MLast.expr -> MLast.expr
+)
+"pa_float.ml" 11 396 407 "pa_float.ml" 11 396 418
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref subst_float "pa_float.ml" 9 331 339 "pa_float.ml" 9 331 350
+)
+"pa_float.ml" 12 422 428 "pa_float.ml" 12 422 431
+type(
+  MLast.expr list -> MLast.expr list
+)
+"pa_float.ml" 12 422 434 "pa_float.ml" 12 422 442
+type(
+  (MLast.expr -> MLast.expr) -> MLast.expr list -> MLast.expr list
+)
+ident(
+  ext_ref List.map
+)
+"pa_float.ml" 12 422 443 "pa_float.ml" 12 422 454
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref subst_float "pa_float.ml" 9 331 339 "pa_float.ml" 9 331 350
+)
+"pa_float.ml" 12 422 434 "pa_float.ml" 12 422 454
+call(
+  stack
+)
+type(
+  MLast.expr list -> MLast.expr list
+)
+"pa_float.ml" 13 458 464 "pa_float.ml" 13 458 469
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list ->
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+"pa_float.ml" 13 458 472 "pa_float.ml" 13 458 480
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr ->
+   MLast.patt * MLast.expr option Ploc.vala * MLast.expr) ->
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list ->
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+ident(
+  ext_ref List.map
+)
+"pa_float.ml" 13 458 487 "pa_float.ml" 13 458 488
+type(
+  MLast.patt
+)
+ident(
+  def p "pa_float.ml" 13 458 499 "pa_float.ml" 13 458 511
+)
+"pa_float.ml" 13 458 490 "pa_float.ml" 13 458 491
+type(
+  MLast.expr option Ploc.vala
+)
+ident(
+  def w "pa_float.ml" 13 458 499 "pa_float.ml" 13 458 511
+)
+"pa_float.ml" 13 458 493 "pa_float.ml" 13 458 494
+type(
+  MLast.expr
+)
+ident(
+  def e "pa_float.ml" 13 458 499 "pa_float.ml" 13 458 511
+)
+"pa_float.ml" 13 458 487 "pa_float.ml" 13 458 494
+type(
+  MLast.patt * MLast.expr option Ploc.vala * MLast.expr
+)
+"pa_float.ml" 13 458 500 "pa_float.ml" 13 458 501
+type(
+  MLast.patt
+)
+ident(
+  int_ref p "pa_float.ml" 13 458 487 "pa_float.ml" 13 458 488
+)
+"pa_float.ml" 13 458 503 "pa_float.ml" 13 458 504
+type(
+  MLast.expr option Ploc.vala
+)
+ident(
+  int_ref w "pa_float.ml" 13 458 490 "pa_float.ml" 13 458 491
+)
+"pa_float.ml" 13 458 506 "pa_float.ml" 13 458 508
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 13 458 509 "pa_float.ml" 13 458 510
+type(
+  MLast.expr
+)
+ident(
+  int_ref e "pa_float.ml" 13 458 493 "pa_float.ml" 13 458 494
+)
+"pa_float.ml" 13 458 506 "pa_float.ml" 13 458 510
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 13 458 499 "pa_float.ml" 13 458 511
+type(
+  MLast.patt * MLast.expr option Ploc.vala * MLast.expr
+)
+"pa_float.ml" 13 458 481 "pa_float.ml" 13 458 512
+type(
+  MLast.patt * MLast.expr option Ploc.vala * MLast.expr ->
+  MLast.patt * MLast.expr option Ploc.vala * MLast.expr
+)
+"pa_float.ml" 13 458 472 "pa_float.ml" 13 458 512
+call(
+  stack
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list ->
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+"pa_float.ml" 14 516 524 "pa_float.ml" 14 516 528
+type(
+  MLast.expr
+)
+ident(
+  int_ref expr "pa_float.ml" 9 331 351 "pa_float.ml" 9 331 355
+)
+"pa_float.ml" 15 534 549 "pa_float.ml" 15 534 551
+type(
+  MLast.expr
+)
+ident(
+  def e1 "pa_float.ml" 15 534 575 "pa_float.ml" 15 534 603
+)
+"pa_float.ml" 15 534 556 "pa_float.ml" 15 534 558
+type(
+  MLast.expr
+)
+ident(
+  def e2 "pa_float.ml" 15 534 575 "pa_float.ml" 15 534 603
+)
+"pa_float.ml" 15 534 540 "pa_float.ml" 15 534 562
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 15 534 584 "pa_float.ml" 15 534 586
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 15 534 587 "pa_float.ml" 15 534 589
+type(
+  MLast.expr
+)
+ident(
+  int_ref e1 "pa_float.ml" 15 534 549 "pa_float.ml" 15 534 551
+)
+"pa_float.ml" 15 534 584 "pa_float.ml" 15 534 589
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 15 534 594 "pa_float.ml" 15 534 596
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 15 534 597 "pa_float.ml" 15 534 599
+type(
+  MLast.expr
+)
+ident(
+  int_ref e2 "pa_float.ml" 15 534 556 "pa_float.ml" 15 534 558
+)
+"pa_float.ml" 15 534 594 "pa_float.ml" 15 534 599
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 15 534 575 "pa_float.ml" 15 534 603
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 16 604 624 "pa_float.ml" 16 604 625
+type(
+  MLast.expr
+)
+ident(
+  def e "pa_float.ml" 16 604 645 "pa_float.ml" 16 604 667
+)
+"pa_float.ml" 16 604 610 "pa_float.ml" 16 604 629
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 16 604 659 "pa_float.ml" 16 604 661
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 16 604 662 "pa_float.ml" 16 604 663
+type(
+  MLast.expr
+)
+ident(
+  int_ref e "pa_float.ml" 16 604 624 "pa_float.ml" 16 604 625
+)
+"pa_float.ml" 16 604 659 "pa_float.ml" 16 604 663
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 16 604 645 "pa_float.ml" 16 604 667
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 17 668 683 "pa_float.ml" 17 668 685
+type(
+  MLast.expr
+)
+ident(
+  def e1 "pa_float.ml" 17 668 709 "pa_float.ml" 17 668 735
+)
+"pa_float.ml" 17 668 688 "pa_float.ml" 17 668 690
+type(
+  MLast.expr
+)
+ident(
+  def e2 "pa_float.ml" 17 668 709 "pa_float.ml" 17 668 735
+)
+"pa_float.ml" 17 668 674 "pa_float.ml" 17 668 694
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 17 668 718 "pa_float.ml" 17 668 720
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 17 668 721 "pa_float.ml" 17 668 723
+type(
+  MLast.expr
+)
+ident(
+  int_ref e1 "pa_float.ml" 17 668 683 "pa_float.ml" 17 668 685
+)
+"pa_float.ml" 17 668 718 "pa_float.ml" 17 668 723
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 17 668 726 "pa_float.ml" 17 668 728
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 17 668 729 "pa_float.ml" 17 668 731
+type(
+  MLast.expr
+)
+ident(
+  int_ref e2 "pa_float.ml" 17 668 688 "pa_float.ml" 17 668 690
+)
+"pa_float.ml" 17 668 726 "pa_float.ml" 17 668 731
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 17 668 709 "pa_float.ml" 17 668 735
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 18 736 751 "pa_float.ml" 18 736 753
+type(
+  MLast.expr
+)
+ident(
+  def e1 "pa_float.ml" 18 736 777 "pa_float.ml" 18 736 808
+)
+"pa_float.ml" 18 736 759 "pa_float.ml" 18 736 761
+type(
+  MLast.expr
+)
+ident(
+  def e2 "pa_float.ml" 18 736 777 "pa_float.ml" 18 736 808
+)
+"pa_float.ml" 18 736 742 "pa_float.ml" 18 736 767
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 18 736 786 "pa_float.ml" 18 736 788
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 18 736 789 "pa_float.ml" 18 736 791
+type(
+  MLast.expr
+)
+ident(
+  int_ref e1 "pa_float.ml" 18 736 751 "pa_float.ml" 18 736 753
+)
+"pa_float.ml" 18 736 786 "pa_float.ml" 18 736 791
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 18 736 797 "pa_float.ml" 18 736 799
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 18 736 800 "pa_float.ml" 18 736 802
+type(
+  MLast.expr
+)
+ident(
+  int_ref e2 "pa_float.ml" 18 736 759 "pa_float.ml" 18 736 761
+)
+"pa_float.ml" 18 736 797 "pa_float.ml" 18 736 802
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 18 736 777 "pa_float.ml" 18 736 808
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 19 809 832 "pa_float.ml" 19 809 834
+type(
+  MLast.expr list Ploc.vala
+)
+type(
+  MLast.expr list
+)
+ident(
+  def el "pa_float.ml" 19 809 850 "pa_float.ml" 19 809 880
+)
+"pa_float.ml" 19 809 815 "pa_float.ml" 19 809 841
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 19 809 867 "pa_float.ml" 19 809 870
+type(
+  MLast.expr list -> MLast.expr list
+)
+ident(
+  int_ref sel "pa_float.ml" 12 422 428 "pa_float.ml" 12 422 431
+)
+"pa_float.ml" 19 809 871 "pa_float.ml" 19 809 873
+type(
+  MLast.expr list
+)
+ident(
+  int_ref el "pa_float.ml" 19 809 832 "pa_float.ml" 19 809 834
+)
+"pa_float.ml" 19 809 867 "pa_float.ml" 19 809 873
+call(
+  stack
+)
+type(
+  MLast.expr list
+)
+type(
+  MLast.expr list Ploc.vala
+)
+"pa_float.ml" 19 809 850 "pa_float.ml" 19 809 880
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 20 881 896 "pa_float.ml" 20 881 898
+type(
+  MLast.expr
+)
+ident(
+  def e1 "pa_float.ml" 20 881 922 "pa_float.ml" 20 881 951
+)
+"pa_float.ml" 20 881 904 "pa_float.ml" 20 881 906
+type(
+  MLast.expr
+)
+ident(
+  def e2 "pa_float.ml" 20 881 922 "pa_float.ml" 20 881 951
+)
+"pa_float.ml" 20 881 887 "pa_float.ml" 20 881 910
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 20 881 931 "pa_float.ml" 20 881 933
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 20 881 934 "pa_float.ml" 20 881 936
+type(
+  MLast.expr
+)
+ident(
+  int_ref e1 "pa_float.ml" 20 881 896 "pa_float.ml" 20 881 898
+)
+"pa_float.ml" 20 881 931 "pa_float.ml" 20 881 936
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 20 881 942 "pa_float.ml" 20 881 944
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 20 881 945 "pa_float.ml" 20 881 947
+type(
+  MLast.expr
+)
+ident(
+  int_ref e2 "pa_float.ml" 20 881 904 "pa_float.ml" 20 881 906
+)
+"pa_float.ml" 20 881 942 "pa_float.ml" 20 881 947
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 20 881 922 "pa_float.ml" 20 881 951
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 21 952 971 "pa_float.ml" 21 952 972
+type(
+  string Ploc.vala
+)
+type(
+  string
+)
+ident(
+  def c "pa_float.ml" 21 952 993 "pa_float.ml" 21 952 997
+)
+"pa_float.ml" 21 952 958 "pa_float.ml" 21 952 976
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 21 952 993 "pa_float.ml" 21 952 997
+type(
+  MLast.expr
+)
+ident(
+  int_ref expr "pa_float.ml" 9 331 351 "pa_float.ml" 9 331 355
+)
+"pa_float.ml" 22 998 1014 "pa_float.ml" 22 998 1015
+type(
+  MLast.expr
+)
+ident(
+  def e "pa_float.ml" 22 998 1039 "pa_float.ml" 22 998 1065
+)
+"pa_float.ml" 22 998 1021 "pa_float.ml" 22 998 1022
+type(
+  MLast.ctyp
+)
+ident(
+  def t "pa_float.ml" 22 998 1039 "pa_float.ml" 22 998 1065
+)
+"pa_float.ml" 22 998 1004 "pa_float.ml" 22 998 1027
+type(
+  MLast.expr
+)
+type(
+  MLast.ctyp option
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 22 998 1049 "pa_float.ml" 22 998 1051
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 22 998 1052 "pa_float.ml" 22 998 1053
+type(
+  MLast.expr
+)
+ident(
+  int_ref e "pa_float.ml" 22 998 1014 "pa_float.ml" 22 998 1015
+)
+"pa_float.ml" 22 998 1049 "pa_float.ml" 22 998 1053
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 22 998 1059 "pa_float.ml" 22 998 1060
+type(
+  MLast.ctyp
+)
+ident(
+  int_ref t "pa_float.ml" 22 998 1021 "pa_float.ml" 22 998 1022
+)
+"pa_float.ml" 22 998 1039 "pa_float.ml" 22 998 1065
+type(
+  MLast.ctyp option
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 23 1066 1082 "pa_float.ml" 23 1066 1083
+type(
+  MLast.expr
+)
+ident(
+  def e "pa_float.ml" 23 1066 1107 "pa_float.ml" 23 1066 1141
+)
+"pa_float.ml" 23 1066 1088 "pa_float.ml" 23 1066 1090
+type(
+  MLast.ctyp
+)
+ident(
+  def t1 "pa_float.ml" 23 1066 1107 "pa_float.ml" 23 1066 1141
+)
+"pa_float.ml" 23 1066 1096 "pa_float.ml" 23 1066 1098
+type(
+  MLast.ctyp
+)
+ident(
+  def t2 "pa_float.ml" 23 1066 1107 "pa_float.ml" 23 1066 1141
+)
+"pa_float.ml" 23 1066 1072 "pa_float.ml" 23 1066 1103
+type(
+  MLast.expr
+)
+type(
+  MLast.ctyp option
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 23 1066 1117 "pa_float.ml" 23 1066 1119
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 23 1066 1120 "pa_float.ml" 23 1066 1121
+type(
+  MLast.expr
+)
+ident(
+  int_ref e "pa_float.ml" 23 1066 1082 "pa_float.ml" 23 1066 1083
+)
+"pa_float.ml" 23 1066 1117 "pa_float.ml" 23 1066 1121
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 23 1066 1126 "pa_float.ml" 23 1066 1128
+type(
+  MLast.ctyp
+)
+ident(
+  int_ref t1 "pa_float.ml" 23 1066 1088 "pa_float.ml" 23 1066 1090
+)
+"pa_float.ml" 23 1066 1134 "pa_float.ml" 23 1066 1136
+type(
+  MLast.ctyp
+)
+ident(
+  int_ref t2 "pa_float.ml" 23 1066 1096 "pa_float.ml" 23 1066 1098
+)
+"pa_float.ml" 23 1066 1107 "pa_float.ml" 23 1066 1141
+type(
+  MLast.ctyp option
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 24 1142 1161 "pa_float.ml" 24 1142 1162
+type(
+  string Ploc.vala
+)
+type(
+  string
+)
+ident(
+  def s "pa_float.ml" 24 1142 1183 "pa_float.ml" 24 1142 1187
+)
+"pa_float.ml" 24 1142 1148 "pa_float.ml" 24 1142 1166
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 24 1142 1183 "pa_float.ml" 24 1142 1187
+type(
+  MLast.expr
+)
+ident(
+  int_ref expr "pa_float.ml" 9 331 351 "pa_float.ml" 9 331 355
+)
+"pa_float.ml" 25 1188 1207 "pa_float.ml" 25 1188 1208
+type(
+  string Ploc.vala
+)
+type(
+  string
+)
+ident(
+  def s "pa_float.ml" 26 1253 1263 "pa_float.ml" 26 1253 1327
+)
+"pa_float.ml" 25 1188 1213 "pa_float.ml" 25 1188 1215
+type(
+  MLast.expr
+)
+ident(
+  def e1 "pa_float.ml" 26 1253 1263 "pa_float.ml" 26 1253 1327
+)
+"pa_float.ml" 25 1188 1221 "pa_float.ml" 25 1188 1222
+type(
+  bool Ploc.vala
+)
+type(
+  bool
+)
+ident(
+  def b "pa_float.ml" 26 1253 1263 "pa_float.ml" 26 1253 1327
+)
+"pa_float.ml" 25 1188 1225 "pa_float.ml" 25 1188 1227
+type(
+  MLast.expr
+)
+ident(
+  def e2 "pa_float.ml" 26 1253 1263 "pa_float.ml" 26 1253 1327
+)
+"pa_float.ml" 25 1188 1240 "pa_float.ml" 25 1188 1242
+type(
+  MLast.expr list Ploc.vala
+)
+type(
+  MLast.expr list
+)
+ident(
+  def el "pa_float.ml" 26 1253 1263 "pa_float.ml" 26 1253 1327
+)
+"pa_float.ml" 25 1188 1194 "pa_float.ml" 25 1188 1248
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 26 1253 1276 "pa_float.ml" 26 1253 1277
+type(
+  string
+)
+ident(
+  int_ref s "pa_float.ml" 25 1188 1207 "pa_float.ml" 25 1188 1208
+)
+type(
+  string Ploc.vala
+)
+"pa_float.ml" 26 1253 1282 "pa_float.ml" 26 1253 1284
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 26 1253 1285 "pa_float.ml" 26 1253 1287
+type(
+  MLast.expr
+)
+ident(
+  int_ref e1 "pa_float.ml" 25 1188 1213 "pa_float.ml" 25 1188 1215
+)
+"pa_float.ml" 26 1253 1282 "pa_float.ml" 26 1253 1287
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 26 1253 1293 "pa_float.ml" 26 1253 1294
+type(
+  bool
+)
+ident(
+  int_ref b "pa_float.ml" 25 1188 1221 "pa_float.ml" 25 1188 1222
+)
+type(
+  bool Ploc.vala
+)
+"pa_float.ml" 26 1253 1297 "pa_float.ml" 26 1253 1299
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 26 1253 1300 "pa_float.ml" 26 1253 1302
+type(
+  MLast.expr
+)
+ident(
+  int_ref e2 "pa_float.ml" 25 1188 1225 "pa_float.ml" 25 1188 1227
+)
+"pa_float.ml" 26 1253 1297 "pa_float.ml" 26 1253 1302
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 26 1253 1315 "pa_float.ml" 26 1253 1318
+type(
+  MLast.expr list -> MLast.expr list
+)
+ident(
+  int_ref sel "pa_float.ml" 12 422 428 "pa_float.ml" 12 422 431
+)
+"pa_float.ml" 26 1253 1319 "pa_float.ml" 26 1253 1321
+type(
+  MLast.expr list
+)
+ident(
+  int_ref el "pa_float.ml" 25 1188 1240 "pa_float.ml" 25 1188 1242
+)
+"pa_float.ml" 26 1253 1315 "pa_float.ml" 26 1253 1321
+call(
+  stack
+)
+type(
+  MLast.expr list
+)
+type(
+  MLast.expr list Ploc.vala
+)
+"pa_float.ml" 26 1253 1263 "pa_float.ml" 26 1253 1327
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 27 1328 1354 "pa_float.ml" 27 1328 1358
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list Ploc.vala
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+ident(
+  def pwel "pa_float.ml" 27 1328 1369 "pa_float.ml" 27 1328 1405
+)
+"pa_float.ml" 27 1328 1334 "pa_float.ml" 27 1328 1364
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 27 1328 1389 "pa_float.ml" 27 1328 1394
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list ->
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+ident(
+  int_ref spwel "pa_float.ml" 13 458 464 "pa_float.ml" 13 458 469
+)
+"pa_float.ml" 27 1328 1395 "pa_float.ml" 27 1328 1399
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+ident(
+  int_ref pwel "pa_float.ml" 27 1328 1354 "pa_float.ml" 27 1328 1358
+)
+"pa_float.ml" 27 1328 1389 "pa_float.ml" 27 1328 1399
+call(
+  stack
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list Ploc.vala
+)
+"pa_float.ml" 27 1328 1369 "pa_float.ml" 27 1328 1405
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 28 1406 1424 "pa_float.ml" 28 1406 1426
+type(
+  MLast.expr
+)
+ident(
+  def e1 "pa_float.ml" 29 1455 1463 "pa_float.ml" 29 1455 1510
+)
+"pa_float.ml" 28 1406 1434 "pa_float.ml" 28 1406 1436
+type(
+  MLast.expr
+)
+ident(
+  def e2 "pa_float.ml" 29 1455 1463 "pa_float.ml" 29 1455 1510
+)
+"pa_float.ml" 28 1406 1444 "pa_float.ml" 28 1406 1446
+type(
+  MLast.expr
+)
+ident(
+  def e3 "pa_float.ml" 29 1455 1463 "pa_float.ml" 29 1455 1510
+)
+"pa_float.ml" 28 1406 1412 "pa_float.ml" 28 1406 1450
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 29 1455 1475 "pa_float.ml" 29 1455 1477
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 29 1455 1478 "pa_float.ml" 29 1455 1480
+type(
+  MLast.expr
+)
+ident(
+  int_ref e1 "pa_float.ml" 28 1406 1424 "pa_float.ml" 28 1406 1426
+)
+"pa_float.ml" 29 1455 1475 "pa_float.ml" 29 1455 1480
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 29 1455 1488 "pa_float.ml" 29 1455 1490
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 29 1455 1491 "pa_float.ml" 29 1455 1493
+type(
+  MLast.expr
+)
+ident(
+  int_ref e2 "pa_float.ml" 28 1406 1434 "pa_float.ml" 28 1406 1436
+)
+"pa_float.ml" 29 1455 1488 "pa_float.ml" 29 1455 1493
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 29 1455 1501 "pa_float.ml" 29 1455 1503
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 29 1455 1504 "pa_float.ml" 29 1455 1506
+type(
+  MLast.expr
+)
+ident(
+  int_ref e3 "pa_float.ml" 28 1406 1444 "pa_float.ml" 28 1406 1446
+)
+"pa_float.ml" 29 1455 1501 "pa_float.ml" 29 1455 1506
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 29 1455 1463 "pa_float.ml" 29 1455 1510
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 31 1512 1531 "pa_float.ml" 31 1512 1532
+type(
+  string Ploc.vala
+)
+type(
+  string
+)
+ident(
+  def s "pa_float.ml" 32 1586 1594 "pa_float.ml" 33 1647 1666
+)
+"pa_float.ml" 31 1512 1518 "pa_float.ml" 31 1512 1536
+type(
+  MLast.expr
+)
+type(
+  string
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 32 1586 1598 "pa_float.ml" 32 1586 1599
+type(
+  string
+)
+"pa_float.ml" 32 1586 1602 "pa_float.ml" 32 1586 1617
+type(
+  float -> string
+)
+ident(
+  ext_ref Pervasives.string_of_float
+)
+"pa_float.ml" 32 1586 1619 "pa_float.ml" 32 1586 1624
+type(
+  int -> float
+)
+ident(
+  ext_ref Pervasives.float
+)
+"pa_float.ml" 32 1586 1626 "pa_float.ml" 32 1586 1639
+type(
+  string -> int
+)
+ident(
+  ext_ref Pervasives.int_of_string
+)
+"pa_float.ml" 32 1586 1640 "pa_float.ml" 32 1586 1641
+type(
+  string
+)
+ident(
+  int_ref s "pa_float.ml" 31 1512 1531 "pa_float.ml" 31 1512 1532
+)
+"pa_float.ml" 32 1586 1625 "pa_float.ml" 32 1586 1642
+type(
+  int
+)
+"pa_float.ml" 32 1586 1618 "pa_float.ml" 32 1586 1643
+type(
+  float
+)
+"pa_float.ml" 32 1586 1602 "pa_float.ml" 32 1586 1643
+call(
+  stack
+)
+type(
+  string
+)
+"pa_float.ml" 33 1647 1661 "pa_float.ml" 33 1647 1662
+type(
+  string
+)
+ident(
+  int_ref x "pa_float.ml" 32 1586 1598 "pa_float.ml" 32 1586 1599
+)
+type(
+  string Ploc.vala
+)
+"pa_float.ml" 33 1647 1648 "pa_float.ml" 33 1647 1666
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 32 1586 1594 "pa_float.ml" 33 1647 1666
+type(
+  MLast.expr
+)
+"pa_float.ml" 35 1668 1685 "pa_float.ml" 35 1668 1686
+type(
+  string Ploc.vala
+)
+ident(
+  def i "pa_float.ml" 35 1668 1709 "pa_float.ml" 35 1668 1734
+)
+"pa_float.ml" 35 1668 1691 "pa_float.ml" 35 1668 1692
+type(
+  MLast.expr
+)
+ident(
+  def e "pa_float.ml" 35 1668 1709 "pa_float.ml" 35 1668 1734
+)
+"pa_float.ml" 35 1668 1674 "pa_float.ml" 35 1668 1696
+type(
+  MLast.expr
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala) list Ploc.vala
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala) list
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala) list
+)
+type(
+  MLast.patt * MLast.expr option Ploc.vala
+)
+type(
+  MLast.expr option Ploc.vala
+)
+type(
+  MLast.expr option
+)
+type(
+  MLast.patt
+)
+type(
+  MLast.loc
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 35 1668 1720 "pa_float.ml" 35 1668 1721
+type(
+  string Ploc.vala
+)
+ident(
+  int_ref i "pa_float.ml" 35 1668 1685 "pa_float.ml" 35 1668 1686
+)
+"pa_float.ml" 35 1668 1726 "pa_float.ml" 35 1668 1728
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 35 1668 1729 "pa_float.ml" 35 1668 1730
+type(
+  MLast.expr
+)
+ident(
+  int_ref e "pa_float.ml" 35 1668 1691 "pa_float.ml" 35 1668 1692
+)
+"pa_float.ml" 35 1668 1726 "pa_float.ml" 35 1668 1730
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 35 1668 1709 "pa_float.ml" 35 1668 1734
+type(
+  (MLast.patt * MLast.expr option Ploc.vala) list
+)
+type(
+  MLast.patt * MLast.expr option Ploc.vala
+)
+type(
+  MLast.expr option
+)
+type(
+  MLast.expr option Ploc.vala
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+type(
+  MLast.patt
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala) list
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala) list Ploc.vala
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 36 1735 1755 "pa_float.ml" 36 1735 1756
+type(
+  MLast.expr
+)
+ident(
+  def e "pa_float.ml" 36 1735 1776 "pa_float.ml" 36 1735 1798
+)
+"pa_float.ml" 36 1735 1741 "pa_float.ml" 36 1735 1760
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 36 1735 1790 "pa_float.ml" 36 1735 1792
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 36 1735 1793 "pa_float.ml" 36 1735 1794
+type(
+  MLast.expr
+)
+ident(
+  int_ref e "pa_float.ml" 36 1735 1755 "pa_float.ml" 36 1735 1756
+)
+"pa_float.ml" 36 1735 1790 "pa_float.ml" 36 1735 1794
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 36 1735 1776 "pa_float.ml" 36 1735 1798
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 37 1799 1822 "pa_float.ml" 37 1799 1823
+type(
+  bool Ploc.vala
+)
+type(
+  bool
+)
+ident(
+  def b "pa_float.ml" 38 1850 1858 "pa_float.ml" 39 1911 1963
+)
+"pa_float.ml" 37 1799 1831 "pa_float.ml" 37 1799 1834
+type(
+  (MLast.patt * MLast.expr) list Ploc.vala
+)
+type(
+  (MLast.patt * MLast.expr) list
+)
+ident(
+  def pel "pa_float.ml" 38 1850 1858 "pa_float.ml" 39 1911 1963
+)
+"pa_float.ml" 37 1799 1840 "pa_float.ml" 37 1799 1841
+type(
+  MLast.expr
+)
+ident(
+  def e "pa_float.ml" 38 1850 1858 "pa_float.ml" 39 1911 1963
+)
+"pa_float.ml" 37 1799 1805 "pa_float.ml" 37 1799 1845
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 38 1850 1862 "pa_float.ml" 38 1850 1866
+type(
+  (MLast.patt * MLast.expr) list
+)
+"pa_float.ml" 38 1850 1869 "pa_float.ml" 38 1850 1877
+type(
+  (MLast.patt * MLast.expr -> MLast.patt * MLast.expr) ->
+  (MLast.patt * MLast.expr) list -> (MLast.patt * MLast.expr) list
+)
+ident(
+  ext_ref List.map
+)
+"pa_float.ml" 38 1850 1884 "pa_float.ml" 38 1850 1885
+type(
+  MLast.patt
+)
+ident(
+  def p "pa_float.ml" 38 1850 1893 "pa_float.ml" 38 1850 1902
+)
+"pa_float.ml" 38 1850 1887 "pa_float.ml" 38 1850 1888
+type(
+  MLast.expr
+)
+ident(
+  def e "pa_float.ml" 38 1850 1893 "pa_float.ml" 38 1850 1902
+)
+"pa_float.ml" 38 1850 1884 "pa_float.ml" 38 1850 1888
+type(
+  MLast.patt * MLast.expr
+)
+"pa_float.ml" 38 1850 1894 "pa_float.ml" 38 1850 1895
+type(
+  MLast.patt
+)
+ident(
+  int_ref p "pa_float.ml" 38 1850 1884 "pa_float.ml" 38 1850 1885
+)
+"pa_float.ml" 38 1850 1897 "pa_float.ml" 38 1850 1899
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 38 1850 1900 "pa_float.ml" 38 1850 1901
+type(
+  MLast.expr
+)
+ident(
+  int_ref e "pa_float.ml" 38 1850 1887 "pa_float.ml" 38 1850 1888
+)
+"pa_float.ml" 38 1850 1897 "pa_float.ml" 38 1850 1901
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 38 1850 1893 "pa_float.ml" 38 1850 1902
+type(
+  MLast.patt * MLast.expr
+)
+"pa_float.ml" 38 1850 1878 "pa_float.ml" 38 1850 1903
+type(
+  MLast.patt * MLast.expr -> MLast.patt * MLast.expr
+)
+"pa_float.ml" 38 1850 1904 "pa_float.ml" 38 1850 1907
+type(
+  (MLast.patt * MLast.expr) list
+)
+ident(
+  int_ref pel "pa_float.ml" 37 1799 1831 "pa_float.ml" 37 1799 1834
+)
+"pa_float.ml" 38 1850 1869 "pa_float.ml" 38 1850 1907
+call(
+  stack
+)
+type(
+  (MLast.patt * MLast.expr) list
+)
+"pa_float.ml" 39 1911 1936 "pa_float.ml" 39 1911 1937
+type(
+  bool
+)
+ident(
+  int_ref b "pa_float.ml" 37 1799 1822 "pa_float.ml" 37 1799 1823
+)
+type(
+  bool Ploc.vala
+)
+"pa_float.ml" 39 1911 1945 "pa_float.ml" 39 1911 1949
+type(
+  (MLast.patt * MLast.expr) list
+)
+ident(
+  int_ref pel' "pa_float.ml" 38 1850 1862 "pa_float.ml" 38 1850 1866
+)
+type(
+  (MLast.patt * MLast.expr) list Ploc.vala
+)
+"pa_float.ml" 39 1911 1955 "pa_float.ml" 39 1911 1957
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 39 1911 1958 "pa_float.ml" 39 1911 1959
+type(
+  MLast.expr
+)
+ident(
+  int_ref e "pa_float.ml" 37 1799 1840 "pa_float.ml" 37 1799 1841
+)
+"pa_float.ml" 39 1911 1955 "pa_float.ml" 39 1911 1959
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 39 1911 1919 "pa_float.ml" 39 1911 1963
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 38 1850 1858 "pa_float.ml" 39 1911 1963
+type(
+  MLast.expr
+)
+"pa_float.ml" 41 1965 1984 "pa_float.ml" 41 1965 1985
+type(
+  string Ploc.vala
+)
+type(
+  string
+)
+ident(
+  def s "pa_float.ml" 42 2039 2047 "pa_float.ml" 44 2118 2134
+)
+"pa_float.ml" 41 1965 1971 "pa_float.ml" 41 1965 1989
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 42 2039 2054 "pa_float.ml" 42 2039 2055
+type(
+  string
+)
+ident(
+  int_ref s "pa_float.ml" 41 1965 1984 "pa_float.ml" 41 1965 1985
+)
+"pa_float.ml" 43 2061 2067 "pa_float.ml" 43 2061 2070
+type(
+  string
+)
+"pa_float.ml" 43 2061 2073 "pa_float.ml" 43 2061 2076
+type(
+  string
+)
+"pa_float.ml" 43 2061 2067 "pa_float.ml" 43 2061 2076
+type(
+  string
+)
+"pa_float.ml" 43 2061 2079 "pa_float.ml" 43 2061 2082
+type(
+  string
+)
+"pa_float.ml" 43 2061 2067 "pa_float.ml" 43 2061 2082
+type(
+  string
+)
+"pa_float.ml" 43 2061 2085 "pa_float.ml" 43 2061 2088
+type(
+  string
+)
+"pa_float.ml" 43 2061 2067 "pa_float.ml" 43 2061 2088
+type(
+  string
+)
+"pa_float.ml" 43 2061 2106 "pa_float.ml" 43 2061 2107
+type(
+  string
+)
+ident(
+  int_ref s "pa_float.ml" 41 1965 1984 "pa_float.ml" 41 1965 1985
+)
+"pa_float.ml" 43 2061 2110 "pa_float.ml" 43 2061 2113
+type(
+  string
+)
+"pa_float.ml" 43 2061 2106 "pa_float.ml" 43 2061 2113
+call(
+  stack
+)
+type(
+  string
+)
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+type(
+  string Ploc.vala
+)
+"pa_float.ml" 43 2061 2092 "pa_float.ml" 43 2061 2117
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 44 2118 2124 "pa_float.ml" 44 2118 2125
+type(
+  string
+)
+"pa_float.ml" 44 2118 2129 "pa_float.ml" 44 2118 2133
+type(
+  MLast.expr
+)
+ident(
+  int_ref expr "pa_float.ml" 9 331 351 "pa_float.ml" 9 331 355
+)
+"pa_float.ml" 42 2039 2047 "pa_float.ml" 44 2118 2134
+type(
+  MLast.expr
+)
+"pa_float.ml" 46 2136 2157 "pa_float.ml" 46 2136 2158
+type(
+  MLast.expr
+)
+ident(
+  def e "pa_float.ml" 47 2187 2188 "pa_float.ml" 47 2187 2238
+)
+"pa_float.ml" 46 2136 2173 "pa_float.ml" 46 2136 2177
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list Ploc.vala
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+ident(
+  def pwel "pa_float.ml" 47 2187 2188 "pa_float.ml" 47 2187 2238
+)
+"pa_float.ml" 46 2136 2142 "pa_float.ml" 46 2136 2183
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 47 2187 2203 "pa_float.ml" 47 2187 2205
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 47 2187 2206 "pa_float.ml" 47 2187 2207
+type(
+  MLast.expr
+)
+ident(
+  int_ref e "pa_float.ml" 46 2136 2157 "pa_float.ml" 46 2136 2158
+)
+"pa_float.ml" 47 2187 2203 "pa_float.ml" 47 2187 2207
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 47 2187 2222 "pa_float.ml" 47 2187 2227
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list ->
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+ident(
+  int_ref spwel "pa_float.ml" 13 458 464 "pa_float.ml" 13 458 469
+)
+"pa_float.ml" 47 2187 2228 "pa_float.ml" 47 2187 2232
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+ident(
+  int_ref pwel "pa_float.ml" 46 2136 2173 "pa_float.ml" 46 2136 2177
+)
+"pa_float.ml" 47 2187 2222 "pa_float.ml" 47 2187 2232
+call(
+  stack
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list Ploc.vala
+)
+"pa_float.ml" 47 2187 2188 "pa_float.ml" 47 2187 2238
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 48 2240 2262 "pa_float.ml" 48 2240 2265
+type(
+  (MLast.patt * MLast.expr) list Ploc.vala
+)
+type(
+  (MLast.patt * MLast.expr) list
+)
+ident(
+  def pel "pa_float.ml" 49 2276 2284 "pa_float.ml" 50 2337 2371
+)
+"pa_float.ml" 48 2240 2246 "pa_float.ml" 48 2240 2271
+type(
+  MLast.expr
+)
+type(
+  MLast.expr option
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 49 2276 2288 "pa_float.ml" 49 2276 2292
+type(
+  (MLast.patt * MLast.expr) list
+)
+"pa_float.ml" 49 2276 2295 "pa_float.ml" 49 2276 2303
+type(
+  (MLast.patt * MLast.expr -> MLast.patt * MLast.expr) ->
+  (MLast.patt * MLast.expr) list -> (MLast.patt * MLast.expr) list
+)
+ident(
+  ext_ref List.map
+)
+"pa_float.ml" 49 2276 2310 "pa_float.ml" 49 2276 2311
+type(
+  MLast.patt
+)
+ident(
+  def p "pa_float.ml" 49 2276 2319 "pa_float.ml" 49 2276 2328
+)
+"pa_float.ml" 49 2276 2313 "pa_float.ml" 49 2276 2314
+type(
+  MLast.expr
+)
+ident(
+  def e "pa_float.ml" 49 2276 2319 "pa_float.ml" 49 2276 2328
+)
+"pa_float.ml" 49 2276 2310 "pa_float.ml" 49 2276 2314
+type(
+  MLast.patt * MLast.expr
+)
+"pa_float.ml" 49 2276 2320 "pa_float.ml" 49 2276 2321
+type(
+  MLast.patt
+)
+ident(
+  int_ref p "pa_float.ml" 49 2276 2310 "pa_float.ml" 49 2276 2311
+)
+"pa_float.ml" 49 2276 2323 "pa_float.ml" 49 2276 2325
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 49 2276 2326 "pa_float.ml" 49 2276 2327
+type(
+  MLast.expr
+)
+ident(
+  int_ref e "pa_float.ml" 49 2276 2313 "pa_float.ml" 49 2276 2314
+)
+"pa_float.ml" 49 2276 2323 "pa_float.ml" 49 2276 2327
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 49 2276 2319 "pa_float.ml" 49 2276 2328
+type(
+  MLast.patt * MLast.expr
+)
+"pa_float.ml" 49 2276 2304 "pa_float.ml" 49 2276 2329
+type(
+  MLast.patt * MLast.expr -> MLast.patt * MLast.expr
+)
+"pa_float.ml" 49 2276 2330 "pa_float.ml" 49 2276 2333
+type(
+  (MLast.patt * MLast.expr) list
+)
+ident(
+  int_ref pel "pa_float.ml" 48 2240 2262 "pa_float.ml" 48 2240 2265
+)
+"pa_float.ml" 49 2276 2295 "pa_float.ml" 49 2276 2333
+call(
+  stack
+)
+type(
+  (MLast.patt * MLast.expr) list
+)
+"pa_float.ml" 50 2337 2361 "pa_float.ml" 50 2337 2365
+type(
+  (MLast.patt * MLast.expr) list
+)
+ident(
+  int_ref pel' "pa_float.ml" 49 2276 2288 "pa_float.ml" 49 2276 2292
+)
+type(
+  (MLast.patt * MLast.expr) list Ploc.vala
+)
+"pa_float.ml" 50 2337 2345 "pa_float.ml" 50 2337 2371
+type(
+  MLast.expr option
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 49 2276 2284 "pa_float.ml" 50 2337 2371
+type(
+  MLast.expr
+)
+"pa_float.ml" 51 2372 2397 "pa_float.ml" 51 2372 2399
+type(
+  MLast.expr list Ploc.vala
+)
+type(
+  MLast.expr list
+)
+ident(
+  def el "pa_float.ml" 51 2372 2413 "pa_float.ml" 51 2372 2444
+)
+"pa_float.ml" 51 2372 2378 "pa_float.ml" 51 2372 2405
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 51 2372 2432 "pa_float.ml" 51 2372 2435
+type(
+  MLast.expr list -> MLast.expr list
+)
+ident(
+  int_ref sel "pa_float.ml" 12 422 428 "pa_float.ml" 12 422 431
+)
+"pa_float.ml" 51 2372 2436 "pa_float.ml" 51 2372 2438
+type(
+  MLast.expr list
+)
+ident(
+  int_ref el "pa_float.ml" 51 2372 2397 "pa_float.ml" 51 2372 2399
+)
+"pa_float.ml" 51 2372 2432 "pa_float.ml" 51 2372 2438
+call(
+  stack
+)
+type(
+  MLast.expr list
+)
+type(
+  MLast.expr list Ploc.vala
+)
+"pa_float.ml" 51 2372 2413 "pa_float.ml" 51 2372 2444
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 52 2445 2460 "pa_float.ml" 52 2445 2462
+type(
+  MLast.expr
+)
+ident(
+  def e1 "pa_float.ml" 52 2445 2486 "pa_float.ml" 52 2445 2517
+)
+"pa_float.ml" 52 2445 2468 "pa_float.ml" 52 2445 2470
+type(
+  MLast.expr
+)
+ident(
+  def e2 "pa_float.ml" 52 2445 2486 "pa_float.ml" 52 2445 2517
+)
+"pa_float.ml" 52 2445 2451 "pa_float.ml" 52 2445 2476
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 52 2445 2495 "pa_float.ml" 52 2445 2497
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 52 2445 2498 "pa_float.ml" 52 2445 2500
+type(
+  MLast.expr
+)
+ident(
+  int_ref e1 "pa_float.ml" 52 2445 2460 "pa_float.ml" 52 2445 2462
+)
+"pa_float.ml" 52 2445 2495 "pa_float.ml" 52 2445 2500
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 52 2445 2506 "pa_float.ml" 52 2445 2508
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 52 2445 2509 "pa_float.ml" 52 2445 2511
+type(
+  MLast.expr
+)
+ident(
+  int_ref e2 "pa_float.ml" 52 2445 2468 "pa_float.ml" 52 2445 2470
+)
+"pa_float.ml" 52 2445 2506 "pa_float.ml" 52 2445 2511
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 52 2445 2486 "pa_float.ml" 52 2445 2517
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 53 2518 2537 "pa_float.ml" 53 2518 2538
+type(
+  string Ploc.vala
+)
+type(
+  string
+)
+ident(
+  def s "pa_float.ml" 53 2518 2546 "pa_float.ml" 53 2518 2550
+)
+"pa_float.ml" 53 2518 2524 "pa_float.ml" 53 2518 2542
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 53 2518 2546 "pa_float.ml" 53 2518 2550
+type(
+  MLast.expr
+)
+ident(
+  int_ref expr "pa_float.ml" 9 331 351 "pa_float.ml" 9 331 355
+)
+"pa_float.ml" 54 2551 2570 "pa_float.ml" 54 2551 2571
+type(
+  MLast.expr
+)
+ident(
+  def e "pa_float.ml" 55 2601 2602 "pa_float.ml" 55 2601 2647
+)
+"pa_float.ml" 54 2551 2586 "pa_float.ml" 54 2551 2590
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list Ploc.vala
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+ident(
+  def pwel "pa_float.ml" 55 2601 2602 "pa_float.ml" 55 2601 2647
+)
+"pa_float.ml" 54 2551 2557 "pa_float.ml" 54 2551 2596
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 55 2601 2615 "pa_float.ml" 55 2601 2616
+type(
+  MLast.expr
+)
+ident(
+  int_ref e "pa_float.ml" 54 2551 2570 "pa_float.ml" 54 2551 2571
+)
+"pa_float.ml" 55 2601 2631 "pa_float.ml" 55 2601 2636
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list ->
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+ident(
+  int_ref spwel "pa_float.ml" 13 458 464 "pa_float.ml" 13 458 469
+)
+"pa_float.ml" 55 2601 2637 "pa_float.ml" 55 2601 2641
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+ident(
+  int_ref pwel "pa_float.ml" 54 2551 2586 "pa_float.ml" 54 2551 2590
+)
+"pa_float.ml" 55 2601 2631 "pa_float.ml" 55 2601 2641
+call(
+  stack
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list Ploc.vala
+)
+"pa_float.ml" 55 2601 2602 "pa_float.ml" 55 2601 2647
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 56 2648 2670 "pa_float.ml" 56 2648 2672
+type(
+  MLast.expr list Ploc.vala
+)
+type(
+  MLast.expr list
+)
+ident(
+  def el "pa_float.ml" 56 2648 2689 "pa_float.ml" 56 2648 2717
+)
+"pa_float.ml" 56 2648 2654 "pa_float.ml" 56 2648 2678
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 56 2648 2705 "pa_float.ml" 56 2648 2708
+type(
+  MLast.expr list -> MLast.expr list
+)
+ident(
+  int_ref sel "pa_float.ml" 12 422 428 "pa_float.ml" 12 422 431
+)
+"pa_float.ml" 56 2648 2709 "pa_float.ml" 56 2648 2711
+type(
+  MLast.expr list
+)
+ident(
+  int_ref el "pa_float.ml" 56 2648 2670 "pa_float.ml" 56 2648 2672
+)
+"pa_float.ml" 56 2648 2705 "pa_float.ml" 56 2648 2711
+call(
+  stack
+)
+type(
+  MLast.expr list
+)
+type(
+  MLast.expr list Ploc.vala
+)
+"pa_float.ml" 56 2648 2689 "pa_float.ml" 56 2648 2717
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 57 2718 2735 "pa_float.ml" 57 2718 2736
+type(
+  MLast.expr
+)
+ident(
+  def e "pa_float.ml" 57 2718 2759 "pa_float.ml" 57 2718 2786
+)
+"pa_float.ml" 57 2718 2741 "pa_float.ml" 57 2718 2742
+type(
+  MLast.ctyp
+)
+ident(
+  def t "pa_float.ml" 57 2718 2759 "pa_float.ml" 57 2718 2786
+)
+"pa_float.ml" 57 2718 2724 "pa_float.ml" 57 2718 2748
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 57 2718 2770 "pa_float.ml" 57 2718 2772
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 57 2718 2773 "pa_float.ml" 57 2718 2774
+type(
+  MLast.expr
+)
+ident(
+  int_ref e "pa_float.ml" 57 2718 2735 "pa_float.ml" 57 2718 2736
+)
+"pa_float.ml" 57 2718 2770 "pa_float.ml" 57 2718 2774
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 57 2718 2779 "pa_float.ml" 57 2718 2780
+type(
+  MLast.ctyp
+)
+ident(
+  int_ref t "pa_float.ml" 57 2718 2741 "pa_float.ml" 57 2718 2742
+)
+"pa_float.ml" 57 2718 2759 "pa_float.ml" 57 2718 2786
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 58 2787 2806 "pa_float.ml" 58 2787 2807
+type(
+  string Ploc.vala
+)
+type(
+  string
+)
+ident(
+  def s "pa_float.ml" 58 2787 2828 "pa_float.ml" 58 2787 2832
+)
+"pa_float.ml" 58 2787 2793 "pa_float.ml" 58 2787 2811
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 58 2787 2828 "pa_float.ml" 58 2787 2832
+type(
+  MLast.expr
+)
+ident(
+  int_ref expr "pa_float.ml" 9 331 351 "pa_float.ml" 9 331 355
+)
+"pa_float.ml" 59 2833 2854 "pa_float.ml" 59 2833 2855
+type(
+  MLast.expr
+)
+ident(
+  def e "pa_float.ml" 60 2881 2889 "pa_float.ml" 60 2881 2933
+)
+"pa_float.ml" 59 2833 2868 "pa_float.ml" 59 2833 2870
+type(
+  MLast.expr list Ploc.vala
+)
+type(
+  MLast.expr list
+)
+ident(
+  def el "pa_float.ml" 60 2881 2889 "pa_float.ml" 60 2881 2933
+)
+"pa_float.ml" 59 2833 2839 "pa_float.ml" 59 2833 2876
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+"pa_float.ml" 60 2881 2904 "pa_float.ml" 60 2881 2906
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref se "pa_float.ml" 11 396 402 "pa_float.ml" 11 396 404
+)
+"pa_float.ml" 60 2881 2907 "pa_float.ml" 60 2881 2908
+type(
+  MLast.expr
+)
+ident(
+  int_ref e "pa_float.ml" 59 2833 2854 "pa_float.ml" 59 2833 2855
+)
+"pa_float.ml" 60 2881 2904 "pa_float.ml" 60 2881 2908
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 60 2881 2921 "pa_float.ml" 60 2881 2924
+type(
+  MLast.expr list -> MLast.expr list
+)
+ident(
+  int_ref sel "pa_float.ml" 12 422 428 "pa_float.ml" 12 422 431
+)
+"pa_float.ml" 60 2881 2925 "pa_float.ml" 60 2881 2927
+type(
+  MLast.expr list
+)
+ident(
+  int_ref el "pa_float.ml" 59 2833 2868 "pa_float.ml" 59 2833 2870
+)
+"pa_float.ml" 60 2881 2921 "pa_float.ml" 60 2881 2927
+call(
+  stack
+)
+type(
+  MLast.expr list
+)
+type(
+  MLast.expr list Ploc.vala
+)
+"pa_float.ml" 60 2881 2889 "pa_float.ml" 60 2881 2933
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 62 2935 2941 "pa_float.ml" 62 2935 2942
+type(
+  MLast.expr
+)
+"pa_float.ml" 63 2947 2948 "pa_float.ml" 63 2947 2968
+type(
+  Stdpp.location -> exn -> MLast.expr
+)
+ident(
+  ext_ref Stdpp.raise_with_loc
+)
+"pa_float.ml" 63 2947 2969 "pa_float.ml" 63 2947 2972
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_float.ml" 10 358 364 "pa_float.ml" 10 358 367
+)
+"pa_float.ml" 65 2987 2993 "pa_float.ml" 65 2987 3071
+type(
+  string
+)
+"pa_float.ml" 64 2974 2977 "pa_float.ml" 66 3028 3072
+type(
+  exn
+)
+"pa_float.ml" 63 2947 2948 "pa_float.ml" 66 3028 3072
+call(
+  tail
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 14 516 518 "pa_float.ml" 66 3028 3072
+type(
+  MLast.expr
+)
+"pa_float.ml" 13 458 460 "pa_float.ml" 66 3028 3072
+type(
+  MLast.expr
+)
+"pa_float.ml" 12 422 424 "pa_float.ml" 66 3028 3072
+type(
+  MLast.expr
+)
+"pa_float.ml" 11 396 398 "pa_float.ml" 66 3028 3072
+type(
+  MLast.expr
+)
+"pa_float.ml" 10 358 360 "pa_float.ml" 66 3028 3072
+type(
+  MLast.expr
+)
+"pa_float.ml" 9 331 351 "pa_float.ml" 66 3028 3072
+type(
+  MLast.expr -> MLast.expr
+)
+"pa_float.ml" 68 3074 3080 "pa_float.ml" 68 3074 3081
+type(
+  (Grammar.token Gramext.g_entry * Gramext.position option *
+   (string option * Gramext.g_assoc option *
+    (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+   list)
+  list -> unit
+)
+ident(
+  ext_ref Grammar.extend
+)
+"pa_float.ml" 69 3081 3083 "pa_float.ml" 69 3081 3093
+type(
+  Grammar.token Gramext.g_entry * Gramext.position option *
+  (string option * Gramext.g_assoc option *
+   (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+  list
+)
+type(
+  (string option * Gramext.g_assoc option *
+   (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+  list
+)
+type(
+  string option * Gramext.g_assoc option *
+  (Grammar.token Gramext.g_symbol list * Gramext.g_action) list
+)
+type(
+  (Grammar.token Gramext.g_symbol list * Gramext.g_action) list
+)
+type(
+  Grammar.token Gramext.g_symbol list * Gramext.g_action
+)
+type(
+  Gramext.g_action
+)
+type(
+  MLast.expr -> '_a -> Ploc.t -> MLast.expr
+)
+type(
+  '_a -> Ploc.t -> MLast.expr
+)
+type(
+  Ploc.t -> MLast.expr
+)
+type(
+  Ploc.t
+)
+ident(
+  def loc "pa_float.ml" 69 3081 3083 "pa_float.ml" 69 3081 3093
+)
+type(
+  '_a
+)
+type(
+  (MLast.expr -> '_a -> Ploc.t -> MLast.expr) -> Gramext.g_action
+)
+ident(
+  ext_ref Gramext.action
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  (Grammar.token Gramext.g_symbol list * Gramext.g_action) list
+)
+type(
+  Gramext.g_assoc option
+)
+type(
+  string option
+)
+type(
+  (string option * Gramext.g_assoc option *
+   (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+  list
+)
+type(
+  Gramext.position option
+)
+type(
+  MLast.expr Grammar.Entry.e
+)
+type(
+  MLast.expr Grammar.Entry.e
+)
+ident(
+  ext_ref Pcaml.expr
+)
+"pa_float.ml" 69 3081 3101 "pa_float.ml" 69 3081 3108
+type(
+  string
+)
+"pa_float.ml" 69 3081 3095 "pa_float.ml" 69 3081 3108
+type(
+  Gramext.position
+)
+"pa_float.ml" 70 3111 3117 "pa_float.ml" 70 3111 3124
+type(
+  Plexing.pattern
+)
+type(
+  string
+)
+type(
+  string
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_float.ml" 70 3111 3130 "pa_float.ml" 70 3111 3140
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_float.ml" 70 3111 3126 "pa_float.ml" 70 3111 3140
+type(
+  MLast.expr
+)
+ident(
+  def e "pa_float.ml" 69 3081 3083 "pa_float.ml" 69 3081 3093
+)
+"pa_float.ml" 70 3111 3144 "pa_float.ml" 70 3111 3155
+type(
+  MLast.expr -> MLast.expr
+)
+ident(
+  int_ref subst_float "pa_float.ml" 9 331 339 "pa_float.ml" 9 331 350
+)
+"pa_float.ml" 70 3111 3156 "pa_float.ml" 70 3111 3157
+type(
+  MLast.expr
+)
+ident(
+  int_ref e "pa_float.ml" 70 3111 3126 "pa_float.ml" 70 3111 3140
+)
+"pa_float.ml" 70 3111 3144 "pa_float.ml" 70 3111 3157
+call(
+  tail
+)
+type(
+  MLast.expr
+)
+type(
+  MLast.expr
+)
+"pa_float.ml" 69 3081 3083 "pa_float.ml" 71 3160 3164
+call(
+  stack
+)
+type(
+  unit
+)
+type(
+  (Grammar.token Gramext.g_entry * Gramext.position option *
+   (string option * Gramext.g_assoc option *
+    (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+   list)
+  list
+)
+type(
+  Grammar.token Gramext.g_entry
+)
+type(
+  MLast.expr Grammar.Entry.e -> Grammar.token Gramext.g_entry
+)
+ident(
+  ext_ref Grammar.Entry.obj
+)
+type(
+  (Grammar.token Gramext.g_entry * Gramext.position option *
+   (string option * Gramext.g_assoc option *
+    (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+   list)
+  list
+)

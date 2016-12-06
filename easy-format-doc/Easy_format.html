@@ -1,0 +1,417 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Easy_format" rel="Chapter" href="Easy_format.html"><title>Easy_format</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;</div>
+<h1>Module <a href="type_Easy_format.html">Easy_format</a></h1>
+
+<pre><span class="keyword">module</span> Easy_format: <code class="code">sig</code> <a href="Easy_format.html">..</a> <code class="code">end</code></pre><div class="info module top">
+Easy_format: indentation made easy.<br>
+</div>
+<hr width="100%">
+<br>
+This module provides a functional, simplified layer over
+  the Format module of the standard library.
+<p>
+
+  Input data must be first modelled as a tree using 3 kinds of nodes:<ul>
+<li>atoms</li>
+<li>lists</li>
+<li>labelled nodes</li>
+</ul>
+
+  Atoms represent any text that is guaranteed to be printed as-is.
+  Lists can model any sequence of items such as arrays of data
+  or lists of definitions that are labelled with something
+  like "int main", "let x =" or "x:".<br>
+
+<pre><span id="TYPEwrap"><span class="keyword">type</span> <code class="type"></code>wrap</span> = <code class="type">[ `Always_wrap<br>       | `Force_breaks<br>       | `Force_breaks_rec<br>       | `Never_wrap<br>       | `No_breaks<br>       | `Wrap_atoms ]</code> </pre>
+<div class="info ">
+List wrapping conditions:<ul>
+<li><code class="code">`Wrap_atoms</code>: wrap if the list contains only atoms</li>
+<li><code class="code">`Always_wrap</code>: always wrap when needed</li>
+<li><code class="code">`Never_wrap</code>: never wrap,
+      i.e. the list is either horizontal or vertical</li>
+<li><code class="code">`Force_breaks</code>: align vertically,
+      i.e. always break line between list items and
+      align the left edge of each item.</li>
+<li><code class="code">`Force_breaks_rec</code>: same as <code class="code">`Force_breaks</code> but turns
+      any wrappable ancestor node's wrap property (<code class="code">`Wrap_atoms</code>
+      or <code class="code">`Always_wrap</code>) into <code class="code">`Force_breaks</code>.</li>
+<li><code class="code">`No_breaks</code>: align horizontally,
+      i.e. never break line between list items</li>
+</ul>
+<br>
+</div>
+
+
+<pre><span id="TYPEstyle_name"><span class="keyword">type</span> <code class="type"></code>style_name</span> = <code class="type">string</code> </pre>
+
+
+<pre><code><span id="TYPEstyle"><span class="keyword">type</span> <code class="type"></code>style</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTstyle.tag_open">tag_open</span>&nbsp;: <code class="type">string</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTstyle.tag_close">tag_close</span>&nbsp;: <code class="type">string</code>;</code></td>
+
+</tr></table>
+}
+
+<div class="info ">
+Pair of opening and closing tags that are inserted around
+	text after pretty-printing.<br>
+</div>
+
+
+<pre><code><span id="TYPEatom_param"><span class="keyword">type</span> <code class="type"></code>atom_param</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTatom_param.atom_style">atom_style</span>&nbsp;: <code class="type"><a href="Easy_format.html#TYPEstyle_name">style_name</a> option</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+Default: <code class="code">None</code><br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr></table>
+}
+
+
+
+<pre><span id="VALatom"><span class="keyword">val</span> atom</span> : <code class="type"><a href="Easy_format.html#TYPEatom_param">atom_param</a></code></pre>
+<pre><code><span id="TYPElist_param"><span class="keyword">type</span> <code class="type"></code>list_param</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTlist_param.space_after_opening">space_after_opening</span>&nbsp;: <code class="type">bool</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+Whether there must be some whitespace
+				  after the opening string.
+				  Default: <code class="code">true</code><br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTlist_param.space_after_separator">space_after_separator</span>&nbsp;: <code class="type">bool</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+Whether there must be some whitespace
+				    after the item separators.
+				    Default: <code class="code">true</code><br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTlist_param.space_before_separator">space_before_separator</span>&nbsp;: <code class="type">bool</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+Whether there must be some whitespace
+				     before the item separators.
+				     Default: <code class="code">false</code><br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTlist_param.separators_stick_left">separators_stick_left</span>&nbsp;: <code class="type">bool</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+Whether the separators must
+				    stick to the item on the left.
+				    Default: <code class="code">true</code><br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTlist_param.space_before_closing">space_before_closing</span>&nbsp;: <code class="type">bool</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+Whether there must be some whitespace
+				   before the closing string.
+				   Default: <code class="code">true</code><br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTlist_param.stick_to_label">stick_to_label</span>&nbsp;: <code class="type">bool</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+Whether the opening string should be fused
+			     with the preceding label.
+			     Default: <code class="code">true</code><br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTlist_param.align_closing">align_closing</span>&nbsp;: <code class="type">bool</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+Whether the beginning of the
+			    closing string must be aligned
+			    with the beginning of the opening string
+			    (stick_to_label = false) or
+			    with the beginning of the label if any
+			    (stick_to_label = true).
+			    Default: <code class="code">true</code><br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTlist_param.wrap_body">wrap_body</span>&nbsp;: <code class="type"><a href="Easy_format.html#TYPEwrap">wrap</a></code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+Defines under which conditions the list body
+			may be wrapped, i.e. allow several lines
+			and several list items per line.
+			Default: <code class="code">`Wrap_atoms</code><br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTlist_param.indent_body">indent_body</span>&nbsp;: <code class="type">int</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+Extra indentation of the list body.
+			 Default: <code class="code">2</code><br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTlist_param.list_style">list_style</span>&nbsp;: <code class="type"><a href="Easy_format.html#TYPEstyle_name">style_name</a> option</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+Default: <code class="code">None</code><br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTlist_param.opening_style">opening_style</span>&nbsp;: <code class="type"><a href="Easy_format.html#TYPEstyle_name">style_name</a> option</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+Default: <code class="code">None</code><br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTlist_param.body_style">body_style</span>&nbsp;: <code class="type"><a href="Easy_format.html#TYPEstyle_name">style_name</a> option</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+Default: <code class="code">None</code><br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTlist_param.separator_style">separator_style</span>&nbsp;: <code class="type"><a href="Easy_format.html#TYPEstyle_name">style_name</a> option</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+Default: <code class="code">None</code><br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTlist_param.closing_style">closing_style</span>&nbsp;: <code class="type"><a href="Easy_format.html#TYPEstyle_name">style_name</a> option</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+Default: <code class="code">None</code><br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr></table>
+}
+
+<div class="info ">
+List-formatting parameters.
+    Always derive a new set of parameters from an existing record.
+    See <a href="Easy_format.html#VALlist"><code class="code">Easy_format.list</code></a>.<br>
+</div>
+
+
+<pre><span id="VALlist"><span class="keyword">val</span> list</span> : <code class="type"><a href="Easy_format.html#TYPElist_param">list_param</a></code></pre><div class="info ">
+Default list-formatting parameters, using the default values
+      described in the type definition above.
+<p>
+
+      In order to make code compatible with future versions of the library,
+      the record inheritance syntax should be used, e.g.
+      <code class="code"> { list with align_closing = false } </code>.
+      If new record fields are added, the program would still compile
+      and work as before.<br>
+</div>
+
+<pre><code><span id="TYPElabel_param"><span class="keyword">type</span> <code class="type"></code>label_param</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTlabel_param.space_after_label">space_after_label</span>&nbsp;: <code class="type">bool</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+Whether there must be some whitespace
+				after the label.
+				Default: <code class="code">true</code><br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTlabel_param.indent_after_label">indent_after_label</span>&nbsp;: <code class="type">int</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+Extra indentation before the item
+				that comes after a label.
+				Default: <code class="code">2</code><br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTlabel_param.label_style">label_style</span>&nbsp;: <code class="type"><a href="Easy_format.html#TYPEstyle_name">style_name</a> option</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+Default: <code class="code">None</code><br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr></table>
+}
+
+<div class="info ">
+Label-formatting parameters.
+    Always derive a new set of parameters from an existing record.
+    See <a href="Easy_format.html#VALlabel"><code class="code">Easy_format.label</code></a>.<br>
+</div>
+
+
+<pre><span id="VALlabel"><span class="keyword">val</span> label</span> : <code class="type"><a href="Easy_format.html#TYPElabel_param">label_param</a></code></pre><div class="info ">
+Default label-formatting parameters, using the default values
+      described in the type definition above.
+<p>
+
+      In order to make code compatible with future versions of the library,
+      the record inheritance syntax should be used, e.g.
+      <code class="code"> { label with indent_after_label = 0 } </code>.
+      If new record fields are added, the program would still compile
+      and work as before.<br>
+</div>
+
+<pre><code><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.Atom"><span class="constructor">Atom</span></span> <span class="keyword">of</span> <code class="type">string * <a href="Easy_format.html#TYPEatom_param">atom_param</a></code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+Plain string normally
+				    without line breaks.<br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.List"><span class="constructor">List</span></span> <span class="keyword">of</span> <code class="type">(string * string * string * <a href="Easy_format.html#TYPElist_param">list_param</a>) * <a href="Easy_format.html#TYPEt">t</a> list</code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+<code class="code">List ((opening, separator, closing, param), nodes)</code><br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.Label"><span class="constructor">Label</span></span> <span class="keyword">of</span> <code class="type">(<a href="Easy_format.html#TYPEt">t</a> * <a href="Easy_format.html#TYPElabel_param">label_param</a>) * <a href="Easy_format.html#TYPEt">t</a></code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+<code class="code">Label ((label, param), node)</code>: labelled node.<br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.Custom"><span class="constructor">Custom</span></span> <span class="keyword">of</span> <code class="type">(Format.formatter -> unit)</code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+User-defined printing function that allows to use the
+	  Format module directly if necessary. It is responsible
+	  for leaving the formatter in a clean state.<br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr></table>
+
+<div class="info ">
+The type of the tree to be pretty-printed. Each node contains
+    its own formatting parameters.
+<p>
+
+    Detail of a list node
+    <code class="code">List ((opening, separator, closing, param), nodes)</code>:
+<p>
+<ul>
+<li><code class="code">opening</code>: opening string such as <code class="code">"{"</code> <code class="code">"["</code> <code class="code">"("</code> <code class="code">"begin"</code> <code class="code">""</code> etc.</li>
+<li><code class="code">separator</code>: node separator such as <code class="code">";"</code> <code class="code">","</code> <code class="code">""</code> <code class="code">"+"</code> <code class="code">"|"</code> etc.</li>
+<li><code class="code">closing</code>: closing string such as <code class="code">"}"</code> <code class="code">"]"</code> <code class="code">")"</code> <code class="code">"end"</code> <code class="code">""</code> etc.</li>
+<li><code class="code">nodes</code>: elements of the list.</li>
+</ul>
+<br>
+</div>
+
+
+<pre><span id="TYPEescape"><span class="keyword">type</span> <code class="type"></code>escape</span> = <code class="type">[ `Escape of (string -> int -> int -> unit) -> string -> int -> int -> unit<br>       | `Escape_string of string -> string<br>       | `None ]</code> </pre>
+
+
+<pre><span id="TYPEstyles"><span class="keyword">type</span> <code class="type"></code>styles</span> = <code class="type">(<a href="Easy_format.html#TYPEstyle_name">style_name</a> * <a href="Easy_format.html#TYPEstyle">style</a>) list</code> </pre>
+
+
+<pre><span class="keyword">module</span> <a href="Easy_format.Pretty.html">Pretty</a>: <code class="code">sig</code> <a href="Easy_format.Pretty.html">..</a> <code class="code">end</code></pre><div class="info">
+The regular pretty-printing functions
+</div>
+
+<pre><span class="keyword">module</span> <a href="Easy_format.Compact.html">Compact</a>: <code class="code">sig</code> <a href="Easy_format.Compact.html">..</a> <code class="code">end</code></pre><div class="info">
+No spacing or newlines other than those in the input data
+    or those produced by <code class="code">Custom</code> printing.
+</div>
+</body></html>

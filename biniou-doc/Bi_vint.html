@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Bi_inbuf.html">
+<link rel="next" href="Bi_io.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Bi_util" rel="Chapter" href="Bi_util.html">
+<link title="Bi_share" rel="Chapter" href="Bi_share.html">
+<link title="Bi_outbuf" rel="Chapter" href="Bi_outbuf.html">
+<link title="Bi_inbuf" rel="Chapter" href="Bi_inbuf.html">
+<link title="Bi_vint" rel="Chapter" href="Bi_vint.html">
+<link title="Bi_io" rel="Chapter" href="Bi_io.html"><title>Bi_vint</title>
+</head>
+<body>
+<div class="navbar"><a href="Bi_inbuf.html">Previous</a>
+&nbsp;<a href="index.html">Up</a>
+&nbsp;<a href="Bi_io.html">Next</a>
+</div>
+<center><h1>Module <a href="type_Bi_vint.html">Bi_vint</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> Bi_vint: <code class="code">sig</code> <a href="Bi_vint.html">..</a> <code class="code">end</code></pre>Vint: variable-length representation of integers<br>
+<hr width="100%">
+<br>
+This module currently provides only conversions between vint and the
+   OCaml int type. Here are the current limits of OCaml ints on
+   32-bit and 64-bit systems:
+<pre>   word length (bits)                 32          64
+
+   int length (bits)                  31          63
+
+   min_int (lowest signed int)        0x40000000  0x4000000000000000
+                                      -1073741824 -4611686018427387904
+
+   max_int (greatest signed int)      0x3fffffff  0x3fffffffffffffff
+                                      1073741823  4611686018427387903
+
+   lowest unsigned int                0x0         0x0
+                                      0           0
+
+   greatest unsigned int              0x7fffffff  0x7fffffffffffffff
+                                      2147483647  9223372036854775807
+
+   maximum vint length (data bits)    31          63
+   maximum vint length (total bytes)  5           9</pre><br>
+<pre><span id="TYPEuint"><span class="keyword">type</span> <code class="type"></code>uint</span> = <code class="type">int</code> </pre>
+<div class="info">
+Unsigned int.
+      Note that ints (signed) and uints use the same representation
+      for integers within [0, <code class="code">max_int</code>].<br>
+</div>
+
+<pre><span id="VALuvint_of_uint"><span class="keyword">val</span> uvint_of_uint</span> : <code class="type">?buf:<a href="Bi_outbuf.html#TYPEt">Bi_outbuf.t</a> -> <a href="Bi_vint.html#TYPEuint">uint</a> -> string</code></pre><div class="info">
+Convert an unsigned int to a vint.<br>
+</div>
+<div class="param_info"><code class="code">buf</code> : existing output buffer that could be reused by this function
+      instead of creating a new one.</div>
+<pre><span id="VALsvint_of_int"><span class="keyword">val</span> svint_of_int</span> : <code class="type">?buf:<a href="Bi_outbuf.html#TYPEt">Bi_outbuf.t</a> -> int -> string</code></pre><div class="info">
+Convert a signed int to a vint.<br>
+</div>
+<div class="param_info"><code class="code">buf</code> : existing output buffer that could be reused by this function
+      instead of creating a new one.</div>
+<pre><span id="VALuint_of_uvint"><span class="keyword">val</span> uint_of_uvint</span> : <code class="type">string -> <a href="Bi_vint.html#TYPEuint">uint</a></code></pre><div class="info">
+Interpret a vint as an unsigned int.<br>
+<b>Raises</b> <code>Bi_util.Error</code> if the input string is not a single valid uvint
+      that is representable using the uint type.<br>
+</div>
+<pre><span id="VALint_of_svint"><span class="keyword">val</span> int_of_svint</span> : <code class="type">string -> int</code></pre><div class="info">
+Interpret a vint as a signed int.<br>
+<b>Raises</b> <code>Bi_util.Error</code> if the input string is not a single valid svint
+      that is representable using the int type.<br>
+</div>
+<pre><span id="VALwrite_uvint"><span class="keyword">val</span> write_uvint</span> : <code class="type"><a href="Bi_outbuf.html#TYPEt">Bi_outbuf.t</a> -> <a href="Bi_vint.html#TYPEuint">uint</a> -> unit</code></pre><div class="info">
+Write an unsigned int to a buffer.<br>
+</div>
+<pre><span id="VALwrite_svint"><span class="keyword">val</span> write_svint</span> : <code class="type"><a href="Bi_outbuf.html#TYPEt">Bi_outbuf.t</a> -> int -> unit</code></pre><div class="info">
+Write a signed int to a buffer.<br>
+</div>
+<pre><span id="VALread_uvint"><span class="keyword">val</span> read_uvint</span> : <code class="type"><a href="Bi_inbuf.html#TYPEt">Bi_inbuf.t</a> -> <a href="Bi_vint.html#TYPEuint">uint</a></code></pre><div class="info">
+Read an unsigned int from a buffer.<br>
+<b>Raises</b> <code>Bi_util.Error</code> if there is no data to read from or if the
+      uvint is not representable using the uint type.<br>
+</div>
+<pre><span id="VALread_svint"><span class="keyword">val</span> read_svint</span> : <code class="type"><a href="Bi_inbuf.html#TYPEt">Bi_inbuf.t</a> -> int</code></pre><div class="info">
+Read a signed int from a buffer.<br>
+<b>Raises</b> <code>Bi_util.Error</code> if there is no data to read from or if the
+      svint is not representable using the int type.<br>
+</div>
+</body></html>

@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Bi_outbuf.html">
+<link rel="next" href="Bi_vint.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Bi_util" rel="Chapter" href="Bi_util.html">
+<link title="Bi_share" rel="Chapter" href="Bi_share.html">
+<link title="Bi_outbuf" rel="Chapter" href="Bi_outbuf.html">
+<link title="Bi_inbuf" rel="Chapter" href="Bi_inbuf.html">
+<link title="Bi_vint" rel="Chapter" href="Bi_vint.html">
+<link title="Bi_io" rel="Chapter" href="Bi_io.html"><title>Bi_inbuf</title>
+</head>
+<body>
+<div class="navbar"><a href="Bi_outbuf.html">Previous</a>
+&nbsp;<a href="index.html">Up</a>
+&nbsp;<a href="Bi_vint.html">Next</a>
+</div>
+<center><h1>Module <a href="type_Bi_inbuf.html">Bi_inbuf</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> Bi_inbuf: <code class="code">sig</code> <a href="Bi_inbuf.html">..</a> <code class="code">end</code></pre>Input buffer<br>
+<hr width="100%">
+<br><code><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = {</code><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>i_s&nbsp;: <code class="type">string</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >This is the buffer string.
+       It can be accessed for reading but should normally only
+       be written to or replaced only by the <code class="code">i_refill</code> function.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>i_pos&nbsp;: <code class="type">int</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >This is the current position in the input buffer.
+       All data before that may be erased at anytime.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>i_len&nbsp;: <code class="type">int</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >This is the position of the first byte of invalid input data.
+      Data starting at <code class="code">i_pos</code> and ending at <code class="code">i_len-1</code> is considered
+      valid input data that is available to the user.
+      Beware that calls to <code class="code">try_preread</code>, <code class="code">read</code> and other read functions
+      may move data around and therefore modify the values
+      of <code class="code">i_pos</code> and <code class="code">i_len</code> in order to keep pointing to the
+      correct data segment.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>i_offs&nbsp;: <code class="type">int</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Length of data read and discarded from the buffer.
+        This indicates the position in the input stream of
+        the first byte of the buffer.
+        The current position in the input stream is <code class="code">i_offs + i_pos</code>.
+        The total length of input stream data put into the buffer is
+        <code class="code">i_offs + i_len</code>.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>i_max_len&nbsp;: <code class="type">int</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >This is the length of <code class="code">i_s</code>.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>i_refill&nbsp;: <code class="type"><a href="Bi_inbuf.html#TYPEt">t</a> -> int -> unit</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Function called when not enough data is available in the buffer.
+      The int argument is the total number of bytes that must be 
+      available starting at position <code class="code">i_pos</code> when the function returns.
+      This function typically does nothing if all input data already has been
+      placed into the buffer.
+      The <code class="code">i_pos</code> and <code class="code">i_len</code> fields can be modified the <code class="code">i_refill</code> function,
+      as long as the available data that was starting from <code class="code">i_pos</code>
+      still starts from the new value of <code class="code">i_pos</code>.
+      All the other fields can be modified as well.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>i_shared&nbsp;: <code class="type"><a href="Bi_share.Rd.html#TYPEtbl">Bi_share.Rd.tbl</a></code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Hash table used to map positions in the input stream to
+       shared objects (if any).</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr></table>
+}
+
+
+<pre><span id="EXCEPTIONEnd_of_input"><span class="keyword">exception</span> End_of_input</span></pre>
+<div class="info">
+Exception raised by all the functions of this module
+     when it is not possible to return a valid result
+     because there is not enough data to read from the buffer.<br>
+</div>
+<pre><span id="VALtry_preread"><span class="keyword">val</span> try_preread</span> : <code class="type"><a href="Bi_inbuf.html#TYPEt">t</a> -> int -> int</code></pre><div class="info">
+<code class="code">try_preread ib n</code> make at least <code class="code">n</code> bytes available for reading 
+     in <code class="code">ib.i_s</code>, unless the end of the input is reached.
+     The result indicates how many bytes were made available. If smaller than
+     <code class="code">n</code>, the result indicates that the end of the input was reached.
+     <code class="code">ib.i_pos</code> is set to point to the first available byte.<br>
+</div>
+<pre><span id="VALread"><span class="keyword">val</span> read</span> : <code class="type"><a href="Bi_inbuf.html#TYPEt">t</a> -> int -> int</code></pre><div class="info">
+<code class="code">read ib n</code> makes at least <code class="code">n</code> bytes available for reading or raises
+     the <code class="code">End_of_input</code> exception.
+     The result is the position of the first available byte.
+     <code class="code">ib.i_pos</code> is moved to point to the next position after the <code class="code">n</code> bytes.<br>
+<b>Raises</b> <code>End_of_input</code> if there is less than <code class="code">n</code> bytes
+     before the end of input.<br>
+</div>
+<pre><span id="VALread_char"><span class="keyword">val</span> read_char</span> : <code class="type"><a href="Bi_inbuf.html#TYPEt">t</a> -> char</code></pre><div class="info">
+Read just one byte.<br>
+<b>Raises</b> <code>End_of_input</code> if the end of input has already been reached.<br>
+</div>
+<pre><span id="VALpeek"><span class="keyword">val</span> peek</span> : <code class="type"><a href="Bi_inbuf.html#TYPEt">t</a> -> char</code></pre><div class="info">
+Return the next byte without moving forward.<br>
+<b>Raises</b> <code>End_of_input</code> if the end of input has already been reached.<br>
+</div>
+<pre><span id="VALfrom_string"><span class="keyword">val</span> from_string</span> : <code class="type">?pos:int -> ?shrlen:int -> string -> <a href="Bi_inbuf.html#TYPEt">t</a></code></pre><div class="info">
+Create an input buffer from a string.<br>
+</div>
+<div class="param_info"><code class="code">pos</code> : position to start from. Default: 0.</div>
+<div class="param_info"><code class="code">shrlen</code> : initial length of the table used to store shared values.</div>
+<pre><span id="VALfrom_channel"><span class="keyword">val</span> from_channel</span> : <code class="type">?len:int -> ?shrlen:int -> Pervasives.in_channel -> <a href="Bi_inbuf.html#TYPEt">t</a></code></pre><div class="info">
+Create an input buffer from an in_channel.
+     Such a buffer is not extensible and <code class="code">read</code> requests may not exceed <code class="code">len</code>.<br>
+</div>
+<div class="param_info"><code class="code">len</code> : buffer length.</div>
+<div class="param_info"><code class="code">shrlen</code> : initial length of the table used to store shared values.</div>
+</body></html>

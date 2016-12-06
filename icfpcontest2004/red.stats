@@ -1,0 +1,409 @@
+Flip 1 4 4                               ;    0 #4 [2508000] loop
+Flip 1 341 341                           ;    1 #339 [116549] while0
+Flip 1 344 344                           ;    2 #341 [116548] or0
+Flip 1 346 346                           ;    3 #344 [116548] and0
+Sense Ahead 342 347 Rock                 ;    4 #346 [116546] or0
+Flip 1 323 323                           ;    5 #13 [115664] search-home
+Flip 1 325 325                           ;    6 #323 [115663] seq0
+Flip 1 328 328                           ;    7 #325 [115660] and0
+Flip 1 330 330                           ;    8 #328 [115659] or0
+Sense LeftAhead 331 329 Foe              ;    9 #330 [115658] and0
+Flip 1 339 339                           ;   10 #324 [115655] seq1
+Sense Here 15 13 Home                    ;   11 #14 [115629] test-safe-home
+Flip 1 334 334                           ;   12 #329 [115604] or1
+Sense Ahead 335 324 Foe                  ;   13 #334 [115603] and0
+Sense Ahead 342 348 Friend               ;   14 #347 [112426] or1
+Sense Ahead 342 345 Foe                  ;   15 #348 [111198] or2
+Move 14 342                              ;   16 #345 [110250] and1
+Flip 1 301 301                           ;   17 #299 [87761] while0
+Flip 1 304 304                           ;   18 #301 [87761] or0
+Flip 1 306 306                           ;   19 #304 [87760] and0
+Sense Ahead 302 307 Rock                 ;   20 #306 [87757] or0
+Flip 1 283 283                           ;   21 #10 [86848] search-food
+Flip 1 285 285                           ;   22 #283 [86846] seq0
+Flip 1 288 288                           ;   23 #285 [86846] and0
+Flip 1 290 290                           ;   24 #288 [86846] or0
+Sense LeftAhead 291 289 Foe              ;   25 #290 [86845] and0
+Flip 1 299 299                           ;   26 #284 [86843] seq1
+Flip 1 321 321                           ;   27 #11 [86822] test-food
+Sense Here 322 10 Food                   ;   28 #321 [86821] and0
+Flip 1 294 294                           ;   29 #289 [86799] or1
+Sense Ahead 295 284 Foe                  ;   30 #294 [86798] and0
+Sense Ahead 302 308 Friend               ;   31 #307 [84935] or1
+Sense Ahead 302 305 Foe                  ;   32 #308 [83641] or2
+Move 11 302                              ;   33 #305 [82807] and1
+Flip 1 349 349                           ;   34 #342 [6388] or1
+Flip 1 352 352                           ;   35 #349 [6388] and0
+Sense RightAhead 343 353 Rock            ;   36 #352 [6388] or0
+Flip 1 309 309                           ;   37 #302 [5010] or1
+Flip 1 312 312                           ;   38 #309 [5010] and0
+Sense RightAhead 303 313 Rock            ;   39 #312 [5010] or0
+Sense RightAhead 343 354 Friend          ;   40 #353 [4350] or1
+Sense RightAhead 343 350 Foe             ;   41 #354 [4127] or2
+Turn Right 351                           ;   42 #350 [4013] and1
+Move 14 343                              ;   43 #351 [4013] and2
+Sense RightAhead 303 314 Friend          ;   44 #313 [3482] or1
+Sense RightAhead 303 310 Foe             ;   45 #314 [2956] or2
+Turn Right 311                           ;   46 #310 [2888] and1
+Move 11 303                              ;   47 #311 [2888] and2
+Flip 1 355 355                           ;   48 #343 [2440] or2
+Flip 1 358 358                           ;   49 #355 [2440] and0
+Sense LeftAhead 340 359 Rock             ;   50 #358 [2440] or0
+Flip 1 315 315                           ;   51 #303 [2178] or2
+Flip 1 318 318                           ;   52 #315 [2178] and0
+Sense LeftAhead 300 319 Rock             ;   53 #318 [2178] or0
+Sense LeftAhead 300 320 Friend           ;   54 #319 [1736] or1
+Sense LeftAhead 340 360 Friend           ;   55 #359 [1725] or1
+Sense LeftAhead 340 356 Foe              ;   56 #360 [1627] or2
+Turn Left 357                            ;   57 #356 [1572] and1
+Move 14 340                              ;   58 #357 [1572] and2
+Sense LeftAhead 300 316 Foe              ;   59 #320 [1330] or2
+Turn Left 317                            ;   60 #316 [1278] and1
+Move 11 300                              ;   61 #317 [1278] and2
+Flip 1 332 332                           ;   62 #331 [946] and1
+Sense RightAhead 326 333 Foe             ;   63 #332 [946] or0
+Sense Ahead 326 329 Foe                  ;   64 #333 [928] or1
+Sense RightAhead 326 324 Foe             ;   65 #335 [921] and1
+Turn Right 299                           ;   66 #300 [920] while1
+Turn Right 339                           ;   67 #340 [894] while1
+Sense RightAhead 286 284 Foe             ;   68 #295 [808] and1
+Flip 1 292 292                           ;   69 #291 [773] and1
+Sense RightAhead 286 293 Foe             ;   70 #292 [773] or0
+Sense Ahead 286 289 Foe                  ;   71 #293 [758] or1
+Sense Here 10 12 Home                    ;   72 #322 [309] and1
+PickUp 13 13                             ;   73 #12 [199] load-and-back
+Drop 16                                  ;   74 #15 [163] drop-and-go
+Flip 1 361 361                           ;   75 #16 [163] maybe-become-guard
+Flip 1 373 373                           ;   76 #361 [163] or0
+Turn Right 363                           ;   77 #362 [163] or1
+Flip 1 379 379                           ;   78 #363 [163] or2
+Sense Ahead 374 362 Marker 5             ;   79 #373 [163] and0
+Sense Ahead 380 364 Marker 5             ;   80 #379 [163] and0
+Turn Right 365                           ;   81 #364 [160] or3
+Flip 1 385 385                           ;   82 #365 [160] or4
+Sense Ahead 386 366 Marker 5             ;   83 #385 [160] and0
+Turn Right 367                           ;   84 #366 [158] or5
+Flip 1 391 391                           ;   85 #367 [158] or6
+Sense Ahead 392 368 Marker 5             ;   86 #391 [158] and0
+Turn Right 369                           ;   87 #368 [156] or7
+Flip 1 397 397                           ;   88 #369 [156] or8
+Sense Ahead 398 370 Marker 5             ;   89 #397 [156] and0
+Turn Right 371                           ;   90 #370 [153] or9
+Flip 1 403 403                           ;   91 #371 [153] or10
+Turn Right 10                            ;   92 #372 [153] or11
+Sense Ahead 404 372 Marker 5             ;   93 #403 [153] and0
+Flip 1 388 388                           ;   94 #386 [136] and1
+Sense Ahead 366 389 Rock                 ;   95 #388 [136] or0
+Sense Ahead 366 390 Friend               ;   96 #389 [136] or1
+Flip 1 181 181                           ;   97 #2 [95] protect-food
+Sense Ahead 3 182 Marker 4               ;   98 #181 [95] or0
+Turn Right 183                           ;   99 #182 [92] or1
+Sense Ahead 3 184 Marker 4               ;  100 #183 [92] or2
+Flip 1 17 17                             ;  101 #0 [91] start
+Flip 1 29 29                             ;  102 #17 [91] or0
+Flip 1 32 32                             ;  103 #29 [91] and0
+Sense Ahead 18 33 Rock                   ;  104 #32 [91] or0
+Sense Ahead 18 34 Friend                 ;  105 #33 [91] or1
+Turn Right 19                            ;  106 #18 [90] or1
+Flip 1 41 41                             ;  107 #19 [90] or2
+Flip 1 44 44                             ;  108 #41 [90] and0
+Sense Ahead 20 45 Rock                   ;  109 #44 [90] or0
+Sense Ahead 20 46 Friend                 ;  110 #45 [90] or1
+Turn Right 21                            ;  111 #20 [89] or3
+Flip 1 53 53                             ;  112 #21 [89] or4
+Flip 1 56 56                             ;  113 #53 [89] and0
+Sense Ahead 22 57 Rock                   ;  114 #56 [89] or0
+Sense Ahead 22 58 Friend                 ;  115 #57 [89] or1
+Turn Right 185                           ;  116 #184 [89] or3
+Sense Ahead 3 186 Marker 4               ;  117 #185 [89] or4
+Turn Right 23                            ;  118 #22 [88] or5
+Flip 1 65 65                             ;  119 #23 [88] or6
+Flip 1 68 68                             ;  120 #65 [88] and0
+Sense Ahead 24 69 Rock                   ;  121 #68 [88] or0
+Sense Ahead 24 70 Friend                 ;  122 #69 [88] or1
+Turn Right 25                            ;  123 #24 [87] or7
+Flip 1 77 77                             ;  124 #25 [87] or8
+Flip 1 80 80                             ;  125 #77 [87] and0
+Sense Ahead 26 81 Rock                   ;  126 #80 [87] or0
+Sense Ahead 26 82 Friend                 ;  127 #81 [87] or1
+Turn Right 27                            ;  128 #26 [86] or9
+Flip 1 89 89                             ;  129 #27 [86] or10
+Flip 1 92 92                             ;  130 #89 [86] and0
+Sense Ahead 28 93 Rock                   ;  131 #92 [86] or0
+Sense Ahead 28 94 Friend                 ;  132 #93 [86] or1
+Turn Right 187                           ;  133 #186 [86] or5
+Sense Ahead 3 188 Marker 4               ;  134 #187 [86] or6
+Flip 1 101 101                           ;  135 #1 [85] wait-a-little
+Turn Right 1                             ;  136 #28 [85] or11
+Flip 1 102 102                           ;  137 #101 [85] seq0
+Flip 1 103 103                           ;  138 #102 [85] seq1
+Flip 1 104 104                           ;  139 #103 [85] seq2
+Flip 1 105 105                           ;  140 #104 [85] seq3
+Flip 1 106 106                           ;  141 #105 [85] seq4
+Flip 1 107 107                           ;  142 #106 [85] seq5
+Flip 1 108 108                           ;  143 #107 [85] seq6
+Flip 1 109 109                           ;  144 #108 [85] seq7
+Flip 1 110 110                           ;  145 #109 [85] seq8
+Flip 1 111 111                           ;  146 #110 [85] seq9
+Flip 1 112 112                           ;  147 #111 [85] seq10
+Flip 1 113 113                           ;  148 #112 [85] seq11
+Flip 1 114 114                           ;  149 #113 [85] seq12
+Flip 1 115 115                           ;  150 #114 [85] seq13
+Flip 1 116 116                           ;  151 #115 [85] seq14
+Flip 1 117 117                           ;  152 #116 [85] seq15
+Flip 1 118 118                           ;  153 #117 [85] seq16
+Flip 1 119 119                           ;  154 #118 [85] seq17
+Flip 1 120 120                           ;  155 #119 [85] seq18
+Flip 1 121 121                           ;  156 #120 [85] seq19
+Flip 1 122 122                           ;  157 #121 [85] seq20
+Flip 1 123 123                           ;  158 #122 [85] seq21
+Flip 1 124 124                           ;  159 #123 [85] seq22
+Flip 1 125 125                           ;  160 #124 [85] seq23
+Flip 1 126 126                           ;  161 #125 [85] seq24
+Flip 1 127 127                           ;  162 #126 [85] seq25
+Flip 1 128 128                           ;  163 #127 [85] seq26
+Flip 1 129 129                           ;  164 #128 [85] seq27
+Flip 1 130 130                           ;  165 #129 [85] seq28
+Flip 1 131 131                           ;  166 #130 [85] seq29
+Flip 1 132 132                           ;  167 #131 [85] seq30
+Flip 1 133 133                           ;  168 #132 [85] seq31
+Flip 1 134 134                           ;  169 #133 [85] seq32
+Flip 1 135 135                           ;  170 #134 [85] seq33
+Flip 1 136 136                           ;  171 #135 [85] seq34
+Flip 1 137 137                           ;  172 #136 [85] seq35
+Flip 1 138 138                           ;  173 #137 [85] seq36
+Flip 1 139 139                           ;  174 #138 [85] seq37
+Flip 1 140 140                           ;  175 #139 [85] seq38
+Flip 1 141 141                           ;  176 #140 [85] seq39
+Flip 1 142 142                           ;  177 #141 [85] seq40
+Flip 1 143 143                           ;  178 #142 [85] seq41
+Flip 1 144 144                           ;  179 #143 [85] seq42
+Flip 1 145 145                           ;  180 #144 [85] seq43
+Flip 1 146 146                           ;  181 #145 [85] seq44
+Flip 1 147 147                           ;  182 #146 [85] seq45
+Flip 1 148 148                           ;  183 #147 [85] seq46
+Flip 1 149 149                           ;  184 #148 [85] seq47
+Flip 1 150 150                           ;  185 #149 [85] seq48
+Flip 1 151 151                           ;  186 #150 [85] seq49
+Flip 1 152 152                           ;  187 #151 [85] seq50
+Flip 1 153 153                           ;  188 #152 [85] seq51
+Flip 1 154 154                           ;  189 #153 [85] seq52
+Flip 1 155 155                           ;  190 #154 [85] seq53
+Flip 1 156 156                           ;  191 #155 [85] seq54
+Flip 1 157 157                           ;  192 #156 [85] seq55
+Flip 1 158 158                           ;  193 #157 [85] seq56
+Flip 1 159 159                           ;  194 #158 [85] seq57
+Flip 1 160 160                           ;  195 #159 [85] seq58
+Flip 1 161 161                           ;  196 #160 [85] seq59
+Flip 1 162 162                           ;  197 #161 [85] seq60
+Flip 1 163 163                           ;  198 #162 [85] seq61
+Flip 1 164 164                           ;  199 #163 [85] seq62
+Flip 1 165 165                           ;  200 #164 [85] seq63
+Flip 1 166 166                           ;  201 #165 [85] seq64
+Flip 1 167 167                           ;  202 #166 [85] seq65
+Flip 1 168 168                           ;  203 #167 [85] seq66
+Flip 1 169 169                           ;  204 #168 [85] seq67
+Flip 1 170 170                           ;  205 #169 [85] seq68
+Flip 1 171 171                           ;  206 #170 [85] seq69
+Flip 1 172 172                           ;  207 #171 [85] seq70
+Flip 1 173 173                           ;  208 #172 [85] seq71
+Flip 1 174 174                           ;  209 #173 [85] seq72
+Flip 1 175 175                           ;  210 #174 [85] seq73
+Flip 1 176 176                           ;  211 #175 [85] seq74
+Flip 1 177 177                           ;  212 #176 [85] seq75
+Flip 1 178 178                           ;  213 #177 [85] seq76
+Flip 1 179 179                           ;  214 #178 [85] seq77
+Flip 1 180 180                           ;  215 #179 [85] seq78
+Flip 1 2 2                               ;  216 #180 [85] seq79
+Flip 1 336 336                           ;  217 #326 [82] and1
+Move 324 324                             ;  218 #327 [82] and2
+Turn Right 337                           ;  219 #336 [82] seq0
+Turn Right 338                           ;  220 #337 [82] seq1
+Turn Right 327                           ;  221 #338 [82] seq2
+Mark 1 269                               ;  222 #268 [76] mark1
+Flip 1 277 277                           ;  223 #269 [76] move1
+Sense Ahead 10 270 Rock                  ;  224 #276 [76] test-rock2
+Move 276 278                             ;  225 #277 [76] while0
+Turn Right 189                           ;  226 #188 [73] or7
+Sense Ahead 3 190 Marker 4               ;  227 #189 [73] or8
+Mark 2 271                               ;  228 #270 [73] mark2
+Flip 1 279 279                           ;  229 #271 [73] move2
+Sense Ahead 10 272 Rock                  ;  230 #274 [73] test-rock0
+Move 274 280                             ;  231 #279 [73] while0
+Mark 0 273                               ;  232 #272 [72] mark0
+Flip 1 281 281                           ;  233 #273 [72] move0
+Sense Ahead 10 268 Rock                  ;  234 #275 [72] test-rock1
+Move 275 282                             ;  235 #281 [72] while0
+Turn Right 191                           ;  236 #190 [70] or9
+Sense Ahead 3 192 Marker 4               ;  237 #191 [70] or10
+Flip 1 193 193                           ;  238 #5 [67] wait-for-guard-marks
+Turn Right 5                             ;  239 #192 [67] or11
+Flip 1 194 194                           ;  240 #193 [67] seq0
+Flip 1 195 195                           ;  241 #194 [67] seq1
+Flip 1 196 196                           ;  242 #195 [67] seq2
+Flip 1 197 197                           ;  243 #196 [67] seq3
+Flip 1 198 198                           ;  244 #197 [67] seq4
+Flip 1 199 199                           ;  245 #198 [67] seq5
+Flip 1 200 200                           ;  246 #199 [67] seq6
+Flip 1 201 201                           ;  247 #200 [67] seq7
+Flip 1 202 202                           ;  248 #201 [67] seq8
+Flip 1 203 203                           ;  249 #202 [67] seq9
+Flip 1 204 204                           ;  250 #203 [67] seq10
+Flip 1 205 205                           ;  251 #204 [67] seq11
+Flip 1 206 206                           ;  252 #205 [67] seq12
+Flip 1 207 207                           ;  253 #206 [67] seq13
+Flip 1 208 208                           ;  254 #207 [67] seq14
+Flip 1 209 209                           ;  255 #208 [67] seq15
+Flip 1 210 210                           ;  256 #209 [67] seq16
+Flip 1 211 211                           ;  257 #210 [67] seq17
+Flip 1 212 212                           ;  258 #211 [67] seq18
+Flip 1 213 213                           ;  259 #212 [67] seq19
+Flip 1 214 214                           ;  260 #213 [67] seq20
+Flip 1 215 215                           ;  261 #214 [67] seq21
+Flip 1 216 216                           ;  262 #215 [67] seq22
+Flip 1 217 217                           ;  263 #216 [67] seq23
+Flip 1 218 218                           ;  264 #217 [67] seq24
+Flip 1 219 219                           ;  265 #218 [67] seq25
+Flip 1 220 220                           ;  266 #219 [67] seq26
+Flip 1 221 221                           ;  267 #220 [67] seq27
+Flip 1 222 222                           ;  268 #221 [67] seq28
+Flip 1 223 223                           ;  269 #222 [67] seq29
+Flip 1 224 224                           ;  270 #223 [67] seq30
+Flip 1 225 225                           ;  271 #224 [67] seq31
+Flip 1 226 226                           ;  272 #225 [67] seq32
+Flip 1 227 227                           ;  273 #226 [67] seq33
+Flip 1 228 228                           ;  274 #227 [67] seq34
+Flip 1 229 229                           ;  275 #228 [67] seq35
+Flip 1 230 230                           ;  276 #229 [67] seq36
+Flip 1 231 231                           ;  277 #230 [67] seq37
+Flip 1 232 232                           ;  278 #231 [67] seq38
+Flip 1 233 233                           ;  279 #232 [67] seq39
+Flip 1 234 234                           ;  280 #233 [67] seq40
+Flip 1 235 235                           ;  281 #234 [67] seq41
+Flip 1 236 236                           ;  282 #235 [67] seq42
+Flip 1 237 237                           ;  283 #236 [67] seq43
+Flip 1 238 238                           ;  284 #237 [67] seq44
+Flip 1 239 239                           ;  285 #238 [67] seq45
+Flip 1 240 240                           ;  286 #239 [67] seq46
+Flip 1 241 241                           ;  287 #240 [67] seq47
+Flip 1 242 242                           ;  288 #241 [67] seq48
+Flip 1 243 243                           ;  289 #242 [67] seq49
+Flip 1 244 244                           ;  290 #243 [67] seq50
+Flip 1 245 245                           ;  291 #244 [67] seq51
+Flip 1 246 246                           ;  292 #245 [67] seq52
+Flip 1 247 247                           ;  293 #246 [67] seq53
+Flip 1 248 248                           ;  294 #247 [67] seq54
+Flip 1 249 249                           ;  295 #248 [67] seq55
+Flip 1 250 250                           ;  296 #249 [67] seq56
+Flip 1 251 251                           ;  297 #250 [67] seq57
+Flip 1 252 252                           ;  298 #251 [67] seq58
+Flip 1 10 10                             ;  299 #252 [67] seq59
+Flip 1 296 296                           ;  300 #286 [66] and1
+Move 284 284                             ;  301 #287 [66] and2
+Turn Right 297                           ;  302 #296 [66] seq0
+Turn Right 298                           ;  303 #297 [66] seq1
+Turn Right 287                           ;  304 #298 [66] seq2
+Flip 1 400 400                           ;  305 #398 [35] and1
+Sense Ahead 370 401 Rock                 ;  306 #400 [35] or0
+Sense Ahead 370 402 Friend               ;  307 #401 [35] or1
+Flip 1 382 382                           ;  308 #380 [32] and1
+Sense Ahead 364 383 Rock                 ;  309 #382 [32] or0
+Sense Ahead 364 384 Friend               ;  310 #383 [32] or1
+Flip 1 376 376                           ;  311 #374 [29] and1
+Sense Ahead 362 377 Rock                 ;  312 #376 [29] or0
+Sense Ahead 362 378 Friend               ;  313 #377 [29] or1
+Mark 5 4                                 ;  314 #3 [28] set-first-guard-mark
+Flip 1 406 406                           ;  315 #404 [25] and1
+Sense Ahead 372 407 Rock                 ;  316 #406 [25] or0
+Sense Ahead 372 408 Friend               ;  317 #407 [25] or1
+Flip 1 35 35                             ;  318 #30 [11] and1
+Sense Ahead 18 30 Foe                    ;  319 #34 [11] or2
+Sense RightAhead 18 36 Rock              ;  320 #35 [11] or0
+Sense RightAhead 18 37 Friend            ;  321 #36 [11] or1
+Flip 1 47 47                             ;  322 #42 [10] and1
+Sense Ahead 20 42 Foe                    ;  323 #46 [10] or2
+Sense RightAhead 20 48 Rock              ;  324 #47 [10] or0
+Sense RightAhead 20 49 Friend            ;  325 #48 [10] or1
+Flip 1 59 59                             ;  326 #54 [10] and1
+Sense Ahead 22 54 Foe                    ;  327 #58 [10] or2
+Sense RightAhead 22 60 Rock              ;  328 #59 [10] or0
+Sense RightAhead 22 61 Friend            ;  329 #60 [10] or1
+Flip 1 71 71                             ;  330 #66 [10] and1
+Sense Ahead 24 66 Foe                    ;  331 #70 [10] or2
+Sense RightAhead 24 72 Rock              ;  332 #71 [10] or0
+Sense RightAhead 24 73 Friend            ;  333 #72 [10] or1
+Flip 1 83 83                             ;  334 #78 [10] and1
+Sense Ahead 26 78 Foe                    ;  335 #82 [10] or2
+Sense RightAhead 26 84 Rock              ;  336 #83 [10] or0
+Sense RightAhead 26 85 Friend            ;  337 #84 [10] or1
+Flip 1 95 95                             ;  338 #90 [10] and1
+Sense Ahead 28 90 Foe                    ;  339 #94 [10] or2
+Sense RightAhead 28 96 Rock              ;  340 #95 [10] or0
+Sense RightAhead 28 97 Friend            ;  341 #96 [10] or1
+Flip 1 276 276                           ;  342 #278 [8] while1
+Flip 1 275 275                           ;  343 #282 [7] while1
+Mark 4 7                                 ;  344 #6 [6] set-food-mark
+Mark 0 8                                 ;  345 #7 [6] set-first-mark
+Flip 1 253 253                           ;  346 #8 [6] set-guard-marks
+Flip 1 268 268                           ;  347 #9 [6] straight-mark
+Flip 1 38 38                             ;  348 #31 [6] and2
+Sense RightAhead 18 31 Foe               ;  349 #37 [6] or2
+Sense LeftAhead 18 39 Rock               ;  350 #38 [6] or0
+Sense LeftAhead 18 40 Friend             ;  351 #39 [6] or1
+Flip 1 50 50                             ;  352 #43 [6] and2
+Sense RightAhead 20 43 Foe               ;  353 #49 [6] or2
+Sense LeftAhead 20 51 Rock               ;  354 #50 [6] or0
+Sense LeftAhead 20 52 Friend             ;  355 #51 [6] or1
+Flip 1 62 62                             ;  356 #55 [6] and2
+Sense RightAhead 22 55 Foe               ;  357 #61 [6] or2
+Sense LeftAhead 22 63 Rock               ;  358 #62 [6] or0
+Sense LeftAhead 22 64 Friend             ;  359 #63 [6] or1
+Flip 1 74 74                             ;  360 #67 [6] and2
+Sense RightAhead 24 67 Foe               ;  361 #73 [6] or2
+Sense LeftAhead 24 75 Rock               ;  362 #74 [6] or0
+Sense LeftAhead 24 76 Friend             ;  363 #75 [6] or1
+Flip 1 86 86                             ;  364 #79 [6] and2
+Sense RightAhead 26 79 Foe               ;  365 #85 [6] or2
+Sense LeftAhead 26 87 Rock               ;  366 #86 [6] or0
+Sense LeftAhead 26 88 Friend             ;  367 #87 [6] or1
+Flip 1 98 98                             ;  368 #91 [6] and2
+Sense RightAhead 28 91 Foe               ;  369 #97 [6] or2
+Sense LeftAhead 28 99 Rock               ;  370 #98 [6] or0
+Sense LeftAhead 28 100 Friend            ;  371 #99 [6] or1
+Turn Left 254                            ;  372 #253 [6] and0
+Move 255 10                              ;  373 #254 [6] and1
+Mark 5 256                               ;  374 #255 [6] and2
+Turn Right 257                           ;  375 #256 [6] and3
+Turn Right 258                           ;  376 #257 [6] and4
+Move 259 10                              ;  377 #258 [6] and5
+Turn Right 260                           ;  378 #259 [6] and6
+Move 261 10                              ;  379 #260 [6] and7
+Mark 5 262                               ;  380 #261 [6] and8
+Flip 1 265 265                           ;  381 #262 [6] and9
+Move 264 10                              ;  382 #263 [6] and10
+Turn Right 9                             ;  383 #264 [6] and11
+Turn Right 266                           ;  384 #265 [6] seq0
+Turn Right 267                           ;  385 #266 [6] seq1
+Turn Right 263                           ;  386 #267 [6] seq2
+Flip 1 274 274                           ;  387 #280 [5] while1
+Move 2 364                               ;  388 #381 [3] and2
+Sense Ahead 364 381 Foe                  ;  389 #384 [3] or2
+Move 2 370                               ;  390 #399 [3] and2
+Sense Ahead 370 399 Foe                  ;  391 #402 [3] or2
+Move 2 366                               ;  392 #387 [2] and2
+Sense Ahead 366 387 Foe                  ;  393 #390 [2] or2
+Flip 1 394 394                           ;  394 #392 [2] and1
+Move 2 368                               ;  395 #393 [2] and2
+Sense Ahead 368 395 Rock                 ;  396 #394 [2] or0
+Sense Ahead 368 396 Friend               ;  397 #395 [2] or1
+Sense Ahead 368 393 Foe                  ;  398 #396 [2] or2
+Sense LeftAhead 18 6 Foe                 ;  399 #40 [1] or2
+Sense LeftAhead 20 6 Foe                 ;  400 #52 [1] or2
+Sense LeftAhead 22 6 Foe                 ;  401 #64 [1] or2
+Sense LeftAhead 24 6 Foe                 ;  402 #76 [1] or2
+Sense LeftAhead 26 6 Foe                 ;  403 #88 [1] or2
+Sense LeftAhead 28 6 Foe                 ;  404 #100 [1] or2
+Move 2 362                               ;  405 #375 [0] and2
+Sense Ahead 362 375 Foe                  ;  406 #378 [0] or2
+Move 2 372                               ;  407 #405 [0] and2
+Sense Ahead 372 405 Foe                  ;  408 #408 [0] or2

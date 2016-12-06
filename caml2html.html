@@ -1,0 +1,178 @@
+
+<!doctype html>
+
+<html>
+<head>
+<title>Caml2html</title>
+<meta http-equiv="content-Type" content="text/html; charset=utf-8">
+
+<link rel="stylesheet" href="/base.css" type="text/css">
+
+<link rel="stylesheet" href="/ocaml.css" type="text/css">
+
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+<link rel="home" href="/">
+<link rel="author" href="/people.html#martin">
+
+</head>
+<body>
+
+<div id="page">
+
+
+<div>
+<table id=top_menu cellspacing=0>
+<tr>
+  <td><a href="/">Main</a></td>
+  <td class="current_topic"><a href="/ocaml.html">Software</a></td>
+  <td><a href="/releases">Downloads</a></td>
+  <td><a href="/other.html">Other</a></td>
+</tr>
+</table>
+</div>
+
+<h1>Caml2html <img src="/1camel.png" 
+     title="difficulty = 1 camel (suitable for OCaml beginners)"
+     alt="[difficulty = 1 camel]">
+</h1>
+
+
+
+
+<h2>Description</h2>
+
+<p>
+The Caml2html package provides an executable and a library 
+that highlight OCaml code by adding some color.
+With the caml2html program, you can produce ready-to-go HTML files
+such as <a href="caml2html_test.html">this one</a>.
+
+<p>
+You can also use the library in a program that makes web pages. See that:
+<pre><span class="Ccomment">(* This small program is inserted verbatim in the source code of this</span>
+<span class="Ccomment">   web page *)</span>
+
+<span class="Copen">open</span> <span class="Cconstructor">Printf</span>
+
+<span class="Clet">let</span> <span class="Crec">rec</span> fac <span class="Cnonalphakeyword">=</span> <span class="Cfunction">function</span> 
+    0 <span class="Cnonalphakeyword">-&gt;</span> 1 
+  <span class="Cbar">|</span> n <span class="Cnonalphakeyword">-&gt;</span> n <span class="Cnonalphakeyword">*</span> fac <span class="Cnonalphakeyword">(</span>n <span class="Cnonalphakeyword">-</span> 1<span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">=</span>
+  <span class="Cfor">for</span> i <span class="Cnonalphakeyword">=</span> 0 <span class="Cto">to</span> 10 <span class="Cdo">do</span>
+    printf <span class="Cstring">"%i -&gt; %i\n"</span> i <span class="Cnonalphakeyword">(</span>fac i<span class="Cnonalphakeyword">)</span>
+  <span class="Cdone">done</span></pre>
+
+<p>
+See also this 
+<a href="http://mlpost.lri.fr/examples/boxes.ml.html">cool example</a>
+by the authors of <a href="http://mlpost.lri.fr/">MLPost</a>.
+It embeds arbitrary HTML (requires version > 1.3.0) with images
+and javascript.
+
+
+<h2>Quick reference guide</h2>
+
+<p>
+See the <a href="caml2html-help.html">help file which comes with 
+the distribution</a>.
+
+<h3>More about custom comment handlers</h3>
+
+<p>
+Consider a file <code>example.ml</code> containing the following OCaml code:
+<pre>
+(*include disclaimer.html *)
+let f x = 2 * x + 1
+</pre>
+
+<p>
+File <code>disclaimer.html</code> contains this:
+<pre>
+Warning, this is a test!
+</pre>
+
+<p>
+Rendered with <code>caml2html</code> without using 
+the <code>-ext</code> option it gives:
+<pre><span class="Ccomment">(*include disclaimer.html *)</span>
+<span class="Clet">let</span> f x <span class="Cnonalphakeyword">=</span> 2 <span class="Cnonalphakeyword">*</span> x <span class="Cnonalphakeyword">+</span> 1</pre>
+
+<p>
+We can define a custom comment expander that reads the contents
+of the comment from stdin and outputs some HTML to stdout.
+In our example we want to insert the contents of a file named
+<code>disclaimer.html</code>. This is done by defining a command
+associated with "include", as follows:
+<pre>
+$ caml2html -ext "include: xargs cat" example.ml
+</pre>
+<p>
+The result is:
+<div>
+<div style="margin-left:4em">
+Warning, this is a test!
+</div>
+<pre><span class="Clet">let</span> f x <span class="Cnonalphakeyword">=</span> 2 <span class="Cnonalphakeyword">*</span> x <span class="Cnonalphakeyword">+</span> 1</pre>
+</div>
+
+
+<h2>Download</h2>
+
+<p>
+Caml2html was written by S&eacute;bastien Ailleret and is now maintained
+by Martin Jambon (me). It is distributed under a 
+<a href="http://www.gnu.org/licenses/gpl.txt">GPL license</a>.
+<a href="/releases/caml2html">Download it here</a>.
+
+<p>
+The <a href="https://github.com/mjambon/caml2html">development version
+of Caml2html</a> is hosted on GitHub.
+
+
+<h2>LaTeX output</h2>
+
+<p>
+Caml2html provides LaTeX output since version 1.4.0 (<code>-latex</code>)
+and works very similarly to the default HTML mode. It uses LaTeX packages
+<code>alltt</code> and <code>color</code>.
+
+
+<h2>Exporting to other formats</h2>
+
+<p>
+To PostScript, HTML, RTF or ANSI terminal: 
+<a href="http://code.google.com/p/ocaml-enscript/">Ocaml support for Enscript
+(ocaml.st by Janne Hellsten)</a>
+
+<p>
+To PostScript: <a href="http://www.ocaml.info/home/ocaml_sources.html">Ocaml 
+support for a2ps (ocaml.ssh by Markus Mottl)</a>
+
+
+
+<div id=footer>
+&copy;&nbsp;2007&nbsp;Martin&nbsp;Jambon &lt;<a href="mailto:martin@mjambon.com">martin@mjambon.com</a>&gt;
+</div>
+
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-640255-1";
+urchinTracker();
+</script>
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+<!-- 
+var sc_project=370325; 
+var sc_partition=1; 
+//-->
+</script>
+
+<script type="text/javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><p><a href="http://www.statcounter.com/"><img src="http://c2.statcounter.com/counter.php?sc_project=370325&amp;java=0" alt="counter"></a></p></noscript>
+<!-- End of StatCounter Code -->
+
+</body>
+</html>

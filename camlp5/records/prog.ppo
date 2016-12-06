@@ -1,0 +1,10 @@
+type bob = { foo : string; bar : string; mutable n : int }
+let rec create_bob ?{foo = "Hello"} ~{bar} ?{n = 1} () =
+  {foo = foo; bar = bar; n = n}
+
+type weird = { x : weird option }
+let rec create_weird ?{x = Some (create_weird ~{x = None} ())} () = {x = x}
+
+let _ =
+  let x = create_bob ~{bar = "World"} () in
+  x.n <- x.n + 1; Printf.printf "%s %s %i\n" x.foo x.bar x.n

@@ -1,0 +1,92 @@
+##
+#load "utils.cmo";;
+#use "topfind";;
+#require "caml2html";;
+#require "mikmatch_pcre";;
+#load "unmix.cmo";;
+#load "print_ocaml.cmo";;
+#use "biniou-version.ml";;
+open Print_ocaml
+open Utils
+open Camlmix
+##
+## include_file "doctype" ##
+<html>
+<head>
+## title 
+"Biniou"
+##
+## include_file "charset" ##
+## include_file "stylesheet" ##
+## include_file "ocaml-stylesheet" ##
+## include_file "icon" ##
+## include_file "commonlinks" ##
+</head>
+<body>
+## include_file "hitcounter" ##
+## include_file "start_big_table" ##
+## top_menu ocaml ##
+
+##
+open Printf
+##
+
+<h1>Biniou
+## include_file "1camel" ##</h1>
+
+<h2>Introduction</h2>
+
+<p>
+Biniou (pronounced "be new") 
+is a binary data format designed for speed, safety, ease of use and
+backward compatibility as protocols evolve.
+Biniou is vastly equivalent to
+<a href="http://json.org/">JSON</a>
+in terms of functionality but allows implementations several times faster
+(4 times faster than <a href="yojson.html">yojson</a>), 
+with 25-35% space savings.
+
+<p>
+Biniou data can be decoded into human-readable form without knowledge of type
+definitions except for field and variant names which are represented by
+31-bit hashes. A program named <code>bdump</code>
+is provided for routine visualization of biniou data files.
+
+<p>
+The program <a href="/atdgen"><code>atdgen</code></a>
+can be used to derive OCaml-Biniou serializers and deserializers
+from type definitions.
+
+
+<h2>Biniou format specification</h2>
+
+<p>
+The <a href="biniou-format.txt">biniou format is specified here</a>.
+
+
+<h2>Library documentation</h2>
+
+<p>
+<a href="biniou-doc/index.html">Documentation of the <code>biniou</code>
+library</a>
+
+
+
+<h2>Download</h2>
+
+<p>
+This software was written by Martin Jambon. 
+It is distributed under a 
+<a href="biniou-license.txt">BSD license</a>.
+<a href="/releases/biniou">Download it here</a>.
+</p>
+
+<p>
+The <a href="https://github.com/mjambon/biniou">development version
+of Biniou</a> is hosted on GitHub.
+
+
+## camlmix_footer ~years:"2010" () ##
+## include_file "end_big_table" ##
+</body>
+</html>

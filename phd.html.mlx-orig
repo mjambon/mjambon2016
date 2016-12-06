@@ -1,0 +1,146 @@
+## 
+#load "utils.cmo";;
+open Utils
+##
+## include_file "doctype" ##
+<html>
+<head>
+## title "Martin Jambon: Doctoral Thesis" ##
+## include_file "charset" ##
+## include_file "stylesheet" ##
+## include_file "icon" ##
+## include_file "commonlinks" ##
+</head>
+<body>
+## include_file "hitcounter" ##
+## include_file "start_big_table" ##
+## top_menu bioinformatics ##
+
+<div class=longtitle>
+A bioinformatic system
+for searching functional similarities
+in 3D structures
+of proteins
+</div>
+
+<div class=longtitle>
+<i>
+Un système bioinformatique
+de recherche de similitudes fonctionnelles
+dans les structures 3D
+de protéines
+</i>
+</div>
+
+<p style="text-align:center">
+Martin Jambon's doctoral thesis<br>
+20 June 2003<br>
+Translated from French into English
+
+##
+open Printf
+let get s = 
+  printf
+    "<td style=\"text-align:center\"><a href=\"phd/sumo-%s\">GET</a></td>" s
+let p = print_string
+let tdl = "<td style=\"text-align:left\">"
+let tdc = 
+  "<td style=\"text-align:center; padding-left:1em; padding-right:1em\">"
+##
+
+<p>
+<table style="padding:1.5em">
+<tr><td></td><th colspan="2">PostScript</th><th colspan="2">PDF</th></tr>
+
+<tr>
+<td></td>
+## p tdc ##Two sides</td>## p tdc ##One side</td>
+## p tdc ##Two sides</td>## p tdc ##One side</td>
+</tr>
+
+<tr>
+## p tdl ##French, A4 paper</td>
+## get "french.ps.gz" ##
+<td></td>
+## get "french.pdf" ##
+<td></td>
+</tr>
+
+<tr>
+## p tdl ##English, A4 paper</td>
+## get "a4.ps.gz" ##
+## get "a4-oneside.ps.gz" ##
+## get "a4.pdf" ##
+## get "a4-oneside.pdf" ##
+</tr>
+
+<tr>
+## p tdl ##English, letter paper</td>
+## get "letter.ps.gz" ##
+## get "letter-oneside.ps.gz" ##
+## get "letter.pdf" ##
+## get "letter-oneside.pdf" ##
+</tr>
+</table>
+
+<h2>Abstract</h2>
+
+<p>
+SuMo is a bioinformatic system for comparing 3D&nbsp;structures of
+proteins. This approach was designed to help along the exploration of
+structural data by biologists and the formulation of accurate
+hypotheses concerning the biological implication of proteins.
+
+<p>
+As opposed to existing approaches in this field, SuMo does not solve a
+formal problem that would derive from a model for biological function.
+This allows constant development of the heuristics, by getting closer
+to intuitive concepts for biological function rather than stick to
+a mathematical model with poor relevance.
+
+<p>
+The heuristics that has been developed is based on a representation of
+macromolecules using chemical groups that are associated with
+heterogeneous geometrical properties and grouped into triplets.
+
+<p>
+SuMo can be used directly from the web server
+## download "http://sumo-pbil.ibcp.fr" ##. Screening SuMo's database of ligand
+binding sites allows in a convenient way to discover potential
+therapeutic targets. 
+
+
+<h2>Résumé</h2>
+
+<p>
+SuMo est un système bioinformatique de comparaison de structures&nbsp;3D
+de protéines. Le but de cette approche est de faciliter l'exploration
+des données structurales par les biologistes et la formulation
+d'hypothèses fines sur l'implication biologique des protéines.
+
+<p>
+Contrairement aux approches existantes dans ce domaine, SuMo ne
+s'attache pas à résoudre un problème formel dérivant d'une
+modélisation de la notion de fonction biologique. Ceci autorise 
+des efforts constants de développement 
+de l'heuristique mise en oeuvre, permettant de
+se rapprocher des notions intuitives de fonction biologique plutôt que
+de coller à un modèle mathématique peu réaliste.
+
+<p>
+L'heuristique développée est basée sur la représentation des
+macromolécules par des groupements chimiques aux
+propriétés géométriques hétérogènes et associés en triplets.
+
+<p>
+L'utilisation de SuMo s'effectue directement à partir du serveur web
+## download "http://sumo-pbil.ibcp.fr" ##. 
+Le criblage de la banque de sites de
+fixation de ligands générée par et pour SuMo permet de repérer de façon
+conviviale de potentielles cibles thérapeutiques.
+
+
+## camlmix_footer () ##
+## include_file "end_big_table" ##
+</body>
+</html>

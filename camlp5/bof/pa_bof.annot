@@ -1,0 +1,300 @@
+"pa_bof.ml" 1 0 4 "pa_bof.ml" 1 0 15
+type(
+  unit -> MLast.str_item * Ploc.t
+)
+ident(
+  def insert_this "pa_bof.ml" 5 101 101 --
+)
+"pa_bof.ml" 1 0 16 "pa_bof.ml" 1 0 18
+type(
+  unit
+)
+"pa_bof.ml" 2 21 27 "pa_bof.ml" 2 21 30
+type(
+  Ploc.t
+)
+"pa_bof.ml" 2 21 33 "pa_bof.ml" 2 21 48
+type(
+  Ploc.t
+)
+ident(
+  ext_ref Token.dummy_loc
+)
+"pa_bof.ml" 3 52 55 "pa_bof.ml" 3 52 93
+type(
+  (MLast.patt * MLast.expr) list
+)
+type(
+  MLast.patt * MLast.expr
+)
+type(
+  string
+)
+type(
+  string Ploc.vala
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_bof.ml" 2 21 27 "pa_bof.ml" 2 21 30
+)
+type(
+  MLast.expr
+)
+type(
+  string
+)
+type(
+  string Ploc.vala
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_bof.ml" 2 21 27 "pa_bof.ml" 2 21 30
+)
+type(
+  MLast.patt
+)
+type(
+  (MLast.patt * MLast.expr) list
+)
+type(
+  (MLast.patt * MLast.expr) list Ploc.vala
+)
+type(
+  bool
+)
+type(
+  bool Ploc.vala
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_bof.ml" 2 21 27 "pa_bof.ml" 2 21 30
+)
+type(
+  MLast.str_item
+)
+"pa_bof.ml" 3 52 95 "pa_bof.ml" 3 52 98
+type(
+  Ploc.t
+)
+ident(
+  int_ref loc "pa_bof.ml" 2 21 27 "pa_bof.ml" 2 21 30
+)
+"pa_bof.ml" 3 52 54 "pa_bof.ml" 3 52 99
+type(
+  MLast.str_item * Ploc.t
+)
+"pa_bof.ml" 2 21 23 "pa_bof.ml" 3 52 99
+type(
+  MLast.str_item * Ploc.t
+)
+"pa_bof.ml" 1 0 16 "pa_bof.ml" 3 52 99
+type(
+  unit -> MLast.str_item * Ploc.t
+)
+"pa_bof.ml" 6 109 115 "pa_bof.ml" 6 109 120
+type(
+  bool ref
+)
+ident(
+  def first "pa_bof.ml" 7 135 137 "pa_bof.ml" 14 311 340
+)
+"pa_bof.ml" 6 109 123 "pa_bof.ml" 6 109 126
+type(
+  bool -> bool ref
+)
+ident(
+  ext_ref Pervasives.ref
+)
+"pa_bof.ml" 6 109 127 "pa_bof.ml" 6 109 131
+type(
+  bool
+)
+"pa_bof.ml" 6 109 123 "pa_bof.ml" 6 109 131
+type(
+  bool ref
+)
+"pa_bof.ml" 7 135 141 "pa_bof.ml" 7 135 146
+type(
+  char Stream.t -> (MLast.str_item * MLast.loc) list * Pcaml.status
+)
+ident(
+  def parse "pa_bof.ml" 14 311 313 "pa_bof.ml" 14 311 340
+)
+"pa_bof.ml" 7 135 147 "pa_bof.ml" 7 135 151
+type(
+  char Stream.t
+)
+ident(
+  def strm "pa_bof.ml" 8 154 158 "pa_bof.ml" 13 290 307
+)
+"pa_bof.ml" 8 154 163 "pa_bof.ml" 8 154 164
+type(
+  (MLast.str_item * MLast.loc) list
+)
+"pa_bof.ml" 8 154 166 "pa_bof.ml" 8 154 173
+type(
+  Pcaml.status
+)
+"pa_bof.ml" 8 154 163 "pa_bof.ml" 8 154 173
+type(
+  (MLast.str_item * MLast.loc) list * Pcaml.status
+)
+"pa_bof.ml" 8 154 177 "pa_bof.ml" 8 154 196
+type(
+  ((MLast.str_item * MLast.loc) list * Pcaml.status) Grammar.Entry.e ->
+  char Stream.t -> (MLast.str_item * MLast.loc) list * Pcaml.status
+)
+ident(
+  ext_ref Grammar.Entry.parse
+)
+"pa_bof.ml" 8 154 197 "pa_bof.ml" 8 154 209
+type(
+  ((MLast.str_item * MLast.loc) list * Pcaml.status) Grammar.Entry.e
+)
+ident(
+  ext_ref Pcaml.implem
+)
+"pa_bof.ml" 8 154 210 "pa_bof.ml" 8 154 214
+type(
+  char Stream.t
+)
+ident(
+  int_ref strm "pa_bof.ml" 7 135 147 "pa_bof.ml" 7 135 151
+)
+"pa_bof.ml" 8 154 177 "pa_bof.ml" 8 154 214
+call(
+  stack
+)
+type(
+  (MLast.str_item * MLast.loc) list * Pcaml.status
+)
+"pa_bof.ml" 9 218 226 "pa_bof.ml" 9 218 228
+type(
+  (MLast.str_item * MLast.loc) list
+)
+"pa_bof.ml" 10 232 242 "pa_bof.ml" 10 232 247
+type(
+  bool ref
+)
+ident(
+  int_ref first "pa_bof.ml" 6 109 115 "pa_bof.ml" 6 109 120
+)
+"pa_bof.ml" 10 232 241 "pa_bof.ml" 10 232 247
+type(
+  bool
+)
+type(
+  bool ref -> bool
+)
+ident(
+  ext_ref Pervasives.( ! )
+)
+"pa_bof.ml" 11 253 254 "pa_bof.ml" 11 253 265
+type(
+  unit -> MLast.str_item * MLast.loc
+)
+ident(
+  int_ref insert_this "pa_bof.ml" 1 0 4 "pa_bof.ml" 1 0 15
+)
+"pa_bof.ml" 11 253 266 "pa_bof.ml" 11 253 268
+type(
+  unit
+)
+"pa_bof.ml" 11 253 254 "pa_bof.ml" 11 253 268
+call(
+  stack
+)
+type(
+  MLast.str_item * MLast.loc
+)
+"pa_bof.ml" 11 253 272 "pa_bof.ml" 11 253 273
+type(
+  (MLast.str_item * MLast.loc) list
+)
+ident(
+  int_ref l "pa_bof.ml" 8 154 163 "pa_bof.ml" 8 154 164
+)
+"pa_bof.ml" 11 253 254 "pa_bof.ml" 11 253 273
+type(
+  (MLast.str_item * MLast.loc) list
+)
+"pa_bof.ml" 12 274 285 "pa_bof.ml" 12 274 286
+type(
+  (MLast.str_item * MLast.loc) list
+)
+ident(
+  int_ref l "pa_bof.ml" 8 154 163 "pa_bof.ml" 8 154 164
+)
+"pa_bof.ml" 10 232 238 "pa_bof.ml" 12 274 286
+type(
+  (MLast.str_item * MLast.loc) list
+)
+"pa_bof.ml" 13 290 295 "pa_bof.ml" 13 290 297
+type(
+  (MLast.str_item * MLast.loc) list
+)
+ident(
+  int_ref l' "pa_bof.ml" 9 218 226 "pa_bof.ml" 9 218 228
+)
+"pa_bof.ml" 13 290 299 "pa_bof.ml" 13 290 306
+type(
+  Pcaml.status
+)
+ident(
+  int_ref stopped "pa_bof.ml" 8 154 166 "pa_bof.ml" 8 154 173
+)
+"pa_bof.ml" 13 290 294 "pa_bof.ml" 13 290 307
+type(
+  (MLast.str_item * MLast.loc) list * Pcaml.status
+)
+"pa_bof.ml" 9 218 222 "pa_bof.ml" 13 290 307
+type(
+  (MLast.str_item * MLast.loc) list * Pcaml.status
+)
+"pa_bof.ml" 8 154 158 "pa_bof.ml" 13 290 307
+type(
+  (MLast.str_item * MLast.loc) list * Pcaml.status
+)
+"pa_bof.ml" 7 135 147 "pa_bof.ml" 13 290 307
+type(
+  char Stream.t -> (MLast.str_item * MLast.loc) list * Pcaml.status
+)
+"pa_bof.ml" 14 311 313 "pa_bof.ml" 14 311 331
+type(
+  (char Stream.t -> (MLast.str_item * MLast.loc) list * Pcaml.status) ref
+)
+ident(
+  ext_ref Pcaml.parse_implem
+)
+"pa_bof.ml" 14 311 335 "pa_bof.ml" 14 311 340
+type(
+  char Stream.t -> (MLast.str_item * MLast.loc) list * Pcaml.status
+)
+ident(
+  int_ref parse "pa_bof.ml" 7 135 141 "pa_bof.ml" 7 135 146
+)
+"pa_bof.ml" 14 311 313 "pa_bof.ml" 14 311 340
+type(
+  unit
+)
+type(
+  (char Stream.t -> (MLast.str_item * MLast.loc) list * Pcaml.status) ref ->
+  (char Stream.t -> (MLast.str_item * MLast.loc) list * Pcaml.status) -> unit
+)
+ident(
+  ext_ref Pervasives.( := )
+)
+"pa_bof.ml" 7 135 137 "pa_bof.ml" 14 311 340
+type(
+  unit
+)
+"pa_bof.ml" 6 109 111 "pa_bof.ml" 14 311 340
+type(
+  unit
+)

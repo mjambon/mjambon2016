@@ -1,0 +1,196 @@
+#! /usr/bin/env ocamlscript
+(*-*- tuareg -*-*)
+Ocaml.packs := [ "unix"; "micmatch_pcre"; "netstring" ]
+--
+(* Author: Martin Jambon <martin_jambon@emailuser.net> *)
+
+open Printf
+open Micmatch
+
+RE loc1 = (int as i:int as j:int) | ((int as i:int) "," (int as j:int))
+RE loc2 = (int as i':int as j':int) | ((int as i':int) "," (int as j':int))
+
+let parse_annot kind = function
+    / loc1 @kind loc2 eos / -> Some ((i, j), (i', j'))
+  | _ -> None
+
+let view Change = parse_annot "c"
+let view Add = parse_annot "a"
+let view Delete = parse_annot "d"
+
+let change_loc (i, j) = (i - 1 , j - i + 1)
+let position_loc (i, j) = 
+  assert (i = j);
+  (i, 0)
+
+let unquote_lines prefix (i, j) l =
+  let a = ref l in
+  let b = ref [] in
+  for k = i to j do
+    match !a with
+	[] -> failwith "syntax error: truncated diff"
+      | / @prefix (_* as s) eos / :: tl -> b := s :: !b; a := tl
+      | _ -> failwith "syntax error in diff"
+  done;
+  (List.rev !b, !a)
+
+let parse_change (loc1, loc2) l =
+  let lines1, l = unquote_lines "< " loc1 l in
+  let l =
+    match l with
+	"---" :: l -> l
+      | _ -> failwith "syntax error" in
+  let lines2, l = unquote_lines "> " loc2 l in
+  (change_loc loc1, change_loc loc2, lines1, lines2), l
+
+let parse_add (loc1, loc2) l =
+  let lines, l = unquote_lines "> " loc2 l in
+  (position_loc loc1, change_loc loc2, [], lines), l
+
+let parse_delete (loc1, loc2) l =
+  let lines, l = unquote_lines "< " loc1 l in
+  (change_loc loc1, position_loc loc2, lines, []), l
+
+let rec parse_diffs l = 
+  match l with
+      [] -> []
+    | %Change x :: tl ->
+	let y, tl' = parse_change x tl in 
+	y :: parse_diffs tl'
+    | %Add x :: tl ->
+	let y, tl' = parse_add x tl in
+	y :: parse_diffs tl'
+    | %Delete x :: tl ->
+	let y, tl' = parse_delete x tl in
+	y :: parse_diffs tl'
+    | other :: _ ->
+	failwith ("syntax error: " ^ other)
+
+let esc =
+  let html_esc = 
+    Netencoding.Html.encode ~in_enc:`Enc_utf8 ~out_enc:`Enc_utf8 () in
+  let subst_tabs = 
+    REPLACE bos "\t"+ as s -> String.make (String.length s * 8) ' ' in
+  fun s -> html_esc (subst_tabs s)
+
+let nothing = 
+  sprintf "<span class=\"nothing\">%s</span>\n" (String.make 80 ' ')
+
+let output_left oc a start ((start1, len1), (_, len2), lines1, lines2) =
+  for i = start to start1 - 1 do
+    fprintf oc "%s\n" (esc a.(i));
+  done;
+  for i = start1 to start1 + len1 - 1 do
+    flush oc;
+    fprintf oc "<span class=\"deleted\">%s</span>\n" (esc a.(i))
+  done;
+  for i = len1 to len2 - 1 do
+    output_string oc nothing
+  done;
+  start1 + len1
+
+let output_right oc a start ((_, len1), (start2, len2), lines1, lines2) =
+  for i = start to start2 - 1 do
+    fprintf oc "%s\n" (esc a.(i));
+  done;
+  for i = start2 to start2 + len2 - 1 do
+    fprintf oc "<span class=\"added\">%s</span>\n" (esc a.(i))
+  done;
+  for i = len2 to len1 - 1 do
+    output_string oc nothing
+  done;
+  start2 + len2
+    
+let finish oc a start =
+  for i = start to Array.length a - 1 do
+    fprintf oc "%s\n" (esc a.(i))
+  done
+
+let print_diffs l =
+  List.iter 
+    (fun ((i, len), (i', len'), _, _) ->
+       printf "<p>pos %i, len %i | pos %i, len %i</p>\n" i len i' len') l
+
+let output_diffs ~title oc l1 l2 l =
+  let a1 = Array.of_list l1 in
+  let a2 = Array.of_list l2 in
+  fprintf oc "\
+<?xml version=\"1.0\"?>
+<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"
+    \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">
+<html>
+<head>
+<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" />
+<meta name=\"generator\" 
+      content=\"diffdiff: http://martin.jambon.free.fr/scripts/\" />
+<title>%s</title>
+<style type=\"text/css\">
+body { 
+  background-color: white;
+  color: black;
+}
+
+.nothing { background-color: #505050; }
+.deleted { background-color: #ff8080; }
+.added { background-color: #80ff80; }
+
+table.diff { 
+  border-width: 1px;
+  border-collapse: collapse;
+}
+
+td.diff {
+ vertical-align: top;
+ border-style: solid;
+ border-color: black;
+ border-width: 1px;
+}
+
+pre.diff { font-size: 80%%; }
+</style>
+</head>
+
+<body>
+<h1>%s</h1>
+<table class=\"diff\">
+<tr class=\"diff\">
+<td class=\"diff\"><pre class=\"diff\">
+"
+  title title;
+  
+  let start1 = (List.fold_left (output_left oc a1) 0 l) in
+  finish oc a1 start1;
+  fprintf oc "</pre></td><td class=\"diff\"><pre class=\"diff\">\n";
+  let start2 = (List.fold_left (output_right oc a2) 0 l) in
+  finish oc a2 start2;
+  fprintf oc "</pre></td></tr></table>
+</body>
+</html>
+"
+
+let diff file1 file2 =
+  let file3 = Filename.temp_file "" ".diff" in
+  let cmd = sprintf "diff '%s' '%s' > %s" file1 file2 file3 in
+  let status = Sys.command cmd in
+  let clean () = try Sys.remove file3 with _ -> () in
+  if status <> 0 && status <> 1 then
+    (clean ();
+     eprintf "The following command failed:\n%s\n" cmd;
+     exit status);
+  let diffs = parse_diffs (Text.lines_of_file file3) in
+  clean ();
+  (*print_diffs diffs;*)
+  let title = esc file1 ^ " &rarr; " ^ esc file2 in
+  output_diffs ~title stdout
+    (Text.lines_of_file file1) (Text.lines_of_file file2) diffs
+
+let _ =
+  match Sys.argv with
+      [| _; file1; file2 |] -> diff file1 file2
+    | _ -> 
+	eprintf "\
+Diffdiff takes two files and shows the differences side-by-side, 
+in an HTML format which makes copy-pasting easy.
+
+Usage: diffdiff oldfile newfile\n%!";
+	exit 1

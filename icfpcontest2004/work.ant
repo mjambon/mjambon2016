@@ -1,0 +1,409 @@
+Flip 1 17 17                             ;    0 start
+Flip 1 101 101                           ;    1 wait-a-little
+Flip 1 181 181                           ;    2 protect-food
+Mark 5 4                                 ;    3 set-first-guard-mark
+Flip 1 4 4                               ;    4 loop
+Flip 1 193 193                           ;    5 wait-for-guard-marks
+Mark 4 7                                 ;    6 set-food-mark
+Mark 0 8                                 ;    7 set-first-mark
+Flip 1 253 253                           ;    8 set-guard-marks
+Flip 1 268 268                           ;    9 straight-mark
+Flip 1 283 283                           ;   10 search-food
+Flip 1 321 321                           ;   11 test-food
+PickUp 13 13                             ;   12 load-and-back
+Flip 1 323 323                           ;   13 search-home
+Sense Here 15 13 Home                    ;   14 test-safe-home
+Drop 16                                  ;   15 drop-and-go
+Flip 1 361 361                           ;   16 maybe-become-guard
+Flip 1 29 29                             ;   17 or0
+Turn Right 19                            ;   18 or1
+Flip 1 41 41                             ;   19 or2
+Turn Right 21                            ;   20 or3
+Flip 1 53 53                             ;   21 or4
+Turn Right 23                            ;   22 or5
+Flip 1 65 65                             ;   23 or6
+Turn Right 25                            ;   24 or7
+Flip 1 77 77                             ;   25 or8
+Turn Right 27                            ;   26 or9
+Flip 1 89 89                             ;   27 or10
+Turn Right 1                             ;   28 or11
+Flip 1 32 32                             ;   29 and0
+Flip 1 35 35                             ;   30 and1
+Flip 1 38 38                             ;   31 and2
+Sense Ahead 18 33 Rock                   ;   32 or0
+Sense Ahead 18 34 Friend                 ;   33 or1
+Sense Ahead 18 30 Foe                    ;   34 or2
+Sense RightAhead 18 36 Rock              ;   35 or0
+Sense RightAhead 18 37 Friend            ;   36 or1
+Sense RightAhead 18 31 Foe               ;   37 or2
+Sense LeftAhead 18 39 Rock               ;   38 or0
+Sense LeftAhead 18 40 Friend             ;   39 or1
+Sense LeftAhead 18 6 Foe                 ;   40 or2
+Flip 1 44 44                             ;   41 and0
+Flip 1 47 47                             ;   42 and1
+Flip 1 50 50                             ;   43 and2
+Sense Ahead 20 45 Rock                   ;   44 or0
+Sense Ahead 20 46 Friend                 ;   45 or1
+Sense Ahead 20 42 Foe                    ;   46 or2
+Sense RightAhead 20 48 Rock              ;   47 or0
+Sense RightAhead 20 49 Friend            ;   48 or1
+Sense RightAhead 20 43 Foe               ;   49 or2
+Sense LeftAhead 20 51 Rock               ;   50 or0
+Sense LeftAhead 20 52 Friend             ;   51 or1
+Sense LeftAhead 20 6 Foe                 ;   52 or2
+Flip 1 56 56                             ;   53 and0
+Flip 1 59 59                             ;   54 and1
+Flip 1 62 62                             ;   55 and2
+Sense Ahead 22 57 Rock                   ;   56 or0
+Sense Ahead 22 58 Friend                 ;   57 or1
+Sense Ahead 22 54 Foe                    ;   58 or2
+Sense RightAhead 22 60 Rock              ;   59 or0
+Sense RightAhead 22 61 Friend            ;   60 or1
+Sense RightAhead 22 55 Foe               ;   61 or2
+Sense LeftAhead 22 63 Rock               ;   62 or0
+Sense LeftAhead 22 64 Friend             ;   63 or1
+Sense LeftAhead 22 6 Foe                 ;   64 or2
+Flip 1 68 68                             ;   65 and0
+Flip 1 71 71                             ;   66 and1
+Flip 1 74 74                             ;   67 and2
+Sense Ahead 24 69 Rock                   ;   68 or0
+Sense Ahead 24 70 Friend                 ;   69 or1
+Sense Ahead 24 66 Foe                    ;   70 or2
+Sense RightAhead 24 72 Rock              ;   71 or0
+Sense RightAhead 24 73 Friend            ;   72 or1
+Sense RightAhead 24 67 Foe               ;   73 or2
+Sense LeftAhead 24 75 Rock               ;   74 or0
+Sense LeftAhead 24 76 Friend             ;   75 or1
+Sense LeftAhead 24 6 Foe                 ;   76 or2
+Flip 1 80 80                             ;   77 and0
+Flip 1 83 83                             ;   78 and1
+Flip 1 86 86                             ;   79 and2
+Sense Ahead 26 81 Rock                   ;   80 or0
+Sense Ahead 26 82 Friend                 ;   81 or1
+Sense Ahead 26 78 Foe                    ;   82 or2
+Sense RightAhead 26 84 Rock              ;   83 or0
+Sense RightAhead 26 85 Friend            ;   84 or1
+Sense RightAhead 26 79 Foe               ;   85 or2
+Sense LeftAhead 26 87 Rock               ;   86 or0
+Sense LeftAhead 26 88 Friend             ;   87 or1
+Sense LeftAhead 26 6 Foe                 ;   88 or2
+Flip 1 92 92                             ;   89 and0
+Flip 1 95 95                             ;   90 and1
+Flip 1 98 98                             ;   91 and2
+Sense Ahead 28 93 Rock                   ;   92 or0
+Sense Ahead 28 94 Friend                 ;   93 or1
+Sense Ahead 28 90 Foe                    ;   94 or2
+Sense RightAhead 28 96 Rock              ;   95 or0
+Sense RightAhead 28 97 Friend            ;   96 or1
+Sense RightAhead 28 91 Foe               ;   97 or2
+Sense LeftAhead 28 99 Rock               ;   98 or0
+Sense LeftAhead 28 100 Friend            ;   99 or1
+Sense LeftAhead 28 6 Foe                 ;  100 or2
+Flip 1 102 102                           ;  101 seq0
+Flip 1 103 103                           ;  102 seq1
+Flip 1 104 104                           ;  103 seq2
+Flip 1 105 105                           ;  104 seq3
+Flip 1 106 106                           ;  105 seq4
+Flip 1 107 107                           ;  106 seq5
+Flip 1 108 108                           ;  107 seq6
+Flip 1 109 109                           ;  108 seq7
+Flip 1 110 110                           ;  109 seq8
+Flip 1 111 111                           ;  110 seq9
+Flip 1 112 112                           ;  111 seq10
+Flip 1 113 113                           ;  112 seq11
+Flip 1 114 114                           ;  113 seq12
+Flip 1 115 115                           ;  114 seq13
+Flip 1 116 116                           ;  115 seq14
+Flip 1 117 117                           ;  116 seq15
+Flip 1 118 118                           ;  117 seq16
+Flip 1 119 119                           ;  118 seq17
+Flip 1 120 120                           ;  119 seq18
+Flip 1 121 121                           ;  120 seq19
+Flip 1 122 122                           ;  121 seq20
+Flip 1 123 123                           ;  122 seq21
+Flip 1 124 124                           ;  123 seq22
+Flip 1 125 125                           ;  124 seq23
+Flip 1 126 126                           ;  125 seq24
+Flip 1 127 127                           ;  126 seq25
+Flip 1 128 128                           ;  127 seq26
+Flip 1 129 129                           ;  128 seq27
+Flip 1 130 130                           ;  129 seq28
+Flip 1 131 131                           ;  130 seq29
+Flip 1 132 132                           ;  131 seq30
+Flip 1 133 133                           ;  132 seq31
+Flip 1 134 134                           ;  133 seq32
+Flip 1 135 135                           ;  134 seq33
+Flip 1 136 136                           ;  135 seq34
+Flip 1 137 137                           ;  136 seq35
+Flip 1 138 138                           ;  137 seq36
+Flip 1 139 139                           ;  138 seq37
+Flip 1 140 140                           ;  139 seq38
+Flip 1 141 141                           ;  140 seq39
+Flip 1 142 142                           ;  141 seq40
+Flip 1 143 143                           ;  142 seq41
+Flip 1 144 144                           ;  143 seq42
+Flip 1 145 145                           ;  144 seq43
+Flip 1 146 146                           ;  145 seq44
+Flip 1 147 147                           ;  146 seq45
+Flip 1 148 148                           ;  147 seq46
+Flip 1 149 149                           ;  148 seq47
+Flip 1 150 150                           ;  149 seq48
+Flip 1 151 151                           ;  150 seq49
+Flip 1 152 152                           ;  151 seq50
+Flip 1 153 153                           ;  152 seq51
+Flip 1 154 154                           ;  153 seq52
+Flip 1 155 155                           ;  154 seq53
+Flip 1 156 156                           ;  155 seq54
+Flip 1 157 157                           ;  156 seq55
+Flip 1 158 158                           ;  157 seq56
+Flip 1 159 159                           ;  158 seq57
+Flip 1 160 160                           ;  159 seq58
+Flip 1 161 161                           ;  160 seq59
+Flip 1 162 162                           ;  161 seq60
+Flip 1 163 163                           ;  162 seq61
+Flip 1 164 164                           ;  163 seq62
+Flip 1 165 165                           ;  164 seq63
+Flip 1 166 166                           ;  165 seq64
+Flip 1 167 167                           ;  166 seq65
+Flip 1 168 168                           ;  167 seq66
+Flip 1 169 169                           ;  168 seq67
+Flip 1 170 170                           ;  169 seq68
+Flip 1 171 171                           ;  170 seq69
+Flip 1 172 172                           ;  171 seq70
+Flip 1 173 173                           ;  172 seq71
+Flip 1 174 174                           ;  173 seq72
+Flip 1 175 175                           ;  174 seq73
+Flip 1 176 176                           ;  175 seq74
+Flip 1 177 177                           ;  176 seq75
+Flip 1 178 178                           ;  177 seq76
+Flip 1 179 179                           ;  178 seq77
+Flip 1 180 180                           ;  179 seq78
+Flip 1 2 2                               ;  180 seq79
+Sense Ahead 3 182 Marker 4               ;  181 or0
+Turn Right 183                           ;  182 or1
+Sense Ahead 3 184 Marker 4               ;  183 or2
+Turn Right 185                           ;  184 or3
+Sense Ahead 3 186 Marker 4               ;  185 or4
+Turn Right 187                           ;  186 or5
+Sense Ahead 3 188 Marker 4               ;  187 or6
+Turn Right 189                           ;  188 or7
+Sense Ahead 3 190 Marker 4               ;  189 or8
+Turn Right 191                           ;  190 or9
+Sense Ahead 3 192 Marker 4               ;  191 or10
+Turn Right 5                             ;  192 or11
+Flip 1 194 194                           ;  193 seq0
+Flip 1 195 195                           ;  194 seq1
+Flip 1 196 196                           ;  195 seq2
+Flip 1 197 197                           ;  196 seq3
+Flip 1 198 198                           ;  197 seq4
+Flip 1 199 199                           ;  198 seq5
+Flip 1 200 200                           ;  199 seq6
+Flip 1 201 201                           ;  200 seq7
+Flip 1 202 202                           ;  201 seq8
+Flip 1 203 203                           ;  202 seq9
+Flip 1 204 204                           ;  203 seq10
+Flip 1 205 205                           ;  204 seq11
+Flip 1 206 206                           ;  205 seq12
+Flip 1 207 207                           ;  206 seq13
+Flip 1 208 208                           ;  207 seq14
+Flip 1 209 209                           ;  208 seq15
+Flip 1 210 210                           ;  209 seq16
+Flip 1 211 211                           ;  210 seq17
+Flip 1 212 212                           ;  211 seq18
+Flip 1 213 213                           ;  212 seq19
+Flip 1 214 214                           ;  213 seq20
+Flip 1 215 215                           ;  214 seq21
+Flip 1 216 216                           ;  215 seq22
+Flip 1 217 217                           ;  216 seq23
+Flip 1 218 218                           ;  217 seq24
+Flip 1 219 219                           ;  218 seq25
+Flip 1 220 220                           ;  219 seq26
+Flip 1 221 221                           ;  220 seq27
+Flip 1 222 222                           ;  221 seq28
+Flip 1 223 223                           ;  222 seq29
+Flip 1 224 224                           ;  223 seq30
+Flip 1 225 225                           ;  224 seq31
+Flip 1 226 226                           ;  225 seq32
+Flip 1 227 227                           ;  226 seq33
+Flip 1 228 228                           ;  227 seq34
+Flip 1 229 229                           ;  228 seq35
+Flip 1 230 230                           ;  229 seq36
+Flip 1 231 231                           ;  230 seq37
+Flip 1 232 232                           ;  231 seq38
+Flip 1 233 233                           ;  232 seq39
+Flip 1 234 234                           ;  233 seq40
+Flip 1 235 235                           ;  234 seq41
+Flip 1 236 236                           ;  235 seq42
+Flip 1 237 237                           ;  236 seq43
+Flip 1 238 238                           ;  237 seq44
+Flip 1 239 239                           ;  238 seq45
+Flip 1 240 240                           ;  239 seq46
+Flip 1 241 241                           ;  240 seq47
+Flip 1 242 242                           ;  241 seq48
+Flip 1 243 243                           ;  242 seq49
+Flip 1 244 244                           ;  243 seq50
+Flip 1 245 245                           ;  244 seq51
+Flip 1 246 246                           ;  245 seq52
+Flip 1 247 247                           ;  246 seq53
+Flip 1 248 248                           ;  247 seq54
+Flip 1 249 249                           ;  248 seq55
+Flip 1 250 250                           ;  249 seq56
+Flip 1 251 251                           ;  250 seq57
+Flip 1 252 252                           ;  251 seq58
+Flip 1 10 10                             ;  252 seq59
+Turn Left 254                            ;  253 and0
+Move 255 10                              ;  254 and1
+Mark 5 256                               ;  255 and2
+Turn Right 257                           ;  256 and3
+Turn Right 258                           ;  257 and4
+Move 259 10                              ;  258 and5
+Turn Right 260                           ;  259 and6
+Move 261 10                              ;  260 and7
+Mark 5 262                               ;  261 and8
+Flip 1 265 265                           ;  262 and9
+Move 264 10                              ;  263 and10
+Turn Right 9                             ;  264 and11
+Turn Right 266                           ;  265 seq0
+Turn Right 267                           ;  266 seq1
+Turn Right 263                           ;  267 seq2
+Mark 1 269                               ;  268 mark1
+Flip 1 277 277                           ;  269 move1
+Mark 2 271                               ;  270 mark2
+Flip 1 279 279                           ;  271 move2
+Mark 0 273                               ;  272 mark0
+Flip 1 281 281                           ;  273 move0
+Sense Ahead 10 272 Rock                  ;  274 test-rock0
+Sense Ahead 10 268 Rock                  ;  275 test-rock1
+Sense Ahead 10 270 Rock                  ;  276 test-rock2
+Move 276 278                             ;  277 while0
+Flip 1 276 276                           ;  278 while1
+Move 274 280                             ;  279 while0
+Flip 1 274 274                           ;  280 while1
+Move 275 282                             ;  281 while0
+Flip 1 275 275                           ;  282 while1
+Flip 1 285 285                           ;  283 seq0
+Flip 1 299 299                           ;  284 seq1
+Flip 1 288 288                           ;  285 and0
+Flip 1 296 296                           ;  286 and1
+Move 284 284                             ;  287 and2
+Flip 1 290 290                           ;  288 or0
+Flip 1 294 294                           ;  289 or1
+Sense LeftAhead 291 289 Foe              ;  290 and0
+Flip 1 292 292                           ;  291 and1
+Sense RightAhead 286 293 Foe             ;  292 or0
+Sense Ahead 286 289 Foe                  ;  293 or1
+Sense Ahead 295 284 Foe                  ;  294 and0
+Sense RightAhead 286 284 Foe             ;  295 and1
+Turn Right 297                           ;  296 seq0
+Turn Right 298                           ;  297 seq1
+Turn Right 287                           ;  298 seq2
+Flip 1 301 301                           ;  299 while0
+Turn Right 299                           ;  300 while1
+Flip 1 304 304                           ;  301 or0
+Flip 1 309 309                           ;  302 or1
+Flip 1 315 315                           ;  303 or2
+Flip 1 306 306                           ;  304 and0
+Move 11 302                              ;  305 and1
+Sense Ahead 302 307 Rock                 ;  306 or0
+Sense Ahead 302 308 Friend               ;  307 or1
+Sense Ahead 302 305 Foe                  ;  308 or2
+Flip 1 312 312                           ;  309 and0
+Turn Right 311                           ;  310 and1
+Move 11 303                              ;  311 and2
+Sense RightAhead 303 313 Rock            ;  312 or0
+Sense RightAhead 303 314 Friend          ;  313 or1
+Sense RightAhead 303 310 Foe             ;  314 or2
+Flip 1 318 318                           ;  315 and0
+Turn Left 317                            ;  316 and1
+Move 11 300                              ;  317 and2
+Sense LeftAhead 300 319 Rock             ;  318 or0
+Sense LeftAhead 300 320 Friend           ;  319 or1
+Sense LeftAhead 300 316 Foe              ;  320 or2
+Sense Here 322 10 Food                   ;  321 and0
+Sense Here 10 12 Home                    ;  322 and1
+Flip 1 325 325                           ;  323 seq0
+Flip 1 339 339                           ;  324 seq1
+Flip 1 328 328                           ;  325 and0
+Flip 1 336 336                           ;  326 and1
+Move 324 324                             ;  327 and2
+Flip 1 330 330                           ;  328 or0
+Flip 1 334 334                           ;  329 or1
+Sense LeftAhead 331 329 Foe              ;  330 and0
+Flip 1 332 332                           ;  331 and1
+Sense RightAhead 326 333 Foe             ;  332 or0
+Sense Ahead 326 329 Foe                  ;  333 or1
+Sense Ahead 335 324 Foe                  ;  334 and0
+Sense RightAhead 326 324 Foe             ;  335 and1
+Turn Right 337                           ;  336 seq0
+Turn Right 338                           ;  337 seq1
+Turn Right 327                           ;  338 seq2
+Flip 1 341 341                           ;  339 while0
+Turn Right 339                           ;  340 while1
+Flip 1 344 344                           ;  341 or0
+Flip 1 349 349                           ;  342 or1
+Flip 1 355 355                           ;  343 or2
+Flip 1 346 346                           ;  344 and0
+Move 14 342                              ;  345 and1
+Sense Ahead 342 347 Rock                 ;  346 or0
+Sense Ahead 342 348 Friend               ;  347 or1
+Sense Ahead 342 345 Foe                  ;  348 or2
+Flip 1 352 352                           ;  349 and0
+Turn Right 351                           ;  350 and1
+Move 14 343                              ;  351 and2
+Sense RightAhead 343 353 Rock            ;  352 or0
+Sense RightAhead 343 354 Friend          ;  353 or1
+Sense RightAhead 343 350 Foe             ;  354 or2
+Flip 1 358 358                           ;  355 and0
+Turn Left 357                            ;  356 and1
+Move 14 340                              ;  357 and2
+Sense LeftAhead 340 359 Rock             ;  358 or0
+Sense LeftAhead 340 360 Friend           ;  359 or1
+Sense LeftAhead 340 356 Foe              ;  360 or2
+Flip 1 373 373                           ;  361 or0
+Turn Right 363                           ;  362 or1
+Flip 1 379 379                           ;  363 or2
+Turn Right 365                           ;  364 or3
+Flip 1 385 385                           ;  365 or4
+Turn Right 367                           ;  366 or5
+Flip 1 391 391                           ;  367 or6
+Turn Right 369                           ;  368 or7
+Flip 1 397 397                           ;  369 or8
+Turn Right 371                           ;  370 or9
+Flip 1 403 403                           ;  371 or10
+Turn Right 10                            ;  372 or11
+Sense Ahead 374 362 Marker 5             ;  373 and0
+Flip 1 376 376                           ;  374 and1
+Move 2 362                               ;  375 and2
+Sense Ahead 362 377 Rock                 ;  376 or0
+Sense Ahead 362 378 Friend               ;  377 or1
+Sense Ahead 362 375 Foe                  ;  378 or2
+Sense Ahead 380 364 Marker 5             ;  379 and0
+Flip 1 382 382                           ;  380 and1
+Move 2 364                               ;  381 and2
+Sense Ahead 364 383 Rock                 ;  382 or0
+Sense Ahead 364 384 Friend               ;  383 or1
+Sense Ahead 364 381 Foe                  ;  384 or2
+Sense Ahead 386 366 Marker 5             ;  385 and0
+Flip 1 388 388                           ;  386 and1
+Move 2 366                               ;  387 and2
+Sense Ahead 366 389 Rock                 ;  388 or0
+Sense Ahead 366 390 Friend               ;  389 or1
+Sense Ahead 366 387 Foe                  ;  390 or2
+Sense Ahead 392 368 Marker 5             ;  391 and0
+Flip 1 394 394                           ;  392 and1
+Move 2 368                               ;  393 and2
+Sense Ahead 368 395 Rock                 ;  394 or0
+Sense Ahead 368 396 Friend               ;  395 or1
+Sense Ahead 368 393 Foe                  ;  396 or2
+Sense Ahead 398 370 Marker 5             ;  397 and0
+Flip 1 400 400                           ;  398 and1
+Move 2 370                               ;  399 and2
+Sense Ahead 370 401 Rock                 ;  400 or0
+Sense Ahead 370 402 Friend               ;  401 or1
+Sense Ahead 370 399 Foe                  ;  402 or2
+Sense Ahead 404 372 Marker 5             ;  403 and0
+Flip 1 406 406                           ;  404 and1
+Move 2 372                               ;  405 and2
+Sense Ahead 372 407 Rock                 ;  406 or0
+Sense Ahead 372 408 Friend               ;  407 or1
+Sense Ahead 372 405 Foe                  ;  408 or2

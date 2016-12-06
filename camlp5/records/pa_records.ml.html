@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>
+pa_records.ml</title>
+  <meta name="GENERATOR" content="caml2html 1.4.2">
+<style type="text/css">
+code,pre { color:black;background-color:white }a.Cannot { color:black;text-decoration:none }.Cannot:hover { background-color: #b4eeb4; }
+.Cbar,
+.Cdo,
+.Cdone,
+.Cdownto,
+.Celse,
+.Cfor,
+.Cif,
+.Clazy,
+.Cmatch,
+.Cnew,
+.Cor,
+.Cthen,
+.Cto,
+.Ctry,
+.Cwhen,
+.Cwhile,
+.Cwith { color: #77aaaa; }
+.Cassert,
+.Cinclude,
+.Copen { color: #cc9900; }
+.Cstring { color: #aa4444; }
+.Cand,
+.Cas,
+.Cclass,
+.Cconstraint,
+.Cexception,
+.Cexternal,
+.Cfun,
+.Cfunction,
+.Cfunctor,
+.Cin,
+.Cinherit,
+.Cinitializer,
+.Clet,
+.Cmethod,
+.Cmodule,
+.Cmutable,
+.Cof,
+.Cprivate,
+.Crec,
+.Ctype,
+.Cval,
+.Cvirtual { color: green; }
+.Cbackground { background-color: white; }
+.Craise { color: red; }
+.Cconstructor { color: #0033cc; }
+.Ccomment { color: #990000; }
+.Calphakeyword,
+.Casr,
+.Cland,
+.Clor,
+.Clsl,
+.Clsr,
+.Clxor,
+.Cmod { color: #808080; }
+.Clinenum { color: black; background-color: silver; }
+.Cbegin,
+.Cend,
+.Cobject,
+.Csig,
+.Cstruct { color: #990099; }
+.Cfalse,
+.Cnonalphakeyword,
+.Cquotation,
+.Ctrue { }
+</style>
+</head>
+<body>
+<h1><a name="pa_records.ml"></a><code>pa_records.ml</code></h1>
+
+<pre><span class="Clinenum">   1:</span><span class="Cbackground"> </span><span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.loc -&gt; ((MLast.loc * string * 'a * 'b) * 'c) list -&gt; MLast.expr">make_record_expr</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.loc">loc</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="((MLast.loc * string * 'a * 'b) * 'c) list">l</a> <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">   2:</span><span class="Cbackground"> </span>  <span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="(MLast.patt * MLast.expr) list">fields</a> <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">   3:</span><span class="Cbackground"> </span>    <a href="javascript:;" style="text-decoration:none" class="Cannot" title="((MLast.loc * string * 'a * 'b) * 'c -&gt; MLast.patt * MLast.expr) -&gt; ((MLast.loc * string * 'a * 'b) * 'c) list -&gt; (MLast.patt * MLast.expr) list"><span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>map</a> <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">(</span><a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.loc">loc</a><span class="Cnonalphakeyword">,</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="string">name</a><span class="Cnonalphakeyword">,</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a">mut</a><span class="Cnonalphakeyword">,</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b">t</a><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">,</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'c">default</a><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> 
+<span class="Clinenum">   4:</span><span class="Cbackground"> </span>                <span class="Cnonalphakeyword">(</span><a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.patt"><span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $lid:name$ </span><span class="Cconstructor">&gt;&gt;</span></a><span class="Cnonalphakeyword">,</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.expr"><span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $lid:name$ </span><span class="Cconstructor">&gt;&gt;</span></a><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="((MLast.loc * string * 'a * 'b) * 'c) list">l</a> <span class="Cin">in</span>
+<span class="Clinenum">   5:</span><span class="Cbackground"> </span>  <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.expr"><span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> { $list:fields$ } </span><span class="Cconstructor">&gt;&gt;</span></a>
+<span class="Clinenum">   6:</span><span class="Cbackground"> </span>
+<span class="Clinenum">   7:</span><span class="Cbackground"> </span><span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.loc -&gt; string -&gt; ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list -&gt; MLast.str_item">expand_record</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.loc">loc</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="string">type_name</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list">l</a> <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">   8:</span><span class="Cbackground"> </span>  <span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.str_item">type_def</a> <span class="Cnonalphakeyword">=</span> 
+<span class="Clinenum">   9:</span><span class="Cbackground"> </span>    <span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="(MLast.loc * string * bool * MLast.ctyp) list">fields</a> <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option -&gt; MLast.loc * string * bool * MLast.ctyp) -&gt; ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list -&gt; (MLast.loc * string * bool * MLast.ctyp) list"><span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>map</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="(MLast.loc * string * bool * MLast.ctyp) * MLast.expr option -&gt; MLast.loc * string * bool * MLast.ctyp">fst</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list">l</a> <span class="Cin">in</span>
+<span class="Clinenum">  10:</span><span class="Cbackground"> </span>    <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.str_item"><span class="Cconstructor">&lt;:str_item&lt;</span><span class="Cquotation"> type $lid:type_name$ = { $list:fields$ } </span><span class="Cconstructor">&gt;&gt;</span></a> <span class="Cin">in</span>
+<span class="Clinenum">  11:</span><span class="Cbackground"> </span>  <span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.str_item">expr_def</a> <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">  12:</span><span class="Cbackground"> </span>    <span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.expr">record_expr</a> <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.loc -&gt; ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list -&gt; MLast.expr">make_record_expr</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.loc">loc</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list">l</a> <span class="Cin">in</span>
+<span class="Clinenum">  13:</span><span class="Cbackground"> </span>    <span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.expr">f</a> <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">  14:</span><span class="Cbackground"> </span>      <a href="javascript:;" style="text-decoration:none" class="Cannot" title="((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option -&gt; MLast.expr -&gt; MLast.expr) -&gt; ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list -&gt; MLast.expr -&gt; MLast.expr"><span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>fold_right</a>
+<span class="Clinenum">  15:</span><span class="Cbackground"> </span>        <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">(</span><a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.loc">loc</a><span class="Cnonalphakeyword">,</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="string">name</a><span class="Cnonalphakeyword">,</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="bool">mut</a><span class="Cnonalphakeyword">,</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.ctyp">t</a><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">,</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.expr option">default</a><span class="Cnonalphakeyword">)</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.expr">e</a> <span class="Cnonalphakeyword">-&gt;</span>
+<span class="Clinenum">  16:</span><span class="Cbackground"> </span>           <span class="Cmatch">match</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.expr option">default</a> <span class="Cwith">with</span>
+<span class="Clinenum">  17:</span><span class="Cbackground"> </span>               <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.expr option"><span class="Cconstructor">None</span></a> <span class="Cnonalphakeyword">-&gt;</span>
+<span class="Clinenum">  18:</span><span class="Cbackground"> </span>                 <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.expr"><span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> fun ~ $Ploc.VaVal name$ -&gt; $e$ </span><span class="Cconstructor">&gt;&gt;</span></a>
+<span class="Clinenum">  19:</span><span class="Cbackground"> </span>             <span class="Cbar">|</span> <span class="Cconstructor">Some</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.expr">x</a> <span class="Cnonalphakeyword">-&gt;</span>
+<span class="Clinenum">  20:</span><span class="Cbackground"> </span>                 <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.expr"><span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> fun ? ($lid:name$ = $x$) -&gt; $e$ </span><span class="Cconstructor">&gt;&gt;</span></a><span class="Cnonalphakeyword">)</span>
+<span class="Clinenum">  21:</span><span class="Cbackground"> </span>        <a href="javascript:;" style="text-decoration:none" class="Cannot" title="((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list">l</a>
+<span class="Clinenum">  22:</span><span class="Cbackground"> </span>        <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.expr"><span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> fun () -&gt; $record_expr$ </span><span class="Cconstructor">&gt;&gt;</span></a> <span class="Cin">in</span>
+<span class="Clinenum">  23:</span><span class="Cbackground"> </span>    <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.str_item"><span class="Cconstructor">&lt;:str_item&lt;</span><span class="Cquotation"> value rec $lid: "create_" ^ type_name$ = $f$ </span><span class="Cconstructor">&gt;&gt;</span></a> <span class="Cin">in</span>
+<span class="Clinenum">  24:</span><span class="Cbackground"> </span>  <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.str_item"><span class="Cconstructor">&lt;:str_item&lt;</span><span class="Cquotation"> declare $type_def$; $expr_def$; end </span><span class="Cconstructor">&gt;&gt;</span></a>
+<span class="Clinenum">  25:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  26:</span><span class="Cbackground"> </span><span class="Cconstructor">EXTEND</span><a href="javascript:;" style="text-decoration:none" class="Cannot" title="(Grammar.token Gramext.g_entry * Gramext.position option * (string option * Gramext.g_assoc option * (Grammar.token Gramext.g_symbol list * Gramext.g_action) list) list) list -&gt; unit">
+<span class="Clinenum">  27:</span><span class="Cbackground"> </span></a>  <span class="Cconstructor">GLOBAL</span>: <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.str_item Grammar.Entry.e"><span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>str_item</a><span class="Cnonalphakeyword">;</span>
+<span class="Clinenum">  28:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  29:</span><span class="Cbackground"> </span>  <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.str_item Grammar.Entry.e"><span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>str_item</a>: <span class="Cconstructor">LEVEL</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="string"><span class="Cstring">"top"</span></a> <span class="Cnonalphakeyword">[</span>
+<span class="Clinenum">  30:</span><span class="Cbackground"> </span>    <span class="Cnonalphakeyword">[</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cstring">"record"</span></a><span class="Cnonalphakeyword">;</span> type_name <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cconstructor">LIDENT</span></a><span class="Cnonalphakeyword">;</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cstring">"="</span></a><span class="Cnonalphakeyword">;</span> 
+<span class="Clinenum">  31:</span><span class="Cbackground"> </span>      <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cstring">"{"</span></a><span class="Cnonalphakeyword">;</span> l <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">LIST1</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol">field_decl</a> <span class="Cconstructor">SEP</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cstring">";"</span></a><span class="Cnonalphakeyword">;</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cstring">"}"</span></a> <span class="Cnonalphakeyword">-&gt;</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.loc -&gt; string -&gt; ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list -&gt; MLast.str_item">expand_record</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.loc">loc</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="string">type_name</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list">l</a> <span class="Cnonalphakeyword">]</span>
+<span class="Clinenum">  32:</span><span class="Cbackground"> </span>  <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+<span class="Clinenum">  33:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  34:</span><span class="Cbackground"> </span>  <a href="javascript:;" style="text-decoration:none" class="Cannot" title="((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) Grammar.Entry.e">field_decl</a>: <span class="Cnonalphakeyword">[</span>
+<span class="Clinenum">  35:</span><span class="Cbackground"> </span>    <span class="Cnonalphakeyword">[</span> mut <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">OPT</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cstring">"mutable"</span></a><span class="Cnonalphakeyword">;</span>
+<span class="Clinenum">  36:</span><span class="Cbackground"> </span>      name <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cconstructor">LIDENT</span></a><span class="Cnonalphakeyword">;</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cstring">":"</span></a><span class="Cnonalphakeyword">;</span> t <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>ctyp</a><span class="Cnonalphakeyword">;</span> 
+<span class="Clinenum">  37:</span><span class="Cbackground"> </span>      default <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">OPT</span> <span class="Cnonalphakeyword">[</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cstring">"="</span></a><span class="Cnonalphakeyword">;</span> e <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr <span class="Cconstructor">LEVEL</span> <span class="Cstring">"simple"</span></a> <span class="Cnonalphakeyword">-&gt;</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.expr">e</a> <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span> 
+<span class="Clinenum">  38:</span><span class="Cbackground"> </span>        <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">(</span><a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.loc">loc</a><span class="Cnonalphakeyword">,</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="string">name</a><span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">(</span><a href="javascript:;" style="text-decoration:none" class="Cannot" title="string option">mut</a> &lt;&gt; <a href="javascript:;" style="text-decoration:none" class="Cannot" title="string option"><span class="Cconstructor">None</span></a><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">,</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.ctyp">t</a><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">,</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.expr option">default</a><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">]</span>
+<span class="Clinenum">  39:</span><span class="Cbackground"> </span>  <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+<span class="Clinenum">  40:</span><span class="Cbackground"> </span><span class="Cconstructor">END</span><span class="Cnonalphakeyword">;;</span>
+</pre>
+
+<hr>
+<p>
+<em>This document was generated using 
+<a href="http://martin.jambon.free.fr/caml2html.html">caml2html</a></em>
+</body>
+</html>

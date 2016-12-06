@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>
+pa_lettry.ml</title>
+  <meta name="GENERATOR" content="caml2html 1.4.2">
+<style type="text/css">
+code,pre { color:black;background-color:white }a.Cannot { color:black;text-decoration:none }.Cannot:hover { background-color: #b4eeb4; }
+.Cbar,
+.Cdo,
+.Cdone,
+.Cdownto,
+.Celse,
+.Cfor,
+.Cif,
+.Clazy,
+.Cmatch,
+.Cnew,
+.Cor,
+.Cthen,
+.Cto,
+.Ctry,
+.Cwhen,
+.Cwhile,
+.Cwith { color: #77aaaa; }
+.Cassert,
+.Cinclude,
+.Copen { color: #cc9900; }
+.Cstring { color: #aa4444; }
+.Cand,
+.Cas,
+.Cclass,
+.Cconstraint,
+.Cexception,
+.Cexternal,
+.Cfun,
+.Cfunction,
+.Cfunctor,
+.Cin,
+.Cinherit,
+.Cinitializer,
+.Clet,
+.Cmethod,
+.Cmodule,
+.Cmutable,
+.Cof,
+.Cprivate,
+.Crec,
+.Ctype,
+.Cval,
+.Cvirtual { color: green; }
+.Cbackground { background-color: white; }
+.Craise { color: red; }
+.Cconstructor { color: #0033cc; }
+.Ccomment { color: #990000; }
+.Calphakeyword,
+.Casr,
+.Cland,
+.Clor,
+.Clsl,
+.Clsr,
+.Clxor,
+.Cmod { color: #808080; }
+.Clinenum { color: black; background-color: silver; }
+.Cbegin,
+.Cend,
+.Cobject,
+.Csig,
+.Cstruct { color: #990099; }
+.Cfalse,
+.Cnonalphakeyword,
+.Cquotation,
+.Ctrue { }
+</style>
+</head>
+<body>
+<h1><a name="pa_lettry.ml"></a><code>pa_lettry.ml</code></h1>
+
+<pre><span class="Clinenum">   1:</span><span class="Cbackground"> </span><span class="Cconstructor">EXTEND</span><a href="javascript:;" style="text-decoration:none" class="Cannot" title="(Grammar.token Gramext.g_entry * Gramext.position option * (string option * Gramext.g_assoc option * (Grammar.token Gramext.g_symbol list * Gramext.g_action) list) list) list -&gt; unit">
+<span class="Clinenum">   2:</span><span class="Cbackground"> </span></a>  <span class="Cconstructor">GLOBAL</span>: <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.expr Grammar.Entry.e"><span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr</a><span class="Cnonalphakeyword">;</span>
+<span class="Clinenum">   3:</span><span class="Cbackground"> </span>
+<span class="Clinenum">   4:</span><span class="Cbackground"> </span>  <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.expr Grammar.Entry.e"><span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr</a>: <span class="Cconstructor">LEVEL</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="string"><span class="Cstring">"expr1"</span></a> <span class="Cnonalphakeyword">[</span>
+<span class="Clinenum">   5:</span><span class="Cbackground"> </span>    <span class="Cnonalphakeyword">[</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cstring">"let"</span></a><span class="Cnonalphakeyword">;</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cstring">"try"</span></a><span class="Cnonalphakeyword">;</span> o <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">OPT</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cstring">"rec"</span></a><span class="Cnonalphakeyword">;</span> l <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">LIST1</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>let_binding</a> <span class="Cconstructor">SEP</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cstring">"and"</span></a><span class="Cnonalphakeyword">;</span> 
+<span class="Clinenum">   6:</span><span class="Cbackground"> </span>      <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cstring">"in"</span></a><span class="Cnonalphakeyword">;</span> e <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr</a><span class="Cnonalphakeyword">;</span>
+<span class="Clinenum">   7:</span><span class="Cbackground"> </span>      <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cstring">"with"</span></a><span class="Cnonalphakeyword">;</span> pwel <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">LIST1</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol">lettry_case</a> <span class="Cconstructor">SEP</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cstring">"|"</span></a> <span class="Cnonalphakeyword">-&gt;</span>
+<span class="Clinenum">   8:</span><span class="Cbackground"> </span>        <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.expr"><span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> (try </span>
+<span class="Clinenum">   9:</span><span class="Cbackground"> </span><span class="Cquotation">                   let $opt: o &lt;&gt; None$ $list:l$ in </span>
+<span class="Clinenum">  10:</span><span class="Cbackground"> </span><span class="Cquotation">                   fun () -&gt; $e$ </span>
+<span class="Clinenum">  11:</span><span class="Cbackground"> </span><span class="Cquotation"></span>        <span class="Cquotation"></span>        <span class="Cquotation"> with </span>
+<span class="Clinenum">  12:</span><span class="Cbackground"> </span><span class="Cquotation">                   [ $list:pwel$ ]) () </span><span class="Cconstructor">&gt;&gt;</span></a>  <span class="Cnonalphakeyword">]</span>
+<span class="Clinenum">  13:</span><span class="Cbackground"> </span>  <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+<span class="Clinenum">  14:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  15:</span><span class="Cbackground"> </span>  <a href="javascript:;" style="text-decoration:none" class="Cannot" title="(MLast.patt * MLast.expr option Ploc.vala * MLast.expr) Grammar.Entry.e">lettry_case</a>: <span class="Cnonalphakeyword">[</span> 
+<span class="Clinenum">  16:</span><span class="Cbackground"> </span>    <span class="Cnonalphakeyword">[</span> p <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>patt</a><span class="Cnonalphakeyword">;</span> 
+<span class="Clinenum">  17:</span><span class="Cbackground"> </span>      w <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">OPT</span> <span class="Cnonalphakeyword">[</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cstring">"when"</span></a><span class="Cnonalphakeyword">;</span> e <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr</a> <span class="Cnonalphakeyword">-&gt;</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.expr">e</a> <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cstring">"-&gt;"</span></a><span class="Cnonalphakeyword">;</span> 
+<span class="Clinenum">  18:</span><span class="Cbackground"> </span>      e <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Grammar.token Gramext.g_symbol"><span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr</a> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.patt">p</a><span class="Cnonalphakeyword">,</span> <span class="Cconstructor">Ploc</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">VaVal</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.expr option">w</a><span class="Cnonalphakeyword">,</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.expr"><span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> fun () -&gt; $e$ </span><span class="Cconstructor">&gt;&gt;</span></a><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">]</span>
+<span class="Clinenum">  19:</span><span class="Cbackground"> </span>  <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+<span class="Clinenum">  20:</span><span class="Cbackground"> </span><span class="Cconstructor">END</span><span class="Cnonalphakeyword">;;</span>
+</pre>
+
+<hr>
+<p>
+<em>This document was generated using 
+<a href="http://martin.jambon.free.fr/caml2html.html">caml2html</a></em>
+</body>
+</html>

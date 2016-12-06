@@ -1,0 +1,342 @@
+"pa_lists.ml" 1 0 4 "pa_lists.ml" 1 0 13
+type(
+  MLast.loc -> MLast.expr list -> MLast.expr
+)
+ident(
+  def expr_list "pa_lists.ml" 8 122 122 --
+)
+"pa_lists.ml" 1 0 14 "pa_lists.ml" 1 0 17
+type(
+  MLast.loc
+)
+ident(
+  def loc "pa_lists.ml" 1 0 18 "pa_lists.ml" 5 102 119
+)
+"pa_lists.ml" 1 0 18 "pa_lists.ml" 1 0 19
+type(
+  MLast.expr list
+)
+ident(
+  def l "pa_lists.ml" 2 22 24 "pa_lists.ml" 5 102 119
+)
+"pa_lists.ml" 2 22 24 "pa_lists.ml" 2 22 39
+type(
+  (MLast.expr -> MLast.expr -> MLast.expr) ->
+  MLast.expr list -> MLast.expr -> MLast.expr
+)
+ident(
+  ext_ref List.fold_right
+)
+"pa_lists.ml" 3 41 50 "pa_lists.ml" 3 41 54
+type(
+  MLast.expr
+)
+ident(
+  def head "pa_lists.ml" 3 41 55 "pa_lists.ml" 3 41 94
+)
+"pa_lists.ml" 3 41 55 "pa_lists.ml" 3 41 59
+type(
+  MLast.expr
+)
+ident(
+  def tail "pa_lists.ml" 3 41 63 "pa_lists.ml" 3 41 94
+)
+"pa_lists.ml" 3 41 74 "pa_lists.ml" 3 41 78
+type(
+  MLast.expr
+)
+ident(
+  int_ref head "pa_lists.ml" 3 41 50 "pa_lists.ml" 3 41 54
+)
+"pa_lists.ml" 3 41 84 "pa_lists.ml" 3 41 88
+type(
+  MLast.expr
+)
+ident(
+  int_ref tail "pa_lists.ml" 3 41 55 "pa_lists.ml" 3 41 59
+)
+"pa_lists.ml" 3 41 63 "pa_lists.ml" 3 41 94
+type(
+  string
+)
+type(
+  string Ploc.vala
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_lists.ml" 1 0 14 "pa_lists.ml" 1 0 17
+)
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_lists.ml" 1 0 14 "pa_lists.ml" 1 0 17
+)
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_lists.ml" 1 0 14 "pa_lists.ml" 1 0 17
+)
+type(
+  MLast.expr
+)
+"pa_lists.ml" 3 41 55 "pa_lists.ml" 3 41 94
+type(
+  MLast.expr -> MLast.expr
+)
+"pa_lists.ml" 3 41 45 "pa_lists.ml" 3 41 95
+type(
+  MLast.expr -> MLast.expr -> MLast.expr
+)
+"pa_lists.ml" 4 96 100 "pa_lists.ml" 4 96 101
+type(
+  MLast.expr list
+)
+ident(
+  int_ref l "pa_lists.ml" 1 0 18 "pa_lists.ml" 1 0 19
+)
+"pa_lists.ml" 5 102 106 "pa_lists.ml" 5 102 119
+type(
+  string
+)
+type(
+  string Ploc.vala
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_lists.ml" 1 0 14 "pa_lists.ml" 1 0 17
+)
+type(
+  MLast.expr
+)
+"pa_lists.ml" 2 22 24 "pa_lists.ml" 5 102 119
+call(
+  tail
+)
+type(
+  MLast.expr
+)
+"pa_lists.ml" 1 0 18 "pa_lists.ml" 5 102 119
+type(
+  MLast.expr list -> MLast.expr
+)
+"pa_lists.ml" 1 0 14 "pa_lists.ml" 5 102 119
+type(
+  MLast.loc -> MLast.expr list -> MLast.expr
+)
+"pa_lists.ml" 8 122 128 "pa_lists.ml" 8 122 129
+type(
+  (Grammar.token Gramext.g_entry * Gramext.position option *
+   (string option * Gramext.g_assoc option *
+    (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+   list)
+  list -> unit
+)
+ident(
+  ext_ref Grammar.extend
+)
+"pa_lists.ml" 9 129 131 "pa_lists.ml" 9 129 141
+type(
+  Grammar.token Gramext.g_entry * Gramext.position option *
+  (string option * Gramext.g_assoc option *
+   (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+  list
+)
+type(
+  (string option * Gramext.g_assoc option *
+   (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+  list
+)
+type(
+  string option * Gramext.g_assoc option *
+  (Grammar.token Gramext.g_symbol list * Gramext.g_action) list
+)
+type(
+  (Grammar.token Gramext.g_symbol list * Gramext.g_action) list
+)
+type(
+  Grammar.token Gramext.g_symbol list * Gramext.g_action
+)
+type(
+  Gramext.g_action
+)
+type(
+  MLast.expr list -> '_a -> MLast.loc -> MLast.expr
+)
+type(
+  '_a -> MLast.loc -> MLast.expr
+)
+type(
+  MLast.loc -> MLast.expr
+)
+type(
+  MLast.loc
+)
+ident(
+  def loc "pa_lists.ml" 9 129 131 "pa_lists.ml" 9 129 141
+)
+type(
+  '_a
+)
+type(
+  (MLast.expr list -> '_a -> MLast.loc -> MLast.expr) -> Gramext.g_action
+)
+ident(
+  ext_ref Gramext.action
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  (Grammar.token Gramext.g_symbol list * Gramext.g_action) list
+)
+type(
+  Gramext.g_assoc option
+)
+type(
+  string option
+)
+type(
+  (string option * Gramext.g_assoc option *
+   (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+  list
+)
+type(
+  Gramext.position option
+)
+type(
+  MLast.expr Grammar.Entry.e
+)
+type(
+  MLast.expr Grammar.Entry.e
+)
+ident(
+  ext_ref Pcaml.expr
+)
+"pa_lists.ml" 10 145 151 "pa_lists.ml" 10 145 157
+type(
+  Plexing.pattern
+)
+type(
+  string
+)
+type(
+  string
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_lists.ml" 10 145 169 "pa_lists.ml" 10 145 189
+type(
+  string
+)
+type(
+  Grammar.token Gramext.g_entry
+)
+type(
+  MLast.expr Grammar.Entry.e
+)
+type(
+  MLast.expr Grammar.Entry.e
+)
+ident(
+  ext_ref Pcaml.expr
+)
+type(
+  MLast.expr Grammar.Entry.e -> Grammar.token Gramext.g_entry
+)
+ident(
+  ext_ref Grammar.Entry.obj
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_lists.ml" 10 145 163 "pa_lists.ml" 10 145 189
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_lists.ml" 10 145 159 "pa_lists.ml" 10 145 189
+type(
+  MLast.expr list
+)
+ident(
+  def l "pa_lists.ml" 9 129 131 "pa_lists.ml" 9 129 141
+)
+"pa_lists.ml" 10 145 193 "pa_lists.ml" 10 145 202
+type(
+  MLast.loc -> MLast.expr list -> MLast.expr
+)
+ident(
+  int_ref expr_list "pa_lists.ml" 1 0 4 "pa_lists.ml" 1 0 13
+)
+"pa_lists.ml" 10 145 203 "pa_lists.ml" 10 145 206
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_lists.ml" 9 129 131 "pa_lists.ml" 9 129 141
+)
+"pa_lists.ml" 10 145 207 "pa_lists.ml" 10 145 208
+type(
+  MLast.expr list
+)
+ident(
+  int_ref l "pa_lists.ml" 10 145 159 "pa_lists.ml" 10 145 189
+)
+"pa_lists.ml" 10 145 193 "pa_lists.ml" 10 145 208
+call(
+  tail
+)
+type(
+  MLast.expr
+)
+type(
+  MLast.expr
+)
+"pa_lists.ml" 9 129 131 "pa_lists.ml" 11 211 215
+call(
+  stack
+)
+type(
+  unit
+)
+type(
+  (Grammar.token Gramext.g_entry * Gramext.position option *
+   (string option * Gramext.g_assoc option *
+    (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+   list)
+  list
+)
+type(
+  Grammar.token Gramext.g_entry
+)
+type(
+  MLast.expr Grammar.Entry.e -> Grammar.token Gramext.g_entry
+)
+ident(
+  ext_ref Grammar.Entry.obj
+)
+type(
+  (Grammar.token Gramext.g_entry * Gramext.position option *
+   (string option * Gramext.g_assoc option *
+    (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+   list)
+  list
+)

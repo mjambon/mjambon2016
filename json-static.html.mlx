@@ -1,0 +1,240 @@
+##
+#load "utils.cmo";;
+#use "topfind";;
+#require "caml2html";;
+#require "mikmatch_pcre";;
+#load "unmix.cmo";;
+#load "print_ocaml.cmo";;
+#use "json-static-version.ml";;
+open Print_ocaml
+open Utils
+open Camlmix
+##
+## include_file "doctype" ##
+<html>
+<head>
+## title 
+"json-static: JSON validator and converter for OCaml"
+##
+## include_file "charset" ##
+## include_file "stylesheet" ##
+## include_file "ocaml-stylesheet" ##
+## include_file "icon" ##
+## include_file "commonlinks" ##
+</head>
+<body>
+## include_file "hitcounter" ##
+## include_file "start_big_table" ##
+## top_menu ocaml ##
+
+##
+open Printf
+##
+
+<h1>json-static: JSON validator and converter for OCaml
+## include_file "2camels" ##</h1>
+
+<p>
+<div class="framed">
+Json-static is now deprecated. Do not use it in new projects.
+It has been replaced by <a href="/atdgen">Atdgen</a>.
+</div>
+
+<h2>Introduction</h2>
+<p>
+json-static is a tool for converting parsed 
+<a href="http://json.org/">JSON</a> data with 
+an unchecked structure
+into specialized OCaml types and vice-versa.
+It is a complement to
+the <a href="json-wheel.html">json-wheel library</a> which provides
+a parser and a (pretty-) printer.
+
+<p>
+By reading a type definition, the preprocessor inserts
+code that converts between OCaml types (lists, arrays, tuples,
+objects, polymorphic variants, ...) and untyped JSON data.
+Those type definitions are written in a syntax which is very close
+to regular OCaml type definitions.
+
+<p>
+Why? OCaml is statically typed (unlike Perl, Python, Ruby, PHP or JavaScript). 
+It means that no type checking 
+occurs at runtime, because it's all done at compile-time. It allows the 
+programs to be faster and less memory consuming, as well as safer since
+simple bugs such as ## ocamlcode "if some_rare_event then 2 + \"2\" " ##
+will be detected at the time of developing the program rather than when
+## ocamlcode "some_rare_event" ## happens, which may well crash 
+a space shuttle. Now, this seems to be a problem for reading JSON data since 
+an OCaml record or object has field labels which must be known at compile-time.
+Using only the core OCaml language, 
+you can load JSON data as a single type, but not specialized types
+such as records, lists, etc. That is inconvenient since most of the time
+you would manually write code that does the conversion, 
+and returns an error if the
+format of the data isn't right. Well, this is precisely what 
+the json-static syntax extension
+provides: when specifying the expected type of a JSON document, 
+converter functions from/to that type are created by the preprocessor.
+The function that converts from generic JSON to the specific type
+is also a validator, since the conversion will fail if the structure
+of the JSON data doesn't comply to the expected format.
+
+<p>
+The big difference with dynamically-typed languages such as those
+mentioned above
+is that once the JSON
+data is converted (and validated), it is guaranteed that every bit of the
+program which uses data of that type will read it safely, e.g. 
+it cannot attempt to read a misspelled field name or a string instead of an int
+because that would trigger a compilation error. In other words, you cannot 
+forget to use the validator.
+
+<p>
+This syntax extension can be loaded like any other package
+and is compatible with other syntax extensions and libraries.
+
+
+<h2>Documentation</h2>
+
+<p>
+Installation instructions, documentation
+and examples are given in 
+the <a href="json-static-readme.txt">README</a> file.
+
+<h2>A realistic example: Yahoo! Image Search</h2>
+
+<p>
+View the <a href="yahoo.ml.html">colorized source code</a>
+or save the script <code><a href="yahoo.ml">yahoo.ml</a></code>.
+It's all explained inside.
+
+<h2>Another cool example: del.icio.us popularity query</h2>
+
+<p>
+This is an <a href="ocaml.html#ocamlscript">ocamlscript</a> 
+<a href="scripts/delicious.html">script that queries del.icio.us</a> and
+shows how many times a given URL was bookmarked regardless of the tags
+as well as for each tag.
+
+<h3>How it works:</h3>
+
+<p>
+The special type definition is what defines the structure of the JSON data 
+as returned by del.icio.us. For example, see what 
+<a href="http://badges.del.icio.us/feeds/json/url/data?hash=ff90821feeb2b02a33a6f9fc8e5f3fcd">a query to del.icio.us for
+http://www.google.com/</a> returns.
+## print_with ocamlpre ##
+type json results = 
+    < hash: string;
+      top_tags: (string * int) assoc;
+      url: string;
+      total_posts: int > list
+## () ##
+<p>
+For those who don't speak OCaml: this is a list of objects with 
+four methods/fields (hash, top_tags, url, total_posts). 
+## ocamlcode "(string * int) assoc" ## maps to the OCaml type
+## ocamlcode "(string * int) list" ##, but using ## ocamlcode "assoc" ## 
+specifies that it derives from a JSON object rather than a JSON array of arrays
+of two elements.
+
+<p>
+The following functions are automatically generated and can be used in the
+rest of the program:
+## print_with ocamlpre ##
+val json_of_results : results -> Json_type.t
+val results_of_json : Json_type.t -> results
+## () ##
+<p>
+These functions convert between generic JSON data and the 
+## ocamlcode "results" ## type. ## ocamlcode "json_of_results" ##
+always succeeds, but a call to 
+## ocamlcode "results_of_json" ## would fail by raising
+an exception if the structure of the JSON data is not compatible 
+with the expected type. This is why this converter is also a validator.
+<p>
+Important note: if any JSON object has more fields 
+than expected or some expected fields are given more than once, 
+those are silently ignored. It makes it easy to ignore fields that are 
+not needed or unexpectedly added to the format.
+
+
+<h2>Download</h2>
+
+<p>
+This software was written by Martin Jambon. 
+It is distributed under a 
+<a href="json-static-license.txt">BSD license</a>.
+The current version is ##= json_static_version ##; 
+see <a href="json-static-changes.txt">Changes</a>.
+<p>
+Disclaimer: this is a beta release.
+
+<p>
+You can install this library from 
+<a href="http://godi.ocaml-programming.de/">GODI</a> or manually:
+
+<p>
+The first version that works with OCaml 3.10.1 is 0.9.6.
+<table class="light-table">
+<tr style="background-color: #ddd">
+<td>Latest version:</td>
+## 
+let gz = sprintf "json-static-%s.tar.gz" json_static_version
+let bz2 = sprintf "json-static-%s.tar.bz2" json_static_version
+##
+<td>## download "json-static.tar.gz" ##</td>
+<td>## download "json-static.tar.bz2" ##</td>
+<td>## download gz ##</td>
+<td>## download bz2 ##</td>
+</tr>
+## 
+List.iter
+  (fun s ->
+     printf "<tr>\n<td></td><td></td><td></td>\n";
+     printf "<td>";
+     download (sprintf "json-static-%s.tar.gz" s); 
+     printf "</td>\n";
+     printf "<td>";
+     download (sprintf "json-static-%s.tar.bz2" s);
+     printf "</td>\n</tr>\n")
+	      [ "0.9.7"; "0.9.6"; "0.9.5"; "0.9.4"; "0.9.3"; "0.9.2"; 
+		"0.9.1"; "0.9.0" (* previous versions go here *) ]
+##
+</table>
+
+<p>
+Access to the 
+<a href="http://forge.ocamlcore.org/scm/?group_id=38">development version 
+of json-static</a>
+is offered by 
+<a href="http://forge.ocamlcore.org/">OCamlForge</a>.
+
+
+
+<h2>Related projects</h2>
+
+All of the following translate some kind of type definition into code that
+can validate the structure of a document and convert it to that type:
+<ul>
+<li> <a href="http://www.kuwata-lab.com/kwalify/">Kwalify</a>: 
+a YAML (and JSON) validator written in Ruby and ported to Java.
+<li> <a href="http://www.ocaml.info/home/ocaml_sources.html">Sexplib</a>:
+same ideas as json-static, but for S-expressions instead of JSON.
+<li> <a href="ocaml.html#col">Col</a>: same ideas as json-static, 
+but for CSV files.
+<li> <a href="http://cristal.inria.fr/~ddr/IoXML/">IoXML</a>: 
+mapping from OCaml type definitions to an XML format.
+<li> <a href="http://www.cduce.org">CDuce</a>: an OCaml-friendly language 
+for the manipulation of XML documents.
+<li> <a href="http://www.cs.cornell.edu/~ebreck/pa_arg/">Pa_arg</a>: 
+record-like type declarations for the automatic conversion of 
+command-line options.
+</ul>
+
+
+## camlmix_footer ~years:"2007" () ##
+## include_file "end_big_table" ##
+</body>
+</html>

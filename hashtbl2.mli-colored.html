@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>
+hashtbl2.mli</title>
+  <meta name="GENERATOR" content="caml2html 1.2.0">
+</head>
+<body>
+
+<pre><span style="color:#990000">(** This module provides a kind of hash tables where each key is </span>
+<span style="color:#990000">present only once in the table, as opposed to the naive usage of </span>
+<span style="color:#990000">the standard [Hashtbl] module.</span>
+<span style="color:#990000">Its main purpose is to provide efficient implementation</span>
+<span style="color:#990000">of functions such as [list_keys] with enhanced safety</span>
+<span style="color:#990000">over the direct use of an [('a, 'b list ref) Hashtbl.t] type.</span>
+<span style="color:#990000">Many functions have two variants:</span>
+<span style="color:#990000">- the first one is applied only on the current bindings, like</span>
+<span style="color:#990000">[iter].</span>
+<span style="color:#990000">- the second one has the [_all] suffix like [iter_all]</span>
+<span style="color:#990000">and is applied to the list of </span>
+<span style="color:#990000">all the values that are bound to the given key </span>
+<span style="color:#990000">instead of only to the topmost value.</span>
+<span style="color:#990000">This list of values</span>
+<span style="color:#990000">is prebuilt, so there is no cost for building the list when</span>
+<span style="color:#990000">such a function is applied.</span>
+<span style="color:#990000"></span>
+<span style="color:#990000">Example - clustering elements:</span>
+<span style="color:#990000"></span>
+<span style="color:#990000">[Hashtbl2.list_all (Hashtbl2.of_list 10 [ (1, "a"); (2, "b"); (1, "c") ])]</span>
+<span style="color:#990000"></span>
+<span style="color:#990000">returns [[(2, ["b"]); (1, ["c"; "a"])]].</span>
+<span style="color:#990000"></span>
+<span style="color:#990000">[Hashtbl2] is an additional layer over the standard [Hashtbl] module.</span>
+<span style="color:#990000"></span>
+<span style="color:#990000">@author Martin Jambon *)</span>
+
+<span style="color:green">type</span> ('a, 'b) t
+<span style="color:#990000">(** The type of hash tables from type ['a] to type ['b].</span>
+<span style="color:#990000">   This representation is suitable for clustering elements </span>
+<span style="color:#990000">   according to the given keys. *)</span>
+
+<span style="color:green">val</span> create : int -&gt; ('a, 'b) t
+<span style="color:#990000">(** [Hashtbl2.create n] creates a new, empty hash table, with</span>
+<span style="color:#990000">   initial size [n].  For best results, [n] should be on the</span>
+<span style="color:#990000">   order of the expected number of elements that will be in</span>
+<span style="color:#990000">   the table.  The table grows as needed, so [n] is just an</span>
+<span style="color:#990000">   initial guess. *)</span>
+
+<span style="color:green">val</span> clear : ('a, 'b) t -&gt; unit
+<span style="color:#990000">(** Empty a hash table. *)</span>
+
+<span style="color:green">val</span> add : ('a, 'b) t -&gt; 'a -&gt; 'b -&gt; unit
+<span style="color:#990000">(** [Hashtbl2.add tbl x y] adds a binding of [x] to [y] in table [tbl].</span>
+<span style="color:#990000">   Previous bindings for [x] are not removed, but simply</span>
+<span style="color:#990000">   hidden. That is, after performing {!Hashtbl2.remove}[ tbl x],</span>
+<span style="color:#990000">   the previous binding for [x], if any, is restored.</span>
+<span style="color:#990000">   (Same behavior as with association lists.) *)</span>
+
+<span style="color:green">val</span> copy : ('a, 'b) t -&gt; ('a, 'b) t
+<span style="color:#990000">(** Return a copy of the given hashtable. *)</span>
+
+<span style="color:green">val</span> find : ('a, 'b) t -&gt; 'a -&gt; 'b
+<span style="color:#990000">(** [Hashtbl2.find tbl x] returns the current binding of [x] in [tbl],</span>
+<span style="color:#990000">   or raises [Not_found] if no such binding exists. *)</span>
+
+<span style="color:green">val</span> find_all : ('a, 'b) t -&gt; 'a -&gt; 'b list
+<span style="color:#990000">(** [Hashtbl2.find_all tbl x] returns the list of all data</span>
+<span style="color:#990000">   associated with [x] in [tbl].</span>
+<span style="color:#990000">   The current binding is returned first, then the previous</span>
+<span style="color:#990000">   bindings, in reverse order of introduction in the table. *)</span>
+
+<span style="color:green">val</span> mem : ('a, 'b) t -&gt; 'a -&gt; bool
+<span style="color:#990000">(** [Hashtbl2.mem tbl x] checks if [x] is bound in [tbl]. *)</span>
+
+<span style="color:green">val</span> remove : ('a, 'b) t -&gt; 'a -&gt; unit
+<span style="color:#990000">(** [Hashtbl2.remove tbl x] removes the current binding of [x] in [tbl],</span>
+<span style="color:#990000">   restoring the previous binding if it exists.</span>
+<span style="color:#990000">   It does nothing if [x] is not bound in [tbl]. *)</span>
+
+<span style="color:green">val</span> remove_all : ('a, 'b) t -&gt; 'a -&gt; unit
+<span style="color:#990000">(** [Hashtbl2.remove_all tbl x] removes all bindings of [x] in [tbl].</span>
+<span style="color:#990000">    It does nothing if [x] is not bound in [tbl]. *)</span>
+
+<span style="color:green">val</span> replace : ('a, 'b) t -&gt; 'a -&gt; 'b -&gt; unit
+<span style="color:#990000">(** [Hashtbl2.replace tbl x y] replaces the current binding of [x]</span>
+<span style="color:#990000">   in [tbl] by a binding of [x] to [y].  If [x] is unbound in [tbl],</span>
+<span style="color:#990000">   a binding of [x] to [y] is added to [tbl].</span>
+<span style="color:#990000">   This is functionally equivalent to {!Hashtbl2.remove}[ tbl x]</span>
+<span style="color:#990000">   followed by {!Hashtbl2.add}[ tbl x y]. *)</span>
+
+<span style="color:green">val</span> replace_all : ('a, 'b) t -&gt; 'a -&gt; 'b list -&gt; unit
+<span style="color:#990000">(** [Hashtbl2.replace_all tbl x y] replaces all bindings of [x]</span>
+<span style="color:#990000">    in [tbl] by bindings of [x] to the elements of [y].</span>
+<span style="color:#990000">    The first element of [y] defines the current binding,</span>
+<span style="color:#990000">    the second element is the defined the previous binding, and so on. *)</span>
+
+<span style="color:green">val</span> iter : ('a -&gt; 'b -&gt; unit) -&gt; ('a, 'b) t -&gt; unit
+<span style="color:#990000">(** [Hashtbl2.iter f tbl] applies [f] to current bindings in table [tbl].</span>
+<span style="color:#990000">   [f] receives the key as first argument, and the associated value</span>
+<span style="color:#990000">   as second argument. Each current binding is presented exactly once to [f].</span>
+<span style="color:#990000">   Hidden bindings are ignored.</span>
+<span style="color:#990000">   The order in which the bindings are passed to [f] is unspecified. *)</span>
+
+<span style="color:green">val</span> iter_all : ('a -&gt; 'b list -&gt; unit) -&gt; ('a, 'b) t -&gt; unit
+<span style="color:#990000">(** [Hashtbl2.iter_all f tbl] applies [f] to all bindings in table [tbl].</span>
+<span style="color:#990000">   [f] receives the key as first argument, and all the associated values</span>
+<span style="color:#990000">   as second argument in reverse order of introduction in the table.</span>
+<span style="color:#990000">   The order in which the bindings are passed to [f] is unspecified. *)</span>
+
+<span style="color:green">val</span> fold : ('a -&gt; 'b -&gt; 'c -&gt; 'c) -&gt; ('a, 'b) t -&gt; 'c -&gt; 'c
+<span style="color:#990000">(** [Hashtbl2.fold f tbl init] computes</span>
+<span style="color:#990000">   [(f kN dN ... (f k1 d1 init)...)],</span>
+<span style="color:#990000">   where [k1 ... kN] are the keys of current bindings in [tbl],</span>
+<span style="color:#990000">   and [d1 ... dN] are the associated values.</span>
+<span style="color:#990000">   Each current binding is presented exactly once to [f].</span>
+<span style="color:#990000">   Hidden bindings are ignored. *)</span>
+
+<span style="color:green">val</span> fold_all : ('a -&gt; 'b list -&gt; 'c -&gt; 'c) -&gt; ('a, 'b) t -&gt; 'c -&gt; 'c
+<span style="color:#990000">(** [Hashtbl2.fold_all f tbl init] computes</span>
+<span style="color:#990000">   [(f kN lN ... (f k1 l1 init)...)],</span>
+<span style="color:#990000">   where [k1 ... kN] are the keys of all bindings in [tbl],</span>
+<span style="color:#990000">   and [l1 ... lN] are the lists of associated values, in reverse order</span>
+<span style="color:#990000">   of introduction in the table. *)</span>
+
+
+<span style="color:green">val</span> list_keys : ('a, 'b) t -&gt; 'a list
+<span style="color:#990000">(** [Hashtbl2.list_keys tbl] returns a list of all the keys</span>
+<span style="color:#990000">   from the current bindings. Therefore no key is duplicated.</span>
+<span style="color:#990000">   Order is unspecified. *)</span>
+
+<span style="color:green">val</span> list_values : ('a, 'b) t -&gt; 'b list
+<span style="color:#990000">(** [Hashtbl2.list_values tbl] returns a list of all the values</span>
+<span style="color:#990000">   from the current bindings. Hidden bindings are ignored.</span>
+<span style="color:#990000">   Order is unspecified. *)</span>
+
+<span style="color:green">val</span> list_all_values : ('a, 'b) t -&gt; 'b list list
+<span style="color:#990000">(** [Hashtbl2.list_all_values tbl] returns a list of all the values</span>
+<span style="color:#990000">   from all bindings. Order is unspecified. *)</span>
+
+<span style="color:green">val</span> list : ('a, 'b) t -&gt; ('a * 'b) list
+<span style="color:#990000">(** [Hashtbl2.list tbl] returns a list of the current bindings.</span>
+<span style="color:#990000">   Order is unspecified. *)</span>
+
+<span style="color:green">val</span> list_all : ('a, 'b) t -&gt; ('a * 'b list) list
+<span style="color:#990000">(** [Hashtbl2.list_all tbl] returns a list of all the bindings clustered</span>
+<span style="color:#990000">   according to their key. Order is unspecified. *)</span>
+
+<span style="color:green">val</span> of_list : int -&gt; ('a * 'b) list -&gt; ('a, 'b) t
+<span style="color:#990000">(** [Hashtbl2.of_list n l] converts a list of bindings into </span>
+<span style="color:#990000">   a hash table of initial size [n]. The ordering of the list is the order</span>
+<span style="color:#990000">   of introduction of the bindings in the table. *)</span>
+
+<span style="color:green">val</span> of_keys : int -&gt; 'a list -&gt; ('a, unit) t
+<span style="color:#990000">(** [Hashtbl2.of_keys n l] converts a list of elements into</span>
+<span style="color:#990000">   a hash table of initial size [n] containing unique copies of these</span>
+<span style="color:#990000">   elements bound at most one time to [()]. *)</span>
+</pre>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>
+caml2html_test.mli, caml2html_test.ml, caml2html_test2.ml</title>
+  <meta name="GENERATOR" content="caml2html 1.4.1">
+<style type="text/css">
+code,pre { color:black;background-color:white }a.Cannot { color:black;text-decoration:none }.Cannot:hover { background-color: #b4eeb4; }
+.Cbar,
+.Cdo,
+.Cdone,
+.Cdownto,
+.Celse,
+.Cfor,
+.Cif,
+.Clazy,
+.Cmatch,
+.Cnew,
+.Cor,
+.Cthen,
+.Cto,
+.Ctry,
+.Cwhen,
+.Cwhile,
+.Cwith { color: #77aaaa; }
+.Cassert,
+.Cinclude,
+.Copen { color: #cc9900; }
+.Cstring { color: #aa4444; }
+.Cand,
+.Cas,
+.Cclass,
+.Cconstraint,
+.Cexception,
+.Cexternal,
+.Cfun,
+.Cfunction,
+.Cfunctor,
+.Cin,
+.Cinherit,
+.Cinitializer,
+.Clet,
+.Cmethod,
+.Cmodule,
+.Cmutable,
+.Cof,
+.Cprivate,
+.Crec,
+.Ctype,
+.Cval,
+.Cvirtual { color: green; }
+.Cbackground { background-color: white; }
+.Craise { color: red; }
+.Cconstructor { color: #0033cc; }
+.Ccomment { color: #990000; }
+.Calphakeyword,
+.Casr,
+.Cland,
+.Clor,
+.Clsl,
+.Clsr,
+.Clxor,
+.Cmod { color: #808080; }
+.Clinenum { color: black; background-color: silver; }
+.Cbegin,
+.Cend,
+.Cobject,
+.Csig,
+.Cstruct { color: #990099; }
+.Cfalse,
+.Cnonalphakeyword,
+.Cquotation,
+.Ctrue { }
+</style>
+</head>
+<body>
+<h1><a name="caml2html_test.mli"></a><code>caml2html_test.mli</code></h1>
+
+<pre><span class="Clinenum">   1:</span><span class="Cbackground"> </span><span class="Ctype">type</span> 'a weird <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">E10</span>
+<span class="Clinenum">   2:</span><span class="Cbackground"> </span><span class="Ctype">type</span> t <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">`</span><span class="Cconstructor">A</span> <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">C</span> <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">D</span> <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">E</span> <span class="Cbar">|</span> <span class="Cconstructor">`</span>b <span class="Cof">of</span> int <span class="Cnonalphakeyword">]</span>
+<span class="Clinenum">   3:</span><span class="Cbackground"> </span><span class="Cmodule">module</span> <span class="Cconstructor">Zéro'04</span> :
+<span class="Clinenum">   4:</span><span class="Cbackground"> </span>  <span class="Csig">sig</span> <span class="Cval">val</span> characters : char list <span class="Cval">val</span> n : int <span class="Cval">val</span> the_Truth : bool <span class="Cend">end</span>
+<span class="Clinenum">   5:</span><span class="Cbackground"> </span><span class="Cval">val</span> hel'Lo : string
+<span class="Clinenum">   6:</span><span class="Cbackground"> </span><span class="Cval">val</span> <span class="Cnonalphakeyword">(</span> |* <span class="Cnonalphakeyword">)</span> : int <span class="Cnonalphakeyword">-&gt;</span> int <span class="Cnonalphakeyword">-&gt;</span> int
+<span class="Clinenum">   7:</span><span class="Cbackground"> </span><span class="Cval">val</span> t : 'a <span class="Cnonalphakeyword">-&gt;</span> 'a <span class="Cnonalphakeyword">*</span> 'a
+<span class="Clinenum">   8:</span><span class="Cbackground"> </span><span class="Cval">val</span> a : 'a <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>'a <span class="Cnonalphakeyword">*</span> 'a<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">*</span> <span class="Cnonalphakeyword">(</span>'a <span class="Cnonalphakeyword">*</span> 'a<span class="Cnonalphakeyword">)</span>
+<span class="Clinenum">   9:</span><span class="Cbackground"> </span><span class="Cval">val</span> b :
+<span class="Clinenum">  10:</span><span class="Cbackground"> </span>  'a <span class="Cnonalphakeyword">-&gt;</span>
+<span class="Clinenum">  11:</span><span class="Cbackground"> </span>  <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">(</span>'a <span class="Cnonalphakeyword">*</span> 'a<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">*</span> <span class="Cnonalphakeyword">(</span>'a <span class="Cnonalphakeyword">*</span> 'a<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">*</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">(</span>'a <span class="Cnonalphakeyword">*</span> 'a<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">*</span> <span class="Cnonalphakeyword">(</span>'a <span class="Cnonalphakeyword">*</span> 'a<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">*</span>
+<span class="Clinenum">  12:</span><span class="Cbackground"> </span>  <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">(</span>'a <span class="Cnonalphakeyword">*</span> 'a<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">*</span> <span class="Cnonalphakeyword">(</span>'a <span class="Cnonalphakeyword">*</span> 'a<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">*</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">(</span>'a <span class="Cnonalphakeyword">*</span> 'a<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">*</span> <span class="Cnonalphakeyword">(</span>'a <span class="Cnonalphakeyword">*</span> 'a<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span>
+</pre>
+
+<hr>
+<h1><a name="caml2html_test.ml"></a><code>caml2html_test.ml</code></h1>
+
+<pre><span class="Clinenum">   1:</span><span class="Cbackground"> </span>
+<span class="Clinenum">   2:</span><span class="Cbackground"> </span><span class="Ccomment">(* Test file for &lt;a href="http://martin.jambon.free.fr/caml2html.html"&gt;caml2html&lt;/a&gt; (the first line is empty) *)</span>
+<span class="Clinenum">   3:</span><span class="Cbackground"> </span>
+<span class="Clinenum">   4:</span><span class="Cbackground"> </span><span class="Ccomment">(* -hc option: &lt;a href="#caml2html_test.mli"&gt;link to caml2html_test.mli&lt;/a&gt; (same page, colorized)</span>
+<span class="Clinenum">   5:</span><span class="Cbackground"> </span><span class="Ccomment"> *             &lt;a href="caml2html_test.ml"&gt;link to caml2html_test.ml&lt;/a&gt; (source) *)</span>
+<span class="Clinenum">   6:</span><span class="Cbackground"> </span>
+<span class="Clinenum">   7:</span><span class="Cbackground"> </span><span class="Ccomment">(* This is a multi-line "*)"</span>
+<span class="Clinenum">   8:</span><span class="Cbackground"> </span><span class="Ccomment">   comment *)</span>
+<span class="Clinenum">   9:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  10:</span><span class="Cbackground"> </span><span class="Copen">open</span> <span class="Cconstructor">Printf</span>
+<span class="Clinenum">  11:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  12:</span><span class="Cbackground"> </span><span class="Ctype">type</span> 'aa' weird <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">E10</span>
+<span class="Clinenum">  13:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  14:</span><span class="Cbackground"> </span><span class="Ctype">type</span> t <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">`</span><span class="Cconstructor">A</span> <span class="Cbar">|</span> <span class="Cconstructor">`</span>b <span class="Cof">of</span> int <span class="Cbar">|</span> <span class="Cconstructor">`</span> <span class="Cconstructor">C</span> <span class="Cbar">|</span> <span class="Cconstructor">`</span> <span class="Ccomment">(* *)</span> <span class="Cconstructor">D</span> <span class="Cbar">|</span> <span class="Cconstructor">`</span>
+<span class="Clinenum">  15:</span><span class="Cbackground"> </span>            <span class="Cconstructor">E</span> <span class="Cnonalphakeyword">]</span>
+<span class="Clinenum">  16:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  17:</span><span class="Cbackground"> </span><span class="Ccomment">(* nested (* comments *) *)</span>
+<span class="Clinenum">  18:</span><span class="Cbackground"> </span><span class="Ccomment">(* "multi-</span>
+<span class="Clinenum">  19:</span><span class="Cbackground"> </span><span class="Ccomment">    line string in comment" *)</span>
+<span class="Clinenum">  20:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  21:</span><span class="Cbackground"> </span></pre>
+  <h2>Hello</h2>
+  <p>
+  This is 
+  HTML!
+  </p>
+<pre>
+<span class="Clinenum">  28:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  29:</span><span class="Cbackground"> </span></pre>Mon Aug  2 16:02:30 PDT 2010
+<pre>
+<span class="Clinenum">  30:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  31:</span><span class="Cbackground"> </span></pre> Cnzy2ugzy ehyrf! "*)" 
+<pre>
+<span class="Clinenum">  32:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  33:</span><span class="Cbackground"> </span><span class="Ccomment">(*foo*)</span>
+<span class="Clinenum">  34:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  35:</span><span class="Cbackground"> </span><span class="Cmodule">module</span> <span class="Cconstructor">Zéro'04</span> <span class="Cnonalphakeyword">=</span> 
+<span class="Clinenum">  36:</span><span class="Cbackground"> </span><span class="Cstruct">struct</span>
+<span class="Clinenum">  37:</span><span class="Cbackground"> </span>  <span class="Clet">let</span> <span style="text-decoration:none" class="Cannot" title="char list">characters</span> <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span> <span style="text-decoration:none" class="Cannot" title="char"><span class="Cstring">'a'</span></span><span class="Cnonalphakeyword">;</span> <span style="text-decoration:none" class="Cannot" title="char"><span class="Cstring">'\000'</span></span><span class="Cnonalphakeyword">;</span> <span style="text-decoration:none" class="Cannot" title="char"><span class="Cstring">'\x12'</span></span><span class="Cnonalphakeyword">;</span> <span style="text-decoration:none" class="Cannot" title="char"><span class="Cstring">'</span>
+<span class="Clinenum">  38:</span><span class="Cbackground"> </span><span class="Cstring">'</span><span class="Cnonalphakeyword">;</span></span> <span class="Cstring">'\t'</span><span style="text-decoration:none" class="Cannot" title="char"><span class="Cnonalphakeyword">;</span></span> <span class="Cstring">'z'</span><span style="text-decoration:none" class="Cannot" title="char"> </span><span class="Cnonalphakeyword">]</span>
+<span class="Clinenum">  39:</span><span class="Cbackground"> </span>  <span class="Clet">let</span> <span style="text-decoration:none" class="Cannot" title="int">n</span> <span class="Cnonalphakeyword">=</span> <span style="text-decoration:none" class="Cannot" title="int">0X12</span> <span style="text-decoration:none" class="Cannot" title="int -&gt; int -&gt; int"><span class="Cnonalphakeyword">+</span></span> <span style="text-decoration:none" class="Cannot" title="float -&gt; int">truncate</span> <span style="text-decoration:none" class="Cannot" title="float">1.2E-1_2</span>
+<span class="Clinenum">  40:</span><span class="Cbackground"> </span>  <span class="Clet">let</span> <span style="text-decoration:none" class="Cannot" title="bool">the_Truth</span> <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">  41:</span><span class="Cbackground"> </span>    <span class="Clet">let</span> <span style="text-decoration:none" class="Cannot" title="'a -&gt; 'b -&gt; 'c -&gt; 'd -&gt; bool">ignore4</span> <span style="text-decoration:none" class="Cannot" title="'a">a</span> <span style="text-decoration:none" class="Cannot" title="'b">b</span> <span style="text-decoration:none" class="Cannot" title="'c">c</span> <span style="text-decoration:none" class="Cannot" title="'d">d</span> <span class="Cnonalphakeyword">=</span> <span style="text-decoration:none" class="Cannot" title="bool"><span class="Cfalse">false</span></span> <span class="Cin">in</span>
+<span class="Clinenum">  42:</span><span class="Cbackground"> </span>    <span style="text-decoration:none" class="Cannot" title="bool -&gt; bool">not</span> <span class="Cnonalphakeyword">(</span><span style="text-decoration:none" class="Cannot" title="float -&gt; '_e option -&gt; float -&gt; '_f weird -&gt; bool">ignore4</span> <span style="text-decoration:none" class="Cannot" title="float">1._0_</span><span style="text-decoration:none" class="Cannot" title="'_e option"><span class="Cconstructor">None</span></span> <span style="text-decoration:none" class="Cannot" title="float">1.0E10</span><span style="text-decoration:none" class="Cannot" title="'_f weird"><span class="Cconstructor">E10</span></span><span class="Cnonalphakeyword">)</span>
+<span class="Clinenum">  43:</span><span class="Cbackground"> </span><span class="Cend">end</span>
+<span class="Clinenum">  44:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  45:</span><span class="Cbackground"> </span><span class="Clet">let</span> <span style="text-decoration:none" class="Cannot" title="string">hel'Lo</span> <span class="Cnonalphakeyword">=</span> <span style="text-decoration:none" class="Cannot" title="string"><span class="Cstring">"\"Hello \</span>
+<span class="Clinenum">  46:</span><span class="Cbackground"> </span><span class="Cstring">                World!\""</span></span>
+<span class="Clinenum">  47:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  48:</span><span class="Cbackground"> </span><span class="Clet">let</span> <span style="text-decoration:none" class="Cannot" title="int -&gt; int -&gt; int"><span class="Cnonalphakeyword">(</span> |* <span class="Cnonalphakeyword">)</span></span> <span style="text-decoration:none" class="Cannot" title="int">a</span> <span style="text-decoration:none" class="Cannot" title="int">b</span> <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">  49:</span><span class="Cbackground"> </span>  <span class="Cmatch">match</span> <span style="text-decoration:none" class="Cannot" title="int">a</span><span class="Cnonalphakeyword">,</span> <span style="text-decoration:none" class="Cannot" title="int">b</span> <span class="Cwith">with</span>
+<span class="Clinenum">  50:</span><span class="Cbackground"> </span>      <span style="text-decoration:none" class="Cannot" title="int">1</span><span class="Cnonalphakeyword">,</span> <span style="text-decoration:none" class="Cannot" title="int">0</span> <span class="Cbar">|</span> <span style="text-decoration:none" class="Cannot" title="int">0</span><span class="Cnonalphakeyword">,</span> <span style="text-decoration:none" class="Cannot" title="int">1</span> <span class="Cnonalphakeyword">-&gt;</span> <span style="text-decoration:none" class="Cannot" title="int">1</span><span style="text-decoration:none" class="Cannot" title="int -&gt; int -&gt; int"><span class="Cnonalphakeyword">+</span></span><span style="text-decoration:none" class="Cannot" title="int">1</span>
+<span class="Clinenum">  51:</span><span class="Cbackground"> </span>    <span class="Cbar">|</span> <span style="text-decoration:none" class="Cannot" title="int * int"><span class="Cnonalphakeyword">_</span></span> <span class="Cnonalphakeyword">-&gt;</span> <span style="text-decoration:none" class="Cannot" title="int">0</span>
+<span class="Clinenum">  52:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  53:</span><span class="Cbackground"> </span><span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">  54:</span><span class="Cbackground"> </span>  <span class="Cassert">assert</span> <span style="text-decoration:none" class="Cannot" title="bool"><span class="Ctrue">true</span></span><span class="Cnonalphakeyword">;</span>
+<span class="Clinenum">  55:</span><span class="Cbackground"> </span>  <span class="Cif">if</span> <span style="text-decoration:none" class="Cannot" title="int">0</span> <span style="text-decoration:none" class="Cannot" title="int -&gt; int -&gt; int"><span class="Cmod">mod</span></span> <span style="text-decoration:none" class="Cannot" title="int">1</span> <span style="text-decoration:none" class="Cannot" title="int -&gt; int -&gt; bool"><span class="Cnonalphakeyword">&lt;</span></span> <span style="text-decoration:none" class="Cannot" title="int">1</span> <span style="text-decoration:none" class="Cannot" title="bool -&gt; bool -&gt; bool"><span class="Cnonalphakeyword">&amp;&amp;</span></span> <span style="text-decoration:none" class="Cannot" title="_[&gt; `Abc | `def ]"><span class="Cconstructor">`</span><span class="Cconstructor">Abc</span></span> <span style="text-decoration:none" class="Cannot" title="(_[&gt; `Abc | `def ] as 'a) -&gt; 'a -&gt; bool">&lt;&gt;</span> <span style="text-decoration:none" class="Cannot" title="'a"><span class="Cconstructor">`</span>def</span> <span class="Cthen">then</span>
+<span class="Clinenum">  56:</span><span class="Cbackground"> </span>    <span style="text-decoration:none" class="Cannot" title="string -&gt; unit">print_endline</span> <span style="text-decoration:none" class="Cannot" title="string">hel'Lo</span>
+<span class="Clinenum">  57:</span><span class="Cbackground"> </span><span class="Cnonalphakeyword">;;</span>
+<span class="Clinenum">  58:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  59:</span><span class="Cbackground"> </span><span class="Ccomment">(* long types *)</span>
+<span class="Clinenum">  60:</span><span class="Cbackground"> </span><span class="Clet">let</span> <span style="text-decoration:none" class="Cannot" title="'a -&gt; 'a * 'a">t</span> <span style="text-decoration:none" class="Cannot" title="'a">x</span> <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span><span style="text-decoration:none" class="Cannot" title="'a">x</span><span class="Cnonalphakeyword">,</span> <span style="text-decoration:none" class="Cannot" title="'a">x</span><span class="Cnonalphakeyword">)</span>
+<span class="Clinenum">  61:</span><span class="Cbackground"> </span><span class="Clet">let</span> <span style="text-decoration:none" class="Cannot" title="'a -&gt; ('a * 'a) * ('a * 'a)">a</span> <span style="text-decoration:none" class="Cannot" title="'a">x</span> <span class="Cnonalphakeyword">=</span> <span style="text-decoration:none" class="Cannot" title="'a * 'a -&gt; ('a * 'a) * ('a * 'a)">t</span> <span class="Cnonalphakeyword">(</span><span style="text-decoration:none" class="Cannot" title="'a -&gt; 'a * 'a">t</span> <span style="text-decoration:none" class="Cannot" title="'a">x</span><span class="Cnonalphakeyword">)</span>
+<span class="Clinenum">  62:</span><span class="Cbackground"> </span><span class="Clet">let</span> <span style="text-decoration:none" class="Cannot" title="'a -&gt; ((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))) * ((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a)))">b</span> <span style="text-decoration:none" class="Cannot" title="'a">x</span> <span class="Cnonalphakeyword">=</span> <span style="text-decoration:none" class="Cannot" title="('a * 'a) * ('a * 'a) -&gt; ((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))) * ((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a)))">a</span> <span class="Cnonalphakeyword">(</span><span style="text-decoration:none" class="Cannot" title="'a -&gt; ('a * 'a) * ('a * 'a)">a</span> <span style="text-decoration:none" class="Cannot" title="'a">x</span><span class="Cnonalphakeyword">)</span>
+<span class="Clinenum">  63:</span><span class="Cbackground"> </span><span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span> <span class="Cfun">fun</span> <span style="text-decoration:none" class="Cannot" title="'a">x</span> <span class="Cnonalphakeyword">-&gt;</span> <span style="text-decoration:none" class="Cannot" title="((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))) * ((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))) -&gt; ((((((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))) * ((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a)))) * (((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))) * ((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))))) * ((((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))) * ((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a)))) * (((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))) * ((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a)))))) * (((((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))) * ((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a)))) * (((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))) * ((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))))) * ((((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))) * ((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a)))) * (((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))) * ((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))))))) * ((((((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))) * ((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a)))) * (((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))) * ((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))))) * ((((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))) * ((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a)))) * (((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))) * ((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a)))))) * (((((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))) * ((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a)))) * (((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))) * ((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))))) * ((((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))) * ((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a)))) * (((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))) * ((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a)))))))">b</span> <span class="Cnonalphakeyword">(</span><span style="text-decoration:none" class="Cannot" title="'a -&gt; ((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a))) * ((('a * 'a) * ('a * 'a)) * (('a * 'a) * ('a * 'a)))">b</span> <span style="text-decoration:none" class="Cannot" title="'a">x</span><span class="Cnonalphakeyword">)</span>
+<span class="Clinenum">  64:</span><span class="Cbackground"> </span><span class="Cnonalphakeyword">;;</span>
+<span class="Clinenum">  65:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  66:</span><span class="Cbackground"> </span><span class="Cnonalphakeyword">#</span> 123 <span class="Ccomment">(* line directives are not parsed, sorry... *)</span>
+</pre>
+
+<hr>
+<h1><a name="caml2html_test2.ml"></a><code>caml2html_test2.ml</code></h1>
+
+<pre><span class="Clinenum">   1:</span><span class="Cbackground"> </span><span class="Clet">let</span> add_operator <span class="Cnonalphakeyword">~</span>name <span class="Cnonalphakeyword">~</span>level <span class="Cnonalphakeyword">~</span>value <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">   2:</span><span class="Cbackground"> </span>  <span class="Cconstructor">EXTEND</span>
+<span class="Clinenum">   3:</span><span class="Cbackground"> </span>    <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr: <span class="Cconstructor">LEVEL</span> $level$ <span class="Cnonalphakeyword">[</span>
+<span class="Clinenum">   4:</span><span class="Cbackground"> </span>      <span class="Cnonalphakeyword">[</span> x <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> $name$<span class="Cnonalphakeyword">;</span> y <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span> 
+<span class="Clinenum">   5:</span><span class="Cbackground"> </span>          <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $value$ $x$ $y$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span>
+<span class="Clinenum">   6:</span><span class="Cbackground"> </span>    <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+<span class="Clinenum">   7:</span><span class="Cbackground"> </span>  <span class="Cconstructor">END</span>
+<span class="Clinenum">   8:</span><span class="Cbackground"> </span>
+<span class="Clinenum">   9:</span><span class="Cbackground"> </span><span class="Cconstructor">EXTEND</span>
+<span class="Clinenum">  10:</span><span class="Cbackground"> </span>  <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>str_item: <span class="Cnonalphakeyword">[</span>
+<span class="Clinenum">  11:</span><span class="Cbackground"> </span>    <span class="Cnonalphakeyword">[</span> <span class="Cstring">"OPERATOR"</span><span class="Cnonalphakeyword">;</span> name <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">STRING</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"LEVEL"</span><span class="Cnonalphakeyword">;</span> level <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">STRING</span><span class="Cnonalphakeyword">;</span> 
+<span class="Clinenum">  12:</span><span class="Cbackground"> </span>      <span class="Cstring">"VALUE"</span><span class="Cnonalphakeyword">;</span> value <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr<span class="Cnonalphakeyword">;</span> <span class="Cstring">"END"</span> <span class="Cnonalphakeyword">-&gt;</span>
+<span class="Clinenum">  13:</span><span class="Cbackground"> </span>        add_operator 
+<span class="Clinenum">  14:</span><span class="Cbackground"> </span>          <span class="Cnonalphakeyword">~</span>name:<span class="Cnonalphakeyword">(</span><span class="Cconstructor">Token</span><span class="Cnonalphakeyword">.</span>eval_string _loc name<span class="Cnonalphakeyword">)</span> 
+<span class="Clinenum">  15:</span><span class="Cbackground"> </span>          <span class="Cnonalphakeyword">~</span>level:<span class="Cnonalphakeyword">(</span><span class="Cconstructor">Token</span><span class="Cnonalphakeyword">.</span>eval_string _loc level<span class="Cnonalphakeyword">)</span> 
+<span class="Clinenum">  16:</span><span class="Cbackground"> </span>          <span class="Cnonalphakeyword">~</span>value<span class="Cnonalphakeyword">;</span>
+<span class="Clinenum">  17:</span><span class="Cbackground"> </span>        <span class="Cconstructor">&lt;:str_item&lt;</span><span class="Cquotation"> declare end </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span>
+<span class="Clinenum">  18:</span><span class="Cbackground"> </span>  <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+<span class="Clinenum">  19:</span><span class="Cbackground"> </span><span class="Cconstructor">END</span>
+<span class="Clinenum">  20:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  21:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  22:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  23:</span><span class="Cbackground"> </span><span class="Clet">let</span> expand _loc e <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">  24:</span><span class="Cbackground"> </span>  <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> 1 + </span>
+<span class="Clinenum">  25:</span><span class="Cbackground"> </span><span class="Cquotation">          $e$ </span><span class="Cconstructor">&gt;&gt;</span>
+</pre>
+
+<hr>
+<p>
+<em>This document was generated using 
+<a href="http://martin.jambon.free.fr/caml2html.html">caml2html</a></em>
+</body>
+</html>

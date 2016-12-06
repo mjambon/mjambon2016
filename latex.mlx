@@ -1,0 +1,47 @@
+##
+#load "latex.cmo";;
+open Printf
+
+let image_counter = ref 0
+let images = ref []
+
+let memo = new Latex.file_memo "latex-memo" (* shared by several documents *)
+
+let new_image () =
+  incr image_counter;
+  let src = !Camlmix.source in
+  let name = sprintf "%s-img%i.png" src !image_counter in
+  images := (src, name) :: !images;
+  name
+
+let list_images () =
+  let tbl = Hashtbl.create 100 in
+  List.iter
+    (fun (src, name) -> 
+       let oc =
+	 try Hashtbl.find tbl src
+	 with Not_found ->
+	   let oc = open_out (src ^ ".images") in
+	   Hashtbl.add tbl src oc;
+	   oc in
+       fprintf oc "%s\n" name)
+    !images;
+  Hashtbl.iter (fun src oc -> close_out oc) tbl
+
+let _ = 
+  at_exit list_images;
+  at_exit (fun () -> memo#save)
+
+let latex ?preamble ?(valign = "middle") code =
+  try
+    let file = new_image () in
+    let f () = Latex.latex_image ?preamble code file in
+    memo#do_it ?preamble ~code ~file f;
+    printf "<img src=\"%s\" alt=\"%s\" style=\"vertical-align:%s\">" 
+      file code valign
+  with exn ->
+    let c = !Camlmix.char in
+    eprintf "File %S, line %i, characters %i-%i:\n"
+    !Camlmix.source !Camlmix.line c (c + String.length code - 1);
+    flush stderr;
+    raise exn

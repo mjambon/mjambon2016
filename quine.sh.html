@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>~/sync/dev/perso/mjambon/pages/quine.sh.html</title>
+<meta name="Generator" content="Vim/7.3">
+<meta name="plugin-version" content="vim7.3_v6">
+<meta name="syntax" content="bash">
+<meta name="settings" content="use_css">
+<style type="text/css">
+<!--
+pre { font-family: monospace; color: #000000; background-color: #ffffff; }
+body { font-family: monospace; color: #000000; background-color: #ffffff; }
+.Constant { color: #ff6060; }
+.PreProc { color: #ff40ff; }
+.Special { color: #ff40ff; }
+.Statement { color: #ffff00; }
+.Identifier { color: #00ffff; }
+-->
+</style>
+</head>
+<body>
+<pre>
+<span class="Identifier">echo2 () {</span>
+    <span class="Statement">echo</span> <span class="Special">-e</span> <span class="Statement">&quot;</span><span class="PreProc">$1</span><span class="Statement">&quot;</span>
+    <span class="Statement">echo</span> <span class="Statement">&quot;</span><span class="Constant">echo2 '</span><span class="PreProc">$1</span><span class="Constant">'</span><span class="Statement">&quot;</span>
+<span class="Identifier">}</span>
+
+echo2 <span class="Statement">'</span><span class="Constant">echo2 () {</span>
+<span class="Constant">    echo -e &quot;$1&quot;</span>
+<span class="Constant">    echo &quot;echo2 \047$1\047&quot;</span>
+<span class="Constant">}</span>
+<span class="Statement">'</span>
+</pre>
+</body>
+</html>

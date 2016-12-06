@@ -1,0 +1,191 @@
+open Printf
+
+let param = Caml2html.Output.default_param
+let code_param = param
+let pre_param = param
+let nature_param = { param with
+		       Caml2html.Output.line_numbers = true }
+
+let compact = function / "\n"* (_* Lazy as s) "\n"* eos / -> s
+
+let ocamlcode =
+  let param = Some code_param in
+  fun s ->
+    print_string (Caml2html.Output.ocamlcode ?param s)
+
+let ocamlpre = 
+  let param = Some pre_param in
+  fun s ->
+    print_string (Caml2html.Output.ocamlpre ?param (compact s))
+
+let ocamlnature = 
+  let param = Some nature_param in
+  fun s ->
+    print_string 
+    (Caml2html.Output.ocamlpre ?param ~tag_open:"<pre class=nature>" 
+       (compact s))
+
+
+let delim s = printf "<span style=\"color:990000\">%s</span>" s
+
+let tags ?clas = function
+    Some s -> 
+      sprintf "<%s%s>" s (match clas with None -> ""
+                            | Some c -> sprintf " class=%s" c),
+      sprintf "</%s>" s
+  | None -> "", ""
+
+let html_quote s =
+  let buf = Buffer.create 100 in
+  String.iter
+    (function
+	 '<' -> Buffer.add_string buf "&lt;"
+       | '>' -> Buffer.add_string buf "&gt;"
+       | '&' -> Buffer.add_string buf "&amp;"
+       | c -> Buffer.add_char buf c)
+    s;
+  Buffer.contents buf
+
+
+let color_camlmix ?(text = html_quote) ?(true_html = true) ?wrap s =
+  let lexbuf = Lexing.from_string s in
+  let l = Unmix.get lexbuf in
+  let (start_tag, end_tag) = tags wrap in
+  print_string start_tag;
+  List.iter
+    (function
+	 `Text s -> print_string (text s)
+       | `Code s -> 
+	   let buf = Buffer.create (10 * String.length s) in
+	   Caml2html.Output.ocaml ~param ~nbsp:true_html 
+	     buf (Caml2html.Input.string s); 
+	   print_string (Buffer.contents buf)
+       | `Sep s -> delim s)
+    l;
+  print_string end_tag
+
+let camlmixcode = color_camlmix ~true_html: true ~wrap: "code"
+let camlmixpre = color_camlmix ~true_html: false ~wrap: "pre"
+
+let a f = fun (any_channel : out_channel) -> f
+
+let ocamldoc ?impl_oc ?intf_oc title description intf impl =
+  printf 
+"<table class=ocamldoc cellspacing=\"0px\">
+<tr>
+<td>
+<div class=descr>
+<b>%s</b> %s
+%s
+</div>
+<div class=intf>%a</div>
+%a
+</td>
+</tr>
+</table>
+"
+    title
+    (if description <> "" then "-" else "")
+    description
+    (a ocamlpre) intf
+    (a ocamlpre) impl;
+
+  let export ?(add1 = ")\n") ?(add2 = "")opt s =
+    match opt with
+	None -> ()
+      | Some oc -> 
+	  fprintf oc "\n(*** %s ***%s%s\n%s\n" title add1 s add2 in
+  export intf_oc intf;
+  export impl_oc ~add1:(sprintf ":\n%s\n*)\n\n" intf) ~add2:";;\n" impl
+
+
+let file_link ?(html = false) file =
+  let name = Filename.basename file in
+  printf "<p>File <a href=\"%s\">%s</a>" file name;
+  if html then
+    printf " [<a href=\"%s\">html</a>]" (file ^ ".html");
+  printf ":\n"
+
+
+let bgcolor_ocaml ?file ?(html = false) ?(header = "") s = 
+  let map = 
+    MAP "@" (graph+ Lazy as tag) "@" (_* Lazy as contents) "@@" -> 
+      match tag with
+	  RE "=" (_* as style) -> `Style (Some style, contents)
+	| "verb" -> `Style (None, contents)
+	| color -> `Style (Some ("background:" ^ color), contents) in
+
+  let buf = Buffer.create 500 in
+  let file_link, export, finish =
+    match file with
+	None -> (fun () -> ()), (fun _ -> ()), (fun () -> ())
+      | Some name ->
+	  let oc = open_out name in
+	  (fun () -> file_link ~html name),
+	  (fun s -> output_string oc s), 
+	  (fun () -> close_out oc) in
+
+  export header;
+  Buffer.add_string buf header;
+
+  List.iter
+    (function
+	 `Text s ->
+	   export s;
+	   let l = Caml2html.Input.string s in
+	   Caml2html.Output.ocaml buf l
+       | `Style (style, s) ->
+	   export s;
+	   (match style with
+		Some st ->
+		  let l = Caml2html.Input.string s in
+		  bprintf buf "<span style=\"%s\">" st;
+		  Caml2html.Output.ocaml buf l;
+		  bprintf buf "</span>"
+	      | None -> 
+		  Buffer.add_string buf (html_quote s)))
+    (map s);
+  finish ();
+  file_link, Buffer.contents buf
+
+let bg_ocaml ?file ?html s =
+  let link, code = bgcolor_ocaml ?file ?html s in
+  link ();
+  printf "<pre>%s</pre>" code
+
+RE result_prefix = 
+    "val " 
+  | "- : "
+  | "exception "
+  | "type "
+  | "module "
+  | "class "
+  | "external "
+
+let ocamltop s =
+  let header, rest =
+    match s with
+	RE (_* Lazy 
+	      (bol space+ "Objective Caml version" _* Lazy eol)
+	      (space+ "Camlp4 Parsing version" _* Lazy eol)?
+	      space* as header : option) (_* as rest) -> header, rest
+      | _ -> None, s in
+	
+  let color_this = 
+    REPLACE
+      bol "# " (_* Lazy ";;" as prog)
+      ((<Not bol ("#" | result_prefix)> _)* as output)
+      ((bol result_prefix (<Not bol "#"> _)* )* as result)
+    | (bol "# " space* eos as prog = "" as output = "" as result = "") ->
+	sprintf "@=font-style:italic;color:red@#@@ \
+                 %s\
+                 @verb@%s@@\
+                 @=font-style:italic@%s@@"
+	  prog output result in
+
+  let _, code = bgcolor_ocaml ?header (color_this rest) in
+  printf "<pre>%s</pre>" code
+
+let ocaml_file ?html file =
+  file_link ?html file;
+  ocamlpre (Mikmatch.Text.file_contents file)

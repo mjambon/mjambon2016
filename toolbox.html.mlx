@@ -1,0 +1,449 @@
+##
+#use "topfind";;
+#require "caml2html";;
+#require "mikmatch_pcre";;
+#load "utils.cmo";;
+#load "unmix.cmo";;
+#load "print_ocaml.cmo";;
+#load "unlatex.cmo";;
+#load "color_latex.cmo";;
+open Printf
+open Utils
+open Camlmix
+##
+## include_file "doctype" ##
+<html>
+<head>
+## title "Toolbox for Camlmix" ##
+## include_file "charset" ##
+## include_file "stylesheet" ##
+## include_file "ocaml-stylesheet" ##
+## include_file "icon" ##
+## include_file "commonlinks" ##
+</head>
+<body>
+## include_file "hitcounter" ##
+## include_file "start_big_table" ##
+## top_menu ocaml ##
+<h1>Toolbox for Camlmix ## include_file "1camel" ##</h1>
+
+
+<p>
+This is a collection of useful tips and code for writing documents using  
+<a href="/camlmix">Camlmix</a> or
+its derivatives such as <a href="/camlremix.html">Camlremix</a>.
+Read the <a href="/camlmix">Camlmix tutorial</a> first.
+
+
+##
+let (toc_item0, toc_item1, toc_item2, toc_entry, toc_link) = make_toc ()
+##
+
+<div class=toc>
+<b>Table of contents</b><br>
+## toc_item0 ~id:"ocaml" "OCaml code samples" ##
+## toc_item1 ~id:"files" "File input" ##
+## toc_item1 ~id:"programs" "Calling external programs" ##
+## toc_item1 ~id:"printer" "Changing the default printer" ##
+## toc_item0 ~id:"web" "Tips and tricks for web documents" ##
+## toc_item1 ~id:"css" "Changing the colors in a stylesheet" ##
+## toc_item1 ~id:"latex" "Inserting LaTeX snippets" ##
+## toc_item0 ~id:"ppocaml" "Preprocessing OCaml files" ##
+</div>
+
+<p>
+Anyone is free to use, copy, modify or redistribute any 
+inlined example that may be found in the Camlmix Toolbox.
+<p>
+Disclaimer: No guarantee of any kind is given concerning the reliability 
+of this document.
+
+
+## toc_entry "ocaml" ##
+
+##
+open Print_ocaml
+
+let intf_oc = open_out "toolbox.mli"
+let impl_oc = open_out "toolbox.ml"
+let _ = 
+  let public = "(* The contents of this file is in the Public Domain. *)" in
+  fprintf impl_oc "%s\n
+(*
+   This file was automatically generated from a set of examples for Camlmix.
+   You can use it directly in a Camlmix file with the #use directive.
+
+   If you want to compile it with ocamlc or ocamlopt, you must
+   remove the references to the Camlmix module and remove the #load
+   directives.
+*)
+"
+    public;
+
+  fprintf intf_oc "%s\n\n" public
+
+let doc = ocamldoc ~intf_oc ~impl_oc
+##
+
+<p>
+The different samples are grouped by sections. Copy/paste them where
+you need them. They are not provided as a single library because they
+are too heterogenous and not complex enough too justify a library.
+However, if you are very impatient, you can 
+download ## download "toolbox.ml" ## and use it by editing the sample
+## download "test.camlmix" ##.
+You may also download ## download "toolbox.mli" ## for information.
+
+<p>
+The code samples are useful when using <a href="/camlmix">Camlmix</a>,
+but also probably in many other situations where 
+<a href="http://caml.inria.fr">OCaml</a> is used as a scripting language.
+They may also be useful for the OCaml beginner looking for short real-life
+examples rather than for Fibonacci numbers or the sieve of Eratosthenes.
+<code>;-)</code>
+
+## toc_entry "files" ##
+
+## doc "Scanning a whole channel" 
+"The function given as argument is 
+applied to each character of the channel, until the end is reached."
+"val read_chan : (char -> 'a) -> in_channel -> unit"
+"let read_chan f ic =
+  try
+    while true do
+      f (input_char ic)
+    done
+  with End_of_file -> ()"
+##
+
+## doc "Including a file"
+"The given file is inserted without any transformation."
+"val include_file : string -> unit"
+"let include_file file =
+  let ic = open_in_bin file in
+  read_chan print_char ic;
+  close_in ic"
+##
+
+## doc "Verbatim input in a HTML document"
+"Special characters are escaped so that the whole contents of the file
+is displayed."
+"val html_verbatim : string -> unit"
+"let html_verbatim file =
+  let ic = open_in_bin file in
+  print_string \"<pre>\\n\";
+  read_chan 
+    (function
+	 '<' -> print_string \"&lt;\"
+       | '>' -> print_string \"&gt;\"
+       | '&' -> print_string \"&amp;\"
+       | c -> print_char c)
+    ic;
+  print_string \"</pre>\";
+  close_in ic"
+##
+
+
+## toc_entry "programs" ##
+
+## doc "Calling an external program" 
+"For example, on Unix systems <code>command \"date\"</code>
+will print the current date."
+
+"val command : string -> unit"
+
+"let command s =
+  if Sys.command s = 0 then ()
+  else invalid_arg (\"command: \" ^ s)"
+##
+
+## doc "Recursive call to Camlmix" 
+"The insertion of a document that must be preprocessed with Camlmix
+without inheriting neither modifying the current environment
+is done by starting a new <code>camlmix</code> process.
+Most of the time, it is preferable to use the 
+<code>include</code> directive instead of this."
+
+"val camlmix : string -> unit"
+
+"let camlmix file = command (\"camlmix \" ^ file)"
+##
+
+## doc "Catching the output of a command"
+"This function converts the output of a system command into an OCaml string.
+This is useful in order to avoid to call the command several times or
+if some further processing is required.
+For instance, <code>slurp_command \"date\"</code> is
+the equivalent of the Unix shell command <code>`date`</code>.
+Note that this function should work on <b>every
+system</b>, including Windows and MacOS."
+
+"val slurp_command : string -> string"
+
+"#load \"unix.cma\"
+
+let read_command_output f s =
+  let ic = Unix.open_process_in s in
+  (try
+     while true do
+       f (input_char ic)
+     done
+   with End_of_file -> ());
+  match Unix.close_process_in ic with
+      Unix.WEXITED 0 -> ()
+    | _ -> invalid_arg (\"read_command_output: \" ^ s)
+
+let slurp_command s =
+  let buf = Buffer.create 100 in
+  read_command_output (Buffer.add_char buf) s;
+  Buffer.contents buf"
+##
+
+## doc "Using an external filter or converter"
+"It is sometimes useful to process some text using a command that
+read its input from <code>stdin</code> and writes its output to
+<code>stdout</code>. <code>feed command data</code> calls
+<code>command</code>, tells it to read <code>data</code> as its
+standard input. <code>sfeed</code> is the same as <code>feed</code> except
+that the result is put into a string.
+<code>ffeed</code> prints the results to the
+specified out_channel. <code>bfeed</code> prints the result into the
+specified buffer.
+<code>kfeed</code> is the general function that
+expects a handler function that will treat each character successively
+and may raise an exception."
+
+"val kfeed : (char -> 'a) -> string -> string -> unit
+val feed : string -> string -> unit
+val ffeed : out_channel -> string -> string -> unit
+val bfeed : Buffer.t -> string -> string -> unit
+val sfeed : string -> string -> string"
+
+"\
+(* Warning: the following function crashes in OCaml 3.09.2,
+   because of that bug: http://caml.inria.fr/mantis/view.php?id=4062
+   (close_out is applied a second time during Unix.close_process) *)
+let kfeed f command data =
+  let (ic, oc) as channels = Unix.open_process command in
+  output_string oc data;
+  close_out oc;
+  let exn = ref None in
+  (try
+     while true do
+       f (input_char ic)
+     done
+   with
+       End_of_file -> ()
+     | e -> exn := Some e);
+  (match Unix.close_process channels with
+       Unix.WEXITED 0 -> ()
+     | _ -> invalid_arg (\"feed_command: \" ^ command));
+  match !exn with
+      Some e -> raise e
+    | None -> ()
+
+let feed = kfeed print_char
+
+let ffeed oc command data = kfeed (output_char oc) command data
+
+let bfeed buf command data = kfeed (Buffer.add_char buf) command data
+
+let sfeed command data = 
+  let buf = Buffer.create (2 * String.length data) in
+  bfeed buf command data;
+  Buffer.contents buf"
+##
+
+## toc_entry "printer" ##
+
+<p>
+Normally Camlmix prints the document blocks without
+modifications and flushes the standard output. This behavior can
+be changed by using the <code>Camlmix.printer</code> hook.
+Note that <code>print_with</code> and <code>print_if</code> 
+are now predefined in the <code>Camlmix</code> module.
+
+## doc "Changing the printer only for the next block"
+"Here, we
+define a function <code>print_with</code> that will change the
+behavior of the printer only for the next block. For instance,
+<code>print_with ignore</code> will skip the next block."
+"val print_with : (string -> unit) -> unit"
+"let print_with f =
+  let saved_printer = !Camlmix.printer in
+  Camlmix.printer := (fun s -> f s; Camlmix.printer := saved_printer)"
+##
+
+## doc "Conditional output of the next block"
+"Most of the time, pure OCaml code is convenient enough to display
+text under certain conditions as in 
+<code>print_string (if test then \"hello\" else \"goodbye\")</code>.
+However, when the text to display is long and contains many double
+quotes (<code>\"</code>) or backslashes (<code>\\</code>), 
+it becomes difficult to protect each of them by manually adding
+backslashes. The following <code>print_if</code> function will
+print the next block if its argument is <code>true</code> and ignore
+it otherwise."
+"val print_if : bool -> unit"
+"let print_if test =
+  if not test then print_with ignore"
+##
+
+
+
+
+## toc_entry "web" ##
+
+<p>
+All the examples that are given in this section require
+the standard distribution of OCaml and the OCaml functions that are
+defined in the previous section, and sometimes some external commands or
+utilities that may or may not be available for every OS.
+
+## toc_entry "css" ##
+
+<p>
+Place the definitions of the colors in several Camlmix files. Write a
+unique CSS using Camlmix insertions for the colors.
+For instance, file <code>orange_style.mlx</code> is the following:
+## print_with camlmixpre ##
+### let main_color = "orange" ###
+## () ##
+<p>File <code>blue_style.mlx</code> is the following:
+## print_with camlmixpre ##
+### let main_color = "blue" ###
+## () ##
+<p><code>style.css.mlx</code> looks like this:
+
+## print_with camlmixpre ##
+body {
+  color: ### main_color () ###;
+}
+...
+table {
+  border: solid ### main_color () ### 3px;
+}
+...
+## () ##
+
+<p>And Camlmix will generate 2 stylesheets for the price of one:
+<pre>
+camlmix -o orange.css orange_style.mlx style.css.mlx
+camlmix -o blue.css blue_style.mlx style.css.mlx
+</pre>
+
+
+## toc_entry "latex" ##
+
+<p>
+For example, the following Camlmix/HTML/LaTeX code:
+## 
+print_with 
+  (fun s -> camlmixpre ~text: Color_latex.html_decorate_latex (jump s))
+##
+### print_with latex ###
+\Huge
+This is a \LaTeX\ formula: % and that is a comment
+$$
+x \rightarrow \frac{1}{\sigma\sqrt{2\pi}} \cdot
+              e^{-\frac{(x-\mu)^2}{2\sigma^2}}
+$$
+### () ###
+## () ##
+
+<p>
+will be inserted into the HTML document just like this:
+## print_with latex ##
+\Huge
+This is a \LaTeX\ formula: % and that is a comment
+$$
+x \rightarrow \frac{1}{\sigma\sqrt{2\pi}} \cdot
+              e^{-\frac{(x-\mu)^2}{2\sigma^2}}
+$$
+## () ##
+
+<p>
+For this, we will define one OCaml function of general purpose that 
+converts a piece of LaTeX into an image, and then some Camlmix-dependent 
+code that makes it convenient to use from a Camlmix/HTML file.
+
+<p>
+The following function <code>latex_image</code> 
+generates an image of the given LaTeX code and
+saves it under the given file name.
+It requires <code>latex</code>, <code>dvips</code> and 
+<code>convert</code> (ImageMagick) in a Unix environment.
+The format of the image is inferred from its extension.
+The size of the font can be changed with the usual LaTeX commands such as
+\large and \small.
+The <code>file_memo</code> class is defined in order 
+to recompute only the images that need to be recomputed.
+We put these functions in a file named <code>latex.ml</code>.
+## ocamlpre (file_contents "latex.ml") ##
+
+<p>
+From a Camlmix/HTML file, we can define a <code>latex</code> function
+that will automatically choose a name for the file, insert the HTML
+code that displays the image and finally update a list of the images that
+were generated so that the right image files 
+can be uploaded to the public website.
+Recompilation of the images occurs only if needed.
+File <code>latex.mlx</code> can be written as follows:
+## camlmixpre (file_contents "latex.mlx") ##
+
+
+## toc_entry "ppocaml" ##
+
+<p>
+It is possible to use Camlmix as a preprocessor for OCaml files.
+This can be useful for merging or including files, or inserting
+characters at any point of the file, which is not possible with Camlp4.
+A command for compiling a file has the following form:
+<pre>
+$ ocamlc -c -pp 'camlmix ppocaml.mlx' -impl my_source_file.mlx
+</pre>
+<p>
+or simply
+<pre>
+$ ocamlc -c -pp 'camlmix ppocaml.mlx' my_source_file.ml
+</pre>
+<p>
+where ## download "ppocaml.mlx" ## is here to generate correct
+error reports whenever a compilation error occurs:
+## print_with (bg_ocaml ~file:"ppocaml.mlx") ##
+###
+(* File ppocaml.mlx: OCaml-style line directives for camlmix-processed files *)
+
+let _ = 
+  let line_directive () =
+    Printf.sprintf "# %i %S\n%s" 
+      !Camlmix.line !Camlmix.source (String.make (!Camlmix.char - 1) ' ') in
+
+  let default_printer = !Camlmix.printer in
+
+  let new_printer s =
+    default_printer (line_directive ());
+    default_printer s in
+
+  Camlmix.printer := new_printer
+## () ##
+<p>
+For instance, <code>my_source_file.mlx</code> could look like this:
+## print_with ocamlpre ##
+### @include "some_definitions.mlx" ###
+
+(* some local OCaml code *)
+...
+
+### @include "more_definitions.mlx" ###
+
+(* more local OCaml code *)
+...
+## () ##
+<p>
+And the included files themselves can include other files.
+
+## camlmix_footer ~years:"2004" () ##
+## include_file "end_big_table" ##
+</body>
+</html>

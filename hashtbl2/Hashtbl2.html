@@ -1,0 +1,170 @@
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<link rel="Start" href="index.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Hashtbl2" rel="Chapter" href="Hashtbl2.html"><title>Hashtbl2</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a href="index.html">Up</a>
+&nbsp;</div>
+<center><h1>Module <a href="type_Hashtbl2.html">Hashtbl2</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> Hashtbl2: <code class="type">sig  end</code></pre><div class="info">
+This module provides a kind of hash tables where each key is 
+present only once in the table, as opposed to the naive usage of 
+the standard <code class="code">Hashtbl</code> module.
+Its main purpose is to provide efficient implementation
+of functions such as <code class="code">list_keys</code> with enhanced safety
+over the direct use of an <code class="code">('a, 'b list ref) Hashtbl.t</code> type.
+Many functions have two variants:<ul>
+<li>the first one is applied only on the current bindings, like
+<code class="code">iter</code>.</li>
+<li>the second one has the <code class="code">_all</code> suffix like <code class="code">iter_all</code>
+and is applied to the list of 
+all the values that are bound to the given key 
+instead of only to the topmost value.
+This list of values
+is prebuilt, so there is no cost for building the list when
+such a function is applied.</li>
+</ul>
+
+Example - clustering elements:
+<p>
+
+<code class="code">Hashtbl2.list_all (Hashtbl2.of_list 10 [ (1, "a"); (2, "b"); (1, "c") ])</code>
+<p>
+
+returns <code class="code">[(2, ["b"]); (1, ["c"; "a"])]</code>.
+<p>
+
+<code class="code">Hashtbl2</code> is an additional layer over the standard <code class="code">Hashtbl</code> module.<br>
+<b>Author(s): </b>Martin Jambon<br>
+</div>
+<hr width="100%">
+<pre><span class="keyword">type</span> <a name="TYPEt"></a><code class="type">('a, 'b)</code> t </pre>
+<div class="info">
+The type of hash tables from type <code class="code">'a</code> to type <code class="code">'b</code>.
+   This representation is suitable for clustering elements 
+   according to the given keys.<br>
+</div>
+
+<pre><span class="keyword">val</span> <a name="VALcreate"></a>create : <code class="type">int -> ('a, 'b) <a href="Hashtbl2.html#TYPEt">t</a></code></pre><div class="info">
+<code class="code">Hashtbl2.create n</code> creates a new, empty hash table, with
+   initial size <code class="code">n</code>.  For best results, <code class="code">n</code> should be on the
+   order of the expected number of elements that will be in
+   the table.  The table grows as needed, so <code class="code">n</code> is just an
+   initial guess.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALclear"></a>clear : <code class="type">('a, 'b) <a href="Hashtbl2.html#TYPEt">t</a> -> unit</code></pre><div class="info">
+Empty a hash table.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALadd"></a>add : <code class="type">('a, 'b) <a href="Hashtbl2.html#TYPEt">t</a> -> 'a -> 'b -> unit</code></pre><div class="info">
+<code class="code">Hashtbl2.add tbl x y</code> adds a binding of <code class="code">x</code> to <code class="code">y</code> in table <code class="code">tbl</code>.
+   Previous bindings for <code class="code">x</code> are not removed, but simply
+   hidden. That is, after performing <a href="Hashtbl2.html#VALremove"><code class="code">Hashtbl2.remove</code></a><code class="code"> tbl x</code>,
+   the previous binding for <code class="code">x</code>, if any, is restored.
+   (Same behavior as with association lists.)<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALcopy"></a>copy : <code class="type">('a, 'b) <a href="Hashtbl2.html#TYPEt">t</a> -> ('a, 'b) <a href="Hashtbl2.html#TYPEt">t</a></code></pre><div class="info">
+Return a copy of the given hashtable.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALfind"></a>find : <code class="type">('a, 'b) <a href="Hashtbl2.html#TYPEt">t</a> -> 'a -> 'b</code></pre><div class="info">
+<code class="code">Hashtbl2.find tbl x</code> returns the current binding of <code class="code">x</code> in <code class="code">tbl</code>,
+   or raises <code class="code">Not_found</code> if no such binding exists.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALfind_all"></a>find_all : <code class="type">('a, 'b) <a href="Hashtbl2.html#TYPEt">t</a> -> 'a -> 'b list</code></pre><div class="info">
+<code class="code">Hashtbl2.find_all tbl x</code> returns the list of all data
+   associated with <code class="code">x</code> in <code class="code">tbl</code>.
+   The current binding is returned first, then the previous
+   bindings, in reverse order of introduction in the table.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALmem"></a>mem : <code class="type">('a, 'b) <a href="Hashtbl2.html#TYPEt">t</a> -> 'a -> bool</code></pre><div class="info">
+<code class="code">Hashtbl2.mem tbl x</code> checks if <code class="code">x</code> is bound in <code class="code">tbl</code>.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALremove"></a>remove : <code class="type">('a, 'b) <a href="Hashtbl2.html#TYPEt">t</a> -> 'a -> unit</code></pre><div class="info">
+<code class="code">Hashtbl2.remove tbl x</code> removes the current binding of <code class="code">x</code> in <code class="code">tbl</code>,
+   restoring the previous binding if it exists.
+   It does nothing if <code class="code">x</code> is not bound in <code class="code">tbl</code>.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALremove_all"></a>remove_all : <code class="type">('a, 'b) <a href="Hashtbl2.html#TYPEt">t</a> -> 'a -> unit</code></pre><div class="info">
+<code class="code">Hashtbl2.remove_all tbl x</code> removes all bindings of <code class="code">x</code> in <code class="code">tbl</code>.
+    It does nothing if <code class="code">x</code> is not bound in <code class="code">tbl</code>.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALreplace"></a>replace : <code class="type">('a, 'b) <a href="Hashtbl2.html#TYPEt">t</a> -> 'a -> 'b -> unit</code></pre><div class="info">
+<code class="code">Hashtbl2.replace tbl x y</code> replaces the current binding of <code class="code">x</code>
+   in <code class="code">tbl</code> by a binding of <code class="code">x</code> to <code class="code">y</code>.  If <code class="code">x</code> is unbound in <code class="code">tbl</code>,
+   a binding of <code class="code">x</code> to <code class="code">y</code> is added to <code class="code">tbl</code>.
+   This is functionally equivalent to <a href="Hashtbl2.html#VALremove"><code class="code">Hashtbl2.remove</code></a><code class="code"> tbl x</code>
+   followed by <a href="Hashtbl2.html#VALadd"><code class="code">Hashtbl2.add</code></a><code class="code"> tbl x y</code>.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALreplace_all"></a>replace_all : <code class="type">('a, 'b) <a href="Hashtbl2.html#TYPEt">t</a> -> 'a -> 'b list -> unit</code></pre><div class="info">
+<code class="code">Hashtbl2.replace_all tbl x y</code> replaces all bindings of <code class="code">x</code>
+    in <code class="code">tbl</code> by bindings of <code class="code">x</code> to the elements of <code class="code">y</code>.
+    The first element of <code class="code">y</code> defines the current binding,
+    the second element is the defined the previous binding, and so on.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALiter"></a>iter : <code class="type">('a -> 'b -> unit) -> ('a, 'b) <a href="Hashtbl2.html#TYPEt">t</a> -> unit</code></pre><div class="info">
+<code class="code">Hashtbl2.iter f tbl</code> applies <code class="code">f</code> to current bindings in table <code class="code">tbl</code>.
+   <code class="code">f</code> receives the key as first argument, and the associated value
+   as second argument. Each current binding is presented exactly once to <code class="code">f</code>.
+   Hidden bindings are ignored.
+   The order in which the bindings are passed to <code class="code">f</code> is unspecified.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALiter_all"></a>iter_all : <code class="type">('a -> 'b list -> unit) -> ('a, 'b) <a href="Hashtbl2.html#TYPEt">t</a> -> unit</code></pre><div class="info">
+<code class="code">Hashtbl2.iter_all f tbl</code> applies <code class="code">f</code> to all bindings in table <code class="code">tbl</code>.
+   <code class="code">f</code> receives the key as first argument, and all the associated values
+   as second argument in reverse order of introduction in the table.
+   The order in which the bindings are passed to <code class="code">f</code> is unspecified.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALfold"></a>fold : <code class="type">('a -> 'b -> 'c -> 'c) -> ('a, 'b) <a href="Hashtbl2.html#TYPEt">t</a> -> 'c -> 'c</code></pre><div class="info">
+<code class="code">Hashtbl2.fold f tbl init</code> computes
+   <code class="code">(f kN dN ... (f k1 d1 init)...)</code>,
+   where <code class="code">k1 ... kN</code> are the keys of current bindings in <code class="code">tbl</code>,
+   and <code class="code">d1 ... dN</code> are the associated values.
+   Each current binding is presented exactly once to <code class="code">f</code>.
+   Hidden bindings are ignored.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALfold_all"></a>fold_all : <code class="type">('a -> 'b list -> 'c -> 'c) -> ('a, 'b) <a href="Hashtbl2.html#TYPEt">t</a> -> 'c -> 'c</code></pre><div class="info">
+<code class="code">Hashtbl2.fold_all f tbl init</code> computes
+   <code class="code">(f kN lN ... (f k1 l1 init)...)</code>,
+   where <code class="code">k1 ... kN</code> are the keys of all bindings in <code class="code">tbl</code>,
+   and <code class="code">l1 ... lN</code> are the lists of associated values, in reverse order
+   of introduction in the table.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALlist_keys"></a>list_keys : <code class="type">('a, 'b) <a href="Hashtbl2.html#TYPEt">t</a> -> 'a list</code></pre><div class="info">
+<code class="code">Hashtbl2.list_keys tbl</code> returns a list of all the keys
+   from the current bindings. Therefore no key is duplicated.
+   Order is unspecified.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALlist_values"></a>list_values : <code class="type">('a, 'b) <a href="Hashtbl2.html#TYPEt">t</a> -> 'b list</code></pre><div class="info">
+<code class="code">Hashtbl2.list_values tbl</code> returns a list of all the values
+   from the current bindings. Hidden bindings are ignored.
+   Order is unspecified.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALlist_all_values"></a>list_all_values : <code class="type">('a, 'b) <a href="Hashtbl2.html#TYPEt">t</a> -> 'b list list</code></pre><div class="info">
+<code class="code">Hashtbl2.list_all_values tbl</code> returns a list of all the values
+   from all bindings. Order is unspecified.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALlist"></a>list : <code class="type">('a, 'b) <a href="Hashtbl2.html#TYPEt">t</a> -> ('a * 'b) list</code></pre><div class="info">
+<code class="code">Hashtbl2.list tbl</code> returns a list of the current bindings.
+   Order is unspecified.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALlist_all"></a>list_all : <code class="type">('a, 'b) <a href="Hashtbl2.html#TYPEt">t</a> -> ('a * 'b list) list</code></pre><div class="info">
+<code class="code">Hashtbl2.list_all tbl</code> returns a list of all the bindings clustered
+   according to their key. Order is unspecified.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALof_list"></a>of_list : <code class="type">int -> ('a * 'b) list -> ('a, 'b) <a href="Hashtbl2.html#TYPEt">t</a></code></pre><div class="info">
+<code class="code">Hashtbl2.of_list n l</code> converts a list of bindings into 
+   a hash table of initial size <code class="code">n</code>. The ordering of the list is the order
+   of introduction of the bindings in the table.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALof_keys"></a>of_keys : <code class="type">int -> 'a list -> ('a, unit) <a href="Hashtbl2.html#TYPEt">t</a></code></pre><div class="info">
+<code class="code">Hashtbl2.of_keys n l</code> converts a list of elements into
+   a hash table of initial size <code class="code">n</code> containing unique copies of these
+   elements bound at most one time to <code class="code">()</code>.<br>
+</div>
+</body></html>

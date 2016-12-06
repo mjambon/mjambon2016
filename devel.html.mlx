@@ -1,0 +1,60 @@
+##
+#use "topfind";;
+#require "caml2html";;
+#require "mikmatch_pcre";;
+#load "unmix.cmo";;
+#load "print_ocaml.cmo";;
+#load "utils.cmo";;
+open Print_ocaml
+open Utils
+##
+## include_file "doctype" ##
+<html>
+<head>
+## title "Software by Martin Jambon" ##
+## include_file "charset" ##
+## include_file "stylesheet" ##
+## include_file "ocaml-stylesheet" ##
+## include_file "icon" ##
+## include_file "commonlinks" ##
+</head>
+<body>
+## include_file "hitcounter" ##
+## include_file "start_big_table" ##
+## top_menu ~here:false ocaml ##
+<h1>Non-OCaml software being developed here</h1>
+<p>
+<a href="http://caml.inria.fr">OCaml</a> programming is my main occupation.
+I have a dedicated <a href="/ocaml.html">OCaml page</a>.
+
+<p>
+<table class=list cellspacing="1em">
+##
+let section_row s = 
+  Printf.printf 
+    "<tr><td colspan=\"2\" \
+     style=\"background:silver; text-align:center; font-weight:bold\">\
+     %s</td></tr>" s
+##
+
+## section_row "PHP programs" ##
+
+<tr><th>Biblio.php</th>
+<td class=normal> <a href="biblio_php.html">Biblio.php</a>
+is an extension of the MediaWiki wiki engine (the one used by
+<a href="http://www.wikipedia.org">Wikipedia</a>). It provides a citation
+system based on keys, a bit like like LaTeX with Bibtex. 
+The cool thing is that
+<a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi">PubMed</a> 
+references are automatically downloaded from the PubMed webservice, so that
+you only need to give the PubMed identifier (PMID) 
+instead of a complete citation with a link to the PubMed abstract.
+</td>
+</tr>
+
+</table>
+
+## camlmix_footer ~years:"2005" () ##
+## include_file "end_big_table" ##
+</body>
+</html>

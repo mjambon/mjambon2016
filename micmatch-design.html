@@ -1,0 +1,265 @@
+
+<!doctype html>
+
+<html>
+<head>
+<title>Micmatch - Design Notes</title>
+<meta http-equiv="content-Type" content="text/html; charset=utf-8">
+
+<link rel="stylesheet" href="/base.css" type="text/css">
+
+<link rel="stylesheet" href="/ocaml.css" type="text/css">
+
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+<link rel="home" href="/">
+<link rel="author" href="/people.html#martin">
+
+</head>
+<body>
+
+<div id="page">
+
+
+<div>
+<table id=top_menu cellspacing=0>
+<tr>
+  <td><a href="/">Main</a></td>
+  <td class="current_topic"><a href="/ocaml.html">Software</a></td>
+  <td><a href="/releases">Downloads</a></td>
+  <td><a href="/other.html">Other</a></td>
+</tr>
+</table>
+</div>
+
+
+
+
+<h1>Micmatch - Design Notes</h1>
+
+<p>
+This is a collection of notes concerning debatable aspects of 
+the design of the <a href="micmatch.html">Micmatch system</a>.
+Use <a href="http://ocaml.pbwiki.com/Micmatch">the wiki</a> if you
+want to share your views.
+
+
+
+
+<div class=toc>
+<b>Contents</b><br>
+<a href="#syntax" class=toc0>1. Syntax</a><br>
+<a href="#general" class=toc1>1.1 General syntax of regexps</a><br>
+<a href="#uppercase" class=toc1>1.2 Uppercase keywords</a><br>
+<a href="#match" class=toc2>1.2.1 "match" patterns</a><br>
+<a href="#macros" class=toc2>1.2.2 Name of the macros</a><br>
+<a href="#options" class=toc1>1.3 Type of named subgroups</a><br>
+
+<a href="#libraries" class=toc0>2. Choice of regexp libraries</a><br>
+<a href="#diversity" class=toc1>2.1 Diversity</a><br>
+<a href="#pcre" class=toc1>2.2 PCRE</a><br>
+
+<a href="#standard" class=toc0>3. Compatibility issues</a><br>
+<a href="#versions" class=toc1>3.1 Versions</a><br>
+<a href="#ocaml" class=toc1>3.2 Cohabitation with other syntax extensions</a><br>
+</div>
+
+<h2 id=syntax>1. Syntax</h2>
+
+<h3 id=general>1.1 General syntax of regexps</h3>
+<p>
+The general syntax for regular expressions is based on what is already
+in use in ocamllex. Regular expressions are often not so simple, and 
+representing them as a compact string which is full of backslashes (\)
+is definitely not user-friendly. With our syntax, the different tokens
+of the regexp can be highlighted by the text editor, and there is no
+need to know a list of "special characters". Special characters are
+simply not mixed with characters that we want to match.
+
+
+<h3 id=uppercase>1.2 Uppercase keywords</h3>
+
+<p>
+I would like to keep the current uppercase convention for
+all the newly created alphabetic keywords because it makes it clear that 
+they are part of a syntax extension, not regular identifiers of the
+core OCaml language. This should make things easier for people
+who don't know by heart all the keywords of either OCaml or Micmatch.
+
+<h4 id=match>1.2.1 "match" patterns</h4>
+
+<p>
+<pre><span class="Cmatch">match</span> <span class="Cstring">"abc def"</span> <span class="Cwith">with</span>
+    <span class="Cconstructor">RE</span> graph<span class="Cnonalphakeyword">+</span> <span class="Cas">as</span> x <span class="Cnonalphakeyword">-&gt;</span> x
+  <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cstring">"???"</span></pre>
+<p>
+In the previous example, it is easy to notice that <code>RE</code> is 
+a new keyword which introduces a section of code with a special
+syntax. 
+Keyword <code>as</code> uses lowercase characters since
+it already exists as a keyword in regular OCaml patterns and
+in ocamllex regexps with an analogous meaning.
+<p>
+However the sandwich form for regexp patterns sometimes looks nicer than
+the <code>RE</code> notation. It is supported since version 0.689
+and is strictly equivalent:
+<pre><span class="Cmatch">match</span> <span class="Cstring">"abc def"</span> <span class="Cwith">with</span>
+    / graph<span class="Cnonalphakeyword">+</span> <span class="Cas">as</span> x / <span class="Cnonalphakeyword">-&gt;</span> x
+  <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cstring">"???"</span></pre>
+<p>
+Another syntax in the same style as stream parsers could have been chosen:
+<pre><span class="Cmatch">match</span> <span class="Cstring">"abc def"</span> <span class="Cwith">with</span>
+    <span class="Cnonalphakeyword">[</span>/ graph<span class="Cnonalphakeyword">+</span> <span class="Cas">as</span> x /<span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span> x
+  <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cstring">"???"</span></pre>
+<p>
+Advantages of / ... / : easier to type; lighter for short regexps.<br>
+Advantages of [/ ... /] : easier to read, especially with a text-editor which
+detects matching brackets (but we can always add parentheses 
+to make things clear); avoids the use of parentheses in some rare cases;
+more consistent with the existing OCaml syntax and other syntax extensions.
+<p>
+Question: what do people prefer? If you have a preference, please let me know.
+We might switch to the [/ ... /] notation but we can't keep both because 
+putting a space between the [ and the / would have a different meaning, which
+would be disastrous for code readability.
+
+<h4 id=macros>1.2.2 Name of the macros</h4>
+<p>
+The various "macros" which are available in the PCRE variant of
+Micmatch all use uppercase characters. Maybe this looks not very
+beautiful for syntaxic constructs which are much more subtle than
+C macros, but once again it avoids confusion for the new users and
+has few chances to interfere with other library functions:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> split_list <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SPLIT</span> space<span class="Cnonalphakeyword">*</span> <span class="Cstring">","</span> space<span class="Cnonalphakeyword">*</span> <span class="Ccomment">(* SPLIT keyword *)</span> <span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cval">val</span> split_list : <span class="Cnonalphakeyword">?</span>full:bool <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">?</span>pos:int <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">-&gt;</span> string list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">&lt;</span><span class="Cfun">fun</span><span class="Cnonalphakeyword">&gt;</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> split_list <span class="Cstring">"a, b, cde"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : string list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span><span class="Cstring">"a"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"b"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"cde"</span><span class="Cnonalphakeyword">]</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Cconstructor">Pcre</span><span class="Cnonalphakeyword">.</span>split <span class="Ccomment">(* good, lowercase split is not a keyword *)</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : <span class="Cnonalphakeyword">?</span>iflags:<span class="Cconstructor">Pcre</span><span class="Cnonalphakeyword">.</span>irflag <span class="Cnonalphakeyword">-&gt;</span>
+    <span class="Cnonalphakeyword">?</span>flags:<span class="Cconstructor">Pcre</span><span class="Cnonalphakeyword">.</span>rflag list <span class="Cnonalphakeyword">-&gt;</span>
+    <span class="Cnonalphakeyword">?</span>rex:<span class="Cconstructor">Pcre</span><span class="Cnonalphakeyword">.</span>regexp <span class="Cnonalphakeyword">-&gt;</span>
+    <span class="Cnonalphakeyword">?</span>pat:string <span class="Cnonalphakeyword">-&gt;</span>
+    <span class="Cnonalphakeyword">?</span>pos:int <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">?</span>max:int <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">?</span>callout:<span class="Cconstructor">Pcre</span><span class="Cnonalphakeyword">.</span>callout <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">-&gt;</span> string
+    list
+<span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">&lt;</span><span class="Cfun">fun</span><span class="Cnonalphakeyword">&gt;</span>
+</span></pre>
+
+<p>
+Finally, the <code>Lazy</code> and <code>Possessive</code> annotations
+that can be found in regexps play the role of keyword withing regexps
+but technically are not keywords since you can use them normally outside
+of regexps. So the <code>Lazy</code> module of the standard library of OCaml
+can still be used without any problem.
+
+
+<h3 id=options>1.3 Type of named subgroups</h3>
+<p>
+In ocamllex patterns, if a binding does not appear on each side of an
+alternative (<code><span class="Cbar">|</span></code>), 
+then the identifier is associated with a value of
+type string option. In the following, the identifier
+<code>greeting</code> can have 3 possible values: 
+<code><span class="Cconstructor">Some</span>&nbsp;<span class="Cstring">"Hello"</span></code>, <code><span class="Cconstructor">Some</span>&nbsp;<span class="Cstring">"hello"</span></code> or
+<code><span class="Cconstructor">None</span></code>:
+<pre><span class="Cnonalphakeyword">[</span><span class="Cstring">'H'</span><span class="Cstring">'h'</span><span class="Cnonalphakeyword">]</span><span class="Cstring">"ello"</span> <span class="Cas">as</span> greeting <span class="Cbar">|</span> <span class="Cstring">""</span>    <span class="Cnonalphakeyword">{</span> greeting <span class="Cnonalphakeyword">}</span></pre>
+<p>
+In Micmatch, this is an invalid pattern since each binding must
+occur on both sides of an alternative. This follows the behavior of
+the regular pattern-matching of OCaml. It is not a real problem since
+in this case the empty string <code><span class="Cstring">""</span></code> is equivalent to 
+<code><span class="Cconstructor">None</span></code> (matching the empty string always succeeds):
+<pre><span class="Cmatch">match</span> read_line <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cwith">with</span>
+    <span class="Cconstructor">RE</span> <span class="Cnonalphakeyword">[</span><span class="Cstring">'H'</span><span class="Cstring">'h'</span><span class="Cnonalphakeyword">]</span><span class="Cstring">"ello"</span> <span class="Cas">as</span> greeting <span class="Cbar">|</span> <span class="Cnonalphakeyword">(</span><span class="Cstring">""</span> <span class="Cas">as</span> greeting<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> greeting</pre>
+<p>
+Which would be preferably written as:
+<pre><span class="Cmatch">match</span> read_line <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cwith">with</span>
+    <span class="Cconstructor">RE</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">[</span><span class="Cstring">'H'</span><span class="Cstring">'h'</span><span class="Cnonalphakeyword">]</span><span class="Cstring">"ello"</span> <span class="Cbar">|</span> <span class="Cstring">""</span><span class="Cnonalphakeyword">)</span> <span class="Cas">as</span> greeting <span class="Cnonalphakeyword">-&gt;</span> greeting</pre>
+<p>
+Or just:
+<pre><span class="Cmatch">match</span> read_line <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cwith">with</span>
+    <span class="Cconstructor">RE</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">[</span><span class="Cstring">'H'</span><span class="Cstring">'h'</span><span class="Cnonalphakeyword">]</span><span class="Cstring">"ello"</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">?</span> <span class="Cas">as</span> greeting <span class="Cnonalphakeyword">-&gt;</span> greeting</pre>
+
+
+
+<h2 id=libraries>2. Choice of regexp libraries</h2>
+
+<h3 id=diversity>2.1 Diversity</h3>
+<p>
+Currently, support is provided for 2 regexp libraries: Str and PCRE.
+First, it shows that other libraries could be used in the future with a
+minimum of efforts since a large part of the implementation of Micmatch
+is already shared between the 2 variants.
+Second, it shows that Micmatch is just a layer over existing
+regexp libraries.
+
+<h3 id=pcre>2.2 PCRE</h3>
+<p>
+<a href="http://www.pcre.org/">PCRE</a> is a popular library which provides many useful and
+documented features.
+There was an existing interface for OCaml (<a href="http://www.ai.univie.ac.at/~markus/home/ocaml_sources.html">PCRE-OCaml</a>)
+so this why a variant of Micmatch which uses PCRE has been implemented
+and is now preferred over the other one.
+
+
+<h2 id=standard>3. Compatibility issues</h2>
+
+
+<h3 id=versions>3.1 Versions</h3>
+<p>
+Micmatch has been used with great satisfaction (at least) by its author,
+for reading various data files in 
+<a href="http://wikiomics.org/wiki/Bioinformatics">bioinformatics</a>
+(writing parsers for these files does not take more time than
+understanding their format).
+
+<p>
+Thus, the version 1.0 of Micmatch will be released soon, hopefully,
+and should not be much different from the current version.
+Subsequent versions (1.x) will remain backward compatible 
+with the specifications of the reference manual 1.0.
+
+<h3 id=ocaml>3.2 Cohabitation with other syntax extensions</h3>
+<p>
+Micmatch is implemented as a syntax extension of Objective Caml using
+the Camlp4 technology. It can be used with the regular syntax
+of OCaml and in theory also with the revised syntax although it has
+not been tested.
+
+<p>
+In theory it should play well with other syntax extensions as long as
+they don't redefine the <code>match ... with</code>, 
+<code>try ... with</code> and <code>function ... -&gt;</code>
+constructs since they are overwritten by Micmatch.
+
+<p>
+In the worst case when there would be an incompatibility between Micmatch
+and another syntax extension, it is still possible to isolate the
+Micmatch-dependent code in a separate file and preprocess only this
+file with Micmatch.
+
+
+<div id=footer>
+&copy;&nbsp;2007&nbsp;Martin&nbsp;Jambon &lt;<a href="mailto:martin@mjambon.com">martin@mjambon.com</a>&gt;
+</div>
+
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-640255-1";
+urchinTracker();
+</script>
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+<!-- 
+var sc_project=370325; 
+var sc_partition=1; 
+//-->
+</script>
+
+<script type="text/javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><p><a href="http://www.statcounter.com/"><img src="http://c2.statcounter.com/counter.php?sc_project=370325&amp;java=0" alt="counter"></a></p></noscript>
+<!-- End of StatCounter Code -->
+
+</body>
+</html>

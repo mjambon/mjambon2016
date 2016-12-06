@@ -1,0 +1,46 @@
+Usage: ./cppo [OPTIONS] [FILE1 [FILE2 ...]]
+Options:
+  -D DEF
+          Equivalent of interpreting '#define DEF' before processing the
+          input
+  -U IDENT
+          Equivalent of interpreting '#undef IDENT' before processing the
+          input
+  -I DIR
+          Add directory DIR to the search path for included files
+  -o FILE
+          Output file
+  -q 
+          Identify and preserve camlp4 quotations
+  -s 
+          Output line directives pointing to the exact source location of 
+          each token, including those coming from the body of macro 
+          definitions.  This behavior is off by default.
+  -n 
+          Do not output any line directive other than those found in the 
+          input (overrides -s).
+  -version 
+          Print the version of the program and exit.
+  -x NAME:CMD_TEMPLATE
+          Define a custom preprocessor target section starting with:
+            #ext "NAME"
+          and ending with:
+            #endext
+
+          NAME must be a lowercase identifier of the form [a-z][A-Za-z0-9_]*
+
+          CMD_TEMPLATE is a command template supporting the following
+          special sequences:
+            %F  file name (unescaped; beware of potential scripting attacks)
+            %B  number of the first line
+            %E  number of the last line
+            %%  a single percent sign
+
+          Filename, first line number and last line number are also
+          available from the following environment variables:
+          CPPO_FILE, CPPO_FIRST_LINE, CPPO_LAST_LINE.
+
+          The command produced is expected to read the data lines from stdin
+          and to write its output to stdout.
+  -help  Display this list of options
+  --help  Display this list of options

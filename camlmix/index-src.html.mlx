@@ -1,0 +1,33 @@
+##
+open Printf
+open Camlmix
+#use "version.ml"
+#load "../utils.cmo"
+#use "topfind"
+#require "caml2html"
+#require "mikmatch_pcre"
+#load "../unmix.cmo"
+#load "../print_ocaml.cmo"
+#directory ".."
+open Print_ocaml
+open Utils
+##
+<html>
+<head>
+## title "/camlmix/index.html.mlx" ##
+## include_file "../charset" ##
+## include_file "../stylesheet" ##
+## include_file "../ocaml-stylesheet" ##
+## include_file "../icon" ##
+## include_file "../commonlinks" ##
+</head>
+<body>
+## include_file "../hitcounter" ##
+
+<pre style="border:0px">
+## color_camlmix ~text:html ~true_html: false
+     (slurp_command "/bin/cat index.html.mlx") ##
+</pre>
+
+</body>
+</html>

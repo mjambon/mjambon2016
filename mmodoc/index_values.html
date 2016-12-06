@@ -1,0 +1,165 @@
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Micmatch" rel="Chapter" href="Micmatch.html"><title>Index of values</title>
+</head>
+<body>
+<center><h1>Index of values</h1></center>
+<table>
+<tr><td align="left"><br>C</td></tr>
+<tr><td><a href="Micmatch.Text.html#VALchannel_contents">channel_contents</a> [<a href="Micmatch.Text.html">Micmatch.Text</a>]</td>
+<td><div class="info">
+<code class="code">channel_contents ic</code> returns the string containing the bytes
+      that can be read from the given input channel <code class="code">ic</code>.
+</div>
+</td></tr>
+<tr><td><a href="Micmatch.Fixed.html#VALchop_spaces">chop_spaces</a> [<a href="Micmatch.Fixed.html">Micmatch.Fixed</a>]</td>
+<td><div class="info">
+<code class="code">chop_spaces s</code> returns a string where the leading and trailing
+      spaces are removed.
+</div>
+</td></tr>
+<tr><td align="left"><br>F</td></tr>
+<tr><td><a href="Micmatch.Text.html#VALfile_contents">file_contents</a> [<a href="Micmatch.Text.html">Micmatch.Text</a>]</td>
+<td><div class="info">
+<code class="code">file_contents file</code> returns the string containing the bytes
+      that can be read from the given file.
+</div>
+</td></tr>
+<tr><td><a href="Micmatch.Fixed.html#VALfloat">float</a> [<a href="Micmatch.Fixed.html">Micmatch.Fixed</a>]</td>
+<td><div class="info">
+<code class="code">float s</code> reads an float from a string where leading and
+      trailing spaces are allowed.
+</div>
+</td></tr>
+<tr><td><a href="Micmatch.Text.html#VALfold_left">fold_left</a> [<a href="Micmatch.Text.html">Micmatch.Text</a>]</td>
+<td><div class="info">
+Like <code class="code">List.fold_left</code> 
+      but the <code class="code">Skip</code> exception can be used to skip an element
+      of the list.
+</div>
+</td></tr>
+<tr><td><a href="Micmatch.Text.html#VALfold_right">fold_right</a> [<a href="Micmatch.Text.html">Micmatch.Text</a>]</td>
+<td><div class="info">
+Like <code class="code">List.fold_right</code> 
+      but the <code class="code">Skip</code> exception can be used to skip an element
+      of the list.
+</div>
+</td></tr>
+<tr><td align="left"><br>I</td></tr>
+<tr><td><a href="Micmatch.Fixed.html#VALint">int</a> [<a href="Micmatch.Fixed.html">Micmatch.Fixed</a>]</td>
+<td><div class="info">
+<code class="code">int s</code> reads an int from a string where leading and
+      trailing spaces are allowed.
+</div>
+</td></tr>
+<tr><td><a href="Micmatch.Directory.html#VALis_dir">is_dir</a> [<a href="Micmatch.Directory.html">Micmatch.Directory</a>]</td>
+<td><div class="info">
+<code class="code">is_dir dir</code> returns true if <code class="code">dir</code> is a directory, false otherwise.
+</div>
+</td></tr>
+<tr><td><a href="Micmatch.Text.html#VALiter_lines_of_channel">iter_lines_of_channel</a> [<a href="Micmatch.Text.html">Micmatch.Text</a>]</td>
+<td><div class="info">
+<code class="code">iter_lines_of_channel f ic</code> reads input channel <code class="code">ic</code>
+      and applies successively the given function <code class="code">f</code> to 
+      each line until the end of file is reached.
+</div>
+</td></tr>
+<tr><td><a href="Micmatch.Text.html#VALiter_lines_of_file">iter_lines_of_file</a> [<a href="Micmatch.Text.html">Micmatch.Text</a>]</td>
+<td><div class="info">
+<code class="code">iter_lines_of_file f file</code> reads file <code class="code">file</code>
+      and applies successively the given function <code class="code">f</code> to 
+      each line until the end of file is reached.
+</div>
+</td></tr>
+<tr><td align="left"><br>L</td></tr>
+<tr><td><a href="Micmatch.Text.html#VALlines_of_channel">lines_of_channel</a> [<a href="Micmatch.Text.html">Micmatch.Text</a>]</td>
+<td><div class="info">
+<code class="code">lines_of_channel ic</code> returns the list of the lines that can be 
+      read from input channel <code class="code">ic</code>.
+</div>
+</td></tr>
+<tr><td><a href="Micmatch.Text.html#VALlines_of_file">lines_of_file</a> [<a href="Micmatch.Text.html">Micmatch.Text</a>]</td>
+<td><div class="info">
+<code class="code">lines_of_file file</code> returns the list of the lines that can be 
+      read from file <code class="code">file</code>.
+</div>
+</td></tr>
+<tr><td><a href="Micmatch.Glob.html#VALlist">list</a> [<a href="Micmatch.Glob.html">Micmatch.Glob</a>]</td>
+<td><div class="info">
+<code class="code">list path_filter</code> works like <a href="Micmatch.Glob.html#VALscan"><code class="code">Micmatch.Glob.scan</code></a> but returns a list
+      of all file paths that match <code class="code">path_filter</code>.
+</div>
+</td></tr>
+<tr><td><a href="Micmatch.Directory.html#VALlist">list</a> [<a href="Micmatch.Directory.html">Micmatch.Directory</a>]</td>
+<td><div class="info">
+<code class="code">list dir</code> returns the alphabetically sorted list 
+      of the names of the files contained in directory <code class="code">dir</code>.
+</div>
+</td></tr>
+<tr><td><a href="Micmatch.Glob.html#VALllist">llist</a> [<a href="Micmatch.Glob.html">Micmatch.Glob</a>]</td>
+<td><div class="info">
+<code class="code">llist path_filter</code> works like <a href="Micmatch.Glob.html#VALlscan"><code class="code">Micmatch.Glob.lscan</code></a> 
+      but returns a list
+      of all file paths that match <code class="code">path_filter</code>.
+</div>
+</td></tr>
+<tr><td><a href="Micmatch.Glob.html#VALlscan">lscan</a> [<a href="Micmatch.Glob.html">Micmatch.Glob</a>]</td>
+<td><div class="info">
+Same as <a href="Micmatch.Glob.html#VALscan"><code class="code">Micmatch.Glob.scan</code></a> but file paths are kept as a list
+    of strings that form a valid path when concatenated using
+    <code class="code">Filename.concat</code>.
+</div>
+</td></tr>
+<tr><td align="left"><br>M</td></tr>
+<tr><td><a href="Micmatch.Text.html#VALmap">map</a> [<a href="Micmatch.Text.html">Micmatch.Text</a>]</td>
+<td><div class="info">
+Like <code class="code">List.map</code> but it is guaranteed that 
+      the elements of the input list are processed from left to right.
+</div>
+</td></tr>
+<tr><td><a href="Micmatch.Text.html#VALmap_lines_of_channel">map_lines_of_channel</a> [<a href="Micmatch.Text.html">Micmatch.Text</a>]</td>
+<td><div class="info">
+<code class="code">map_lines_of_channel f ic</code> is equivalent to
+      <code class="code">map f (lines_of_channel ic)</code> but faster.
+</div>
+</td></tr>
+<tr><td><a href="Micmatch.Text.html#VALmap_lines_of_file">map_lines_of_file</a> [<a href="Micmatch.Text.html">Micmatch.Text</a>]</td>
+<td><div class="info">
+<code class="code">map_lines_of_file f file</code> is equivalent to
+      <code class="code">map f (lines_of_file file)</code> but faster.
+</div>
+</td></tr>
+<tr><td align="left"><br>R</td></tr>
+<tr><td><a href="Micmatch.Text.html#VALrev_map">rev_map</a> [<a href="Micmatch.Text.html">Micmatch.Text</a>]</td>
+<td><div class="info">
+Like <code class="code">List.rev_map</code>, but it is guaranteed that 
+      the elements of the input list are processed from left to right.
+</div>
+</td></tr>
+<tr><td align="left"><br>S</td></tr>
+<tr><td><a href="Micmatch.Text.html#VALsave">save</a> [<a href="Micmatch.Text.html">Micmatch.Text</a>]</td>
+<td><div class="info">
+<code class="code">save file data</code> stores the string <code class="code">data</code> in <code class="code">file</code>.
+</div>
+</td></tr>
+<tr><td><a href="Micmatch.Text.html#VALsave_lines">save_lines</a> [<a href="Micmatch.Text.html">Micmatch.Text</a>]</td>
+<td><div class="info">
+<code class="code">save_lines file l</code> saves the given list <code class="code">l</code> of strings in <code class="code">file</code>
+      and adds a newline characters (<code class="code">'\n'</code>) after each of them.
+</div>
+</td></tr>
+<tr><td><a href="Micmatch.Glob.html#VALscan">scan</a> [<a href="Micmatch.Glob.html">Micmatch.Glob</a>]</td>
+<td><div class="info">
+<code class="code">scan action path_filter</code> returns all the file paths having a name
+    that matches <code class="code">path_filter</code>.
+</div>
+</td></tr>
+</table><br>
+</body>
+</html>

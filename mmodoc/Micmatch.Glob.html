@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Micmatch.Directory.html">
+<link rel="Up" href="Micmatch.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Micmatch" rel="Chapter" href="Micmatch.html"><title>Micmatch.Glob</title>
+</head>
+<body>
+<div class="navbar"><a href="Micmatch.Directory.html">Previous</a>
+&nbsp;<a href="Micmatch.html">Up</a>
+&nbsp;</div>
+<center><h1>Module <a href="type_Micmatch.Glob.html">Micmatch.Glob</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> Glob: <code class="code">sig</code> <a href="Micmatch.Glob.html">..</a> <code class="code">end</code></pre><hr width="100%">
+<br>
+A generic file path matching utility<br>
+<pre><span class="keyword">val</span> <a name="VALscan"></a>scan : <code class="type">?absolute:bool -><br>       ?path:bool -><br>       ?root:string -><br>       ?nofollow:bool -> (string -> unit) -> (string -> bool) list -> unit</code></pre><div class="info">
+<code class="code">scan action path_filter</code> returns all the file paths having a name
+    that matches <code class="code">path_filter</code>. <code class="code">path_filter</code> is a list of filters that
+    test whether a directory name or a file name should be selected.
+<p>
+
+    The path search starts from the current directory by default, or 
+    from the directory specified by the <code class="code">root</code> option. The file names 
+    are examined in an undefined order. When a file path matches,
+    <code class="code">action</code> is applied to the string representing the path.
+    Options <code class="code">absolute</code> and <code class="code">path</code> have the same meaning and the same 
+    default values as in <a href="Micmatch.Directory.html#VALlist"><code class="code">Micmatch.Directory.list</code></a>.
+<p>
+
+    <code class="code">nofollow</code> can be used to prevent from considering symbolic links 
+    as directories. It is false by default. 
+    See also <a href="Micmatch.Directory.html#VALis_dir"><code class="code">Micmatch.Directory.is_dir</code></a>.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALlscan"></a>lscan : <code class="type">?rev:bool -><br>       ?absolute:bool -><br>       ?path:bool -><br>       ?root:string list -><br>       ?nofollow:bool -> (string list -> unit) -> (string -> bool) list -> unit</code></pre><div class="info">
+Same as <a href="Micmatch.Glob.html#VALscan"><code class="code">Micmatch.Glob.scan</code></a> but file paths are kept as a list
+    of strings that form a valid path when concatenated using
+    <code class="code">Filename.concat</code>. Option <code class="code">rev</code> can be set if the lists representing
+    paths are in reversed order, i.e. the root comes last.
+<p>
+
+    In <code class="code">lscan action path_filter</code>, options <code class="code">rev</code>, <code class="code">absolute</code>, and <code class="code">path</code>
+    take their default values which are all false.
+    In this situation, it is guaranteed that the paths that are passed
+    to <code class="code">action</code> have the same length as <code class="code">path_filter</code>.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALlist"></a>list : <code class="type">?absolute:bool -><br>       ?path:bool -><br>       ?root:string -><br>       ?nofollow:bool -> ?sort:bool -> (string -> bool) list -> string list</code></pre><div class="info">
+<code class="code">list path_filter</code> works like <a href="Micmatch.Glob.html#VALscan"><code class="code">Micmatch.Glob.scan</code></a> but returns a list
+      of all file paths that match <code class="code">path_filter</code>.
+<p>
+
+    An example in Micmatch syntax is <code class="code">list [FILTER _* ".ml" eos]</code>.
+    It returns the list of ".ml" files in the current directory.
+    It could have been written as 
+    <code class="code">list [ fun s -&gt; Filename.check_suffix s ".ml"]</code> and is equivalent
+    to <code class="code">*.ml</code> in shell syntax.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALllist"></a>llist : <code class="type">?rev:bool -><br>       ?absolute:bool -><br>       ?path:bool -><br>       ?root:string list -><br>       ?nofollow:bool -> ?sort:bool -> (string -> bool) list -> string list list</code></pre><div class="info">
+<code class="code">llist path_filter</code> works like <a href="Micmatch.Glob.html#VALlscan"><code class="code">Micmatch.Glob.lscan</code></a> 
+      but returns a list
+      of all file paths that match <code class="code">path_filter</code>.<br>
+</div>
+</body></html>

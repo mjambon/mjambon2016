@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Yojson.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Yojson" rel="Chapter" href="Yojson.html">
+<link title="Yojson_biniou" rel="Chapter" href="Yojson_biniou.html"><title>Yojson_biniou</title>
+</head>
+<body>
+<div class="navbar"><a href="Yojson.html">Previous</a>
+&nbsp;<a href="index.html">Up</a>
+&nbsp;</div>
+<center><h1>Module <a href="type_Yojson_biniou.html">Yojson_biniou</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> Yojson_biniou: <code class="code">sig</code> <a href="Yojson_biniou.html">..</a> <code class="code">end</code></pre>Conversions between JSON and biniou<br>
+<hr width="100%">
+<pre><span id="VALbiniou_of_json"><span class="keyword">val</span> biniou_of_json</span> : <code class="type"><a href="Yojson.Safe.html#TYPEjson">Yojson.Safe.json</a> -> Bi_io.tree</code></pre><div class="info">
+Converts from JSON to biniou.<br>
+<b>Raises</b> <code>Failure</code> if conversion is not reversible.<br>
+</div>
+<pre><span id="VALjson_of_biniou"><span class="keyword">val</span> json_of_biniou</span> : <code class="type">Bi_io.tree -> <a href="Yojson.Safe.html#TYPEjson">Yojson.Safe.json</a></code></pre><div class="info">
+Converts from biniou to JSON.<br>
+<b>Raises</b> <code>Failure</code> if conversion is not reversible, except for biniou
+      tables which are considered equivalent to arrays of records.<br>
+</div>
+</body></html>

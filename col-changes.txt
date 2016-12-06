@@ -1,0 +1,8 @@
+Version 1.0.2 2006-05-01:
+* inserted missing X.Tup.create function (= alias for X.create_tuple) 
+* added X.OO.create function for homogeneity purposes (= new X.OO)
+
+Version 1.0.1 2006-04-29: 
+* of_int and to_int functions added to "tag" modules
+
+Version 1.0.0 2006-04-26: first release

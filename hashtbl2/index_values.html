@@ -1,0 +1,153 @@
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<link rel="Start" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Hashtbl2" rel="Chapter" href="Hashtbl2.html"><title>Index of values</title>
+</head>
+<body>
+<center><h1>Index of values</h1></center>
+<table>
+<tr><td align="left"><br>A</td></tr>
+<tr><td><a href="Hashtbl2.html#VALadd">add</a> [<a href="Hashtbl2.html">Hashtbl2</a>]</td>
+<td><div class="info">
+<code class="code">Hashtbl2.add tbl x y</code> adds a binding of <code class="code">x</code> to <code class="code">y</code> in table <code class="code">tbl</code>.
+</div>
+</td></tr>
+<tr><td align="left"><br>C</td></tr>
+<tr><td><a href="Hashtbl2.html#VALclear">clear</a> [<a href="Hashtbl2.html">Hashtbl2</a>]</td>
+<td><div class="info">
+Empty a hash table.
+</div>
+</td></tr>
+<tr><td><a href="Hashtbl2.html#VALcopy">copy</a> [<a href="Hashtbl2.html">Hashtbl2</a>]</td>
+<td><div class="info">
+Return a copy of the given hashtable.
+</div>
+</td></tr>
+<tr><td><a href="Hashtbl2.html#VALcreate">create</a> [<a href="Hashtbl2.html">Hashtbl2</a>]</td>
+<td><div class="info">
+<code class="code">Hashtbl2.create n</code> creates a new, empty hash table, with
+   initial size <code class="code">n</code>.
+</div>
+</td></tr>
+<tr><td align="left"><br>F</td></tr>
+<tr><td><a href="Hashtbl2.html#VALfind">find</a> [<a href="Hashtbl2.html">Hashtbl2</a>]</td>
+<td><div class="info">
+<code class="code">Hashtbl2.find tbl x</code> returns the current binding of <code class="code">x</code> in <code class="code">tbl</code>,
+   or raises <code class="code">Not_found</code> if no such binding exists.
+</div>
+</td></tr>
+<tr><td><a href="Hashtbl2.html#VALfind_all">find_all</a> [<a href="Hashtbl2.html">Hashtbl2</a>]</td>
+<td><div class="info">
+<code class="code">Hashtbl2.find_all tbl x</code> returns the list of all data
+   associated with <code class="code">x</code> in <code class="code">tbl</code>.
+</div>
+</td></tr>
+<tr><td><a href="Hashtbl2.html#VALfold">fold</a> [<a href="Hashtbl2.html">Hashtbl2</a>]</td>
+<td><div class="info">
+<code class="code">Hashtbl2.fold f tbl init</code> computes
+   <code class="code">(f kN dN ... (f k1 d1 init)...)</code>,
+   where <code class="code">k1 ... kN</code> are the keys of current bindings in <code class="code">tbl</code>,
+   and <code class="code">d1 ... dN</code> are the associated values.
+</div>
+</td></tr>
+<tr><td><a href="Hashtbl2.html#VALfold_all">fold_all</a> [<a href="Hashtbl2.html">Hashtbl2</a>]</td>
+<td><div class="info">
+<code class="code">Hashtbl2.fold_all f tbl init</code> computes
+   <code class="code">(f kN lN ... (f k1 l1 init)...)</code>,
+   where <code class="code">k1 ... kN</code> are the keys of all bindings in <code class="code">tbl</code>,
+   and <code class="code">l1 ... lN</code> are the lists of associated values, in reverse order
+   of introduction in the table.
+</div>
+</td></tr>
+<tr><td align="left"><br>I</td></tr>
+<tr><td><a href="Hashtbl2.html#VALiter">iter</a> [<a href="Hashtbl2.html">Hashtbl2</a>]</td>
+<td><div class="info">
+<code class="code">Hashtbl2.iter f tbl</code> applies <code class="code">f</code> to current bindings in table <code class="code">tbl</code>.
+</div>
+</td></tr>
+<tr><td><a href="Hashtbl2.html#VALiter_all">iter_all</a> [<a href="Hashtbl2.html">Hashtbl2</a>]</td>
+<td><div class="info">
+<code class="code">Hashtbl2.iter_all f tbl</code> applies <code class="code">f</code> to all bindings in table <code class="code">tbl</code>.
+</div>
+</td></tr>
+<tr><td align="left"><br>L</td></tr>
+<tr><td><a href="Hashtbl2.html#VALlist">list</a> [<a href="Hashtbl2.html">Hashtbl2</a>]</td>
+<td><div class="info">
+<code class="code">Hashtbl2.list tbl</code> returns a list of the current bindings.
+</div>
+</td></tr>
+<tr><td><a href="Hashtbl2.html#VALlist_all">list_all</a> [<a href="Hashtbl2.html">Hashtbl2</a>]</td>
+<td><div class="info">
+<code class="code">Hashtbl2.list_all tbl</code> returns a list of all the bindings clustered
+   according to their key.
+</div>
+</td></tr>
+<tr><td><a href="Hashtbl2.html#VALlist_all_values">list_all_values</a> [<a href="Hashtbl2.html">Hashtbl2</a>]</td>
+<td><div class="info">
+<code class="code">Hashtbl2.list_all_values tbl</code> returns a list of all the values
+   from all bindings.
+</div>
+</td></tr>
+<tr><td><a href="Hashtbl2.html#VALlist_keys">list_keys</a> [<a href="Hashtbl2.html">Hashtbl2</a>]</td>
+<td><div class="info">
+<code class="code">Hashtbl2.list_keys tbl</code> returns a list of all the keys
+   from the current bindings.
+</div>
+</td></tr>
+<tr><td><a href="Hashtbl2.html#VALlist_values">list_values</a> [<a href="Hashtbl2.html">Hashtbl2</a>]</td>
+<td><div class="info">
+<code class="code">Hashtbl2.list_values tbl</code> returns a list of all the values
+   from the current bindings.
+</div>
+</td></tr>
+<tr><td align="left"><br>M</td></tr>
+<tr><td><a href="Hashtbl2.html#VALmem">mem</a> [<a href="Hashtbl2.html">Hashtbl2</a>]</td>
+<td><div class="info">
+<code class="code">Hashtbl2.mem tbl x</code> checks if <code class="code">x</code> is bound in <code class="code">tbl</code>.
+</div>
+</td></tr>
+<tr><td align="left"><br>O</td></tr>
+<tr><td><a href="Hashtbl2.html#VALof_keys">of_keys</a> [<a href="Hashtbl2.html">Hashtbl2</a>]</td>
+<td><div class="info">
+<code class="code">Hashtbl2.of_keys n l</code> converts a list of elements into
+   a hash table of initial size <code class="code">n</code> containing unique copies of these
+   elements bound at most one time to <code class="code">()</code>.
+</div>
+</td></tr>
+<tr><td><a href="Hashtbl2.html#VALof_list">of_list</a> [<a href="Hashtbl2.html">Hashtbl2</a>]</td>
+<td><div class="info">
+<code class="code">Hashtbl2.of_list n l</code> converts a list of bindings into 
+   a hash table of initial size <code class="code">n</code>.
+</div>
+</td></tr>
+<tr><td align="left"><br>R</td></tr>
+<tr><td><a href="Hashtbl2.html#VALremove">remove</a> [<a href="Hashtbl2.html">Hashtbl2</a>]</td>
+<td><div class="info">
+<code class="code">Hashtbl2.remove tbl x</code> removes the current binding of <code class="code">x</code> in <code class="code">tbl</code>,
+   restoring the previous binding if it exists.
+</div>
+</td></tr>
+<tr><td><a href="Hashtbl2.html#VALremove_all">remove_all</a> [<a href="Hashtbl2.html">Hashtbl2</a>]</td>
+<td><div class="info">
+<code class="code">Hashtbl2.remove_all tbl x</code> removes all bindings of <code class="code">x</code> in <code class="code">tbl</code>.
+</div>
+</td></tr>
+<tr><td><a href="Hashtbl2.html#VALreplace">replace</a> [<a href="Hashtbl2.html">Hashtbl2</a>]</td>
+<td><div class="info">
+<code class="code">Hashtbl2.replace tbl x y</code> replaces the current binding of <code class="code">x</code>
+   in <code class="code">tbl</code> by a binding of <code class="code">x</code> to <code class="code">y</code>.
+</div>
+</td></tr>
+<tr><td><a href="Hashtbl2.html#VALreplace_all">replace_all</a> [<a href="Hashtbl2.html">Hashtbl2</a>]</td>
+<td><div class="info">
+<code class="code">Hashtbl2.replace_all tbl x y</code> replaces all bindings of <code class="code">x</code>
+    in <code class="code">tbl</code> by bindings of <code class="code">x</code> to the elements of <code class="code">y</code>.
+</div>
+</td></tr>
+</table><br>
+</body>
+</html>

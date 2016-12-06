@@ -1,0 +1,256 @@
+##
+#load "utils.cmo";;
+#use "topfind";;
+#require "caml2html";;
+#require "mikmatch_pcre";;
+#load "unmix.cmo";;
+#load "print_ocaml.cmo";;
+open Print_ocaml
+open Utils
+open Camlmix
+##
+## include_file "doctype" ##
+<html>
+<head>
+## title "Micmatch - Design Notes" ##
+## include_file "charset" ##
+## include_file "stylesheet" ##
+## include_file "ocaml-stylesheet" ##
+## include_file "icon" ##
+## include_file "commonlinks" ##
+</head>
+<body>
+## include_file "hitcounter" ##
+## include_file "start_big_table" ##
+## top_menu ocaml ##
+
+##
+open Printf
+let link ~url contents = printf "<a href=\"%s\">%s</a>" url contents
+let pcre_ocaml =
+  link ~url:"http://www.ai.univie.ac.at/~markus/home/ocaml_sources.html"
+let pcre =
+  link ~url:"http://www.pcre.org/"
+##
+
+<h1>Micmatch - Design Notes</h1>
+
+<p>
+This is a collection of notes concerning debatable aspects of 
+the design of the <a href="micmatch.html">Micmatch system</a>.
+Use <a href="http://ocaml.pbwiki.com/Micmatch">the wiki</a> if you
+want to share your views.
+
+
+## let (toc_item0, toc_item1, toc_item2, toc_entry, toc_link) = make_toc () ##
+
+<div class=toc>
+<b>Contents</b><br>
+## toc_item0 ~id:"syntax" "Syntax" ##
+## toc_item1 ~id:"general" "General syntax of regexps" ##
+## toc_item1 ~id:"uppercase" "Uppercase keywords" ##
+## toc_item2 ~id:"match" "\"match\" patterns" ##
+## toc_item2 ~id:"macros" "Name of the macros" ##
+## toc_item1 ~id:"options" "Type of named subgroups" ##
+
+## toc_item0 ~id:"libraries" "Choice of regexp libraries" ##
+## toc_item1 ~id:"diversity" "Diversity" ##
+## toc_item1 ~id:"pcre" "PCRE" ##
+
+## toc_item0 ~id:"standard" "Compatibility issues" ##
+## toc_item1 ~id:"versions" "Versions" ##
+## toc_item1 ~id:"ocaml" "Cohabitation with other syntax extensions" ##
+</div>
+
+## toc_entry "syntax" ##
+
+## toc_entry "general" ##
+<p>
+The general syntax for regular expressions is based on what is already
+in use in ocamllex. Regular expressions are often not so simple, and 
+representing them as a compact string which is full of backslashes (\)
+is definitely not user-friendly. With our syntax, the different tokens
+of the regexp can be highlighted by the text editor, and there is no
+need to know a list of "special characters". Special characters are
+simply not mixed with characters that we want to match.
+
+
+## toc_entry "uppercase" ##
+
+<p>
+I would like to keep the current uppercase convention for
+all the newly created alphabetic keywords because it makes it clear that 
+they are part of a syntax extension, not regular identifiers of the
+core OCaml language. This should make things easier for people
+who don't know by heart all the keywords of either OCaml or Micmatch.
+
+## toc_entry "match" ##
+
+<p>
+## print_with ocamlpre ##
+match "abc def" with
+    RE graph+ as x -> x
+  | _ -> "???"
+## () ##
+<p>
+In the previous example, it is easy to notice that <code>RE</code> is 
+a new keyword which introduces a section of code with a special
+syntax. 
+Keyword <code>as</code> uses lowercase characters since
+it already exists as a keyword in regular OCaml patterns and
+in ocamllex regexps with an analogous meaning.
+<p>
+However the sandwich form for regexp patterns sometimes looks nicer than
+the <code>RE</code> notation. It is supported since version 0.689
+and is strictly equivalent:
+## print_with ocamlpre ##
+match "abc def" with
+    / graph+ as x / -> x
+  | _ -> "???"
+## () ##
+<p>
+Another syntax in the same style as stream parsers could have been chosen:
+## print_with ocamlpre ##
+match "abc def" with
+    [/ graph+ as x /] -> x
+  | _ -> "???"
+## () ##
+<p>
+Advantages of / ... / : easier to type; lighter for short regexps.<br>
+Advantages of [/ ... /] : easier to read, especially with a text-editor which
+detects matching brackets (but we can always add parentheses 
+to make things clear); avoids the use of parentheses in some rare cases;
+more consistent with the existing OCaml syntax and other syntax extensions.
+<p>
+Question: what do people prefer? If you have a preference, please let me know.
+We might switch to the [/ ... /] notation but we can't keep both because 
+putting a space between the [ and the / would have a different meaning, which
+would be disastrous for code readability.
+
+## toc_entry "macros" ##
+<p>
+The various "macros" which are available in the PCRE variant of
+Micmatch all use uppercase characters. Maybe this looks not very
+beautiful for syntaxic constructs which are much more subtle than
+C macros, but once again it avoids confusion for the new users and
+has few chances to interfere with other library functions:
+## print_with ocamltop ##
+# let split_list = SPLIT space* "," space* (* SPLIT keyword *) ;;
+val split_list : ?full:bool -> ?pos:int -> string -> string list = <fun>
+# split_list "a, b, cde";;
+- : string list = ["a"; "b"; "cde"]
+# Pcre.split (* good, lowercase split is not a keyword *);;
+- : ?iflags:Pcre.irflag ->
+    ?flags:Pcre.rflag list ->
+    ?rex:Pcre.regexp ->
+    ?pat:string ->
+    ?pos:int -> ?max:int -> ?callout:Pcre.callout -> string -> string
+    list
+= <fun>
+## () ##
+
+<p>
+Finally, the <code>Lazy</code> and <code>Possessive</code> annotations
+that can be found in regexps play the role of keyword withing regexps
+but technically are not keywords since you can use them normally outside
+of regexps. So the <code>Lazy</code> module of the standard library of OCaml
+can still be used without any problem.
+
+
+## toc_entry "options" ##
+<p>
+In ocamllex patterns, if a binding does not appear on each side of an
+alternative (## ocamlcode "|" ##), 
+then the identifier is associated with a value of
+type string option. In the following, the identifier
+<code>greeting</code> can have 3 possible values: 
+## ocamlcode "Some \"Hello\"" ##, ## ocamlcode "Some \"hello\"" ## or
+## ocamlcode "None" ##:
+## print_with ocamlpre ##
+['H''h']"ello" as greeting | ""    { greeting }
+## () ##
+<p>
+In Micmatch, this is an invalid pattern since each binding must
+occur on both sides of an alternative. This follows the behavior of
+the regular pattern-matching of OCaml. It is not a real problem since
+in this case the empty string ## ocamlcode "\"\"" ## is equivalent to 
+## ocamlcode "None" ## (matching the empty string always succeeds):
+## print_with ocamlpre ##
+match read_line () with
+    RE ['H''h']"ello" as greeting | ("" as greeting) -> greeting
+## () ##
+<p>
+Which would be preferably written as:
+## print_with ocamlpre ##
+match read_line () with
+    RE (['H''h']"ello" | "") as greeting -> greeting
+## () ##
+<p>
+Or just:
+## print_with ocamlpre ##
+match read_line () with
+    RE (['H''h']"ello")? as greeting -> greeting
+## () ##
+
+
+
+## toc_entry "libraries" ##
+
+## toc_entry "diversity" ##
+<p>
+Currently, support is provided for 2 regexp libraries: Str and PCRE.
+First, it shows that other libraries could be used in the future with a
+minimum of efforts since a large part of the implementation of Micmatch
+is already shared between the 2 variants.
+Second, it shows that Micmatch is just a layer over existing
+regexp libraries.
+
+## toc_entry "pcre" ##
+<p>
+## pcre "PCRE" ## is a popular library which provides many useful and
+documented features.
+There was an existing interface for OCaml (## pcre_ocaml "PCRE-OCaml" ##)
+so this why a variant of Micmatch which uses PCRE has been implemented
+and is now preferred over the other one.
+
+
+## toc_entry "standard" ##
+
+
+## toc_entry "versions" ##
+<p>
+Micmatch has been used with great satisfaction (at least) by its author,
+for reading various data files in 
+<a href="http://wikiomics.org/wiki/Bioinformatics">bioinformatics</a>
+(writing parsers for these files does not take more time than
+understanding their format).
+
+<p>
+Thus, the version 1.0 of Micmatch will be released soon, hopefully,
+and should not be much different from the current version.
+Subsequent versions (1.x) will remain backward compatible 
+with the specifications of the reference manual 1.0.
+
+## toc_entry "ocaml" ##
+<p>
+Micmatch is implemented as a syntax extension of Objective Caml using
+the Camlp4 technology. It can be used with the regular syntax
+of OCaml and in theory also with the revised syntax although it has
+not been tested.
+
+<p>
+In theory it should play well with other syntax extensions as long as
+they don't redefine the <code>match ... with</code>, 
+<code>try ... with</code> and <code>function ... -&gt;</code>
+constructs since they are overwritten by Micmatch.
+
+<p>
+In the worst case when there would be an incompatibility between Micmatch
+and another syntax extension, it is still possible to isolate the
+Micmatch-dependent code in a separate file and preprocess only this
+file with Micmatch.
+
+## camlmix_footer () ##
+## include_file "end_big_table" ##
+</body>
+</html>

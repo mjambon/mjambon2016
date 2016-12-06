@@ -1,0 +1,716 @@
+"phys.ml" 19 412 418 "phys.ml" 19 412 423
+type(
+  'a -> 'a -> bool
+)
+ident(
+  def equal "phys.ml" 20 433 435 "phys.ml" 21 459 462
+)
+"phys.ml" 19 412 426 "phys.ml" 19 412 432
+type(
+  'a -> 'a -> bool
+)
+ident(
+  ext_ref Pervasives.( == )
+)
+"phys.ml" 20 433 439 "phys.ml" 20 433 443
+type(
+  'b -> int
+)
+ident(
+  def hash "phys.ml" 20 433 458 "phys.ml" 21 459 462
+)
+"phys.ml" 20 433 446 "phys.ml" 20 433 458
+type(
+  'b -> int
+)
+ident(
+  ext_ref Hashtbl.hash
+)
+"phys.ml" 23 464 485 "phys.ml" 23 464 509
+call(
+  stack
+)
+"phys.ml" 28 548 552 "phys.ml" 28 548 555
+type(
+  'a Magic_table.t -> 'b -> 'a -> unit
+)
+ident(
+  def add "phys.ml" 29 601 601 --
+)
+"phys.ml" 28 548 556 "phys.ml" 28 548 559
+type(
+  'a Magic_table.t
+)
+ident(
+  def tbl "phys.ml" 28 548 560 "phys.ml" 28 548 600
+)
+"phys.ml" 28 548 560 "phys.ml" 28 548 561
+type(
+  'b
+)
+ident(
+  def k "phys.ml" 28 548 562 "phys.ml" 28 548 600
+)
+"phys.ml" 28 548 562 "phys.ml" 28 548 563
+type(
+  'a
+)
+ident(
+  def v "phys.ml" 28 548 566 "phys.ml" 28 548 600
+)
+"phys.ml" 28 548 566 "phys.ml" 28 548 581
+type(
+  'a Magic_table.t -> Magic_table.key -> 'a -> unit
+)
+ident(
+  ext_ref Magic_table.add
+)
+"phys.ml" 28 548 582 "phys.ml" 28 548 585
+type(
+  'a Magic_table.t
+)
+ident(
+  int_ref tbl "phys.ml" 28 548 556 "phys.ml" 28 548 559
+)
+"phys.ml" 28 548 587 "phys.ml" 28 548 595
+type(
+  'b -> Magic_table.key
+)
+ident(
+  ext_ref Obj.repr
+)
+"phys.ml" 28 548 596 "phys.ml" 28 548 597
+type(
+  'b
+)
+ident(
+  int_ref k "phys.ml" 28 548 560 "phys.ml" 28 548 561
+)
+"phys.ml" 28 548 586 "phys.ml" 28 548 598
+type(
+  Magic_table.key
+)
+"phys.ml" 28 548 599 "phys.ml" 28 548 600
+type(
+  'a
+)
+ident(
+  int_ref v "phys.ml" 28 548 562 "phys.ml" 28 548 563
+)
+"phys.ml" 28 548 566 "phys.ml" 28 548 600
+call(
+  tail
+)
+type(
+  unit
+)
+"phys.ml" 29 601 605 "phys.ml" 29 601 610
+type(
+  'a Magic_table.t -> unit
+)
+ident(
+  def clear "phys.ml" 30 639 639 --
+)
+"phys.ml" 29 601 611 "phys.ml" 29 601 614
+type(
+  'a Magic_table.t
+)
+ident(
+  def tbl "phys.ml" 29 601 617 "phys.ml" 29 601 638
+)
+"phys.ml" 29 601 617 "phys.ml" 29 601 634
+type(
+  'a Magic_table.t -> unit
+)
+ident(
+  ext_ref Magic_table.clear
+)
+"phys.ml" 29 601 635 "phys.ml" 29 601 638
+type(
+  'a Magic_table.t
+)
+ident(
+  int_ref tbl "phys.ml" 29 601 611 "phys.ml" 29 601 614
+)
+"phys.ml" 29 601 617 "phys.ml" 29 601 638
+call(
+  tail
+)
+type(
+  unit
+)
+"phys.ml" 30 639 643 "phys.ml" 30 639 647
+type(
+  'a Magic_table.t -> 'a Magic_table.t
+)
+ident(
+  def copy "phys.ml" 31 675 675 --
+)
+"phys.ml" 30 639 648 "phys.ml" 30 639 651
+type(
+  'a Magic_table.t
+)
+ident(
+  def tbl "phys.ml" 30 639 654 "phys.ml" 30 639 674
+)
+"phys.ml" 30 639 654 "phys.ml" 30 639 670
+type(
+  'a Magic_table.t -> 'a Magic_table.t
+)
+ident(
+  ext_ref Magic_table.copy
+)
+"phys.ml" 30 639 671 "phys.ml" 30 639 674
+type(
+  'a Magic_table.t
+)
+ident(
+  int_ref tbl "phys.ml" 30 639 648 "phys.ml" 30 639 651
+)
+"phys.ml" 30 639 654 "phys.ml" 30 639 674
+call(
+  tail
+)
+type(
+  'a Magic_table.t
+)
+"phys.ml" 31 675 679 "phys.ml" 31 675 685
+type(
+  int -> 'a Magic_table.t
+)
+ident(
+  def create "phys.ml" 32 711 711 --
+)
+"phys.ml" 31 675 686 "phys.ml" 31 675 687
+type(
+  int
+)
+ident(
+  def n "phys.ml" 31 675 690 "phys.ml" 31 675 710
+)
+"phys.ml" 31 675 690 "phys.ml" 31 675 708
+type(
+  int -> 'a Magic_table.t
+)
+ident(
+  ext_ref Magic_table.create
+)
+"phys.ml" 31 675 709 "phys.ml" 31 675 710
+type(
+  int
+)
+ident(
+  int_ref n "phys.ml" 31 675 686 "phys.ml" 31 675 687
+)
+"phys.ml" 31 675 690 "phys.ml" 31 675 710
+call(
+  tail
+)
+type(
+  'a Magic_table.t
+)
+"phys.ml" 32 711 715 "phys.ml" 32 711 719
+type(
+  'a Magic_table.t -> 'b -> 'a
+)
+ident(
+  def find "phys.ml" 33 762 762 --
+)
+"phys.ml" 32 711 720 "phys.ml" 32 711 723
+type(
+  'a Magic_table.t
+)
+ident(
+  def tbl "phys.ml" 32 711 724 "phys.ml" 32 711 761
+)
+"phys.ml" 32 711 724 "phys.ml" 32 711 725
+type(
+  'b
+)
+ident(
+  def k "phys.ml" 32 711 728 "phys.ml" 32 711 761
+)
+"phys.ml" 32 711 728 "phys.ml" 32 711 744
+type(
+  'a Magic_table.t -> Magic_table.key -> 'a
+)
+ident(
+  ext_ref Magic_table.find
+)
+"phys.ml" 32 711 745 "phys.ml" 32 711 748
+type(
+  'a Magic_table.t
+)
+ident(
+  int_ref tbl "phys.ml" 32 711 720 "phys.ml" 32 711 723
+)
+"phys.ml" 32 711 750 "phys.ml" 32 711 758
+type(
+  'b -> Magic_table.key
+)
+ident(
+  ext_ref Obj.repr
+)
+"phys.ml" 32 711 759 "phys.ml" 32 711 760
+type(
+  'b
+)
+ident(
+  int_ref k "phys.ml" 32 711 724 "phys.ml" 32 711 725
+)
+"phys.ml" 32 711 749 "phys.ml" 32 711 761
+type(
+  Magic_table.key
+)
+"phys.ml" 32 711 728 "phys.ml" 32 711 761
+call(
+  tail
+)
+type(
+  'a
+)
+"phys.ml" 33 762 766 "phys.ml" 33 762 774
+type(
+  'a Magic_table.t -> 'b -> 'a list
+)
+ident(
+  def find_all "phys.ml" 34 821 821 --
+)
+"phys.ml" 33 762 775 "phys.ml" 33 762 778
+type(
+  'a Magic_table.t
+)
+ident(
+  def tbl "phys.ml" 33 762 779 "phys.ml" 33 762 820
+)
+"phys.ml" 33 762 779 "phys.ml" 33 762 780
+type(
+  'b
+)
+ident(
+  def k "phys.ml" 33 762 783 "phys.ml" 33 762 820
+)
+"phys.ml" 33 762 783 "phys.ml" 33 762 803
+type(
+  'a Magic_table.t -> Magic_table.key -> 'a list
+)
+ident(
+  ext_ref Magic_table.find_all
+)
+"phys.ml" 33 762 804 "phys.ml" 33 762 807
+type(
+  'a Magic_table.t
+)
+ident(
+  int_ref tbl "phys.ml" 33 762 775 "phys.ml" 33 762 778
+)
+"phys.ml" 33 762 809 "phys.ml" 33 762 817
+type(
+  'b -> Magic_table.key
+)
+ident(
+  ext_ref Obj.repr
+)
+"phys.ml" 33 762 818 "phys.ml" 33 762 819
+type(
+  'b
+)
+ident(
+  int_ref k "phys.ml" 33 762 779 "phys.ml" 33 762 780
+)
+"phys.ml" 33 762 808 "phys.ml" 33 762 820
+type(
+  Magic_table.key
+)
+"phys.ml" 33 762 783 "phys.ml" 33 762 820
+call(
+  tail
+)
+type(
+  'a list
+)
+"phys.ml" 34 821 825 "phys.ml" 34 821 829
+type(
+  'a -> 'b -> 'c -> 'c
+)
+ident(
+  def fold "phys.ml" 35 895 895 --
+)
+"phys.ml" 34 821 830 "phys.ml" 34 821 831
+type(
+  'a
+)
+ident(
+  def f "phys.ml" 34 821 832 "phys.ml" 34 821 894
+)
+"phys.ml" 34 821 832 "phys.ml" 34 821 835
+type(
+  'b
+)
+ident(
+  def tbl "phys.ml" 34 821 836 "phys.ml" 34 821 894
+)
+"phys.ml" 34 821 836 "phys.ml" 34 821 840
+type(
+  'c
+)
+ident(
+  def accu "phys.ml" 34 821 843 "phys.ml" 34 821 894
+)
+"phys.ml" 34 821 843 "phys.ml" 34 821 859
+type(
+  (Magic_table.key -> '_d -> 'c -> 'c) -> '_d Magic_table.t -> 'c -> 'c
+)
+ident(
+  ext_ref Magic_table.fold
+)
+"phys.ml" 34 821 861 "phys.ml" 34 821 870
+type(
+  'a -> Magic_table.key -> '_d -> 'c -> 'c
+)
+ident(
+  ext_ref Obj.magic
+)
+"phys.ml" 34 821 871 "phys.ml" 34 821 872
+type(
+  'a
+)
+ident(
+  int_ref f "phys.ml" 34 821 830 "phys.ml" 34 821 831
+)
+"phys.ml" 34 821 860 "phys.ml" 34 821 873
+type(
+  Magic_table.key -> '_d -> 'c -> 'c
+)
+"phys.ml" 34 821 875 "phys.ml" 34 821 884
+type(
+  'b -> '_d Magic_table.t
+)
+ident(
+  ext_ref Obj.magic
+)
+"phys.ml" 34 821 885 "phys.ml" 34 821 888
+type(
+  'b
+)
+ident(
+  int_ref tbl "phys.ml" 34 821 832 "phys.ml" 34 821 835
+)
+"phys.ml" 34 821 874 "phys.ml" 34 821 889
+type(
+  '_d Magic_table.t
+)
+"phys.ml" 34 821 890 "phys.ml" 34 821 894
+type(
+  'c
+)
+ident(
+  int_ref accu "phys.ml" 34 821 836 "phys.ml" 34 821 840
+)
+"phys.ml" 34 821 843 "phys.ml" 34 821 894
+call(
+  tail
+)
+type(
+  'c
+)
+"phys.ml" 35 895 899 "phys.ml" 35 895 903
+type(
+  'a -> 'b -> unit
+)
+ident(
+  def iter "phys.ml" 36 959 959 --
+)
+"phys.ml" 35 895 904 "phys.ml" 35 895 905
+type(
+  'a
+)
+ident(
+  def f "phys.ml" 35 895 906 "phys.ml" 35 895 958
+)
+"phys.ml" 35 895 906 "phys.ml" 35 895 909
+type(
+  'b
+)
+ident(
+  def tbl "phys.ml" 35 895 912 "phys.ml" 35 895 958
+)
+"phys.ml" 35 895 912 "phys.ml" 35 895 928
+type(
+  (Magic_table.key -> '_c -> unit) -> '_c Magic_table.t -> unit
+)
+ident(
+  ext_ref Magic_table.iter
+)
+"phys.ml" 35 895 930 "phys.ml" 35 895 939
+type(
+  'a -> Magic_table.key -> '_c -> unit
+)
+ident(
+  ext_ref Obj.magic
+)
+"phys.ml" 35 895 940 "phys.ml" 35 895 941
+type(
+  'a
+)
+ident(
+  int_ref f "phys.ml" 35 895 904 "phys.ml" 35 895 905
+)
+"phys.ml" 35 895 929 "phys.ml" 35 895 942
+type(
+  Magic_table.key -> '_c -> unit
+)
+"phys.ml" 35 895 944 "phys.ml" 35 895 953
+type(
+  'b -> '_c Magic_table.t
+)
+ident(
+  ext_ref Obj.magic
+)
+"phys.ml" 35 895 954 "phys.ml" 35 895 957
+type(
+  'b
+)
+ident(
+  int_ref tbl "phys.ml" 35 895 906 "phys.ml" 35 895 909
+)
+"phys.ml" 35 895 943 "phys.ml" 35 895 958
+type(
+  '_c Magic_table.t
+)
+"phys.ml" 35 895 912 "phys.ml" 35 895 958
+call(
+  tail
+)
+type(
+  unit
+)
+"phys.ml" 36 959 963 "phys.ml" 36 959 969
+type(
+  'a Magic_table.t -> int
+)
+ident(
+  def length "phys.ml" 37 999 999 --
+)
+"phys.ml" 36 959 970 "phys.ml" 36 959 973
+type(
+  'a Magic_table.t
+)
+ident(
+  def tbl "phys.ml" 36 959 976 "phys.ml" 36 959 998
+)
+"phys.ml" 36 959 976 "phys.ml" 36 959 994
+type(
+  'a Magic_table.t -> int
+)
+ident(
+  ext_ref Magic_table.length
+)
+"phys.ml" 36 959 995 "phys.ml" 36 959 998
+type(
+  'a Magic_table.t
+)
+ident(
+  int_ref tbl "phys.ml" 36 959 970 "phys.ml" 36 959 973
+)
+"phys.ml" 36 959 976 "phys.ml" 36 959 998
+call(
+  tail
+)
+type(
+  int
+)
+"phys.ml" 37 999 1003 "phys.ml" 37 999 1006
+type(
+  'a Magic_table.t -> 'b -> bool
+)
+ident(
+  def mem "phys.ml" 38 1048 1048 --
+)
+"phys.ml" 37 999 1007 "phys.ml" 37 999 1010
+type(
+  'a Magic_table.t
+)
+ident(
+  def tbl "phys.ml" 37 999 1011 "phys.ml" 37 999 1047
+)
+"phys.ml" 37 999 1011 "phys.ml" 37 999 1012
+type(
+  'b
+)
+ident(
+  def k "phys.ml" 37 999 1015 "phys.ml" 37 999 1047
+)
+"phys.ml" 37 999 1015 "phys.ml" 37 999 1030
+type(
+  'a Magic_table.t -> Magic_table.key -> bool
+)
+ident(
+  ext_ref Magic_table.mem
+)
+"phys.ml" 37 999 1031 "phys.ml" 37 999 1034
+type(
+  'a Magic_table.t
+)
+ident(
+  int_ref tbl "phys.ml" 37 999 1007 "phys.ml" 37 999 1010
+)
+"phys.ml" 37 999 1036 "phys.ml" 37 999 1044
+type(
+  'b -> Magic_table.key
+)
+ident(
+  ext_ref Obj.repr
+)
+"phys.ml" 37 999 1045 "phys.ml" 37 999 1046
+type(
+  'b
+)
+ident(
+  int_ref k "phys.ml" 37 999 1011 "phys.ml" 37 999 1012
+)
+"phys.ml" 37 999 1035 "phys.ml" 37 999 1047
+type(
+  Magic_table.key
+)
+"phys.ml" 37 999 1015 "phys.ml" 37 999 1047
+call(
+  tail
+)
+type(
+  bool
+)
+"phys.ml" 38 1048 1052 "phys.ml" 38 1048 1058
+type(
+  'a Magic_table.t -> 'b -> unit
+)
+ident(
+  def remove "phys.ml" 39 1103 1103 --
+)
+"phys.ml" 38 1048 1059 "phys.ml" 38 1048 1062
+type(
+  'a Magic_table.t
+)
+ident(
+  def tbl "phys.ml" 38 1048 1063 "phys.ml" 38 1048 1102
+)
+"phys.ml" 38 1048 1063 "phys.ml" 38 1048 1064
+type(
+  'b
+)
+ident(
+  def k "phys.ml" 38 1048 1067 "phys.ml" 38 1048 1102
+)
+"phys.ml" 38 1048 1067 "phys.ml" 38 1048 1085
+type(
+  'a Magic_table.t -> Magic_table.key -> unit
+)
+ident(
+  ext_ref Magic_table.remove
+)
+"phys.ml" 38 1048 1086 "phys.ml" 38 1048 1089
+type(
+  'a Magic_table.t
+)
+ident(
+  int_ref tbl "phys.ml" 38 1048 1059 "phys.ml" 38 1048 1062
+)
+"phys.ml" 38 1048 1091 "phys.ml" 38 1048 1099
+type(
+  'b -> Magic_table.key
+)
+ident(
+  ext_ref Obj.repr
+)
+"phys.ml" 38 1048 1100 "phys.ml" 38 1048 1101
+type(
+  'b
+)
+ident(
+  int_ref k "phys.ml" 38 1048 1063 "phys.ml" 38 1048 1064
+)
+"phys.ml" 38 1048 1090 "phys.ml" 38 1048 1102
+type(
+  Magic_table.key
+)
+"phys.ml" 38 1048 1067 "phys.ml" 38 1048 1102
+call(
+  tail
+)
+type(
+  unit
+)
+"phys.ml" 39 1103 1107 "phys.ml" 39 1103 1114
+type(
+  'a Magic_table.t -> 'b -> 'a -> unit
+)
+ident(
+  def replace "phys.ml" 39 1103 1163 --
+)
+"phys.ml" 39 1103 1115 "phys.ml" 39 1103 1118
+type(
+  'a Magic_table.t
+)
+ident(
+  def tbl "phys.ml" 39 1103 1119 "phys.ml" 39 1103 1163
+)
+"phys.ml" 39 1103 1119 "phys.ml" 39 1103 1120
+type(
+  'b
+)
+ident(
+  def k "phys.ml" 39 1103 1121 "phys.ml" 39 1103 1163
+)
+"phys.ml" 39 1103 1121 "phys.ml" 39 1103 1122
+type(
+  'a
+)
+ident(
+  def v "phys.ml" 39 1103 1125 "phys.ml" 39 1103 1163
+)
+"phys.ml" 39 1103 1125 "phys.ml" 39 1103 1144
+type(
+  'a Magic_table.t -> Magic_table.key -> 'a -> unit
+)
+ident(
+  ext_ref Magic_table.replace
+)
+"phys.ml" 39 1103 1145 "phys.ml" 39 1103 1148
+type(
+  'a Magic_table.t
+)
+ident(
+  int_ref tbl "phys.ml" 39 1103 1115 "phys.ml" 39 1103 1118
+)
+"phys.ml" 39 1103 1150 "phys.ml" 39 1103 1158
+type(
+  'b -> Magic_table.key
+)
+ident(
+  ext_ref Obj.repr
+)
+"phys.ml" 39 1103 1159 "phys.ml" 39 1103 1160
+type(
+  'b
+)
+ident(
+  int_ref k "phys.ml" 39 1103 1119 "phys.ml" 39 1103 1120
+)
+"phys.ml" 39 1103 1149 "phys.ml" 39 1103 1161
+type(
+  Magic_table.key
+)
+"phys.ml" 39 1103 1162 "phys.ml" 39 1103 1163
+type(
+  'a
+)
+ident(
+  int_ref v "phys.ml" 39 1103 1121 "phys.ml" 39 1103 1122
+)
+"phys.ml" 39 1103 1125 "phys.ml" 39 1103 1163
+call(
+  tail
+)
+type(
+  unit
+)

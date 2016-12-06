@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>
+pa_bof.ml</title>
+  <meta name="GENERATOR" content="caml2html 1.4.2">
+<style type="text/css">
+code,pre { color:black;background-color:white }a.Cannot { color:black;text-decoration:none }.Cannot:hover { background-color: #b4eeb4; }
+.Cbar,
+.Cdo,
+.Cdone,
+.Cdownto,
+.Celse,
+.Cfor,
+.Cif,
+.Clazy,
+.Cmatch,
+.Cnew,
+.Cor,
+.Cthen,
+.Cto,
+.Ctry,
+.Cwhen,
+.Cwhile,
+.Cwith { color: #77aaaa; }
+.Cassert,
+.Cinclude,
+.Copen { color: #cc9900; }
+.Cstring { color: #aa4444; }
+.Cand,
+.Cas,
+.Cclass,
+.Cconstraint,
+.Cexception,
+.Cexternal,
+.Cfun,
+.Cfunction,
+.Cfunctor,
+.Cin,
+.Cinherit,
+.Cinitializer,
+.Clet,
+.Cmethod,
+.Cmodule,
+.Cmutable,
+.Cof,
+.Cprivate,
+.Crec,
+.Ctype,
+.Cval,
+.Cvirtual { color: green; }
+.Cbackground { background-color: white; }
+.Craise { color: red; }
+.Cconstructor { color: #0033cc; }
+.Ccomment { color: #990000; }
+.Calphakeyword,
+.Casr,
+.Cland,
+.Clor,
+.Clsl,
+.Clsr,
+.Clxor,
+.Cmod { color: #808080; }
+.Clinenum { color: black; background-color: silver; }
+.Cbegin,
+.Cend,
+.Cobject,
+.Csig,
+.Cstruct { color: #990099; }
+.Cfalse,
+.Cnonalphakeyword,
+.Cquotation,
+.Ctrue { }
+</style>
+</head>
+<body>
+<h1><a name="pa_bof.ml"></a><code>pa_bof.ml</code></h1>
+
+<pre><span class="Clinenum">   1:</span><span class="Cbackground"> </span><span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="unit -&gt; MLast.str_item * Ploc.t">insert_this</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="unit"><span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span></a> <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">   2:</span><span class="Cbackground"> </span>  <span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Ploc.t">loc</a> <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Ploc.t"><span class="Cconstructor">Token</span><span class="Cnonalphakeyword">.</span>dummy_loc</a> <span class="Cin">in</span>
+<span class="Clinenum">   3:</span><span class="Cbackground"> </span>  <span class="Cnonalphakeyword">(</span><a href="javascript:;" style="text-decoration:none" class="Cannot" title="MLast.str_item"><span class="Cconstructor">&lt;:str_item&lt;</span><span class="Cquotation"> value version = "1.2.3" </span><span class="Cconstructor">&gt;&gt;</span></a><span class="Cnonalphakeyword">,</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Ploc.t">loc</a><span class="Cnonalphakeyword">)</span>
+<span class="Clinenum">   4:</span><span class="Cbackground"> </span>
+<span class="Clinenum">   5:</span><span class="Cbackground"> </span><span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">   6:</span><span class="Cbackground"> </span>  <span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="bool ref">first</a> <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="bool -&gt; bool ref">ref</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="bool"><span class="Ctrue">true</span></a> <span class="Cin">in</span>
+<span class="Clinenum">   7:</span><span class="Cbackground"> </span>  <span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="char Stream.t -&gt; (MLast.str_item * MLast.loc) list * Pcaml.status">parse</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="char Stream.t">strm</a> <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">   8:</span><span class="Cbackground"> </span>    <span class="Clet">let</span> <span class="Cnonalphakeyword">(</span><a href="javascript:;" style="text-decoration:none" class="Cannot" title="(MLast.str_item * MLast.loc) list">l</a><span class="Cnonalphakeyword">,</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Pcaml.status">stopped</a><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="((MLast.str_item * MLast.loc) list * Pcaml.status) Grammar.Entry.e -&gt; char Stream.t -&gt; (MLast.str_item * MLast.loc) list * Pcaml.status"><span class="Cconstructor">Grammar</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Entry</span><span class="Cnonalphakeyword">.</span>parse</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="((MLast.str_item * MLast.loc) list * Pcaml.status) Grammar.Entry.e"><span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>implem</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="char Stream.t">strm</a> <span class="Cin">in</span>
+<span class="Clinenum">   9:</span><span class="Cbackground"> </span>    <span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="(MLast.str_item * MLast.loc) list">l'</a> <span class="Cnonalphakeyword">=</span> 
+<span class="Clinenum">  10:</span><span class="Cbackground"> </span>      <span class="Cif">if</span> !<a href="javascript:;" style="text-decoration:none" class="Cannot" title="bool ref">first</a> <span class="Cthen">then</span>
+<span class="Clinenum">  11:</span><span class="Cbackground"> </span>        <a href="javascript:;" style="text-decoration:none" class="Cannot" title="unit -&gt; MLast.str_item * MLast.loc">insert_this</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="unit"><span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span></a> <span class="Cnonalphakeyword">::</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="(MLast.str_item * MLast.loc) list">l</a>
+<span class="Clinenum">  12:</span><span class="Cbackground"> </span>      <span class="Celse">else</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="(MLast.str_item * MLast.loc) list">l</a> <span class="Cin">in</span>
+<span class="Clinenum">  13:</span><span class="Cbackground"> </span>    <span class="Cnonalphakeyword">(</span><a href="javascript:;" style="text-decoration:none" class="Cannot" title="(MLast.str_item * MLast.loc) list">l'</a><span class="Cnonalphakeyword">,</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="Pcaml.status">stopped</a><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+<span class="Clinenum">  14:</span><span class="Cbackground"> </span>  <a href="javascript:;" style="text-decoration:none" class="Cannot" title="(char Stream.t -&gt; (MLast.str_item * MLast.loc) list * Pcaml.status) ref"><span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>parse_implem</a> <span class="Cnonalphakeyword">:=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="char Stream.t -&gt; (MLast.str_item * MLast.loc) list * Pcaml.status">parse</a>
+</pre>
+
+<hr>
+<p>
+<em>This document was generated using 
+<a href="http://martin.jambon.free.fr/caml2html.html">caml2html</a></em>
+</body>
+</html>

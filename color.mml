@@ -1,0 +1,16 @@
+let color_ocaml s = 
+  let map = 
+    MAP alpha* as color "@@" (_* Lazy as contents) "@@" -> 
+      `Color (color, contents) in
+  let buf = Buffer.create 500 in
+  List.iter
+    (function
+	 `Text s ->
+	   let s' = Caml2html.Input.string s in
+	   Caml2html.Output.ocaml buf s'
+       | `Color (color, s) ->
+	   let s' = Caml2html.Input.string s in
+	   bprintf "<span style=\"background-color=%s\">%s</span>"  
+	     color Caml2html.Output.ocaml s')
+    (map s);
+  Buffer.contents buf

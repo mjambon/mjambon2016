@@ -1,0 +1,107 @@
+
+(* The function that returns unique identifiers *)
+let new_id =
+  let counter = ref 0 in
+  fun () -> incr counter; "__finally" ^ string_of_int !counter
+
+(* The function that converts our syntax into a single OCaml expression,
+   i.e. an "expr" node of the syntax tree *)
+let expand loc e1 e2 =
+  let id = new_id () in
+  let id_patt = MLast.PaLid (loc, id) in
+  let id_expr = MLast.ExLid (loc, id) in
+  MLast.ExLet
+    (loc, false,
+     [id_patt,
+      MLast.ExTry
+        (loc, MLast.ExSeq (loc, [e1; MLast.ExUid (loc, "None")]),
+         [MLast.PaLid (loc, "exn"), None,
+          MLast.ExApp
+            (loc, MLast.ExUid (loc, "Some"), MLast.ExLid (loc, "exn"))])],
+     MLast.ExSeq
+       (loc,
+        [e2;
+         MLast.ExMat
+           (loc, id_expr,
+            [MLast.PaUid (loc, "None"), None, MLast.ExUid (loc, "()");
+             MLast.PaApp
+               (loc, MLast.PaUid (loc, "Some"), MLast.PaLid (loc, "exn")),
+             None,
+             MLast.ExApp
+               (loc, MLast.ExLid (loc, "raise"),
+                MLast.ExLid (loc, "exn"))])]))
+
+let rec subst_float expr =
+  let loc = MLast.loc_of_expr expr in
+  let se = subst_float in
+  let sel = List.map subst_float in
+  let spwel = List.map (fun (p, w, e) -> p, w, se e) in
+  match expr with
+    MLast.ExAcc (_, e1, e2) -> MLast.ExAcc (loc, se e1, se e2)
+  | MLast.ExAnt (_, e) -> MLast.ExAnt (loc, se e)
+  | MLast.ExApp (_, e1, e2) -> MLast.ExApp (loc, se e1, se e2)
+  | MLast.ExAre (_, e1, e2) -> MLast.ExAre (loc, se e1, se e2)
+  | MLast.ExArr (_, el) -> MLast.ExArr (loc, sel el)
+  | MLast.ExAss (_, e1, e2) -> MLast.ExAss (loc, se e1, se e2)
+  | MLast.ExChr (_, c) -> expr
+  | MLast.ExCoe (_, e, None, t) -> MLast.ExCoe (loc, se e, None, t)
+  | MLast.ExCoe (_, e, Some t1, t2) -> MLast.ExCoe (loc, se e, Some t1, t2)
+  | MLast.ExFlo (_, s) -> expr
+  | MLast.ExFor (_, s, e1, e2, b, el) ->
+      MLast.ExFor (loc, s, se e1, se e2, b, sel el)
+  | MLast.ExFun (_, pwel) -> MLast.ExFun (loc, spwel pwel)
+  | MLast.ExIfe (_, e1, e2, e3) -> MLast.ExIfe (loc, se e1, se e2, se e3)
+  | MLast.ExInt (_, s) ->
+      let x = string_of_float (float (int_of_string s)) in
+      MLast.ExFlo (loc, x)
+  | MLast.ExLab (_, i, Some e) -> MLast.ExLab (loc, i, Some (se e))
+  | MLast.ExLaz (_, e) -> MLast.ExLaz (loc, se e)
+  | MLast.ExLet (_, b, pel, e) ->
+      let pel' = List.map (fun (p, e) -> p, se e) pel in
+      MLast.ExLet (loc, b, pel', se e)
+  | MLast.ExLid (_, s) -> expr
+  | MLast.ExMat (_, e, pwel) -> MLast.ExMat (loc, se e, spwel pwel)
+  | MLast.ExRec (_, pel, None) ->
+      let pel' = List.map (fun (p, e) -> p, se e) pel in
+      MLast.ExRec (loc, pel', None)
+  | MLast.ExSeq (_, el) -> MLast.ExSeq (loc, sel el)
+  | MLast.ExSte (_, e1, e2) -> MLast.ExSte (loc, se e1, se e2)
+  | MLast.ExStr (_, s) -> expr
+  | MLast.ExTry (_, e, pwel) -> MLast.ExTry (loc, e, spwel pwel)
+  | MLast.ExTup (_, el) -> MLast.ExTup (loc, sel el)
+  | MLast.ExTyc (_, e, t) -> MLast.ExTyc (loc, se e, t)
+  | MLast.ExUid (_, s) -> expr
+  | MLast.ExWhi (_, e, el) -> MLast.ExWhi (loc, se e, sel el)
+  | _ ->
+      Stdpp.raise_with_loc loc
+        (Failure "syntax not supported due to the \
+              lack of documentation for Camlp4")
+
+
+(* The statement that extends the default grammar, 
+   i.e. the regular syntax of OCaml if we use camlp4o 
+   or the revised syntax if we use camlp4r *)
+let _ =
+  Grammar.extend
+    [Grammar.Entry.obj (Pcaml.expr : 'Pcaml__expr Grammar.Entry.e),
+     Some (Gramext.Level "expr1"),
+     [None, None,
+      [[Gramext.Stoken ("", "FLOAT"); Gramext.Sself],
+       Gramext.action
+         (fun (e : 'Pcaml__expr) _
+            (loc : Lexing.position * Lexing.position) ->
+            (MLast.ExLet
+               (loc, false,
+                [MLast.PaLid (loc, "+"), MLast.ExLid (loc, "+.");
+                 MLast.PaLid (loc, "-"), MLast.ExLid (loc, "-.");
+                 MLast.PaLid (loc, "/"), MLast.ExLid (loc, "/.");
+                 MLast.PaLid (loc, "*"), MLast.ExLid (loc, "*.");
+                 MLast.PaLid (loc, "mod"), MLast.ExLid (loc, "mod_float")],
+                subst_float e) :
+             'Pcaml__expr));
+       [Gramext.Stoken ("", "try"); Gramext.Sself;
+        Gramext.Stoken ("", "finally"); Gramext.Sself],
+       Gramext.action
+         (fun (e2 : 'Pcaml__expr) _ (e1 : 'Pcaml__expr) _
+            (loc : Lexing.position * Lexing.position) ->
+            (expand loc e1 e2 : 'Pcaml__expr))]]]

@@ -1,0 +1,467 @@
+##
+#load "utils.cmo";;
+#use "topfind";;
+#require "caml2html";;
+#require "mikmatch_pcre";;
+#load "unmix.cmo";;
+#load "print_ocaml.cmo";;
+#use "json-wheel-version.ml";;
+open Print_ocaml
+open Utils
+open Camlmix
+##
+## include_file "doctype" ##
+<html>
+<head>
+## title 
+"json-wheel: JSON Library for OCaml"
+##
+## include_file "charset" ##
+## include_file "stylesheet" ##
+## include_file "ocaml-stylesheet" ##
+## include_file "icon" ##
+## include_file "commonlinks" ##
+</head>
+<body>
+## include_file "hitcounter" ##
+## include_file "start_big_table" ##
+## top_menu ocaml ##
+
+##
+open Printf
+##
+
+<h1>json-wheel: JSON library for OCaml
+## include_file "1camel" ##</h1>
+
+<p>
+<div class="framed">
+Json-wheel is now deprecated. Do not use it in new projects.
+It has been replaced by <a href="yojson.html">Yojson</a>.
+</div>
+
+<h2>Introduction</h2>
+<p>
+From <a href="http://www.json.org/">www.json.org</a>:
+<p style="padding-left:10%;padding-right:10%">
+<i>
+JSON (JavaScript Object Notation) is a lightweight data-interchange format. It is easy for humans to read and write. It is easy for machines to parse and generate. It is based on a subset of the JavaScript Programming Language, Standard ECMA-262 3rd Edition - December 1999.
+</i>
+<p>
+This implementation follows 
+<a href="http://www.ietf.org/rfc/rfc4627.txt">RFC 4627</a>. 
+We use key/value lists to represent JSON objects, 
+and lists to represent JSON arrays. 
+The library also provides pretty-printing and 
+optional support for C-style comments.
+
+
+
+<h2>Documentation</h2>
+
+<p>
+<a href="json-wheel-doc/index.html">Ocamldoc-generated 
+documentation</a> is available.
+
+<h2>Download</h2>
+
+<p>
+This software was written by Mika Illouz and Martin Jambon, 
+with some contributions by Gerd Stolpmann.
+It is distributed under a 
+<a href="json-wheel-license.txt">BSD license</a>.
+The current version is ## print_string json_wheel_version ##; 
+see <a href="json-wheel-changes.txt">Changes</a>.
+<p>
+<table class="light-table">
+<tr style="background-color: #ddd">
+<td>Latest version:</td>
+## 
+let gz = sprintf "json-wheel-%s.tar.gz" json_wheel_version
+let bz2 = sprintf "json-wheel-%s.tar.bz2" json_wheel_version
+##
+<td>## download "json-wheel.tar.gz" ##</td>
+<td>## download "json-wheel.tar.bz2" ##</td>
+<td>## download gz ##</td>
+<td>## download bz2 ##</td>
+</tr>
+## 
+List.iter
+  (fun s ->
+     printf "<tr>\n<td></td><td></td><td></td>\n";
+     printf "<td>";
+     download (sprintf "json-wheel-%s.tar.gz" s); 
+     printf "</td>\n";
+     printf "<td>";
+     download (sprintf "json-wheel-%s.tar.bz2" s);
+     printf "</td>\n</tr>\n")
+	      [ "1.0.5"; "1.0.4"; "1.0.3"; "1.0.2"; "1.0.1"; "1.0.0" ]
+##
+</table>
+
+<p>
+We also recommend <a href="json-static.html">json-static</a> which greatly
+simplifies the job of converting from generic JSON data to 
+specialized OCaml types (JSON objects <code>-&gt;</code> OCaml objects, etc.).
+
+
+<h2>Notes</h2>
+
+<p>
+The JSON parser, in the default mode, conforms to the specifications 
+of <a href="http://www.ietf.org/rfc/rfc4627.txt">RFC 4627</a>, 
+with only some limitations due to the implementation 
+of the corresponding OCaml types:
+<ul>
+<li> ints that are too large to be represented with the OCaml int type
+  cause an error. The limit depends whether it is a 32-bit or 64-bit
+  platform (see <code>min_int</code> and <code>max_int</code>).
+
+<li> floats may be represented with reduced precision as they must fit
+  into the 8 bytes of the "double" format.
+
+<li> The size of OCaml strings is limited to about 16MB on 32-bit
+  platforms, and much more on 64-bit platforms 
+  (see <code>Sys.max_string_length</code>).
+</ul>
+
+<p>
+The UTF-8 encoding is supported, however no attempt is made at
+checking whether strings are actually valid UTF-8 or not. Therefore, other
+ASCII-compatible encodings such as the ISO 8859 series are supported
+as well.
+
+<h2>JSON equivalents of OCaml types</h2>
+
+<p>
+JSON provides only two kinds of containers which are very flexible, 
+while OCaml provides a greater variety of containers which 
+are more specialized. Here is a suggestion on how you could convert OCaml data
+to JSON, assuming you have a choice.
+
+<p>
+There is now a camlp4 syntax extension, 
+<a href="json-static.html">json-static</a>, that generates converters
+between OCaml and Json_type.t all by itself, using only type declarations.
+It allows the programmer to ignore the middle column of this table:
+
+<p>
+<table class="real-table" style="font-size:70%">
+<tr>
+<th></th>
+<th>OCaml</th>
+<th>Json_type.t</th>
+<th>JSON</th>
+</tr>
+
+<tr>
+<th>Basic types</th>
+<td>
+## print_with ocamlpre ##
+"abc"
+
+1234
+
+3.14
+
+1.
+
+-1.23e12
+
+true
+## () ##
+</td>
+<td>
+## print_with ocamlpre ##
+String "abc"
+
+Int 1234
+
+Float 3.14
+
+Float 1.
+
+Float (-1.23e12)
+
+Bool true
+## () ##
+</td>
+<td>
+<pre>
+"abc"
+
+1234
+
+3.14
+
+1.0
+
+-1.23e12
+
+true
+</pre>
+</td>
+</tr>
+
+<tr>
+<th>Lists and arrays</th>
+<td>
+## print_with ocamlpre ##
+(* List *)
+[ "Hello"; "World" ]
+
+(* Array *)
+[| "Hello"; "World" |]
+## () ##
+</td>
+<td>
+## print_with ocamlpre ##
+Array [ String "Hello";
+	String "World" ]
+## () ##
+</td>
+<td>
+<pre>
+[ "Hello", "World" ]
+</pre>
+</td>
+</tr>
+
+<tr>
+<th>Tuples</th>
+<td>
+## print_with ocamlpre ##
+("abc", 1234)
+## () ##
+</td>
+<td>
+## print_with ocamlpre ##
+Array [ String "abc"; Int 1234 ]
+## () ##
+</td>
+<td>
+<pre>
+[ "abc", 1234 ]
+</pre>
+</td>
+</tr>
+
+<tr>
+<th>Records, objects</th>
+<td>
+## print_with ocamlpre ##
+(* Record *)
+{ x = 0; 
+  y = 1; 
+  show = true }
+
+(* Object *)
+object 
+  method x = 0 
+  method y = 1 
+  method show = true 
+end
+## () ##
+</td>
+<td>
+## print_with ocamlpre ##
+Object [ "x", Int 0; 
+	 "y", Int 1; 
+	 "show", Bool true ]
+## () ##
+</td>
+<td>
+<pre>
+{ "x": 0,
+  "y": 1,
+  "show": true }
+</pre>
+</td>
+</tr>
+
+<tr>
+<th>Hash tables, association lists, maps</th>
+<td>
+## print_with ocamlpre ##
+(* Association list *)
+[ "x", 0; 
+  "y", 1 ]
+## () ##
+</td>
+<td>
+## print_with ocamlpre ##
+Object [ "x", Int 0; 
+	 "y", Int 1 ]
+## () ##
+</td>
+<td>
+<pre>
+{ "x": 0,
+  "y": 1 }
+</pre>
+</td>
+</tr>
+<tr>
+
+<th>Options</th>
+<td>
+## print_with ocamlpre ##
+None
+
+Some "abc"
+## () ##
+</td>
+<td>
+## print_with ocamlpre ##
+Null
+
+String "abc"
+## () ##
+</td>
+<td>
+<pre>
+null
+
+"abc"
+</pre>
+</td>
+</tr>
+
+<tr>
+<th>Sum types (other than options)</th>
+<td>
+## print_with ocamlpre ##
+(* No argument *)
+A
+
+`A
+
+(* One argument *)
+B "abc"
+
+`B "abc"
+
+(* One argument of type tuple *)
+Coord (123, 456)
+
+`Coord (123, 456)
+
+(* Several arguments *)
+Coord2 (123, 456)
+## () ##
+</td>
+<td>
+## print_with ocamlpre ##
+(* No argument *)
+String "A"
+
+(* One argument *)
+Array [ String "B",
+	String "abc" ]
+
+(* One argument of type tuple *)
+Array [ String "Coord", 
+	Array [ Int 123,
+		Int 456 ] ]
+
+(* Several arguments *)
+Array [ String "Coord2", 
+	Int 123, 
+	Int 456 ]
+## () ##
+</td>
+<td>
+<pre>
+/* No argument */
+"A"
+
+/* One argument */
+[ "B", "abc" ]
+
+/* One argument of type tuple */
+[ "Coord", [ 123, 456 ] ]
+
+/* Several arguments */
+[ "Coord2", 123, 456 ]
+</pre>
+</td>
+</tr>
+
+</table>
+
+
+<h2>JSON vs. <span style="text-decoration: line-through">Freddy</span> XML</h2>
+
+<p>
+The XML to JSON mapping which is proposed by 
+<a href="http://jsonml.org/">JsonML</a> is a good illustration of 
+the flexibility of JSON.
+</p>
+
+<h2>Simple examples</h2>
+
+<p>
+On the OCaml side, here are two examples of the typical operations that
+you would perform:
+## print_with ocamlpre ##
+(* Program that builds a JSON object and saves it into a file *)
+open Json_type
+
+let obj = Object [ "x", Int 1;
+		   "y", Int 2 ]
+let _ = Json_io.save_json "point.js" obj
+## () ##
+
+## print_with ocamlpre ##
+(* Program that reads a JSON object from a file and converts it
+   into a specialized type. 
+   Uses file "point.js" created by the previous example. *)
+open Json_type
+open Json_type.Browse
+
+let json_obj = Json_io.load_json "point.js"
+let tbl = make_table (objekt json_obj)
+let x = int (field tbl "x")
+let y = int (field tbl "y")
+let _ = Printf.printf "x = %i\ny = %i\n" x y
+## () ##
+
+<p>
+Maybe you are using JSON to communicate between a web page and a HTTP server
+that serves JSON data. There are two options for reading pure JSON data:
+<ul>
+<li> Use <code>eval</code>, after adding parentheses around the JSON code: <code>eval('(' + responseText + ')')</code>,
+<li> or use a proper JSON parser for JavaScript, 
+which is considered more secure, 
+but really you are requesting stuff only from your own server anyway.
+</ul>
+<p>
+Read more about this at <a href="http://www.json.org/js.html">json.org</a>.
+
+<p>
+Now, one of the most exciting features of asynchronous HTTP requests from
+JavaScript (or "AJAX" if you like the term), is to request information 
+from other websites than your own and include it in your pages. 
+Well, this is disabled by 
+the web browsers... probably just to annoy programmers, since you can emulate 
+the same functionality, with unfortunately even less safety.
+The principle is the following: 
+<ol>
+<li> The client-side javascript creates a URL that should return the data that
+we need from a server.
+<li> Then it inserts a script element, e.g.
+<code>&lt;script type="text/javascript" src="http://example.com/query?x=123&amp;y=true" /&gt;</code> anywhere in the document.
+<li> You guessed it, the server must serve real javascript code that will
+be magically downloaded and executed (if not already cached by the browser).
+Normally it would be a simple callback performed on JSON data.
+</ol>
+<p>
+For more information, visit the
+<a href="http://developer.yahoo.com/common/json.html">Yahoo! Web Services page 
+on JSON</a>.
+
+
+## camlmix_footer ~years:"2006, 2009" () ##
+## include_file "end_big_table" ##
+</body>
+</html>

@@ -1,0 +1,480 @@
+##
+#load "utils.cmo";;
+#use "topfind";;
+#require "caml2html";;
+#require "mikmatch_pcre";;
+#load "unmix.cmo";;
+#load "print_ocaml.cmo";;
+#use "easy-format-version.ml";;
+open Print_ocaml
+open Utils
+open Camlmix
+##
+## include_file "doctype" ##
+<html>
+<head>
+## title 
+"Easy-format: pretty-printing made easy"
+##
+## include_file "charset" ##
+## include_file "stylesheet" ##
+## include_file "ocaml-stylesheet" ##
+## include_file "icon" ##
+## include_file "commonlinks" ##
+</head>
+<body>
+## include_file "hitcounter" ##
+## include_file "start_big_table" ##
+## top_menu ocaml ##
+
+##
+open Printf
+##
+
+<h1>Easy-format: pretty-printing made easy
+## include_file "1camel" ##</h1>
+
+<h2>Introduction</h2>
+
+<p>
+This module offers a high-level and functional interface 
+to the Format module of the OCaml standard library.
+It is a pretty-printing facility, i.e. it takes as input some code 
+represented as a tree and formats this code into the most visually
+satisfying result, breaking and indenting lines of code
+where appropriate.
+</p>
+
+<p>
+Input data must be first modelled and converted into
+a tree using 3 kinds of nodes:
+</p>
+<ul>
+<li> atoms</li>
+<li> lists</li>
+<li> labelled nodes</li>
+</ul>
+
+<p>
+Atoms represent any text that is guaranteed to be printed as-is.
+Lists can model any sequence of items such as arrays of data
+or lists of definitions that are labelled with something 
+like "int main", "let x =" or "x:".
+</p>
+
+
+<h2>Download</h2>
+
+<p>
+This software was written by Martin Jambon. 
+It is distributed under a 
+<a href="easy-format-license.txt">BSD license</a>.
+<a href="/releases/easy-format">Download it here</a>.
+</p>
+
+<p>
+The <a href="https://github.com/mjambon/easy-format">development version
+of easy-format</a> is hosted on GitHub.
+
+
+
+<h2>Library interface</h2>
+
+<p>
+<a href="easy-format-doc/index.html">Ocamldoc-generated 
+interface documentation</a>
+</p>
+
+
+
+<h2>Indentation rules</h2>
+
+
+<p>
+Indentation is performed using ASCII space character, 
+and whitespace as produced by the Format module.
+The current implementation uses reasonable characters: ASCII space ' '
+and ASCII line feeds '\n' although the output functions may perform 
+a conversion, i.e. convert "\n" into "\r\n" on Windows out_channels opened
+in text mode.
+</p>
+
+<p>
+No strict indentation rules are guaranteed. The target language, if any,
+is assumed to treat any sequence of whitespace characters 
+between nodes as insignificant.
+</p>
+
+<p>
+Formatting hints can be specified for each node of the tree and 
+they allow to cover a variety of formatting styles.
+</p>
+
+
+<h2>Examples</h2>
+
+
+<p>
+A fairly <a href="easy_format_example.html">complete example</a> 
+(<a href="easy_format_example.html">HTML</a>, 
+<a href="easy_format_example.ml">raw source</a>).
+</p>
+
+<p>
+More examples used for testing and debugging
+are provided with the source distribution.
+</p>
+
+
+
+<h2>Frequent patterns</h2>
+
+
+
+
+<h3>Sticky opening</h3>
+
+<pre>
+label opening ... closing
+</pre>
+
+<p>or</p>
+
+<pre>
+label opening
+  ...
+closing
+</pre>
+
+
+<p>Parameters:</p>
+<pre>
+  stick_to_label = true
+  align_closing = true
+</pre>
+
+
+<h3>Non-sticky opening</h3>
+
+
+<pre>
+label opening item1 item2 closing
+</pre>
+
+<p>or</p>
+
+<pre>
+label
+  opening
+    ...
+  closing
+</pre>
+
+
+<p>Parameters:</p>
+<pre>
+  stick_to_label = false
+  align_closing = true
+</pre>
+
+
+<h3>Sequence</h3>
+
+
+<pre>
+label opening ... closing
+</pre>
+
+<p>or</p>
+
+<pre>
+label
+opening
+  ...
+closing
+</pre>
+
+
+<p>Parameters:</p>
+<pre>
+  indent_after_label = 0
+  stick_to_label = false
+  align_closing = true
+</pre>
+
+
+
+<h3>Indented list</h3>
+
+
+<pre>
+opening item1 item2 closing
+</pre>
+
+<p>or</p>
+
+<pre>
+opening
+  item1
+  item2
+closing
+</pre>
+
+
+<p>Parameters:</p>
+<pre>
+  indent_items = 2
+  align_closing = true
+</pre>
+
+
+
+<h3>Non-aligned parentheses</h3>
+
+
+<pre>
+opening item1 item2 item3 closing
+</pre>
+
+<p>or</p>
+
+<pre>
+opening item1
+        item2
+        item3 closing
+</pre>
+
+
+<p>Parameters:</p>
+<pre>
+  align_closing = false
+</pre>
+
+
+
+<h3>Wrapped list body</h3>
+
+
+<pre>
+opening item1 item2 item3 closing
+</pre>
+
+<p>or</p>
+
+<pre>
+opening
+  item1 item2
+  item3
+closing
+</pre>
+
+
+<p>Parameters:</p>
+<pre>
+   wrap_body = `Always_wrap
+</pre>
+
+
+<h3>Disabled list body wrapping</h3>
+
+
+<pre>
+opening item1 item2 item3 closing
+</pre>
+
+<p>or</p>
+
+<pre>
+opening
+  item1
+  item2
+  item3
+closing
+</pre>
+
+
+<p>Parameters:</p>
+<pre>
+   wrap_body = `Never_wrap
+</pre>
+
+
+
+<h3>Vertical list body</h3>
+
+<pre>
+opening
+  item1
+  item2
+  item3
+closing
+</pre>
+
+
+<p>Parameters:</p>
+<pre>
+   wrap_body = `Force_breaks
+</pre>
+
+
+<h3>Horizontal list body</h3>
+
+<pre>
+opening item1 item2 item3 closing
+</pre>
+
+<p>or</p>
+
+<pre>
+opening
+  item1 item2 item3
+closing
+</pre>
+
+
+<p>Parameters:</p>
+<pre>
+   wrap_body = `No_breaks
+</pre>
+
+
+
+
+<h3>Padding</h3>
+
+
+<pre>
+( item1 item2 )
+</pre>
+
+<p>or</p>
+
+<pre>
+(
+  item1
+  item2
+)
+</pre>
+
+
+<p>Parameters:</p>
+<pre>
+  space_after_opening = true
+  space_before_closing = true
+</pre>
+
+
+
+<h3>No padding</h3>
+
+
+<pre>
+(item1 item2)
+</pre>
+
+<p>or</p>
+
+<pre>
+(
+  item1
+  item2
+)
+</pre>
+
+
+<p>Parameters:</p>
+<pre>
+  space_after_opening = false
+  space_before_closing = false
+</pre>
+
+
+
+<h3>Space after separator</h3>
+
+
+<pre>
+opening item1, item2 closing
+</pre>
+
+<p>or</p>
+
+<pre>
+opening
+  item1,
+  item2
+closing
+</pre>
+
+
+<p>Parameters:</p>
+<pre>
+  space_after_separator = true
+</pre>
+
+
+
+<h3>No space after separator</h3>
+
+
+<pre>
+opening item1,item2 closing
+</pre>
+
+<p>or</p>
+
+<pre>
+opening
+  item1,
+  item2
+closing
+</pre>
+
+
+<p>Parameters:</p>
+<pre>
+  space_after_separator = false
+</pre>
+
+
+
+
+<h3>Beginning-of-line separators</h3>
+
+
+<pre>
+opening item1 separator item2 separator item3 closing
+</pre>
+
+<p>or</p>
+
+<pre>
+opening
+            item1
+  separator item2
+  separator item3
+closing
+</pre>
+
+<p>or</p>
+
+<pre>
+opening
+            item1 separator item2
+  separator item3
+closing
+</pre>
+
+
+<p>Parameters:</p>
+<pre>
+  separators_stick_left = false
+  space_before_separator = true
+  space_after_separator = true
+</pre>
+
+
+## camlmix_footer ~years:"2008" () ##
+## include_file "end_big_table" ##
+</body>
+</html>

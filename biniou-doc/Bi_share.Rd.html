@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Bi_share.Wr.html">
+<link rel="Up" href="Bi_share.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Bi_util" rel="Chapter" href="Bi_util.html">
+<link title="Bi_share" rel="Chapter" href="Bi_share.html">
+<link title="Bi_outbuf" rel="Chapter" href="Bi_outbuf.html">
+<link title="Bi_inbuf" rel="Chapter" href="Bi_inbuf.html">
+<link title="Bi_vint" rel="Chapter" href="Bi_vint.html">
+<link title="Bi_io" rel="Chapter" href="Bi_io.html"><title>Bi_share.Rd</title>
+</head>
+<body>
+<div class="navbar"><a href="Bi_share.Wr.html">Previous</a>
+&nbsp;<a href="Bi_share.html">Up</a>
+&nbsp;</div>
+<center><h1>Module <a href="type_Bi_share.Rd.html">Bi_share.Rd</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> Rd: <code class="code">sig</code> <a href="Bi_share.Rd.html">..</a> <code class="code">end</code></pre><hr width="100%">
+<pre><span id="TYPEtbl"><span class="keyword">type</span> <code class="type"></code>tbl</span> </pre>
+
+<pre><span id="VALcreate"><span class="keyword">val</span> create</span> : <code class="type">int -> <a href="Bi_share.Rd.html#TYPEtbl">tbl</a></code></pre><pre><span id="VALclear"><span class="keyword">val</span> clear</span> : <code class="type"><a href="Bi_share.Rd.html#TYPEtbl">tbl</a> -> unit</code></pre><pre><span id="VALput"><span class="keyword">val</span> put</span> : <code class="type"><a href="Bi_share.Rd.html#TYPEtbl">tbl</a> -> int * <a href="Bi_share.html#TYPEtype_id">Bi_share.type_id</a> -> Obj.t -> unit</code></pre><div class="info">
+<code class="code">put tbl pos x</code> puts the position of a new shared value into the
+	table.  <code class="code">pos</code> is the absolute position of the first byte
+	of the ref value excluding its tag.<br>
+</div>
+<pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type"><a href="Bi_share.Rd.html#TYPEtbl">tbl</a> -> int * <a href="Bi_share.html#TYPEtype_id">Bi_share.type_id</a> -> Obj.t</code></pre><div class="info">
+<code class="code">get tbl pos</code> returns the value stored at this position
+	or raises a <a href="Bi_util.html#EXCEPTIONError"><code class="code">Bi_util.Error</code></a> exception.<br>
+</div>
+</body></html>

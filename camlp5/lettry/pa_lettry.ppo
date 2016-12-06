@@ -1,0 +1,68 @@
+let _ =
+  Grammar.extend
+    (let _ = (Pcaml.expr : 'Pcaml__expr Grammar.Entry.e) in
+     let grammar_entry_create s =
+       Grammar.create_local_entry (Grammar.of_entry Pcaml.expr) s
+     in
+     let lettry_case : 'lettry_case Grammar.Entry.e =
+       grammar_entry_create "lettry_case"
+     in
+     [Grammar.Entry.obj (Pcaml.expr : 'Pcaml__expr Grammar.Entry.e),
+      Some (Gramext.Level "expr1"),
+      [None, None,
+       [[Gramext.Stoken ("", "let"); Gramext.Stoken ("", "try");
+         Gramext.Sopt (Gramext.Stoken ("", "rec"));
+         Gramext.Slist1sep
+           (Gramext.Snterm
+              (Grammar.Entry.obj
+                 (Pcaml.let_binding : 'Pcaml__let_binding Grammar.Entry.e)),
+            Gramext.Stoken ("", "and"), false);
+         Gramext.Stoken ("", "in"); Gramext.Sself;
+         Gramext.Stoken ("", "with");
+         Gramext.Slist1sep
+           (Gramext.Snterm
+              (Grammar.Entry.obj
+                 (lettry_case : 'lettry_case Grammar.Entry.e)),
+            Gramext.Stoken ("", "|"), false)],
+        Gramext.action
+          (fun (pwel : 'lettry_case list) _ (e : 'Pcaml__expr) _
+               (l : 'Pcaml__let_binding list) (o : string option) _ _
+               (loc : Ploc.t) ->
+             (MLast.ExApp
+                (loc,
+                 MLast.ExTry
+                   (loc,
+                    MLast.ExLet
+                      (loc, Ploc.VaVal (o <> None), Ploc.VaVal l,
+                       MLast.ExFun
+                         (loc,
+                          Ploc.VaVal
+                            [MLast.PaUid (loc, Ploc.VaVal "()"),
+                             Ploc.VaVal None, e])),
+                    Ploc.VaVal pwel),
+                 MLast.ExUid (loc, Ploc.VaVal "()")) :
+              'Pcaml__expr))]];
+      Grammar.Entry.obj (lettry_case : 'lettry_case Grammar.Entry.e), None,
+      [None, None,
+       [[Gramext.Snterm
+           (Grammar.Entry.obj (Pcaml.patt : 'Pcaml__patt Grammar.Entry.e));
+         Gramext.Sopt
+           (Gramext.srules
+              [[Gramext.Stoken ("", "when");
+                Gramext.Snterm
+                  (Grammar.Entry.obj
+                     (Pcaml.expr : 'Pcaml__expr Grammar.Entry.e))],
+               Gramext.action
+                 (fun (e : 'Pcaml__expr) _ (loc : Ploc.t) -> (e : 'e__1))]);
+         Gramext.Stoken ("", "->");
+         Gramext.Snterm
+           (Grammar.Entry.obj (Pcaml.expr : 'Pcaml__expr Grammar.Entry.e))],
+        Gramext.action
+          (fun (e : 'Pcaml__expr) _ (w : 'e__1 option) (p : 'Pcaml__patt)
+               (loc : Ploc.t) ->
+             (p, Ploc.VaVal w,
+              MLast.ExFun
+                (loc,
+                 Ploc.VaVal
+                   [MLast.PaUid (loc, Ploc.VaVal "()"), Ploc.VaVal None, e]) :
+              'lettry_case))]]])

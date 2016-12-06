@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>~/sync/dev/perso/mjambon/pages/micmatch/Makefile.html</title>
+<meta name="Generator" content="Vim/7.3">
+<meta name="plugin-version" content="vim7.3_v6">
+<meta name="syntax" content="make">
+<meta name="settings" content="use_css">
+<style type="text/css">
+<!--
+pre { font-family: monospace; color: #000000; background-color: #ffffff; }
+body { font-family: monospace; color: #000000; background-color: #ffffff; }
+.Constant { color: #ff6060; }
+.PreProc { color: #ff40ff; }
+.Statement { color: #ffff00; }
+.Special { color: #ff40ff; }
+.Identifier { color: #00ffff; }
+.Comment { color: #8080ff; }
+-->
+</style>
+</head>
+<body>
+<pre>
+<span class="Comment">### Sample Makefile for non-trivial programs using Micmatch (micmatch_pcre)</span>
+<span class="Comment">### (extracted from a real project!)</span>
+
+<span class="Comment"># The name of the program</span>
+<span class="Identifier">RESULT </span>= my_program
+
+<span class="Comment"># Micmatch source files end with .mml instead of .ml</span>
+<span class="Comment"># (no specific order)</span>
+<span class="Identifier">MM_FILES </span>= <span class="Special">\</span>
+<span class="Special">  </span>species.mml scop.mml <span class="Special">\</span>
+<span class="Special">  </span>pairs.mml align.mml <span class="Special">\</span>
+<span class="Special">  </span>dssp.mml contact.mml oligomers.mml whatif.mml <span class="Special">\</span>
+<span class="Special">  </span>stats.mml <span class="Special">\</span>
+<span class="Special">  </span>main.mml
+
+<span class="Comment"># All sources files + .ml files produced from .mml files above</span>
+<span class="Comment"># (in linking order)</span>
+<span class="Identifier">SOURCES </span>= <span class="Special">\</span>
+<span class="Special">  </span>pdb.mli pdb.ml <span class="Special">\</span>
+<span class="Special">  </span>param.ml <span class="Special">\</span>
+<span class="Special">  </span>species.ml scop.ml <span class="Special">\</span>
+<span class="Special">  </span>pairs.ml align.ml <span class="Special">\</span>
+<span class="Special">  </span>dssp.ml contact.ml oligomers.ml whatif.ml <span class="Special">\</span>
+<span class="Special">  </span>stats.ml <span class="Special">\</span>
+<span class="Special">  </span>main.ml
+
+<span class="Comment"># Directory where micmatch_pcre was installed:</span>
+<span class="Identifier">MICMATCHDIR </span>= <span class="Identifier">$(</span><span class="Statement">shell</span><span class="Identifier"> ocamlfind query micmatch_pcre)</span>
+
+<span class="Comment"># The packages that are managed with Findlib (ocamlfind)</span>
+<span class="Comment"># (only micmatch_pcre is required):</span>
+<span class="Identifier">PACKS </span>= micmatch_pcre netclient
+<span class="Identifier">CREATE_LIB </span>= yes <span class="Comment"># I don't know why</span>
+
+<span class="Comment"># Uncomment if you use threads</span>
+<span class="Comment">#THREADS = yes</span>
+
+
+<span class="Comment"># If you want to see the preprocessed OCaml code </span>
+<span class="Comment"># (instead of the AST in binary format; </span>
+<span class="Comment"># references to the .mml source code will be lost):</span>
+<span class="Comment">#REPRINT = yes</span>
+
+<span class="Comment"># The main target: pp can be followed by any target provided by OCamlMakefile</span>
+<span class="Statement">.PHONY:</span> all
+<span class="Identifier">all:</span> pp nc
+
+
+
+<span class="Comment">##### The rest should not change too often</span>
+
+<span class="Identifier">MM_SOURCES </span>= <span class="Identifier">$(MM_FILES:.mml=.ml)</span>
+
+<span class="PreProc">ifdef</span> REPRINT
+<span class="Identifier">  PR </span>= pr_o.cmo
+<span class="PreProc">else</span>
+<span class="Identifier">  PR </span>=
+<span class="PreProc">endif</span>
+
+<span class="PreProc">ifdef</span> THREADS
+<span class="Identifier">  MM_THREAD </span>= -thread
+<span class="PreProc">else</span>
+<span class="Identifier">  MM_THREAD </span>=
+<span class="PreProc">endif</span>
+
+
+<span class="Statement">.PHONY:</span> pp
+<span class="Identifier">pp:</span> <span class="Identifier">$(MM_SOURCES)</span>
+
+<span class="Identifier">$(MM_SOURCES):</span> <span class="Identifier">%</span>.ml: <span class="Identifier">%</span>.mml
+<span class="Constant">        camlp4o </span><span class="Identifier">$(PR)</span><span class="Constant"> -I </span><span class="Identifier">$(MICMATCHDIR)</span><span class="Constant"> pa_micmatch_pcre.cma </span><span class="Identifier">$(MM_THREAD)</span><span class="Constant"> </span><span class="Special">\</span>
+<span class="Constant">                -impl </span><span class="Identifier">$&lt;</span><span class="Constant"> &gt; </span><span class="Identifier">$@</span>
+
+<span class="Identifier">TRASH </span>= <span class="Identifier">$(MM_SOURCES)</span>
+
+<span class="Identifier">OCAMLMAKEFILE </span>= OCamlMakefile
+<span class="PreProc">include</span> <span class="Identifier">$(OCAMLMAKEFILE)</span>
+</pre>
+</body>
+</html>

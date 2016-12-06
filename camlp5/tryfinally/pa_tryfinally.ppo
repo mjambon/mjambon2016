@@ -1,0 +1,54 @@
+(* The function that returns unique identifiers *)
+let new_id =
+  let counter = ref 0 in
+  fun () -> incr counter; "__finally" ^ string_of_int !counter
+
+(* The function that converts our syntax into a single OCaml expression,
+   i.e. an "expr" node of the syntax tree *)
+let expand loc e1 e2 =
+  let id = new_id () in
+  let id_patt = MLast.PaLid (loc, Ploc.VaVal id) in
+  let id_expr = MLast.ExLid (loc, Ploc.VaVal id) in
+  MLast.ExLet
+    (loc, Ploc.VaVal false,
+     Ploc.VaVal
+       [id_patt,
+        MLast.ExTry
+          (loc,
+           MLast.ExSeq
+             (loc, Ploc.VaVal [e1; MLast.ExUid (loc, Ploc.VaVal "None")]),
+           Ploc.VaVal
+             [MLast.PaLid (loc, Ploc.VaVal "exn"), Ploc.VaVal None,
+              MLast.ExApp
+                (loc, MLast.ExUid (loc, Ploc.VaVal "Some"),
+                 MLast.ExLid (loc, Ploc.VaVal "exn"))])],
+     MLast.ExSeq
+       (loc,
+        Ploc.VaVal
+          [e2;
+           MLast.ExMat
+             (loc, id_expr,
+              Ploc.VaVal
+                [MLast.PaUid (loc, Ploc.VaVal "None"), Ploc.VaVal None,
+                 MLast.ExUid (loc, Ploc.VaVal "()");
+                 MLast.PaApp
+                   (loc, MLast.PaUid (loc, Ploc.VaVal "Some"),
+                    MLast.PaLid (loc, Ploc.VaVal "exn")),
+                 Ploc.VaVal None,
+                 MLast.ExApp
+                   (loc, MLast.ExLid (loc, Ploc.VaVal "raise"),
+                    MLast.ExLid (loc, Ploc.VaVal "exn"))])]))
+
+(* The statement that extends the default grammar, 
+   i.e. the regular syntax of OCaml if we use camlp5o 
+   or the revised syntax if we use camlp5r *)
+let _ =
+  Grammar.extend
+    [Grammar.Entry.obj (Pcaml.expr : 'Pcaml__expr Grammar.Entry.e),
+     Some (Gramext.Level "expr1"),
+     [None, None,
+      [[Gramext.Stoken ("", "try"); Gramext.Sself;
+        Gramext.Stoken ("", "finally"); Gramext.Sself],
+       Gramext.action
+         (fun (e2 : 'Pcaml__expr) _ (e1 : 'Pcaml__expr) _ (loc : Ploc.t) ->
+            (expand loc e1 e2 : 'Pcaml__expr))]]]

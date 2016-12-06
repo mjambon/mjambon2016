@@ -1,0 +1,519 @@
+
+
+
+<!doctype html>
+
+<html>
+<head>
+<title>Mikmatch: OCaml Pattern Matching + Regexps</title>
+<meta http-equiv="content-Type" content="text/html; charset=utf-8">
+
+<link rel="stylesheet" href="/base.css" type="text/css">
+
+<link rel="stylesheet" href="/ocaml.css" type="text/css">
+
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+<link rel="home" href="/">
+<link rel="author" href="/people.html#martin">
+
+</head>
+<body>
+
+<div id="page">
+
+
+<div>
+<table id=top_menu cellspacing=0>
+<tr>
+  <td><a href="/">Main</a></td>
+  <td class="current_topic"><a href="/ocaml.html">Software</a></td>
+  <td><a href="/releases">Downloads</a></td>
+  <td><a href="/other.html">Other</a></td>
+</tr>
+</table>
+</div>
+
+<h1>Mikmatch <img src="/2camels.png" 
+     title="difficulty = 2 camels (requires a knowledge of OCaml's basics)" 
+     alt="[difficulty = 2 camels]">
+<br>
+<span class=title2>OCaml Pattern Matching + Regexps</span></h1>
+
+
+
+<p>
+<table class=list>
+<tr><td><a href="micmatch-howto.html" class=toc0>Tutorial</a></td></tr>
+<tr><td><a href="micmatch-manual.html" class=toc0>Micmatch reference manual 
+(Camlp5)</a></td></tr>
+<tr><td><a href="mikmatch-manual.html" class=toc0>Mikmatch reference manual 
+(new Camlp4)</a></td></tr>
+<tr><td><a href="#download" class=toc0>Download</a></td></tr>
+<tr><td><a href="micmatch-design.html" class=toc0>Design issues</a></td></tr>
+<tr><td><a href="http://groups.google.com/group/micmatch" class=toc0>Mailing-list</a></td></tr>
+</table>
+
+
+<h2>Mi<i>k</i>match vs. Mi<i>c</i>match</h2>
+
+<p>
+Mi<b>k</b>match and Mi<b>c</b>match refer to two implementations
+of the same thing.
+Mi<b>k</b>match works with the official distribution of Camlp4, while
+Mi<b>c</b>match works with Camlp5 which is based on the 
+original design of Camlp4.
+
+
+<h2>Introduction</h2>
+
+<p>
+The goal of Micmatch is to make text-oriented programs even easier to write, 
+read and run without losing the unique and powerful features of 
+<a href="http://caml.inria.fr/">Objective Caml (OCaml)</a>.
+
+<p>
+Micmatch provides a concise and highly readable syntax for 
+regular expressions, and integrates it into the 
+syntax of OCaml thanks to Camlp4.
+
+<p>
+<table>
+<tr>
+<td>
+The implementation of Micmatch consists essentially of:
+<ol>
+<li> a library which is loaded by the OCaml preprocessor (Camlp4) and defines
+sophisticated "macros", i.e. the modified syntax,
+<li> a traditional library (runtime) which is required 
+by the programs that use the Micmatch syntax,
+<li> a dedicated <code>micmatch</code> command which can be used as 
+a replacement for <code>ocaml</code> in scripts or as an interactive toplevel.
+It performs automatically these steps: preprocessing, compilation 
+and execution.
+</ol>
+</td>
+<td>
+<img src="micmatch-camlp4-pipeline.png" alt="[Micmatch-Camlp4-OCaml pipeline]">
+</td>
+</tr>
+</table>
+
+<p>
+Micmatch is a syntax extension of OCaml which is built on top of 
+existing libraries that provide regular expression engines such as the
+Perl-Compatible Regular Expressions library (PCRE).
+Regular expressions are compiled at the same time as the rest of the program,
+and syntax errors are precisely highlighted just like 
+in the rest of the OCaml program.
+This brings substantial comfort, safety and productivity to the programmer.
+
+<p>
+Micmatch is being actively maintained. 
+Thank you for reporting any bug you may find to 
+micmatch@<a style="display:none">nobody.com@there.com</a>googlegroups.com.
+Comments and suggestions are also highly appreciated.
+
+
+<h2>A taste of Micmatch</h2>
+
+<p>
+Micmatch is a syntax extension of the 
+<a href="http://caml.inria.fr/pub/docs/manual-ocaml/manual014.html">pattern matching constructs of Objective Caml</a> 
+for matching and extracting substrings with regular expressions.
+Micmatch tries to stay as close as possible to the spirit of
+OCaml.
+
+<p>
+Let's consider the problem of finding if a message starts with hello or not.
+In OCaml, we can only match whole strings using the general pattern-matching
+system like this:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Ccomment">(* Test if msg is Hello or hello *)</span>
+<span class="Clet">let</span> msg <span class="Cnonalphakeyword">=</span> <span class="Cstring">"hello"</span> <span class="Cin">in</span>
+<span class="Cmatch">match</span> msg <span class="Cwith">with</span>
+    <span class="Cstring">"Hello"</span> <span class="Cbar">|</span> <span class="Cstring">"hello"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Ctrue">true</span>
+  <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cfalse">false</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : bool <span class="Cnonalphakeyword">=</span> <span class="Ctrue">true</span>
+</span></pre>
+<p>
+When our data is already structured, say as a list of tokens,
+we can conveniently test the head of the list:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Ccomment">(* Test if the head of a list of tokens is `Hello and</span>
+<span class="Ccomment">     return the name of the recipient or None *)</span>
+<span class="Clet">let</span> msg <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">`</span><span class="Cconstructor">Hello</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">`</span><span class="Cconstructor">Who</span> <span class="Cstring">"you"</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">`</span><span class="Cconstructor">Bye</span> <span class="Cnonalphakeyword">]</span> <span class="Cin">in</span>
+<span class="Cmatch">match</span> msg <span class="Cwith">with</span>
+    <span class="Cconstructor">`</span><span class="Cconstructor">Hello</span> <span class="Cnonalphakeyword">::</span> <span class="Cconstructor">`</span><span class="Cconstructor">Who</span> name <span class="Cnonalphakeyword">::</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">Some</span> name
+  <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">None</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : string option <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Some</span> <span class="Cstring">"you"</span>
+</span></pre>
+<p>
+However, OCaml does not provide a simple mechanism 
+to look inside of strings and extract the interesting pieces all 
+in one place.
+Micmatch provides a syntax extension which integrates in-place
+regular expressions into the native pattern-matching of OCaml:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Ccomment">(* Test if the string starts with Hello or hello and return the</span>
+<span class="Ccomment">     name of the recipient or None *)</span>
+<span class="Clet">let</span> msg <span class="Cnonalphakeyword">=</span> <span class="Cstring">"Hello you"</span> <span class="Cin">in</span>
+<span class="Cmatch">match</span> msg <span class="Cwith">with</span>
+    <span class="Cconstructor">RE</span> <span class="Cnonalphakeyword">[</span><span class="Cstring">"Hh"</span><span class="Cnonalphakeyword">]</span><span class="Cstring">"ello"</span> space<span class="Cnonalphakeyword">+</span> <span class="Cnonalphakeyword">(</span>alpha<span class="Cnonalphakeyword">+</span> <span class="Cas">as</span> name<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">Some</span> name
+  <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">None</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : string option <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Some</span> <span class="Cstring">"you"</span>
+</span></pre>
+
+<p>
+Do you like it?
+Many other features are offered by Micmatch! They are described 
+in the following documents:
+<ul>
+<li> the <a href="micmatch-howto.html">tutorial</a>
+<li> the <a href="mikmatch-manual.html">reference manual</a> 
+</ul>
+
+
+
+<h2>Practical issues</h2>
+
+<h3>Installation</h3>
+
+<p>
+The easiest way to install Micmatch is from 
+<a href="http://godi.ocaml-programming.de/">GODI</a>.
+
+<p>
+Alternatively, it can be <a href="#download">downloaded</a> and installed 
+manually using OCaml 3.07, 3.08 or 3.09. 
+See the <code>INSTALL</code> file of
+the <a href="#download">archive</a>.
+
+
+<h3>Compilation with Micmatch as a preprocessor</h3>
+
+<p>
+For scripting (writing one-file programs), 
+you just need to use <code>micmatch</code> as a
+replacement for <code>ocaml</code>. 
+On Unix systems, it is possible to make the scripts self-executable 
+by adding <code>#!/usr/bin/micmatch</code> or 
+<code>#!/usr/bin/env micmatch</code> at the beginning of the file
+like in the following example:
+<pre><span class="Cnonalphakeyword">#</span>! /usr/bin/env micmatch
+
+<span class="Ccomment">(* This script reads lines of input and</span>
+<span class="Ccomment">   inserts line numbers as new comments (starting with '#')</span>
+<span class="Ccomment">   or at the beginning of existing comments. *)</span>
+
+<span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> n <span class="Cnonalphakeyword">=</span> ref 0 <span class="Cin">in</span>
+  <span class="Cconstructor">Micmatch</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Text</span><span class="Cnonalphakeyword">.</span>iter_lines_of_channel
+    <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> line <span class="Cnonalphakeyword">-&gt;</span>
+       <span class="Clet">let</span> code<span class="Cnonalphakeyword">,</span> comment <span class="Cnonalphakeyword">=</span>
+         <span class="Cmatch">match</span> line <span class="Cwith">with</span>
+             <span class="Cconstructor">RE</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">*</span> <span class="Cconstructor">Lazy</span> <span class="Cas">as</span> code<span class="Cnonalphakeyword">)</span> <span class="Cstring">"#"</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">*</span> <span class="Cas">as</span> comment<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> code<span class="Cnonalphakeyword">,</span> comment
+           <span class="Cbar">|</span> code <span class="Cnonalphakeyword">-&gt;</span> code<span class="Cnonalphakeyword">,</span> <span class="Cstring">""</span> <span class="Cin">in</span>
+       incr n<span class="Cnonalphakeyword">;</span>
+       <span class="Cconstructor">Printf</span><span class="Cnonalphakeyword">.</span>printf <span class="Cstring">"%s# %i %s\n"</span> code !n comment<span class="Cnonalphakeyword">)</span>
+    stdin</pre>
+
+<p>
+In programs that are compiled with <code>ocamlc</code> or 
+<code>ocamlopt</code>, the code in the Micmatch syntax must be explicitely
+preprocessed with <code>camlp4o</code> or <code>camlp4r</code> 
+and the library <code>pa_micmatch_pcre.cma</code> before actually compiling. 
+The linking phase requires the Pcre library and the runtime library for
+micmatch (<code>run_micmatch_pcre</code>).
+
+<p>
+The now-<b>recommended approach</b> 
+to compile programs which require some Camlp4
+preprocessing is 
+<a href="http://ocaml-tutorial.org/compiling_ocaml_projects">the one 
+described there</a> which uses 
+<code>ocamlfind</code>, <code>OCamlMakefile</code> and
+<code>camlp4find</code>.
+
+<p>
+If you are interested, 
+commands for compiling and linking with <code>ocamlfind</code> are:
+<pre>
+ocamlfind ocamlopt -c       -syntax camlp4o \
+                            -package micmatch_pcre \
+                                     hello.ml
+
+ocamlfind ocamlopt -o hello -syntax camlp4o \
+                            -package micmatch_pcre \
+                            -linkpkg hello.cmx
+</pre>
+<p>
+Without ocamlfind, where $MICMATCHDIR is the directory where the library
+files have been installed, and $PCREDIR is where 
+PCRE-OCaml has been installed:
+<pre>
+ocamlopt -c       -I $MICMATCHDIR \
+                  -pp "camlp4o -I $MICMATCHDIR pa_micmatch_pcre.cma" \
+                  hello.ml
+
+ocamlopt -o hello -I $MICMATCHDIR -I $PCREDIR\
+                  pcre.cmxa run_micmatch.cmxa hello.cmx
+</pre>
+
+<p>
+A sample <code>Makefile</code> is also available 
+[<a href="micmatch/Makefile.html">view</a>|<a href="micmatch/Makefile">save</a>].
+It uses <a href="http://www.ai.univie.ac.at/~markus/home/ocaml_sources.html"><code>OCamlMakefile</code></a>.
+
+
+
+<h2 id=download>Download</h2>
+
+
+<h3>Micmatch for OCaml 3.09 + old Camlp4</h3>
+
+<p>
+This software is distributed under a 
+<a href="micmatch-license.txt">BSD license</a>.
+The latest version that works with the old Camlp4 is 0.700.
+<p>
+<table class=light-table>
+
+<tr>
+<td><a href="micmatch-0.700.tar.gz">micmatch-0.700.tar.gz</a></td>
+<td><a href="micmatch-0.700.tar.bz2">micmatch-0.700.tar.bz2</a></td>
+</tr>
+<tr>
+<td><a href="micmatch-0.699-beta.tar.gz">micmatch-0.699-beta.tar.gz</a></td>
+<td><a href="micmatch-0.699-beta.tar.bz2">micmatch-0.699-beta.tar.bz2</a></td>
+</tr>
+<tr>
+<td><a href="micmatch-0.698-beta.tar.gz">micmatch-0.698-beta.tar.gz</a></td>
+<td><a href="micmatch-0.698-beta.tar.bz2">micmatch-0.698-beta.tar.bz2</a></td>
+</tr>
+<tr>
+<td><a href="micmatch-0.697-beta.tar.gz">micmatch-0.697-beta.tar.gz</a></td>
+<td><a href="micmatch-0.697-beta.tar.bz2">micmatch-0.697-beta.tar.bz2</a></td>
+</tr>
+<tr>
+<td><a href="micmatch-0.696-beta.tar.gz">micmatch-0.696-beta.tar.gz</a></td>
+<td><a href="micmatch-0.696-beta.tar.bz2">micmatch-0.696-beta.tar.bz2</a></td>
+</tr>
+<tr>
+<td><a href="micmatch-0.695-beta.tar.gz">micmatch-0.695-beta.tar.gz</a></td>
+<td><a href="micmatch-0.695-beta.tar.bz2">micmatch-0.695-beta.tar.bz2</a></td>
+</tr>
+<tr>
+<td><a href="micmatch-0.694-beta.tar.gz">micmatch-0.694-beta.tar.gz</a></td>
+<td><a href="micmatch-0.694-beta.tar.bz2">micmatch-0.694-beta.tar.bz2</a></td>
+</tr>
+<tr>
+<td><a href="micmatch-0.693-beta.tar.gz">micmatch-0.693-beta.tar.gz</a></td>
+<td><a href="micmatch-0.693-beta.tar.bz2">micmatch-0.693-beta.tar.bz2</a></td>
+</tr>
+<tr>
+<td><a href="micmatch-0.692-beta.tar.gz">micmatch-0.692-beta.tar.gz</a></td>
+<td><a href="micmatch-0.692-beta.tar.bz2">micmatch-0.692-beta.tar.bz2</a></td>
+</tr>
+<tr>
+<td><a href="micmatch-0.691-beta.tar.gz">micmatch-0.691-beta.tar.gz</a></td>
+<td><a href="micmatch-0.691-beta.tar.bz2">micmatch-0.691-beta.tar.bz2</a></td>
+</tr>
+<tr>
+<td><a href="micmatch-0.690-beta.tar.gz">micmatch-0.690-beta.tar.gz</a></td>
+<td><a href="micmatch-0.690-beta.tar.bz2">micmatch-0.690-beta.tar.bz2</a></td>
+</tr>
+<tr>
+<td><a href="micmatch-0.689-beta.tar.gz">micmatch-0.689-beta.tar.gz</a></td>
+<td><a href="micmatch-0.689-beta.tar.bz2">micmatch-0.689-beta.tar.bz2</a></td>
+</tr>
+<tr>
+<td><a href="micmatch-0.688-beta.tar.gz">micmatch-0.688-beta.tar.gz</a></td>
+<td><a href="micmatch-0.688-beta.tar.bz2">micmatch-0.688-beta.tar.bz2</a></td>
+</tr>
+<tr>
+<td><a href="micmatch-0.687-beta.tar.gz">micmatch-0.687-beta.tar.gz</a></td>
+<td><a href="micmatch-0.687-beta.tar.bz2">micmatch-0.687-beta.tar.bz2</a></td>
+</tr>
+<tr>
+<td><a href="micmatch-0.686-beta.tar.gz">micmatch-0.686-beta.tar.gz</a></td>
+<td><a href="micmatch-0.686-beta.tar.bz2">micmatch-0.686-beta.tar.bz2</a></td>
+</tr>
+<tr>
+<td><a href="micmatch-0.685-beta.tar.gz">micmatch-0.685-beta.tar.gz</a></td>
+<td><a href="micmatch-0.685-beta.tar.bz2">micmatch-0.685-beta.tar.bz2</a></td>
+</tr>
+<tr>
+<td><a href="micmatch-0.684-beta.tar.gz">micmatch-0.684-beta.tar.gz</a></td>
+<td><a href="micmatch-0.684-beta.tar.bz2">micmatch-0.684-beta.tar.bz2</a></td>
+</tr>
+<tr>
+<td><a href="micmatch-0.683-beta.tar.gz">micmatch-0.683-beta.tar.gz</a></td>
+<td><a href="micmatch-0.683-beta.tar.bz2">micmatch-0.683-beta.tar.bz2</a></td>
+</tr>
+<tr>
+<td><a href="micmatch-0.682-beta.tar.gz">micmatch-0.682-beta.tar.gz</a></td>
+<td><a href="micmatch-0.682-beta.tar.bz2">micmatch-0.682-beta.tar.bz2</a></td>
+</tr>
+<tr>
+<td><a href="micmatch-0.681-beta.tar.gz">micmatch-0.681-beta.tar.gz</a></td>
+<td><a href="micmatch-0.681-beta.tar.bz2">micmatch-0.681-beta.tar.bz2</a></td>
+</tr>
+<tr>
+<td><a href="micmatch-0.680-beta.tar.gz">micmatch-0.680-beta.tar.gz</a></td>
+<td><a href="micmatch-0.680-beta.tar.bz2">micmatch-0.680-beta.tar.bz2</a></td>
+</tr>
+<tr>
+<td><a href="micmatch-0.679-beta.tar.gz">micmatch-0.679-beta.tar.gz</a></td>
+<td><a href="micmatch-0.679-beta.tar.bz2">micmatch-0.679-beta.tar.bz2</a></td>
+</tr>
+<tr>
+<td><a href="micmatch-0.678-beta.tar.gz">micmatch-0.678-beta.tar.gz</a></td>
+<td><a href="micmatch-0.678-beta.tar.bz2">micmatch-0.678-beta.tar.bz2</a></td>
+</tr>
+<tr>
+<td><a href="micmatch-0.677-beta.tar.gz">micmatch-0.677-beta.tar.gz</a></td>
+<td><a href="micmatch-0.677-beta.tar.bz2">micmatch-0.677-beta.tar.bz2</a></td>
+</tr>
+<tr>
+<td><a href="micmatch-0.676-beta.tar.gz">micmatch-0.676-beta.tar.gz</a></td>
+<td><a href="micmatch-0.676-beta.tar.bz2">micmatch-0.676-beta.tar.bz2</a></td>
+</tr>
+
+</table>
+
+
+
+<h3>Micmatch for OCaml 3.09, 3.10 + Camlp5</h3>
+
+
+<p>
+This software is distributed under a 
+<a href="micmatch-license.txt">BSD license</a>.
+The current version is 1.0.0.
+The first version that works with Camlp5 is 1.0.0 
+and offers the same exact features as release 0.700.
+See the <a href="micmatch-changes.txt">history of changes</a>.
+<p>
+<table class=light-table>
+<tr style="background-color: #ddd">
+<td>Latest version:</td>
+
+<td><a href="micmatch.tar.gz">micmatch.tar.gz</a></td>
+<td><a href="micmatch.tar.bz2">micmatch.tar.bz2</a></td>
+<td><a href="micmatch-1.0.0.tar.gz">micmatch-1.0.0.tar.gz</a></td>
+<td><a href="micmatch-1.0.0.tar.bz2">micmatch-1.0.0.tar.bz2</a></td>
+</tr>
+
+</table>
+
+
+
+
+
+<h3>Mikmatch for OCaml 3.10 + new Camlp4</h3>
+
+<p>
+This software is distributed under a 
+<a href="mikmatch-license.txt">BSD license</a>.
+Mikmatch is the implementation of Micmatch for the "new Camlp4",
+i.e. Camlp4 that ships with the core OCaml distribution starting from 
+version 3.10.
+See the <a href="mikmatch-changes.txt">history of changes</a>.
+
+
+<p>
+<table class=light-table>
+<tr style="background-color: #ddd">
+<td>Latest version:</td>
+
+<td><a href="mikmatch-1.0.0.tar.gz">mikmatch-1.0.0.tar.gz</a></td>
+<td><a href="mikmatch-1.0.0.tar.bz2">mikmatch-1.0.0.tar.bz2</a></td>
+</tr>
+</table>
+
+<h3>Mikmatch for OCaml 3.11 + new Camlp4</h3>
+
+<p>
+This software is distributed under a 
+<a href="mikmatch-license.txt">BSD license</a>.
+Mikmatch is the implementation of Micmatch for the "new Camlp4",
+i.e. Camlp4 that ships with the core OCaml distribution starting from 
+version 3.10. This particular version works with Camlp4 3.11.0 and 3.11.1
+and does not work with earlier or later versions.
+See the <a href="mikmatch-changes.txt">history of changes</a>.
+
+
+<p>
+<table class=light-table>
+<tr style="background-color: #ddd">
+<td>Latest version:</td>
+<td><a href="mikmatch-1.0.2.tar.gz">mikmatch-1.0.2.tar.gz</a></td>
+<td><a href="mikmatch-1.0.2.tar.bz2">mikmatch-1.0.2.tar.bz2</a></td>
+</tr>
+</table>
+
+
+<h3>Mikmatch for OCaml 3.12 + new Camlp4</h3>
+
+<p>
+This software is distributed under a 
+<a href="mikmatch-license.txt">BSD license</a>.
+Mikmatch is the implementation of Micmatch for the "new Camlp4",
+i.e. Camlp4 that ships with the core OCaml distribution starting from 
+version 3.10. This particular version works with Camlp4 3.12
+and does not work with earlier versions.
+See the <a href="mikmatch-changes.txt">history of changes</a>.
+<a href="/releases/mikmatch">Download it here</a>.
+
+
+<h3>Development versions</h3>
+
+<p>
+The <a href="https://github.com/mjambon/mikmatch">development version
+of Mikmatch</a> is hosted on GitHub.
+
+
+<h2>Acknowledgements</h2>
+
+<p>
+Many concepts found in Micmatch were inspired on discussions on
+caml-list@inria.fr and from existing software.
+The following sofware has been important for Micmatch:
+<ul>
+<li> <a href="http://caml.inria.fr/">Camlp4</a>
+<li> <a href="http://caml.inria.fr/">OCaml</a>
+<li> <a href="http://caml.inria.fr/pub/docs/manual-ocaml/manual026.html">ocamllex</a>
+<li> <a href="http://www.eleves.ens.fr/home/frisch/soft#paocamllex">pa_ocamllex</a>
+<li> Camlp4 utilities from <a href="http://www.yl.is.s.u-tokyo.ac.jp/~oiwa/caml/">Regexp/OCaml (regexp-pp)</a>
+<li> <a href="http://www.pcre.org/">PCRE</a>
+<li> <a href="http://www.ai.univie.ac.at/~markus/home/ocaml_sources.html">PCRE-OCaml</a>
+</ul>
+<p>
+Thanks to their respective authors.
+
+
+<div id=footer>
+&copy;&nbsp;2007&nbsp;Martin&nbsp;Jambon &lt;<a href="mailto:martin@mjambon.com">martin@mjambon.com</a>&gt;
+</div>
+
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-640255-1";
+urchinTracker();
+</script>
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+<!-- 
+var sc_project=370325; 
+var sc_partition=1; 
+//-->
+</script>
+
+<script type="text/javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><p><a href="http://www.statcounter.com/"><img src="http://c2.statcounter.com/counter.php?sc_project=370325&amp;java=0" alt="counter"></a></p></noscript>
+<!-- End of StatCounter Code -->
+
+</body>
+</html>

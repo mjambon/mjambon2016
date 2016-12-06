@@ -1,0 +1,1285 @@
+##
+#load "utils.cmo";;
+#use "topfind";;
+#require "caml2html";;
+#require "mikmatch_pcre";;
+#load "unmix.cmo";;
+#load "print_ocaml.cmo";;
+open Print_ocaml
+open Utils
+open Camlmix
+##
+## include_file "doctype" ##
+<html>
+<head>
+## title 
+"Micmatch - Tutorial and FAQ"
+##
+## include_file "charset" ##
+## include_file "stylesheet" ##
+## include_file "ocaml-stylesheet" ##
+## include_file "icon" ##
+## include_file "commonlinks" ##
+</head>
+<body>
+## include_file "hitcounter" ##
+## include_file "start_big_table" ##
+## top_menu ocaml ##
+
+##
+open Printf
+##
+
+<h1>Micmatch Tutorial and FAQ
+## include_file "2camels" ##</h1>
+
+
+<p>
+This is a tutorial on how to use <a href="micmatch.html">Micmatch</a> 
+in practice. It covers the PCRE variant of Micmatch, which is the default.
+For a complete but concise description of all the features that are 
+supported, see the <a href="micmatch-manual">reference manual</a>.
+
+<p>
+For a good tutorial on regexp matching (in Perl-like syntax), go to 
+<a href="http://www.regular-expressions.info/tutorial.html">www.regular-expressions.info</a>.
+
+## let (toc_item0, toc_item1, toc_item2, toc_entry, toc_link) = make_toc () ##
+
+<div class=toc>
+<b>Contents</b><br>
+## toc_item0 ~id:"whatfor" "What is Micmatch for?" ##
+## toc_item0 ~id:"camlp4" "Is Micmatch a new language?" ##
+## toc_item0 ~id:"why" 
+    "What's wrong with traditional regexp libraries such as Str or PCRE?" ##
+## toc_item0 ~id:"features" "Features at a glance" ##
+## toc_item0 ~id:"compile" "How to compile programs which use Micmatch" ##
+## toc_item1 ~id:"toplevel" "Interactive use" ##
+## toc_item1 ~id:"standalone" "Compilation into bytecode or native code" ##
+## toc_item0 ~id:"regexps" "How to define a text pattern" ##
+## toc_item1 ~id:"regexp-basics" "Basics of the syntax" ##
+## toc_item1 ~id:"regexp-matching" "Matching a text pattern" ##
+## toc_item0 ~id:"lines" "How to scan the lines of a file" ##
+## toc_item0 ~id:"filter" "Does it just match?" ##
+## toc_item0 ~id:"substrings" 
+      "How to extract substrings from a matched pattern" ##
+## toc_item0 ~id:"laziness" 
+      "Lazy vs. greedy matching" ##
+## toc_item0 ~id:"conversions" 
+      "Shortcuts to convert substrings to ints, floats or something else" ##
+## toc_item0 ~id:"numbers" "How to parse numbers" ##
+## toc_item0 ~id:"capture-object" "Packing subgroups into a single object" ##
+## toc_item0 ~id:"locate" "How to locate a pattern in a string" ##
+## toc_item0 ~id:"case" "How to ignore the case of the characters" ##
+## toc_item0 ~id:"collect" "How to get a list of the matched substrings" ##
+## toc_item0 ~id:"replace" "How to replace specific patterns in a string" ##
+## toc_item0 ~id:"split" "How to split a string into a list of components" ##
+## toc_item0 ~id:"assertions"
+      "How to test characters without consuming them" ##
+## toc_item0 ~id:"arguments" "How to search for a string which
+is unknown at compile-time" ##
+## toc_item0 ~id:"include" "How to reuse named regexps in other files" ##
+## toc_item0 ~id:"encodings"
+      "Does Micmatch support non-ASCII character encodings?" ##
+## toc_item0 ~id:"non-regexp" "Miscellaneous non-regexp problems" ##
+</div>
+
+## toc_entry "whatfor" ##
+
+<p>
+Micmatch is a text manipulation facility for Objective Caml.
+<p>
+Micmatch adds static support for regular expressions in the 
+Objective Caml language. It means that regular expressions are made part
+of the programming language, and therefore their syntax is more natural
+and their correctness is checked during the compilation process.
+<p>
+What does all of this mean? It means:
+<ul>
+<li> you can easily extract the data you want from any piece of text,
+<li> the compiler tells you exactly where you made a mistake in a regular
+expression, i.e. the text pattern that you are looking for,
+<li> you don't need to define mysterious strings of characters which are full
+of unreadable backslashes anymore,
+<li> you benefit from syntax highlighting with any OCaml-aware text editor.
+</ul>
+
+<p>
+Micmatch is not:
+<ul>
+<li> a replacement for parsers of programming languages such as 
+those that are implemented using ocamllex and ocamlyacc
+<li> a library that implements regular expression engines in itself but it
+provides a syntaxic layer which makes them much easier and safer to use
+</ul>
+
+
+## toc_entry "camlp4" ##
+
+<p>
+Yes and no.
+Yes because it introduces a new syntax that does not exist in regular
+OCaml, and no because it is just a library that is loaded 
+by the OCaml preprocessor, Camlp4.
+
+<p>
+So you are still using the <a href="http://caml.inria.fr">OCaml system</a>, 
+with all its benefits.
+
+
+## toc_entry "why" ##
+
+<p>
+Regexps are programs. They have to be compiled before they can be used.
+Like any program, we prefer them to be easy to write, easy to read, 
+safe, and fast. This is why it is better to integrate them tightly
+in the programming language we are using, which is OCaml in our case.
+
+<p>
+<table class=real-table>
+<tr>
+<th></th>
+<th>Regexp library used directly (Str or PCRE)</th>
+<th>Micmatch (using Str or PCRE internally)</th>
+</tr>
+## 
+let row x y z =
+  printf "<tr><th>%s</th><td>%s</td><td>%s</td></tr>" x y z 
+##
+## row "compilation into a regexp engine" 
+    "at runtime only, explicit, usually not at the same place in the program \
+     than where it is actually used" 
+    "compile-time checks, implicit runtime compilation on program startup"
+##
+## row "syntax highlighting"
+    "just a monochrome string (under OCaml modes for emacs or vim)"
+    "natural highlighting under any text-editor that highlights OCaml code \
+     properly: strings, characters, keywords, \
+     lowercase and uppercase identifiers"
+##
+## row "error reporting"
+    "at runtime only, does not point directly to the exact location \
+     in the program"
+    "at compile-time, points directly to the fragment of the regexp that \
+     is problematic"
+##
+## row "extraction of substrings from a matched pattern (capturing groups)"
+    "checked at runtime only; using integer constants to refer to groups \
+     is error-prone, especially when adding or removing groups from the \
+     regexp"
+    "only named groups which are checked at compile-time; the semantics \
+     guarantees that every named group is well-defined when used in an OCaml \
+     expression"
+##
+## row "comments"
+    "either outside of the regexp string or inside (PCRE only) but \
+     spaces must be expressed with \\s"
+    "OCaml comments can appear between any piece of the regexp"
+##
+## row "speed"
+    "state-of-the-art"
+    "same! (since the same libraries are used at runtime)"
+##
+## row "protection of special characters"
+    "uses backslashes, requires a full knowledge of which character is \
+     special and which one is not; backslashes must be doubled in \
+     OCaml string literals"
+    "string literals are used to match exactly what appears in the string; \
+     operators are not mixed with characters to match"
+##
+## row "integration in ML-style pattern-matching \
+        (general-purpose destructuring of data other than strings)"
+    "no"
+    "yes; but unmatched cases are not detected anymore when a regexp is being \
+     used in the pattern-matching"
+##
+## row "runtime definition of regexps"
+    "yes"
+    "partially: gaps for sequences are accepted in regexps and are filled
+     at runtime (possibly case-insensitive); \
+     Str or PCRE-OCaml should be used directly in other cases"
+##
+## row "composition of regexps (defining and using macros)"
+    "do-it-yourself"
+    "yes"
+##
+</table>
+
+
+## toc_entry "features" ##
+
+<p>
+Micmatch has the following features:
+<ul>
+<li> string-manipulation using regexp-based matching, searching and replacing
+<li> use the regexp where it appears, without penalty
+<li> static verification of the regexps
+<li> no backslashes
+<li> extended ocamllex syntax
+<li> naming and composition of regexps
+<li> named capturing groups
+<li> positional markers
+<li> lazy quantifiers
+<li> possessive quantifiers
+<li> back references
+<li> lookahead and lookbehind assertions
+<li> local case-insensitive matching
+<li> in-place conversion of capturing groups
+<li> search for user-defined sequences
+<li> speed of PCRE
+<li> safety of functional programming and static type-checking
+<li> pattern-matching (ML) and pattern-matching (string regexps) 
+     finally unified
+<li> just a library for Camlp4 and OCaml
+<li> fully documented
+<li> open-source, free and distributed with a BSD license
+</ul>
+
+
+## toc_entry "compile" ##
+
+<p>
+We assume that you have successfully installed Micmatch 
+(the normal installation requires the PCRE library which is written in C, 
+the bindings for OCaml PCRE-OCaml, 
+and Findlib i.e. the <code>ocamlfind</code> command).
+
+## toc_entry "toplevel" ##
+Now a <code>micmatch</code> command should be available. Use it as 
+replacement for the <code>ocaml</code> command either in interactive mode:
+## print_with ocamltop ##
+$ micmatch
+        Objective Caml version 3.08.2
+
+        Camlp4 Parsing version 3.08.2
+
+# 
+## () ##
+<p>
+or in scripting mode:
+## print_with verbatim ##
+$ micmatch source_file.ml
+## () ##
+
+<p>
+In interactive mode, it is suggested to use <code>ledit</code>,
+which can be installed easily from GODI. It provides a line-editing facility
+that is not available with the default <code>ocaml</code> 
+or <code>micmatch</code> commands:
+## print_with ocamltop ##
+$ ledit micmatch
+        Objective Caml version 3.08.2
+
+        Camlp4 Parsing version 3.08.2
+
+# 
+## () ##
+
+<p>
+For even more comfort, 
+you can tell ledit to remember what you typed during your last
+sessions using this command:
+## print_with verbatim ##
+ledit -x -h some_file micmatch'
+## () ##
+<p>
+For instance, if your command interpreter is <code>bash</code>, 
+you can place the following
+line in your <code>.bashrc</code> file:
+## print_with verbatim ##
+alias mic='ledit -x -h ~/.micmatch_history micmatch'
+## () ##
+<p>
+and then invoke <code>mic</code> for your
+interactive Micmatch sessions.
+
+<p>
+Note that in OCaml programs we can usually avoid writing the <code>;;</code>
+symbol. In interactive mode, the double semicolon is however required
+after each phrase. In the examples we will assume that you are typing
+the code directly into a file and thus we will omit the unnecessary
+<code>;;</code>.
+
+<p>
+Note to the users of OCaml/Camlp4 3.10 and 3.11: the package has been
+renamed "mikmatch" with a "k" because of significant changes in the 
+Camlp4 tool.
+There is no longer a <code>micmatch</code> (or <code>mikmatch</code>) command.
+Mikmatch cannot be used interactively under Camlp4 3.10, but it is possible
+again with 3.11. The package must have been installed with Findlib; try the
+following command and it should return a path:
+<pre>
+$ ocamlfind query mikmatch_pcre
+/home/martin/godi3110/lib/ocaml/site-lib/mikmatch_pcre
+</pre>
+
+<p>
+In this case, use these directives:
+<pre>
+$ ocaml
+        Objective Caml version 3.11.0
+
+# #use "topfind";;
+- : unit = ()
+Findlib has been successfully loaded. Additional directives:
+  #require "package";;      to load a package
+  #list;;                   to list the available packages
+  #camlp4o;;                to load camlp4 (standard syntax)
+  #camlp4r;;                to load camlp4 (revised syntax)
+  #predicates "p,q,...";;   to set these predicates
+  Topfind.reset();;         to force that packages will be reloaded
+  #thread;;                 to enable threads
+
+- : unit = ()
+# #require "tophide";;
+/home/martin/godi3110/lib/ocaml/pkg-lib/tophide: added to search path
+/home/martin/godi3110/lib/ocaml/pkg-lib/tophide/tophide.cmo: loaded
+# #require "dynlink";;
+/home/martin/godi/lib/ocaml/std-lib/dynlink.cma: loaded
+# #camlp4o;;
+/home/martin/godi/lib/ocaml/std-lib/camlp4: added to search path
+/home/martin/godi/lib/ocaml/std-lib/camlp4/camlp4o.cma: loaded
+        Camlp4 Parsing version 3.11.0
+
+# #require "mikmatch_pcre";;
+/home/martin/godi3110/lib/ocaml/pkg-lib/pcre: added to search path
+/home/martin/godi3110/lib/ocaml/pkg-lib/pcre/pcre.cma: loaded
+/home/martin/godi/lib/ocaml/std-lib/unix.cma: loaded
+/home/martin/godi3110/lib/ocaml/site-lib/mikmatch_pcre: added to search path
+/home/martin/godi3110/lib/ocaml/site-lib/mikmatch_pcre/pa_mikmatch_pcre.cma: loa
+ded
+/home/martin/godi3110/lib/ocaml/site-lib/mikmatch_pcre/run_mikmatch_pcre.cma: lo
+aded
+</pre>
+<p>
+Phew. Dynlink and Tophide must be loaded before camlp4o, for some 
+uninteresting reasons. It's probably easier to put all of these
+in a file and load it using <code>ocaml -init mikmatch.init</code>, 
+and make it a script so that it can be passed to ledit (as described above).
+The <code>mikmatch.init</code> file would be:
+<pre>
+#use "topfind";;
+#require "tophide";;
+#require "dynlink";;
+#camlp4o;;
+#require "mikmatch_pcre";;
+</pre>
+
+
+
+
+## toc_entry "standalone" ##
+
+<p>
+Programs using Micmatch can of course be compiled into bytecode or 
+native code like any other OCaml program that uses Camlp4 parsing. See 
+<a href="http://ocaml-tutorial.org/compiling_ocaml_projects">this tutorial</a>
+for a quick start.
+
+
+
+## toc_entry "regexps" ##
+
+<p>
+A text pattern is defined by a regular expression, also known 
+as regexp or regex.
+In Micmatch, the regexps follow a specific syntax which is relatively 
+easy to learn.
+
+## toc_entry "regexp-basics" ##
+
+<p>
+If you want to match a character or a sequence of characters,
+just write them as an OCaml string:
+## print_with ocamlpre ##
+RE hello = "Hello!" (* matches exactly the string "Hello!" *)
+RE hello = "***"    (* matches exactly three stars *)
+## () ##
+<p>
+There is no special character to remember! All the special characters appear
+outside of the string or character literals.
+<p>
+If you want to match one character taken from a given set of characters,
+use the bracket notation:
+## print_with ocamlpre ##
+(* All of the following definitions are equivalent,
+   they match one digit within the range 0-7: *)
+RE octal  = ['0'-'7']
+RE octal1 = ["01234567"]
+RE octal2 = ['0' '1' '2' '3' '4' '5' '6' '7']
+RE octal3 = ['0'-'4' '5'-'7']
+RE octal4 = digit # ['8' '9']  (* digit is a predefined set of characters *)
+RE octal5 = "0" | ['1'-'7']
+RE octal6 = ['0'-'4'] | ['5'-'7']
+## () ##
+<p>
+We can also specify which characters should not be matched:
+## print_with ocamlpre ##
+RE octal = ['0'-'7']       (* this matches an octal digit *)
+RE not_octal  = [^'0'-'7'] (* this matches any character but an octal digit *)
+RE not_octal' = [^ octal]  (* another way to write it *)
+## () ##
+<p>
+If we want to match any character we use the underscore symbol:
+## print_with ocamlpre ##
+RE paren = "(" _ ")"   (* matches one character between parentheses *)
+## () ##
+
+<p>
+Patterns can be repeated:
+## print_with ocamlpre ##
+RE anything  = _*         (* any string, as long as possible *)
+RE anything' = _* Lazy    (* any string, as short as possible *)
+
+RE opt_hello  = "hello"?      (* matches hello if possible, or nothing *)
+RE opt_hello' = "hello"? Lazy (* matches nothing if possible, or hello *)
+
+RE num = digit+        (* a non-empty sequence of digits, as long as possible;
+			  shortcut for: digit digit* *)
+RE lazy_junk = _+ Lazy (* match one character then match any sequence
+			  of characters and give up as early as possible *)
+
+RE at_least_one_digit = digit{1+}     (* same as digit+ *)
+RE at_least_three_digits = digit{3+}
+RE three_digits = digit{3}
+RE three_to_five_digits = digit{3-5}
+RE lazy_three_to_five_digits = digit{3-5} Lazy
+## () ##
+
+
+
+## toc_entry "regexp-matching" ##
+
+<p>
+Matching a string against a regexp pattern can be performed
+with the usual <code>match ... with</code> construct, 
+except that the
+<code>RE</code> keyword is used to introduce a regular expression.
+Say we want to test if a given string <code>s</code> matches the word "hello", 
+in normal OCaml we would write:
+## print_with ocamlpre ##
+match s with
+    "hello" -> true
+  | _ -> false
+## () ##
+<p>
+But if we want to test if <code>s</code> starts with "hello", there is 
+no way to do this with the usual pattern matching. With a regexp, it is
+as simple as this:
+## print_with ocamlpre ##
+match s with
+    RE "hello" -> true
+  | _ -> false
+## () ##
+<p>
+Note that in both examples, the underscore character (<code>_</code>) 
+is regular OCaml and means "anything" or in this case "any string", 
+which is different from its meaning in a regular expression.
+<p>
+The regexp must match from the beginning of the string, but the remaining,
+unmatched part of the string doesn't have to be empty.
+Have a look at this test:
+## print_with ocamltop ##
+$ ledit micmatch
+        Objective Caml version 3.08.2
+
+        Camlp4 Parsing version 3.08.2
+
+# match "hello world" with
+    "hello" -> true
+  | _ -> false;;
+- : bool = false
+# match "hello world" with
+    RE "hello" -> true
+  | _ -> false;;
+- : bool = true
+# match "world hello" with
+    RE "hello" -> true
+  | _ -> false;;
+- : bool = false
+## () ##
+
+<p>
+It is important to know that the matching process will try any possible
+combination until the pattern is matched. However,
+the combinations are tried from left to right, and
+repeats are either greedy (the longest match is tried first) or 
+lazy (the shortest match is tried first).
+The greedy behavior is the default, laziness is triggered by the presence
+of the <code>Lazy</code> keyword.
+
+<p>
+More possibilities are offered by Micmatch, such as the extraction of
+subgroups or positions in the matched string, and various 
+constructs for searching and replacing patterns conveniently.
+
+<p>
+Sometimes, the structure of the string to match is known in advance,
+and we just need to extract some substrings.
+The <code>let</code> constructs can be used directly with a regexp pattern.
+And since <code>let RE ... = ...</code> doesn't look nice in this
+situation, the sandwich
+notation (<code>/ ... /</code>) has been introduced.
+The version of the OCaml compiler that was used to compile the program
+can be decomposed quite easily:
+## print_with ocamltop ##
+# Sys.ocaml_version;;
+- : string = "3.08.3"
+# RE num = digit+;;
+# let / (num as major : int) 
+        "." (num as minor : int) 
+
+        ("." (num as patchlevel := fun s -> Some (int_of_string s)) 
+        | ("" as patchlevel = None))
+
+        ("+" (_* as additional_info := fun s -> Some s) 
+        | ("" as additional_info = None))
+
+        eos / = Sys.ocaml_version
+;;
+val additional_info : string option = None
+val major : int = 3
+val minor : int = 8
+val patchlevel : int option = Some 3
+## () ##
+
+<p>
+The sandwich notation can be used in <code>match</code> cases as well.
+Whether to use it or not is just a matter of taste.
+
+<p>
+See also ## toc_link "numbers" "how to parse numbers" ##.
+
+## toc_entry "lines" ##
+
+<p>
+The function <code>Micmatch.Text.iter_lines_of_file</code> allows an iteration
+over the lines of a file. Similarly, 
+<code>Micmatch.Text.iter_lines_of_channel</code> can be used to scan an open
+file, such as the standard input <code>stdin</code>.
+In the following example, we reprint input with line numbers at the beginning
+of each line:
+## print_with ocamlpre ##
+(* file line_numbering.ml *)
+open Printf
+open Micmatch
+
+let () = 
+  let n = ref 0 in
+  Text.iter_lines_of_channel
+    (fun s -> 
+       incr n;
+       printf "%3i: %s\n%!" !n s)
+    stdin
+## () ##
+<p>
+Result, with the source file itself as input:
+## print_with verbatim ##
+$ micmatch line_numbering.ml < line_numbering.ml
+  1: (* file line_numbering.ml *)
+  2: open Printf
+  3: open Micmatch
+  4: 
+  5: let () = 
+  6:   let n = ref 0 in
+  7:   Text.iter_lines_of_channel
+  8:     (fun s -> 
+  9:        incr n;
+ 10:        printf "%3i: %s\n%!" !n s)
+ 11:     stdin
+## () ##
+
+## toc_entry "filter" ##
+
+<p>
+The ## verb "FILTER" ## macro allows you to define a function that
+takes one string and returns ## verb "true" ## or ## verb "false" ##
+whether the string matches the regexp or not. For instance, it can be
+used to select strings from a list:
+## print_with ocamlpre ##
+# List.filter (FILTER int eos) [ "-123"; "a"; "0"; "-1.2" ];;
+- : string list = ["-123"; "0"]
+## () ##
+
+<p>
+## verb "FILTER" ## is mostly useful when passed to a function that expects
+a predicate. For example the ## verb "Micmatch.Glob" ## module offers
+functions for listing files and selecting file paths.
+An equivalent of the shell expression ## verb "ls /home/martin/.*/*.conf" ##
+would be:
+## print_with ocamlpre ##
+# open Micmatch;;
+# Glob.list ~root:"/home/martin" [ FILTER "."; FILTER _* ".conf" eos ];;
+- : string list = [".gnupg/gpg.conf"; ".mplayer/gui.conf"]
+## () ##
+
+
+
+## toc_entry "substrings" ##
+
+<p>
+The <code>as</code> keyword is used to give a name to a part of 
+a pattern. When the whole pattern matches, the substring
+which is matched by our named subpattern becomes available directly
+under this name.
+In the following example, we extract the contents of the parentheses:
+## print_with ocamlpre ##
+match "acbde (result), blabla..." with
+    RE _* "(" (_* as x) ")" -> print_endline x
+  | _ -> print_endline "Failed"
+## () ##
+<p>
+Please note that the regular expression that we just used will not work
+as intended when the string contains several pairs of parentheses, because
+the matching engine is greedy by default. It means that 
+the repetitions (<code>*</code>) 
+are made as long as possible before trying to match the
+rest of the pattern, an possibly giving up one character and retrying
+(backtracking). The opposite behavior, the lazy one, is to advance 
+in the pattern as soon as possible. We can rewrite our example using
+lazy repetitions and a more challenging subject string:
+## print_with ocamlpre ##
+match "acbde (result), bla(bla)..." with
+    RE _* Lazy "(" (_* Lazy as x) ")" -> print_endline x
+  | _ -> print_endline "Failed"
+## () ##
+<p>
+In that new case, <code>result</code> 
+is still correctly extracted and displayed.
+<p>
+Exercise: what would be the result if this string 
+(## print_with ocamlcode ##"acbde (result), bla(bla)..."## () ##) is matched
+using our first regexp, the greedy one?
+
+<p>
+See ## toc_link "laziness" "the section on laziness" ## for more information.
+
+
+
+## toc_entry "laziness" ##
+
+<p>
+There are two ways of matching a repeated pattern <b>pat</b> within a regexp:
+<ul>
+<li> the greedy way: repeat the pattern <b>pat</b>
+as many times as possible before trying to match the rest of the regexp,
+and then give up one repetition of <b>pat</b> and retry, and so on.
+This is the default.
+<li> the lazy or impatient way: try to advance in the regexp first, 
+and only if it fails, try to match one more occurence of <b>pat</b>
+and continue.
+</ul>
+
+<p>
+It is just a question of order in which the matching engine proceeds:
+if there is only one way of matching a given string with a given pattern,
+then the result will not be affected by the lazy or greedy behavior 
+for matching repeated subpatterns.
+
+<p>
+Often, the lazy behavior in regexps is described as "shortest match".
+This is misleading since introducing lazy behavior may well lead to 
+a larger matched substring. Consider the following where being
+impatient finally leads to a longer substring:
+## print_with ocamltop ##
+# let / "a"?      ("b" | "abc") as x / = "abc";;
+val x : string = "ab"
+# let / "a"? Lazy ("b" | "abc") as x / = "abc";;
+val x : string = "abc"
+## () ##
+
+<p>
+All you have is to understand this example...
+Remember that the matching engine:
+<ul>
+<li> proceeds always from left to right,
+<li> tries alternatives from left to right,
+<li> by default is greedy,
+<li> can be made lazy by placing <code>Lazy</code> after 
+a quantifier (<code>?</code>, <code>*</code>, <code>+</code> or 
+<code>{</code>...<code>}</code>)
+</ul>
+
+
+## toc_entry "conversions" ##
+
+<p>
+In-place conversions of the substrings can be performed, using either
+the predefined converters <code>int</code>, <code>float</code> or
+<code>option</code> or custom converters:
+## print_with ocamlpre ##
+match "123/456" with
+    RE (digit+ as x : int) "/" (digit+ as y : int) -> x, y
+  | _ -> 0, 0
+## () ##
+<p>
+which is equivalent to:
+## print_with ocamlpre ##
+match "123/456" with
+    RE (digit+ as sx) "/" (digit+ as sy) -> int_of_string sx, int_of_string sy
+  | _ -> 0, 0
+## () ##
+<p>
+However the notation is useful when used in more complex patterns:
+## print_with ocamlpre ##
+match 123, 45, "6789" with
+    i, _, (RE digit+ as j : int) 
+  | j, i, _ -> i * j + 1
+## () ##
+
+<p>
+Also, a matched substring can be converted to anything with a user-defined
+function or simply set to an arbitrary value.
+In practice, we might want to 
+extract some tokens that have different meanings but appear in 
+the same context:
+## print_with ocamltop ##
+# open Micmatch;;
+# let get_tokens s = 
+  let f =
+    MAP 
+      ("+" as x = `Plus)
+    | ("-" as x = `Minus)
+    | ("/" as x = `Div)
+    | ("*" as x = `Mul)
+    | (digit+ as x := fun s -> `Int (int_of_string s))
+    | (alpha [alpha digit]+ as x := fun s -> `Ident s) -> x in
+  Text.map 
+    (function (* removes the inter-token spaces *)
+	 `Text (RE space*) -> raise Text.Skip
+       | `Text _ -> invalid_arg "get_tokens"
+       | token -> token)
+    (f s)
+;;
+val get_tokens :
+  string ->
+  [> `Div
+   | `Ident of string
+   | `Int of int
+   | `Minus
+   | `Mul
+   | `Plus
+   | `Text of string ]
+  list = <fun>
+# get_tokens "a1 + b3 / 45";;
+- : [> `Div
+     | `Ident of string
+     | `Int of int
+     | `Minus
+     | `Mul
+     | `Plus
+     | `Text of string ]
+    list
+= [`Ident "a1"; `Plus; `Ident "b3"; `Div; `Int 45]
+## () ##
+<p>
+Note that in general ocamllex is better suited for this kind of job
+(more elegant and faster).
+
+
+## toc_entry "numbers" ##
+
+<p>
+There are two predefined regexps named ## verb "int" ## 
+and ## verb "float" ## which will work in a vast majority of cases
+for parsing integers and floating point numbers (yellow in the example).
+
+<p>
+In parallel, ## toc_link "conversions" "converters" ##
+from strings to OCaml ints and floats exist (grey in the example), 
+so extracting the first 
+float from a line of text can be done like this:
+## print_with ocamltop ##
+# let search_float = SEARCH_FIRST @yellow@float@@ as x @silver@: float@@ -> x ;;
+val search_float : ?share:bool -> ?pos:int -> string -> float = <fun>
+# search_float "bla bla -1.234e12 bla";;
+- : float = -1.234e+12
+## () ##
+
+<p>
+A line of numbers can be easily parsed using ## verb "COLLECT" ##:
+## print_with ocamltop ##
+# let get_numbers = COLLECT float as x : float -> x ;;
+val get_numbers : ?pos:int -> string -> float list = <fun>
+# get_numbers "1.2   83  nan  -inf 5e-10";;
+- : float list = [1.2; 83.; nan; neg_infinity; 5e-10]
+## () ##
+
+<p>
+Reading all the numbers from each line of a given file can be done this way:
+## print_with ocamltop ##
+# open Micmatch;;                          
+# let read_file = Text.map_lines_of_file (COLLECT float as x : float -> x);;
+val read_file : string -> float list list = <fun>
+## () ##
+
+<p>
+If you want to extract numbers from some text which contains not only
+numbers, our ## verb "get_numbers" ## function may recognize pieces of
+words as numbers:
+## print_with ocamltop ##
+# let get_numbers = COLLECT float as x : float -> x ;;
+val get_numbers : ?pos:int -> string -> float list = <fun>
+# get_numbers "time = 1.2 nanoseconds, speed2=+4.5295E3";;              
+- : float list = [1.2; nan; 2.; 4529.5]
+## () ##
+<p>
+This kind of problems may be solved using negative assertions (pink):
+## print_with ocamltop ##
+# let get_only_numbers = 
+    COLLECT @pink@< Not alnum . >@@ (float as x : float) @pink@< . Not alnum >@@ -> x ;;
+val get_only_numbers : ?pos:int -> string -> float list = <fun>
+# get_only_numbers "time = 1.2 nanoseconds, speed2=+4.5295E3";;
+- : float list = [1.2; 4529.5]
+## () ##
+
+<p>
+For fun, let's look at the Perl-compatible 
+regexp that is produced and used internally:
+## print_with ocamltop ##
+# let src = RE_PCRE < Not alnum . > (float as x : float) < . Not alnum > in
+  print_endline (fst src);;
+(?<![0-9A-Za-z])([+\-]?(?:(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[Ee][+\-]?[0-9]+)?|
+(?:[Nn][Aa][Nn]|[Ii][Nn][Ff])))(?![0-9A-Za-z])
+## () ##
+
+## toc_entry "capture-object" ##
+
+<p>
+The ## verb "CAPTURE" ## macro allows to automatically pack 
+the matched subgroups into a single object (see also ## verb "COLLECTOBJ" ##):
+## print_with ocamlpre ##
+# RE pair = "(" space* (int as x : int) space* ","
+                space* (int as y : int) space* ")";;   
+# let opt = (CAPTURE pair) "(12, 23)";;
+val opt : < x : int; y : int > option = Some <obj>
+# match opt with
+    None -> ()
+  | Some obj -> Printf.printf "x=%i y=%i\n" obj#x obj#y;;    
+x=12 y=23
+- : unit = ()
+## () ##
+
+
+
+## toc_entry "locate" ##
+
+<p>
+<code>SEARCH</code> can be used to locate all the occurrences of a given
+pattern in a string. The positions are recorded using positional markers,
+introduced by the <code>%</code> symbol. The following program
+looks for any appearance of arrows in the string read from the standard input:
+## print_with ocamlpre ##
+(* file locate_arrows.ml *)
+open Printf
+open Micmatch
+
+let locate_arrows = 
+  SEARCH %pos1 "->" %pos2 -> 
+    printf "Found one arrow (characters %i-%i)\n" pos1 (pos2 - 1)
+
+let () = 
+  let s = Text.channel_contents stdin in
+  locate_arrows s
+## () ##
+<p>
+Result, when applied to the source code itself:
+## print_with verbatim ##
+$ micmatch locate_arrows.ml < locate_arrows.ml
+Found one arrow (characters 92-93)
+Found one arrow (characters 102-103)
+## () ##
+
+<p>
+The positional markers can appear anywhere in the regular expression.
+In the following example, we locate the contents of HTML tags, i.e. 
+the text contained within <code>&lt;</code> or 
+<code>&lt;/</code> and <code>&gt;</code>:
+## print_with ocamlpre ##
+(* file locate_tags.ml *)
+open Printf
+open Micmatch
+
+let locate_tags = 
+  SEARCH "<" "/"? %tag_start (_* Lazy as tag_contents) %tag_end ">" -> 
+    printf "Tag %S, characters %i-%i\n" tag_contents tag_start (tag_end - 1)
+
+let () = 
+  let s = Text.channel_contents stdin in
+  locate_tags s
+## () ##
+Result:
+## print_with verbatim ##
+$ micmatch locate_tags.ml < some_page.html
+Tag "html", characters 1-4
+Tag "head", characters 8-11
+Tag "title", characters 15-19
+Tag "title", characters 52-56
+...
+## () ##
+
+
+
+## toc_entry "case" ##
+
+<p>
+Use the postfix <code>~</code> operator:
+## print_with ocamlpre ##
+match "OCaml" with
+    RE "ocaml"~ -> print_endline "Success"
+  | _ -> print_endline "Failure"
+## () ##
+<p>
+The case can be ignored only locally. In our example, we can specify
+that the first letter has to be an big L but ignore the case of the rest:
+## print_with ocamlpre ##
+match "OCaml" with (* "oCaml" doesn't work here *)
+    RE "O" "caml"~ -> print_endline "Success"
+  | _ -> print_endline "Failure"
+## () ##
+
+## toc_entry "collect" ##
+
+<p>
+The ## verb "COLLECT" ## macro lets you do this:
+## print_with ocamltop ##
+# let list_words = COLLECT (upper | lower)+ as x -> x;;
+val list_words : ?pos:int -> string -> string list = <fun>
+# list_words "Objective Caml, version 3.08.3";;
+- : string list = ["Objective"; "Caml"; "version"]
+## () ##
+
+<p>
+## verb "COLLECT" ## creates a function that can actually return a list of
+any type. For instance, if we want to extract the pairs of numbers
+from a piece of text, we would do this:
+## print_with ocamltop ##
+# let get_int_pairs = 
+    COLLECT "(" space* (digit+ as x : int) space* ","
+                space* (digit+ as y : int) space* ")" ->
+       (x, y);;
+val get_int_pairs : ?pos:int -> string -> (int * int) list = <fun>
+# get_int_pairs "(123,456): (a,2) ( 5, 34) (0, 0)";;
+- : (int * int) list = [(123, 456); (5, 34); (0, 0)]
+## () ##
+
+<p>
+## verb "COLLECTOBJ" ##, a variant of ## verb "COLLECT" ##, directly builds
+an object with methods that allow access to the captured subgroups.
+## print_with ocamltop ##
+# RE pair = "(" space* (digit+ as x : int) space* ","
+                space* (digit+ as y : int) space* ")";;
+# let get_objlist = COLLECTOBJ pair;;
+val get_objlist : ?pos:int -> string -> < x : int; y : int > list = <fun>
+# let objlist = get_objlist "(123,456): (a,2) ( 5, 34) (0, 0)";;
+val objlist : < x : int; y : int > list = [<obj>; <obj>; <obj>]
+# List.iter (fun o -> Printf.printf "x=%i, y=%i\n" o#x o#y) objlist;;
+x=123, y=456
+x=5, y=34
+x=0, y=0
+- : unit = ()
+## () ##
+
+<p>
+In the example above, ## verb "COLLECTOBJ pair" ## is really just a shortcut
+for:
+## print_with ocamlpre ##
+COLLECT pair -> object 
+                  method x = x
+                  method y = y
+                end
+## () ##
+
+
+## toc_entry "replace" ##
+
+<p>
+Let's say we want to remove all the comments from a file where comments
+start with any occurrence of <code>#</code> and end at the end of the line.
+For this purpose, we will use the <code>REPLACE</code> construct.
+We need to specify the regex which matches a comment, and the expression which
+will serve as a replacement text. Here we will specify the pattern that 
+matches a comment and replace it with the empty string. There we go:
+## print_with ocamlpre ##
+let remove_comments = REPLACE "#" _* Lazy eol -> ""
+## () ##
+<p>
+We defined a function <code>remove_comments</code> that removes the
+comments from a given string. You may notice that we use the 
+predefined <code>eol</code> pattern. <code>eol</code> does not match any 
+character: it is an assertion which matches before newline characters and at
+the end of the string. Thus, the newline characters are preserved.
+## print_with ocamltop ##
+$ ledit micmatch
+        Objective Caml version 3.08.2
+
+        Camlp4 Parsing version 3.08.2
+
+# let remove_comments = REPLACE "#" _* Lazy eol -> "";;
+val remove_comments : ?pos:int -> string -> string = <fun>
+# remove_comments "Hello # comment\nWorld # another comment";;
+- : string = "Hello \nWorld "
+## () ##
+<p>
+It works!
+See also <code>REPLACE_FIRST</code>. It does the same, except that it 
+replaces at most one occurrence of the pattern, the first one.
+<p>
+Also, you may have noticed the option <code>pos</code> argument in the type
+of <code>remove_comments</code>. You can use it to specify where the search
+for the pattern should start. The default is of course 0, i.e. the beginning
+of the string.
+
+## toc_entry "split" ##
+
+<p>
+The ## verb "SPLIT" ## macro creates a function which removes the
+given pattern from a given string:
+## print_with ocamltop ##
+$ ledit micmatch
+        Objective Caml version 3.08.3
+
+        Camlp4 Parsing version 3.08.3
+
+# (SPLIT space* [",;"] space* ) "a, b, c ; 1, zz;";;
+- : string list = ["a"; "b"; "c"; "1"; "zz"]
+## () ##
+
+<p>
+A function is created from the given regexp: we can name it and see
+that it accepts two optional arguments:
+## print_with ocamltop ##
+# let split = SPLIT space* [",;"] space*;;
+val split : ?full:bool -> ?pos:int -> string -> string list = <fun>
+## () ##
+
+<p>
+The ## verb "full" ## option is false by default. When true, it
+considers the regexp as a separator between substrings even if the first or
+the last one is empty:
+## print_with ocamltop ##
+# split ~full:true "a, b, c ; 1, zz;";;
+- : string list = ["a"; "b"; "c"; "1"; "zz"; ""]
+# split ~full:false "a, b, c ; 1, zz;";;
+- : string list = ["a"; "b"; "c"; "1"; "zz"]
+## () ##
+
+<p>
+The ## verb "pos" ## option tells where to start to scan the string:
+## print_with ocamltop ##
+# split ~pos:5 "a, b, c ; 1, zz;";;     
+- : string list = [" c"; "1"; "zz"]
+## () ##
+
+
+## toc_entry "assertions" ##
+
+<p>
+These are called zero-width assertions and can be used to insert additional
+tests within a given regular expression. For instance, a word can be defined
+using one of the following expressions:
+## print_with ocamlpre ##
+           (* no letter before *) (* the word itself *) (* no letter after *)
+RE word  =    < Not alpha . >            alpha+           < . Not alpha >
+RE word' =    < Not alpha . >            alpha+              <Not alpha>
+## () ##
+<p>
+Of course <code>Not</code> indicates that a given regular expression
+should not match (negative assertion).
+<p>
+Assertions can also be used in searching for overlapping patterns in 
+a string. If we want to extract all possible subsequences
+of 3 consecutive letters in a string, we will define the following
+function:
+## print_with ocamlpre ##
+RE triplet = <alpha{3} as x>
+let print_triplets_of_letters = SEARCH triplet -> print_endline x
+## () ##
+<p>
+Check the result:
+## print_with ocamltop ##
+# RE triplet = <alpha{3} as x> ;;
+# let print_triplets_of_letters = SEARCH triplet -> print_endline x;;
+val print_triplets_of_letters : ?pos:int -> string -> unit = <fun>
+# print_triplets_of_letters "Hello World!";;
+Hel
+ell
+llo
+Wor
+orl
+rld
+- : unit = ()
+## () ##
+
+<p>
+OK, now you may be wondering "Why do we have to use assertions at all?".
+Well, if you don't define your pattern as an assertion, 
+the substrings that match the pattern do not overlap.
+With the same pattern as in the previous example 
+but not defined as a lookahead assertion, we get these results:
+## print_with ocamltop ##
+# (SEARCH alpha{3} as x -> print_endline x) "Hello World!";;
+Hel
+Wor
+- : unit = ()
+# (SEARCH alpha{3} as x -> print_endline x) ~pos:2 "Hello World!";;
+llo
+Wor
+- : unit = ()
+## () ##
+
+
+
+## toc_entry "arguments" ##
+
+<p>
+This is achieved by placing the given string expression
+in the regexp, preceded by the ## ocamlcode "@" ## symbol.
+It means that at the place where it appears in the regexp, this 
+string will be matched literally:
+
+## print_with ocamltop ##
+# let text = "name=Max age=27 hobby=programming";;
+val text : string = "name=Max age=27 hobby=programming"
+# let get_field x = SEARCH_FIRST @x "=" (alnum* as y) -> y;;
+val get_field : string -> ?share:bool -> ?pos:int -> string -> string = <fun>
+# get_field "age" text;;
+- : string = "27"
+# get_field "name" text;;
+- : string = "Max"
+## () ##
+
+
+## toc_entry "include" ##
+
+<p>
+The standard pa_macro syntax extension provides an ## verb "INCLUDE" ##
+instruction which is similar to ## verb "#include" ## for ## verb "cpp" ##. 
+It parses the included file using the current grammar, 
+so it is possible to use it to store Micmatch
+regexps:
+## print_with ocamltop ##
+$ cat regexps.mml 
+RE pdb_id = digit alnum{3}
+$ micmatch pa_macro.cmo
+        Objective Caml version 3.08.4
+
+        Camlp4 Parsing version 3.08.4
+
+# INCLUDE "regexps.mml";;
+# let / "pdb" (pdb_id as id) ".ent" eos / = "pdb2pel.ent";; 
+val id : string = "2pel"
+## () ##
+
+
+## toc_entry "encodings" ##
+
+<p>
+Yes, with some limitations.
+A char in OCaml and in Micmatch is simply a <b>byte</b> 
+(8 bits of information).
+There is no specific support for multibyte encodings such as UTFs,
+every single byte being treated independently.
+
+<p>
+If either your text-editor or the text you want to parse 
+uses an encoding which is not ASCII or Latin1,
+the simplest way to make things work is to avoid
+the square brackets for denoting alternatives between bytes.
+Instead of ## ocamlcode "[\"abc\"]" ##, write
+## print_with ocamlcode ##("a" | "b" | "c")## () ## 
+unless you know what you are doing.
+Also, avoid using the ## ocamlcode "~" ## operator.
+
+
+
+## toc_entry "non-regexp" ##
+
+<p>
+Micmatch can be used for a variety of string-related problems 
+that do not strictly require the use of regexps. In many cases, the
+efficiency is suboptimal but the code is often simpler and safer
+than using traditional methods.
+
+<p>
+An ## verb "explode" ## function that converts a string into a list of 
+characters:
+## print_with ocamltop ##
+# let explode = COLLECT _ as x -> x.[0];;
+# explode "Hello, World!";;
+- : char list =
+['H'; 'e'; 'l'; 'l'; 'o'; ','; ' '; 'W'; 'o'; 'r'; 'l'; 'd'; '!']
+## () ##
+
+<p>
+A function that splits a string into fragments of at most 3 characters:
+## print_with ocamltop ##
+# let cut3 = COLLECT _{1-3} as x -> x;;
+val cut3 : ?pos:int -> string -> string list = <fun>
+# cut3 "Hello, World!";;
+- : string list = ["Hel"; "lo,"; " Wo"; "rld"; "!"]
+## () ##
+
+<p>
+A function that removes everything that starts with a 
+## ocamlcode "'#'" ## character:
+## print_with ocamltop ##
+# let uncomment = function / [^'#']* as s / -> s;;
+val uncomment : string -> string = <fun>
+# uncomment "1 + 1   # = 3?";;
+- : string = "1 + 1   "
+## () ##
+
+<p>
+A function that counts the number of occurrences of a given word in
+a text:
+## print_with ocamltop ##
+# let count_abc s =
+    let n = ref 0 in
+    (SEARCH "abc" -> incr n) s;
+    !n;;
+val count_abc : string -> int = <fun>
+# count_abc "xabcdjkfmabcdefabcrt";;
+- : int = 3
+## () ##
+
+<p>
+... or, if creating a list for nothing is not a problem for you:
+## print_with ocamltop ##
+# let count_abc2 s = List.length ((COLLECT "abc" -> ()) s);;
+val count_abc2 : string -> int = <fun>
+# count_abc2 "xabcdjkfmabcdefabcrt";;
+- : int = 3
+## () ##
+
+<p>
+If the text to search is not known in advance, then you can do this:
+## print_with ocamltop ##
+# let count word s =
+    let n = ref 0 in
+    (SEARCH @word -> incr n) s;
+    !n;;
+val count : string -> string -> int = <fun>
+# count "abc" "xabcdjkfmabcdefabcrt";;
+- : int = 3
+## () ##
+
+<p>
+A function which locates a given substring:
+## print_with ocamltop ##
+# let locate ~subs = COLLECT %start @subs %stop -> (start, stop);;
+val locate : subs:string -> ?pos:int -> string -> (int * int) list = <fun>
+# locate ~subs:"xy" "xyz; xxyxy";;
+- : (int * int) list = [(0, 2); (6, 8); (8, 10)]
+# locate ~subs:"xx" "xxxxx";;
+- : (int * int) list = [(0, 2); (2, 4)]
+# locate ~subs:"" "1234";;
+- : (int * int) list = [(0, 0); (1, 1); (2, 2); (3, 3); (4, 4)]
+## () ##
+
+
+
+## camlmix_footer () ##
+## include_file "end_big_table" ##
+</body>
+</html>

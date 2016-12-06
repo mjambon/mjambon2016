@@ -1,0 +1,188 @@
+"prog.ml" 1 0 4 "prog.ml" 1 0 5
+type(
+  float -> float
+)
+ident(
+  def f "prog.ml" 6 68 68 --
+)
+"prog.ml" 1 0 6 "prog.ml" 1 0 7
+type(
+  float
+)
+ident(
+  def x "prog.ml" 3 19 22 "prog.ml" 4 44 66
+)
+"prog.ml" 3 19 26 "prog.ml" 3 19 28
+type(
+  float
+)
+"prog.ml" 3 19 31 "prog.ml" 3 19 35
+type(
+  float -> float
+)
+ident(
+  ext_ref Pervasives.acos
+)
+"prog.ml" 3 19 36 "prog.ml" 3 19 40
+type(
+  float
+)
+"prog.ml" 3 19 31 "prog.ml" 3 19 40
+type(
+  float
+)
+"prog.ml" 4 44 47 "prog.ml" 4 44 48
+type(
+  float
+)
+ident(
+  int_ref x "prog.ml" 1 0 6 "prog.ml" 1 0 7
+)
+"prog.ml" 4 44 50 "prog.ml" 4 44 51
+type(
+  float
+)
+"prog.ml" 4 44 52 "prog.ml" 4 44 54
+type(
+  float
+)
+ident(
+  int_ref pi "prog.ml" 3 19 26 "prog.ml" 3 19 28
+)
+"prog.ml" 4 44 50 "prog.ml" 4 44 54
+type(
+  float -> float -> float
+)
+ident(
+  ext_ref Pervasives.( *. )
+)
+"prog.ml" 4 44 49 "prog.ml" 4 44 55
+type(
+  float
+)
+"prog.ml" 4 44 47 "prog.ml" 4 44 55
+type(
+  float
+)
+type(
+  float -> float -> float
+)
+ident(
+  ext_ref Pervasives.( /. )
+)
+"prog.ml" 4 44 58 "prog.ml" 4 44 59
+type(
+  float
+)
+ident(
+  int_ref x "prog.ml" 1 0 6 "prog.ml" 1 0 7
+)
+"prog.ml" 4 44 62 "prog.ml" 4 44 63
+type(
+  float
+)
+"prog.ml" 4 44 64 "prog.ml" 4 44 65
+type(
+  float
+)
+"prog.ml" 4 44 62 "prog.ml" 4 44 65
+type(
+  float -> float -> float
+)
+ident(
+  ext_ref Pervasives.( /. )
+)
+"prog.ml" 4 44 61 "prog.ml" 4 44 66
+type(
+  float
+)
+"prog.ml" 4 44 58 "prog.ml" 4 44 66
+type(
+  float
+)
+type(
+  float -> float -> float
+)
+ident(
+  ext_ref Pervasives.( ** )
+)
+"prog.ml" 4 44 47 "prog.ml" 4 44 66
+type(
+  float
+)
+type(
+  float -> float -> float
+)
+ident(
+  ext_ref Pervasives.( -. )
+)
+"prog.ml" 3 19 22 "prog.ml" 4 44 66
+type(
+  float
+)
+"prog.ml" 1 0 6 "prog.ml" 4 44 66
+type(
+  float -> float
+)
+"prog.ml" 7 77 83 "prog.ml" 7 77 84
+type(
+  float
+)
+ident(
+  def x "prog.ml" 8 94 96 "prog.ml" 8 94 130
+)
+"prog.ml" 7 77 87 "prog.ml" 7 77 90
+type(
+  float
+)
+"prog.ml" 8 94 96 "prog.ml" 8 94 109
+type(
+  (float -> float -> unit, out_channel, unit) format ->
+  float -> float -> unit
+)
+ident(
+  ext_ref Printf.printf
+)
+"prog.ml" 8 94 110 "prog.ml" 8 94 122
+type(
+  (float -> float -> unit, out_channel, unit) format
+)
+"prog.ml" 8 94 123 "prog.ml" 8 94 124
+type(
+  float
+)
+ident(
+  int_ref x "prog.ml" 7 77 83 "prog.ml" 7 77 84
+)
+"prog.ml" 8 94 126 "prog.ml" 8 94 127
+type(
+  float -> float
+)
+ident(
+  int_ref f "prog.ml" 1 0 4 "prog.ml" 1 0 5
+)
+"prog.ml" 8 94 128 "prog.ml" 8 94 129
+type(
+  float
+)
+ident(
+  int_ref x "prog.ml" 7 77 83 "prog.ml" 7 77 84
+)
+"prog.ml" 8 94 125 "prog.ml" 8 94 130
+call(
+  stack
+)
+type(
+  float
+)
+"prog.ml" 8 94 96 "prog.ml" 8 94 130
+call(
+  stack
+)
+type(
+  unit
+)
+"prog.ml" 7 77 79 "prog.ml" 8 94 130
+type(
+  unit
+)

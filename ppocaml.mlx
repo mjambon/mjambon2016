@@ -1,0 +1,16 @@
+
+##
+(* File ppocaml.mlx: OCaml-style line directives for camlmix-processed files *)
+
+let _ = 
+  let line_directive () =
+    Printf.sprintf "# %i %S\n%s" 
+      !Camlmix.line !Camlmix.source (String.make (!Camlmix.char - 1) ' ') in
+
+  let default_printer = !Camlmix.printer in
+
+  let new_printer s =
+    default_printer (line_directive ());
+    default_printer s in
+
+  Camlmix.printer := new_printer

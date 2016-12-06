@@ -1,0 +1,329 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>
+hashtbl2.ml, hashtbl2.mli</title>
+  <meta name="GENERATOR" content="caml2html 1.4.2">
+<style type="text/css">
+code,pre { color:black;background-color:white }a.Cannot { color:black;text-decoration:none }.Cannot:hover { background-color: #b4eeb4; }
+.Cbar,
+.Cdo,
+.Cdone,
+.Cdownto,
+.Celse,
+.Cfor,
+.Cif,
+.Clazy,
+.Cmatch,
+.Cnew,
+.Cor,
+.Cthen,
+.Cto,
+.Ctry,
+.Cwhen,
+.Cwhile,
+.Cwith { color: #77aaaa; }
+.Cassert,
+.Cinclude,
+.Copen { color: #cc9900; }
+.Cstring { color: #aa4444; }
+.Cand,
+.Cas,
+.Cclass,
+.Cconstraint,
+.Cexception,
+.Cexternal,
+.Cfun,
+.Cfunction,
+.Cfunctor,
+.Cin,
+.Cinherit,
+.Cinitializer,
+.Clet,
+.Cmethod,
+.Cmodule,
+.Cmutable,
+.Cof,
+.Cprivate,
+.Crec,
+.Ctype,
+.Cval,
+.Cvirtual { color: green; }
+.Cbackground { background-color: white; }
+.Craise { color: red; }
+.Cconstructor { color: #0033cc; }
+.Ccomment { color: #990000; }
+.Calphakeyword,
+.Casr,
+.Cland,
+.Clor,
+.Clsl,
+.Clsr,
+.Clxor,
+.Cmod { color: #808080; }
+.Clinenum { color: black; background-color: silver; }
+.Cbegin,
+.Cend,
+.Cobject,
+.Csig,
+.Cstruct { color: #990099; }
+.Cfalse,
+.Cnonalphakeyword,
+.Cquotation,
+.Ctrue { }
+</style>
+</head>
+<body>
+<h1><a name="hashtbl2.ml"></a><code>hashtbl2.ml</code></h1>
+
+<pre><span class="Clinenum">   1:</span><span class="Cbackground"> </span><span class="Ctype">type</span> <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b list ref<span class="Cnonalphakeyword">)</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>t
+<span class="Clinenum">   2:</span><span class="Cbackground"> </span>
+<span class="Clinenum">   3:</span><span class="Cbackground"> </span><span class="Clet">let</span> create <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>create
+<span class="Clinenum">   4:</span><span class="Cbackground"> </span><span class="Clet">let</span> clear <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>clear
+<span class="Clinenum">   5:</span><span class="Cbackground"> </span>
+<span class="Clinenum">   6:</span><span class="Cbackground"> </span><span class="Clet">let</span> add tbl key data <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">   7:</span><span class="Cbackground"> </span>  <span class="Clet">let</span> r <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">   8:</span><span class="Cbackground"> </span>    <span class="Ctry">try</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>find tbl key
+<span class="Clinenum">   9:</span><span class="Cbackground"> </span>    <span class="Cwith">with</span> <span class="Cconstructor">Not_found</span> <span class="Cnonalphakeyword">-&gt;</span>
+<span class="Clinenum">  10:</span><span class="Cbackground"> </span>      <span class="Clet">let</span> r <span class="Cnonalphakeyword">=</span> ref <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span> <span class="Cin">in</span>
+<span class="Clinenum">  11:</span><span class="Cbackground"> </span>      <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>add tbl key r<span class="Cnonalphakeyword">;</span>
+<span class="Clinenum">  12:</span><span class="Cbackground"> </span>      r <span class="Cin">in</span>
+<span class="Clinenum">  13:</span><span class="Cbackground"> </span>  r <span class="Cnonalphakeyword">:=</span> data <span class="Cnonalphakeyword">::</span> !r
+<span class="Clinenum">  14:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  15:</span><span class="Cbackground"> </span><span class="Clet">let</span> copy tbl <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">  16:</span><span class="Cbackground"> </span>  <span class="Clet">let</span> tbl2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>copy tbl <span class="Cin">in</span>
+<span class="Clinenum">  17:</span><span class="Cbackground"> </span>  <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>iter <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> key r <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>replace tbl2 key <span class="Cnonalphakeyword">(</span>ref !r<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> tbl<span class="Cnonalphakeyword">;</span>
+<span class="Clinenum">  18:</span><span class="Cbackground"> </span>  tbl2
+<span class="Clinenum">  19:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  20:</span><span class="Cbackground"> </span><span class="Clet">let</span> find tbl key <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">  21:</span><span class="Cbackground"> </span>  <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>hd !<span class="Cnonalphakeyword">(</span><span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>find tbl key<span class="Cnonalphakeyword">)</span>
+<span class="Clinenum">  22:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  23:</span><span class="Cbackground"> </span><span class="Clet">let</span> find_all tbl key <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">  24:</span><span class="Cbackground"> </span>  !<span class="Cnonalphakeyword">(</span><span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>find tbl key<span class="Cnonalphakeyword">)</span>
+<span class="Clinenum">  25:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  26:</span><span class="Cbackground"> </span><span class="Clet">let</span> mem <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>mem
+<span class="Clinenum">  27:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  28:</span><span class="Cbackground"> </span><span class="Clet">let</span> remove tbl key <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">  29:</span><span class="Cbackground"> </span>  <span class="Ctry">try</span>
+<span class="Clinenum">  30:</span><span class="Cbackground"> </span>    <span class="Clet">let</span> r <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>find tbl key <span class="Cin">in</span>
+<span class="Clinenum">  31:</span><span class="Cbackground"> </span>    <span class="Cmatch">match</span> !r <span class="Cwith">with</span>
+<span class="Clinenum">  32:</span><span class="Cbackground"> </span>        <span class="Cnonalphakeyword">[</span>data<span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>remove tbl key
+<span class="Clinenum">  33:</span><span class="Cbackground"> </span>      <span class="Cbar">|</span> hd <span class="Cnonalphakeyword">::</span> tl <span class="Cnonalphakeyword">-&gt;</span> r <span class="Cnonalphakeyword">:=</span> tl
+<span class="Clinenum">  34:</span><span class="Cbackground"> </span>      <span class="Cbar">|</span> <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span> invalid_arg <span class="Cstring">"remove"</span>
+<span class="Clinenum">  35:</span><span class="Cbackground"> </span>  <span class="Cwith">with</span> <span class="Cconstructor">Not_found</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+<span class="Clinenum">  36:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  37:</span><span class="Cbackground"> </span><span class="Clet">let</span> remove_all <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>remove
+<span class="Clinenum">  38:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  39:</span><span class="Cbackground"> </span><span class="Clet">let</span> replace tbl key data <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">  40:</span><span class="Cbackground"> </span>  <span class="Ctry">try</span>
+<span class="Clinenum">  41:</span><span class="Cbackground"> </span>    <span class="Clet">let</span> r <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>find tbl key <span class="Cin">in</span>
+<span class="Clinenum">  42:</span><span class="Cbackground"> </span>    r <span class="Cnonalphakeyword">:=</span> data <span class="Cnonalphakeyword">::</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>tl !r<span class="Cnonalphakeyword">)</span>
+<span class="Clinenum">  43:</span><span class="Cbackground"> </span>  <span class="Cwith">with</span> 
+<span class="Clinenum">  44:</span><span class="Cbackground"> </span>      <span class="Cconstructor">Not_found</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>add tbl key <span class="Cnonalphakeyword">(</span>ref <span class="Cnonalphakeyword">[</span>data<span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">)</span>
+<span class="Clinenum">  45:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  46:</span><span class="Cbackground"> </span><span class="Clet">let</span> replace_all tbl key l <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">  47:</span><span class="Cbackground"> </span>  <span class="Ctry">try</span>
+<span class="Clinenum">  48:</span><span class="Cbackground"> </span>    <span class="Clet">let</span> r <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>find tbl key <span class="Cin">in</span>
+<span class="Clinenum">  49:</span><span class="Cbackground"> </span>    r <span class="Cnonalphakeyword">:=</span> l
+<span class="Clinenum">  50:</span><span class="Cbackground"> </span>  <span class="Cwith">with</span> 
+<span class="Clinenum">  51:</span><span class="Cbackground"> </span>      <span class="Cconstructor">Not_found</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>add tbl key <span class="Cnonalphakeyword">(</span>ref l<span class="Cnonalphakeyword">)</span>
+<span class="Clinenum">  52:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  53:</span><span class="Cbackground"> </span><span class="Clet">let</span> iter f tbl <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">  54:</span><span class="Cbackground"> </span>  <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>iter <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> key r <span class="Cnonalphakeyword">-&gt;</span> f key <span class="Cnonalphakeyword">(</span><span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>hd !r<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> tbl
+<span class="Clinenum">  55:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  56:</span><span class="Cbackground"> </span><span class="Clet">let</span> iter_all f tbl <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">  57:</span><span class="Cbackground"> </span>  <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>iter <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> key r <span class="Cnonalphakeyword">-&gt;</span> f key !r<span class="Cnonalphakeyword">)</span> tbl
+<span class="Clinenum">  58:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  59:</span><span class="Cbackground"> </span><span class="Clet">let</span> fold f tbl init <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">  60:</span><span class="Cbackground"> </span>  <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>fold <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> key r accu <span class="Cnonalphakeyword">-&gt;</span> f key <span class="Cnonalphakeyword">(</span><span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>hd !r<span class="Cnonalphakeyword">)</span> accu<span class="Cnonalphakeyword">)</span> tbl init
+<span class="Clinenum">  61:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  62:</span><span class="Cbackground"> </span><span class="Clet">let</span> fold_all f tbl init <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">  63:</span><span class="Cbackground"> </span>  <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>fold 
+<span class="Clinenum">  64:</span><span class="Cbackground"> </span>    <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> key r accu <span class="Cnonalphakeyword">-&gt;</span> f key !r accu<span class="Cnonalphakeyword">)</span>
+<span class="Clinenum">  65:</span><span class="Cbackground"> </span>    tbl init
+<span class="Clinenum">  66:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  67:</span><span class="Cbackground"> </span><span class="Clet">let</span> list_keys tbl <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">  68:</span><span class="Cbackground"> </span>  fold <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> key <span class="Cnonalphakeyword">_</span> accu <span class="Cnonalphakeyword">-&gt;</span> key <span class="Cnonalphakeyword">::</span> accu<span class="Cnonalphakeyword">)</span> tbl <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span>
+<span class="Clinenum">  69:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  70:</span><span class="Cbackground"> </span><span class="Clet">let</span> list_values tbl <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">  71:</span><span class="Cbackground"> </span>  fold <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> <span class="Cnonalphakeyword">_</span> data accu <span class="Cnonalphakeyword">-&gt;</span> data <span class="Cnonalphakeyword">::</span> accu<span class="Cnonalphakeyword">)</span> tbl <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span>
+<span class="Clinenum">  72:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  73:</span><span class="Cbackground"> </span><span class="Clet">let</span> list_all_values tbl <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">  74:</span><span class="Cbackground"> </span>  fold_all <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> <span class="Cnonalphakeyword">_</span> l accu <span class="Cnonalphakeyword">-&gt;</span> l <span class="Cnonalphakeyword">::</span> accu<span class="Cnonalphakeyword">)</span> tbl <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span>
+<span class="Clinenum">  75:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  76:</span><span class="Cbackground"> </span><span class="Clet">let</span> list tbl <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">  77:</span><span class="Cbackground"> </span>  fold <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> key data accu <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>key<span class="Cnonalphakeyword">,</span> data<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">::</span> accu<span class="Cnonalphakeyword">)</span> tbl <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span>
+<span class="Clinenum">  78:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  79:</span><span class="Cbackground"> </span><span class="Clet">let</span> list_all tbl <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">  80:</span><span class="Cbackground"> </span>  fold_all <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> key l accu <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>key<span class="Cnonalphakeyword">,</span> l<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">::</span> accu<span class="Cnonalphakeyword">)</span> tbl <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span>
+<span class="Clinenum">  81:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  82:</span><span class="Cbackground"> </span><span class="Clet">let</span> of_list n l <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">  83:</span><span class="Cbackground"> </span>  <span class="Clet">let</span> tbl <span class="Cnonalphakeyword">=</span> create n <span class="Cin">in</span>
+<span class="Clinenum">  84:</span><span class="Cbackground"> </span>  <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>iter <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span>key<span class="Cnonalphakeyword">,</span> data<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> add tbl key data<span class="Cnonalphakeyword">)</span> l<span class="Cnonalphakeyword">;</span>
+<span class="Clinenum">  85:</span><span class="Cbackground"> </span>  tbl
+<span class="Clinenum">  86:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  87:</span><span class="Cbackground"> </span><span class="Clet">let</span> of_keys n l <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">  88:</span><span class="Cbackground"> </span>  <span class="Clet">let</span> tbl <span class="Cnonalphakeyword">=</span> create n <span class="Cin">in</span>
+<span class="Clinenum">  89:</span><span class="Cbackground"> </span>  <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>iter <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> key <span class="Cnonalphakeyword">-&gt;</span> replace tbl key <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> l<span class="Cnonalphakeyword">;</span>
+<span class="Clinenum">  90:</span><span class="Cbackground"> </span>  tbl
+</pre>
+
+<hr>
+<h1><a name="hashtbl2.mli"></a><code>hashtbl2.mli</code></h1>
+
+<pre><span class="Clinenum">   1:</span><span class="Cbackground"> </span><span class="Ccomment">(** This module provides a kind of hash tables where each key is </span>
+<span class="Clinenum">   2:</span><span class="Cbackground"> </span><span class="Ccomment">present only once in the table, as opposed to the naive usage of </span>
+<span class="Clinenum">   3:</span><span class="Cbackground"> </span><span class="Ccomment">the standard [Hashtbl] module.</span>
+<span class="Clinenum">   4:</span><span class="Cbackground"> </span><span class="Ccomment">Its main purpose is to provide efficient implementation</span>
+<span class="Clinenum">   5:</span><span class="Cbackground"> </span><span class="Ccomment">of functions such as [list_keys] with enhanced safety</span>
+<span class="Clinenum">   6:</span><span class="Cbackground"> </span><span class="Ccomment">over the direct use of an [('a, 'b list ref) Hashtbl.t] type.</span>
+<span class="Clinenum">   7:</span><span class="Cbackground"> </span><span class="Ccomment">Many functions have two variants:</span>
+<span class="Clinenum">   8:</span><span class="Cbackground"> </span><span class="Ccomment">- the first one is applied only on the current bindings, like</span>
+<span class="Clinenum">   9:</span><span class="Cbackground"> </span><span class="Ccomment">[iter].</span>
+<span class="Clinenum">  10:</span><span class="Cbackground"> </span><span class="Ccomment">- the second one has the [_all] suffix like [iter_all]</span>
+<span class="Clinenum">  11:</span><span class="Cbackground"> </span><span class="Ccomment">and is applied to the list of </span>
+<span class="Clinenum">  12:</span><span class="Cbackground"> </span><span class="Ccomment">all the values that are bound to the given key </span>
+<span class="Clinenum">  13:</span><span class="Cbackground"> </span><span class="Ccomment">instead of only to the topmost value.</span>
+<span class="Clinenum">  14:</span><span class="Cbackground"> </span><span class="Ccomment">This list of values</span>
+<span class="Clinenum">  15:</span><span class="Cbackground"> </span><span class="Ccomment">is prebuilt, so there is no cost for building the list when</span>
+<span class="Clinenum">  16:</span><span class="Cbackground"> </span><span class="Ccomment">such a function is applied.</span>
+<span class="Clinenum">  17:</span><span class="Cbackground"> </span><span class="Ccomment"></span>
+<span class="Clinenum">  18:</span><span class="Cbackground"> </span><span class="Ccomment">Example - clustering elements:</span>
+<span class="Clinenum">  19:</span><span class="Cbackground"> </span><span class="Ccomment"></span>
+<span class="Clinenum">  20:</span><span class="Cbackground"> </span><span class="Ccomment">[Hashtbl2.list_all (Hashtbl2.of_list 10 [ (1, "a"); (2, "b"); (1, "c") ])]</span>
+<span class="Clinenum">  21:</span><span class="Cbackground"> </span><span class="Ccomment"></span>
+<span class="Clinenum">  22:</span><span class="Cbackground"> </span><span class="Ccomment">returns [[(2, ["b"]); (1, ["c"; "a"])]].</span>
+<span class="Clinenum">  23:</span><span class="Cbackground"> </span><span class="Ccomment"></span>
+<span class="Clinenum">  24:</span><span class="Cbackground"> </span><span class="Ccomment">[Hashtbl2] is an additional layer over the standard [Hashtbl] module.</span>
+<span class="Clinenum">  25:</span><span class="Cbackground"> </span><span class="Ccomment"></span>
+<span class="Clinenum">  26:</span><span class="Cbackground"> </span><span class="Ccomment">@author Martin Jambon *)</span>
+<span class="Clinenum">  27:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  28:</span><span class="Cbackground"> </span><span class="Ctype">type</span> <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t
+<span class="Clinenum">  29:</span><span class="Cbackground"> </span><span class="Ccomment">(** The type of hash tables from type ['a] to type ['b].</span>
+<span class="Clinenum">  30:</span><span class="Cbackground"> </span><span class="Ccomment">   This representation is suitable for clustering elements </span>
+<span class="Clinenum">  31:</span><span class="Cbackground"> </span><span class="Ccomment">   according to the given keys. *)</span>
+<span class="Clinenum">  32:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  33:</span><span class="Cbackground"> </span><span class="Cval">val</span> create : int <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t
+<span class="Clinenum">  34:</span><span class="Cbackground"> </span><span class="Ccomment">(** [Hashtbl2.create n] creates a new, empty hash table, with</span>
+<span class="Clinenum">  35:</span><span class="Cbackground"> </span><span class="Ccomment">   initial size [n].  For best results, [n] should be on the</span>
+<span class="Clinenum">  36:</span><span class="Cbackground"> </span><span class="Ccomment">   order of the expected number of elements that will be in</span>
+<span class="Clinenum">  37:</span><span class="Cbackground"> </span><span class="Ccomment">   the table.  The table grows as needed, so [n] is just an</span>
+<span class="Clinenum">  38:</span><span class="Cbackground"> </span><span class="Ccomment">   initial guess. *)</span>
+<span class="Clinenum">  39:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  40:</span><span class="Cbackground"> </span><span class="Cval">val</span> clear : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> unit
+<span class="Clinenum">  41:</span><span class="Cbackground"> </span><span class="Ccomment">(** Empty a hash table. *)</span>
+<span class="Clinenum">  42:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  43:</span><span class="Cbackground"> </span><span class="Cval">val</span> add : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'a <span class="Cnonalphakeyword">-&gt;</span> 'b <span class="Cnonalphakeyword">-&gt;</span> unit
+<span class="Clinenum">  44:</span><span class="Cbackground"> </span><span class="Ccomment">(** [Hashtbl2.add tbl x y] adds a binding of [x] to [y] in table [tbl].</span>
+<span class="Clinenum">  45:</span><span class="Cbackground"> </span><span class="Ccomment">   Previous bindings for [x] are not removed, but simply</span>
+<span class="Clinenum">  46:</span><span class="Cbackground"> </span><span class="Ccomment">   hidden. That is, after performing {!Hashtbl2.remove}[ tbl x],</span>
+<span class="Clinenum">  47:</span><span class="Cbackground"> </span><span class="Ccomment">   the previous binding for [x], if any, is restored.</span>
+<span class="Clinenum">  48:</span><span class="Cbackground"> </span><span class="Ccomment">   (Same behavior as with association lists.) *)</span>
+<span class="Clinenum">  49:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  50:</span><span class="Cbackground"> </span><span class="Cval">val</span> copy : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t
+<span class="Clinenum">  51:</span><span class="Cbackground"> </span><span class="Ccomment">(** Return a copy of the given hashtable. *)</span>
+<span class="Clinenum">  52:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  53:</span><span class="Cbackground"> </span><span class="Cval">val</span> find : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'a <span class="Cnonalphakeyword">-&gt;</span> 'b
+<span class="Clinenum">  54:</span><span class="Cbackground"> </span><span class="Ccomment">(** [Hashtbl2.find tbl x] returns the current binding of [x] in [tbl],</span>
+<span class="Clinenum">  55:</span><span class="Cbackground"> </span><span class="Ccomment">   or raises [Not_found] if no such binding exists. *)</span>
+<span class="Clinenum">  56:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  57:</span><span class="Cbackground"> </span><span class="Cval">val</span> find_all : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'a <span class="Cnonalphakeyword">-&gt;</span> 'b list
+<span class="Clinenum">  58:</span><span class="Cbackground"> </span><span class="Ccomment">(** [Hashtbl2.find_all tbl x] returns the list of all data</span>
+<span class="Clinenum">  59:</span><span class="Cbackground"> </span><span class="Ccomment">   associated with [x] in [tbl].</span>
+<span class="Clinenum">  60:</span><span class="Cbackground"> </span><span class="Ccomment">   The current binding is returned first, then the previous</span>
+<span class="Clinenum">  61:</span><span class="Cbackground"> </span><span class="Ccomment">   bindings, in reverse order of introduction in the table. *)</span>
+<span class="Clinenum">  62:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  63:</span><span class="Cbackground"> </span><span class="Cval">val</span> mem : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'a <span class="Cnonalphakeyword">-&gt;</span> bool
+<span class="Clinenum">  64:</span><span class="Cbackground"> </span><span class="Ccomment">(** [Hashtbl2.mem tbl x] checks if [x] is bound in [tbl]. *)</span>
+<span class="Clinenum">  65:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  66:</span><span class="Cbackground"> </span><span class="Cval">val</span> remove : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'a <span class="Cnonalphakeyword">-&gt;</span> unit
+<span class="Clinenum">  67:</span><span class="Cbackground"> </span><span class="Ccomment">(** [Hashtbl2.remove tbl x] removes the current binding of [x] in [tbl],</span>
+<span class="Clinenum">  68:</span><span class="Cbackground"> </span><span class="Ccomment">   restoring the previous binding if it exists.</span>
+<span class="Clinenum">  69:</span><span class="Cbackground"> </span><span class="Ccomment">   It does nothing if [x] is not bound in [tbl]. *)</span>
+<span class="Clinenum">  70:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  71:</span><span class="Cbackground"> </span><span class="Cval">val</span> remove_all : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'a <span class="Cnonalphakeyword">-&gt;</span> unit
+<span class="Clinenum">  72:</span><span class="Cbackground"> </span><span class="Ccomment">(** [Hashtbl2.remove_all tbl x] removes all bindings of [x] in [tbl].</span>
+<span class="Clinenum">  73:</span><span class="Cbackground"> </span><span class="Ccomment">    It does nothing if [x] is not bound in [tbl]. *)</span>
+<span class="Clinenum">  74:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  75:</span><span class="Cbackground"> </span><span class="Cval">val</span> replace : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'a <span class="Cnonalphakeyword">-&gt;</span> 'b <span class="Cnonalphakeyword">-&gt;</span> unit
+<span class="Clinenum">  76:</span><span class="Cbackground"> </span><span class="Ccomment">(** [Hashtbl2.replace tbl x y] replaces the current binding of [x]</span>
+<span class="Clinenum">  77:</span><span class="Cbackground"> </span><span class="Ccomment">   in [tbl] by a binding of [x] to [y].  If [x] is unbound in [tbl],</span>
+<span class="Clinenum">  78:</span><span class="Cbackground"> </span><span class="Ccomment">   a binding of [x] to [y] is added to [tbl].</span>
+<span class="Clinenum">  79:</span><span class="Cbackground"> </span><span class="Ccomment">   This is functionally equivalent to {!Hashtbl2.remove}[ tbl x]</span>
+<span class="Clinenum">  80:</span><span class="Cbackground"> </span><span class="Ccomment">   followed by {!Hashtbl2.add}[ tbl x y]. *)</span>
+<span class="Clinenum">  81:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  82:</span><span class="Cbackground"> </span><span class="Cval">val</span> replace_all : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'a <span class="Cnonalphakeyword">-&gt;</span> 'b list <span class="Cnonalphakeyword">-&gt;</span> unit
+<span class="Clinenum">  83:</span><span class="Cbackground"> </span><span class="Ccomment">(** [Hashtbl2.replace_all tbl x y] replaces all bindings of [x]</span>
+<span class="Clinenum">  84:</span><span class="Cbackground"> </span><span class="Ccomment">    in [tbl] by bindings of [x] to the elements of [y].</span>
+<span class="Clinenum">  85:</span><span class="Cbackground"> </span><span class="Ccomment">    The first element of [y] defines the current binding,</span>
+<span class="Clinenum">  86:</span><span class="Cbackground"> </span><span class="Ccomment">    the second element is the defined the previous binding, and so on. *)</span>
+<span class="Clinenum">  87:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  88:</span><span class="Cbackground"> </span><span class="Cval">val</span> iter : <span class="Cnonalphakeyword">(</span>'a <span class="Cnonalphakeyword">-&gt;</span> 'b <span class="Cnonalphakeyword">-&gt;</span> unit<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> unit
+<span class="Clinenum">  89:</span><span class="Cbackground"> </span><span class="Ccomment">(** [Hashtbl2.iter f tbl] applies [f] to current bindings in table [tbl].</span>
+<span class="Clinenum">  90:</span><span class="Cbackground"> </span><span class="Ccomment">   [f] receives the key as first argument, and the associated value</span>
+<span class="Clinenum">  91:</span><span class="Cbackground"> </span><span class="Ccomment">   as second argument. Each current binding is presented exactly once to [f].</span>
+<span class="Clinenum">  92:</span><span class="Cbackground"> </span><span class="Ccomment">   Hidden bindings are ignored.</span>
+<span class="Clinenum">  93:</span><span class="Cbackground"> </span><span class="Ccomment">   The order in which the bindings are passed to [f] is unspecified. *)</span>
+<span class="Clinenum">  94:</span><span class="Cbackground"> </span>
+<span class="Clinenum">  95:</span><span class="Cbackground"> </span><span class="Cval">val</span> iter_all : <span class="Cnonalphakeyword">(</span>'a <span class="Cnonalphakeyword">-&gt;</span> 'b list <span class="Cnonalphakeyword">-&gt;</span> unit<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> unit
+<span class="Clinenum">  96:</span><span class="Cbackground"> </span><span class="Ccomment">(** [Hashtbl2.iter_all f tbl] applies [f] to all bindings in table [tbl].</span>
+<span class="Clinenum">  97:</span><span class="Cbackground"> </span><span class="Ccomment">   [f] receives the key as first argument, and all the associated values</span>
+<span class="Clinenum">  98:</span><span class="Cbackground"> </span><span class="Ccomment">   as second argument in reverse order of introduction in the table.</span>
+<span class="Clinenum">  99:</span><span class="Cbackground"> </span><span class="Ccomment">   The order in which the bindings are passed to [f] is unspecified. *)</span>
+<span class="Clinenum"> 100:</span><span class="Cbackground"> </span>
+<span class="Clinenum"> 101:</span><span class="Cbackground"> </span><span class="Cval">val</span> fold : <span class="Cnonalphakeyword">(</span>'a <span class="Cnonalphakeyword">-&gt;</span> 'b <span class="Cnonalphakeyword">-&gt;</span> 'c <span class="Cnonalphakeyword">-&gt;</span> 'c<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'c <span class="Cnonalphakeyword">-&gt;</span> 'c
+<span class="Clinenum"> 102:</span><span class="Cbackground"> </span><span class="Ccomment">(** [Hashtbl2.fold f tbl init] computes</span>
+<span class="Clinenum"> 103:</span><span class="Cbackground"> </span><span class="Ccomment">   [(f kN dN ... (f k1 d1 init)...)],</span>
+<span class="Clinenum"> 104:</span><span class="Cbackground"> </span><span class="Ccomment">   where [k1 ... kN] are the keys of current bindings in [tbl],</span>
+<span class="Clinenum"> 105:</span><span class="Cbackground"> </span><span class="Ccomment">   and [d1 ... dN] are the associated values.</span>
+<span class="Clinenum"> 106:</span><span class="Cbackground"> </span><span class="Ccomment">   Each current binding is presented exactly once to [f].</span>
+<span class="Clinenum"> 107:</span><span class="Cbackground"> </span><span class="Ccomment">   Hidden bindings are ignored. *)</span>
+<span class="Clinenum"> 108:</span><span class="Cbackground"> </span>
+<span class="Clinenum"> 109:</span><span class="Cbackground"> </span><span class="Cval">val</span> fold_all : <span class="Cnonalphakeyword">(</span>'a <span class="Cnonalphakeyword">-&gt;</span> 'b list <span class="Cnonalphakeyword">-&gt;</span> 'c <span class="Cnonalphakeyword">-&gt;</span> 'c<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'c <span class="Cnonalphakeyword">-&gt;</span> 'c
+<span class="Clinenum"> 110:</span><span class="Cbackground"> </span><span class="Ccomment">(** [Hashtbl2.fold_all f tbl init] computes</span>
+<span class="Clinenum"> 111:</span><span class="Cbackground"> </span><span class="Ccomment">   [(f kN lN ... (f k1 l1 init)...)],</span>
+<span class="Clinenum"> 112:</span><span class="Cbackground"> </span><span class="Ccomment">   where [k1 ... kN] are the keys of all bindings in [tbl],</span>
+<span class="Clinenum"> 113:</span><span class="Cbackground"> </span><span class="Ccomment">   and [l1 ... lN] are the lists of associated values, in reverse order</span>
+<span class="Clinenum"> 114:</span><span class="Cbackground"> </span><span class="Ccomment">   of introduction in the table. *)</span>
+<span class="Clinenum"> 115:</span><span class="Cbackground"> </span>
+<span class="Clinenum"> 116:</span><span class="Cbackground"> </span>
+<span class="Clinenum"> 117:</span><span class="Cbackground"> </span><span class="Cval">val</span> list_keys : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'a list
+<span class="Clinenum"> 118:</span><span class="Cbackground"> </span><span class="Ccomment">(** [Hashtbl2.list_keys tbl] returns a list of all the keys</span>
+<span class="Clinenum"> 119:</span><span class="Cbackground"> </span><span class="Ccomment">   from the current bindings. Therefore no key is duplicated.</span>
+<span class="Clinenum"> 120:</span><span class="Cbackground"> </span><span class="Ccomment">   Order is unspecified. *)</span>
+<span class="Clinenum"> 121:</span><span class="Cbackground"> </span>
+<span class="Clinenum"> 122:</span><span class="Cbackground"> </span><span class="Cval">val</span> list_values : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'b list
+<span class="Clinenum"> 123:</span><span class="Cbackground"> </span><span class="Ccomment">(** [Hashtbl2.list_values tbl] returns a list of all the values</span>
+<span class="Clinenum"> 124:</span><span class="Cbackground"> </span><span class="Ccomment">   from the current bindings. Hidden bindings are ignored.</span>
+<span class="Clinenum"> 125:</span><span class="Cbackground"> </span><span class="Ccomment">   Order is unspecified. *)</span>
+<span class="Clinenum"> 126:</span><span class="Cbackground"> </span>
+<span class="Clinenum"> 127:</span><span class="Cbackground"> </span><span class="Cval">val</span> list_all_values : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'b list list
+<span class="Clinenum"> 128:</span><span class="Cbackground"> </span><span class="Ccomment">(** [Hashtbl2.list_all_values tbl] returns a list of all the values</span>
+<span class="Clinenum"> 129:</span><span class="Cbackground"> </span><span class="Ccomment">   from all bindings. Order is unspecified. *)</span>
+<span class="Clinenum"> 130:</span><span class="Cbackground"> </span>
+<span class="Clinenum"> 131:</span><span class="Cbackground"> </span><span class="Cval">val</span> list : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>'a <span class="Cnonalphakeyword">*</span> 'b<span class="Cnonalphakeyword">)</span> list
+<span class="Clinenum"> 132:</span><span class="Cbackground"> </span><span class="Ccomment">(** [Hashtbl2.list tbl] returns a list of the current bindings.</span>
+<span class="Clinenum"> 133:</span><span class="Cbackground"> </span><span class="Ccomment">   Order is unspecified. *)</span>
+<span class="Clinenum"> 134:</span><span class="Cbackground"> </span>
+<span class="Clinenum"> 135:</span><span class="Cbackground"> </span><span class="Cval">val</span> list_all : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>'a <span class="Cnonalphakeyword">*</span> 'b list<span class="Cnonalphakeyword">)</span> list
+<span class="Clinenum"> 136:</span><span class="Cbackground"> </span><span class="Ccomment">(** [Hashtbl2.list_all tbl] returns a list of all the bindings clustered</span>
+<span class="Clinenum"> 137:</span><span class="Cbackground"> </span><span class="Ccomment">   according to their key. Order is unspecified. *)</span>
+<span class="Clinenum"> 138:</span><span class="Cbackground"> </span>
+<span class="Clinenum"> 139:</span><span class="Cbackground"> </span><span class="Cval">val</span> of_list : int <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>'a <span class="Cnonalphakeyword">*</span> 'b<span class="Cnonalphakeyword">)</span> list <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t
+<span class="Clinenum"> 140:</span><span class="Cbackground"> </span><span class="Ccomment">(** [Hashtbl2.of_list n l] converts a list of bindings into </span>
+<span class="Clinenum"> 141:</span><span class="Cbackground"> </span><span class="Ccomment">   a hash table of initial size [n]. The ordering of the list is the order</span>
+<span class="Clinenum"> 142:</span><span class="Cbackground"> </span><span class="Ccomment">   of introduction of the bindings in the table. *)</span>
+<span class="Clinenum"> 143:</span><span class="Cbackground"> </span>
+<span class="Clinenum"> 144:</span><span class="Cbackground"> </span><span class="Cval">val</span> of_keys : int <span class="Cnonalphakeyword">-&gt;</span> 'a list <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> unit<span class="Cnonalphakeyword">)</span> t
+<span class="Clinenum"> 145:</span><span class="Cbackground"> </span><span class="Ccomment">(** [Hashtbl2.of_keys n l] converts a list of elements into</span>
+<span class="Clinenum"> 146:</span><span class="Cbackground"> </span><span class="Ccomment">   a hash table of initial size [n] containing unique copies of these</span>
+<span class="Clinenum"> 147:</span><span class="Cbackground"> </span><span class="Ccomment">   elements bound at most one time to [()]. *)</span>
+</pre>
+
+<hr>
+<p>
+<em>This document was generated using 
+<a href="http://martin.jambon.free.fr/caml2html.html">caml2html</a></em>
+</body>
+</html>

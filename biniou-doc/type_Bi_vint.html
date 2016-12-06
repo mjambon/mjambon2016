@@ -1,0 +1,27 @@
+<html><head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Bi_util" rel="Chapter" href="Bi_util.html">
+<link title="Bi_share" rel="Chapter" href="Bi_share.html">
+<link title="Bi_outbuf" rel="Chapter" href="Bi_outbuf.html">
+<link title="Bi_inbuf" rel="Chapter" href="Bi_inbuf.html">
+<link title="Bi_vint" rel="Chapter" href="Bi_vint.html">
+<link title="Bi_io" rel="Chapter" href="Bi_io.html"><title>Bi_vint</title>
+</head>
+<body>
+<code class="code"><span class="keyword">sig</span><br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;uint&nbsp;=&nbsp;int<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;uvint_of_uint&nbsp;:&nbsp;?buf:<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Bi_vint</span>.uint&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;svint_of_int&nbsp;:&nbsp;?buf:<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;uint_of_uvint&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Bi_vint</span>.uint<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;int_of_svint&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_uvint&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Bi_vint</span>.uint&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_svint&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;read_uvint&nbsp;:&nbsp;<span class="constructor">Bi_inbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Bi_vint</span>.uint<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;read_svint&nbsp;:&nbsp;<span class="constructor">Bi_inbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int<br>
+<span class="keyword">end</span></code></body></html>

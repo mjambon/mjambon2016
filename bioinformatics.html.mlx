@@ -1,0 +1,117 @@
+##
+#load "utils.cmo";;
+open Utils
+##
+## include_file "doctype" ##
+<html>
+<head>
+## title "Miscellaneous bioinformatics-related resources" ##
+## include_file "charset" ##
+## include_file "stylesheet" ##
+## include_file "icon" ##
+## include_file "commonlinks" ##
+</head>
+<body>
+## include_file "hitcounter" ##
+## include_file "start_big_table" ##
+## top_menu ~here:false bioinformatics ##
+
+<h1>Bioinformatics</h1> 
+
+<h2>Bioinformatics at the Burnham Institute for Medical Research</h2>
+
+<p>
+Until April 2007, 
+I was working in <a href="http://bioinformatics.burnham.org">Adam Godzik's 
+group</a> at <a href="http://www.burnham.org">the Burnham Institute 
+for Medical Research</a>
+in San Diego, California.
+<p>
+I was the webmaster of the 
+<a href="http://openwetware.org/wiki/Wikiomics">Wikiomics.org bioinformatics wiki</a>,
+which provides an open space for sharing notes, tips, links and references on 
+<a href="http://en.wikipedia.org/wiki/Bioinformatics">bioinformatics</a>.
+
+<p>
+I developed Pacgum,
+a novel method and web application 
+for estimating the resolution of a protein 3D model independently
+from its origin, whether it is X-ray crystallography, 
+NMR spectroscopy, homology modelling or any other technique.
+It returns a single score as well as a plot called "contact profile"
+that helps understand why a protein scores high or low.
+Ask me about the paper (that was never published) and software if interested.
+</p>
+
+
+<h2>Documents</h2>
+
+<p>
+You can find <a href="publications.html">my publications here</a>.
+
+<p>My full PhD thesis is available in French and in English: 
+<i><a href="phd.html">A bioinformatic system
+for searching functional similarities
+in 3D structures
+of proteins</a></i>.
+It contains the full specification of the SuMo system
+as of version 4.4.
+
+<p>
+I also maintain a list of 
+<a href="search-protein-3D-sites.html">comparison-based approaches 
+to the automated prediction of interesting 3D sites in a protein structure</a>.
+
+
+<h2>ISMB 2005 poster & AFP SIG talk</h2> 
+
+<p>
+<table><tr>
+<td><a href="poster-ismb05.png"><img src="micro-poster-ismb05.png" 
+alt="reduced poster"></a>
+</td>
+<td>
+<a href="poster-ismb05.png">The poster</a> 
+presented at <a href="http://www.iscb.org/ismb2005">ISMB 2005</a>, 
+shows some of the latest features of SuMo for 
+searching ligand binding sites in protein structures: 
+<i>Unification of discrete and continuous effects on protein interfaces: 
+an extension of the concept of hydrophobic effect and its application</i>
+</td>
+</tr></table>
+
+<p>
+<a href="jambon-afpsig2005.pdf">The slides</a> 
+of the presentation given at the Automated Function Prediction SIG
+at ISMB 2005 are available: 
+<i>SuMo: structure comparison of proteins focused on 
+functional properties of ligand binding sites</i>
+
+<h2>The Open Structure Annotation Network (TOPSAN) poster (2006)</h2> 
+
+<p>
+<table><tr>
+<td><a href="poster-topsan-reduced.jpg"><img src="micro-poster-topsan.png" 
+alt="reduced poster"></a> 
+</td>
+<td>
+This poster, presented at the 
+<a href="http://biofunctionprediction.org/AFP/afp06">Automated 
+Function Prediction meeting 2006 in San Diego</a>, 
+introduces 
+<a href="http://topsan.org">The Open Structure Annotation Network (TOPSAN)</a>.
+TOPSAN is a website
+that is meant primarily to ease the process of publishing protein
+3D structures from structural genomics, 
+which initially have little or no associated biological data.
+It is a hybrid between a wiki (editable online, continuously), 
+a traditional publishing system (releases of frozen versions of articles,
+designated editors),
+and a database of biological annotations (structured fields, free text,
+feeds from other databases, links to external tools).</td>
+</tr></table>
+
+## camlmix_footer ~years:"2005" () ##
+## include_file "end_big_table" ##
+</body>
+</html>

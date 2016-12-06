@@ -1,0 +1,17 @@
+(*** Changing the printer only for the next block ***:
+val print_with : (string -> unit) -> unit
+*)
+
+let print_with f =
+  let saved_printer = !Camlmix.printer in
+  Camlmix.printer := (fun s -> f s; Camlmix.printer := saved_printer)
+;;
+
+
+(*** Conditional output of the next block ***:
+val print_if : bool -> unit
+*)
+
+let print_if test =
+  if not test then print_with ignore
+;;

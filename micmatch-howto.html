@@ -1,0 +1,1222 @@
+
+<!doctype html>
+
+<html>
+<head>
+<title>Micmatch - Tutorial and FAQ</title>
+<meta http-equiv="content-Type" content="text/html; charset=utf-8">
+
+<link rel="stylesheet" href="/base.css" type="text/css">
+
+<link rel="stylesheet" href="/ocaml.css" type="text/css">
+
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+<link rel="home" href="/">
+<link rel="author" href="/people.html#martin">
+
+</head>
+<body>
+
+<div id="page">
+
+
+<div>
+<table id=top_menu cellspacing=0>
+<tr>
+  <td><a href="/">Main</a></td>
+  <td class="current_topic"><a href="/ocaml.html">Software</a></td>
+  <td><a href="/releases">Downloads</a></td>
+  <td><a href="/other.html">Other</a></td>
+</tr>
+</table>
+</div>
+
+
+
+
+<h1>Micmatch Tutorial and FAQ
+<img src="/2camels.png" 
+     title="difficulty = 2 camels (requires a knowledge of OCaml's basics)" 
+     alt="[difficulty = 2 camels]">
+</h1>
+
+
+<p>
+This is a tutorial on how to use <a href="micmatch.html">Micmatch</a> 
+in practice. It covers the PCRE variant of Micmatch, which is the default.
+For a complete but concise description of all the features that are 
+supported, see the <a href="micmatch-manual">reference manual</a>.
+
+<p>
+For a good tutorial on regexp matching (in Perl-like syntax), go to 
+<a href="http://www.regular-expressions.info/tutorial.html">www.regular-expressions.info</a>.
+
+
+
+<div class=toc>
+<b>Contents</b><br>
+<a href="#whatfor" class=toc0>1. What is Micmatch for?</a><br>
+<a href="#camlp4" class=toc0>2. Is Micmatch a new language?</a><br>
+<a href="#why" class=toc0>3. What's wrong with traditional regexp libraries such as Str or PCRE?</a><br>
+<a href="#features" class=toc0>4. Features at a glance</a><br>
+<a href="#compile" class=toc0>5. How to compile programs which use Micmatch</a><br>
+<a href="#toplevel" class=toc1>5.1 Interactive use</a><br>
+<a href="#standalone" class=toc1>5.2 Compilation into bytecode or native code</a><br>
+<a href="#regexps" class=toc0>6. How to define a text pattern</a><br>
+<a href="#regexp-basics" class=toc1>6.1 Basics of the syntax</a><br>
+<a href="#regexp-matching" class=toc1>6.2 Matching a text pattern</a><br>
+<a href="#lines" class=toc0>7. How to scan the lines of a file</a><br>
+<a href="#filter" class=toc0>8. Does it just match?</a><br>
+<a href="#substrings" class=toc0>9. How to extract substrings from a matched pattern</a><br>
+<a href="#laziness" class=toc0>10. Lazy vs. greedy matching</a><br>
+<a href="#conversions" class=toc0>11. Shortcuts to convert substrings to ints, floats or something else</a><br>
+<a href="#numbers" class=toc0>12. How to parse numbers</a><br>
+<a href="#capture-object" class=toc0>13. Packing subgroups into a single object</a><br>
+<a href="#locate" class=toc0>14. How to locate a pattern in a string</a><br>
+<a href="#case" class=toc0>15. How to ignore the case of the characters</a><br>
+<a href="#collect" class=toc0>16. How to get a list of the matched substrings</a><br>
+<a href="#replace" class=toc0>17. How to replace specific patterns in a string</a><br>
+<a href="#split" class=toc0>18. How to split a string into a list of components</a><br>
+<a href="#assertions" class=toc0>19. How to test characters without consuming them</a><br>
+<a href="#arguments" class=toc0>20. How to search for a string which
+is unknown at compile-time</a><br>
+<a href="#include" class=toc0>21. How to reuse named regexps in other files</a><br>
+<a href="#encodings" class=toc0>22. Does Micmatch support non-ASCII character encodings?</a><br>
+<a href="#non-regexp" class=toc0>23. Miscellaneous non-regexp problems</a><br>
+</div>
+
+<h2 id=whatfor>1. What is Micmatch for?</h2>
+
+<p>
+Micmatch is a text manipulation facility for Objective Caml.
+<p>
+Micmatch adds static support for regular expressions in the 
+Objective Caml language. It means that regular expressions are made part
+of the programming language, and therefore their syntax is more natural
+and their correctness is checked during the compilation process.
+<p>
+What does all of this mean? It means:
+<ul>
+<li> you can easily extract the data you want from any piece of text,
+<li> the compiler tells you exactly where you made a mistake in a regular
+expression, i.e. the text pattern that you are looking for,
+<li> you don't need to define mysterious strings of characters which are full
+of unreadable backslashes anymore,
+<li> you benefit from syntax highlighting with any OCaml-aware text editor.
+</ul>
+
+<p>
+Micmatch is not:
+<ul>
+<li> a replacement for parsers of programming languages such as 
+those that are implemented using ocamllex and ocamlyacc
+<li> a library that implements regular expression engines in itself but it
+provides a syntaxic layer which makes them much easier and safer to use
+</ul>
+
+
+<h2 id=camlp4>2. Is Micmatch a new language?</h2>
+
+<p>
+Yes and no.
+Yes because it introduces a new syntax that does not exist in regular
+OCaml, and no because it is just a library that is loaded 
+by the OCaml preprocessor, Camlp4.
+
+<p>
+So you are still using the <a href="http://caml.inria.fr">OCaml system</a>, 
+with all its benefits.
+
+
+<h2 id=why>3. What's wrong with traditional regexp libraries such as Str or PCRE?</h2>
+
+<p>
+Regexps are programs. They have to be compiled before they can be used.
+Like any program, we prefer them to be easy to write, easy to read, 
+safe, and fast. This is why it is better to integrate them tightly
+in the programming language we are using, which is OCaml in our case.
+
+<p>
+<table class=real-table>
+<tr>
+<th></th>
+<th>Regexp library used directly (Str or PCRE)</th>
+<th>Micmatch (using Str or PCRE internally)</th>
+</tr>
+
+<tr><th>compilation into a regexp engine</th><td>at runtime only, explicit, usually not at the same place in the program than where it is actually used</td><td>compile-time checks, implicit runtime compilation on program startup</td></tr>
+<tr><th>syntax highlighting</th><td>just a monochrome string (under OCaml modes for emacs or vim)</td><td>natural highlighting under any text-editor that highlights OCaml code properly: strings, characters, keywords, lowercase and uppercase identifiers</td></tr>
+<tr><th>error reporting</th><td>at runtime only, does not point directly to the exact location in the program</td><td>at compile-time, points directly to the fragment of the regexp that is problematic</td></tr>
+<tr><th>extraction of substrings from a matched pattern (capturing groups)</th><td>checked at runtime only; using integer constants to refer to groups is error-prone, especially when adding or removing groups from the regexp</td><td>only named groups which are checked at compile-time; the semantics guarantees that every named group is well-defined when used in an OCaml expression</td></tr>
+<tr><th>comments</th><td>either outside of the regexp string or inside (PCRE only) but spaces must be expressed with \s</td><td>OCaml comments can appear between any piece of the regexp</td></tr>
+<tr><th>speed</th><td>state-of-the-art</td><td>same! (since the same libraries are used at runtime)</td></tr>
+<tr><th>protection of special characters</th><td>uses backslashes, requires a full knowledge of which character is special and which one is not; backslashes must be doubled in OCaml string literals</td><td>string literals are used to match exactly what appears in the string; operators are not mixed with characters to match</td></tr>
+<tr><th>integration in ML-style pattern-matching (general-purpose destructuring of data other than strings)</th><td>no</td><td>yes; but unmatched cases are not detected anymore when a regexp is being used in the pattern-matching</td></tr>
+<tr><th>runtime definition of regexps</th><td>yes</td><td>partially: gaps for sequences are accepted in regexps and are filled
+     at runtime (possibly case-insensitive); Str or PCRE-OCaml should be used directly in other cases</td></tr>
+<tr><th>composition of regexps (defining and using macros)</th><td>do-it-yourself</td><td>yes</td></tr>
+</table>
+
+
+<h2 id=features>4. Features at a glance</h2>
+
+<p>
+Micmatch has the following features:
+<ul>
+<li> string-manipulation using regexp-based matching, searching and replacing
+<li> use the regexp where it appears, without penalty
+<li> static verification of the regexps
+<li> no backslashes
+<li> extended ocamllex syntax
+<li> naming and composition of regexps
+<li> named capturing groups
+<li> positional markers
+<li> lazy quantifiers
+<li> possessive quantifiers
+<li> back references
+<li> lookahead and lookbehind assertions
+<li> local case-insensitive matching
+<li> in-place conversion of capturing groups
+<li> search for user-defined sequences
+<li> speed of PCRE
+<li> safety of functional programming and static type-checking
+<li> pattern-matching (ML) and pattern-matching (string regexps) 
+     finally unified
+<li> just a library for Camlp4 and OCaml
+<li> fully documented
+<li> open-source, free and distributed with a BSD license
+</ul>
+
+
+<h2 id=compile>5. How to compile programs which use Micmatch</h2>
+
+<p>
+We assume that you have successfully installed Micmatch 
+(the normal installation requires the PCRE library which is written in C, 
+the bindings for OCaml PCRE-OCaml, 
+and Findlib i.e. the <code>ocamlfind</code> command).
+
+<h3 id=toplevel>5.1 Interactive use</h3>
+Now a <code>micmatch</code> command should be available. Use it as 
+replacement for the <code>ocaml</code> command either in interactive mode:
+<pre>
+$ micmatch
+        Objective Caml version 3.08.2
+
+        Camlp4 Parsing version 3.08.2
+
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span style="font-style:italic"></span></pre>
+<p>
+or in scripting mode:
+
+<pre>
+$ micmatch source_file.ml
+</pre>
+
+
+<p>
+In interactive mode, it is suggested to use <code>ledit</code>,
+which can be installed easily from GODI. It provides a line-editing facility
+that is not available with the default <code>ocaml</code> 
+or <code>micmatch</code> commands:
+<pre>
+$ ledit micmatch
+        Objective Caml version 3.08.2
+
+        Camlp4 Parsing version 3.08.2
+
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span style="font-style:italic"></span></pre>
+
+<p>
+For even more comfort, 
+you can tell ledit to remember what you typed during your last
+sessions using this command:
+
+<pre>
+ledit -x -h some_file micmatch'
+</pre>
+
+<p>
+For instance, if your command interpreter is <code>bash</code>, 
+you can place the following
+line in your <code>.bashrc</code> file:
+
+<pre>
+alias mic='ledit -x -h ~/.micmatch_history micmatch'
+</pre>
+
+<p>
+and then invoke <code>mic</code> for your
+interactive Micmatch sessions.
+
+<p>
+Note that in OCaml programs we can usually avoid writing the <code>;;</code>
+symbol. In interactive mode, the double semicolon is however required
+after each phrase. In the examples we will assume that you are typing
+the code directly into a file and thus we will omit the unnecessary
+<code>;;</code>.
+
+<p>
+Note to the users of OCaml/Camlp4 3.10 and 3.11: the package has been
+renamed "mikmatch" with a "k" because of significant changes in the 
+Camlp4 tool.
+There is no longer a <code>micmatch</code> (or <code>mikmatch</code>) command.
+Mikmatch cannot be used interactively under Camlp4 3.10, but it is possible
+again with 3.11. The package must have been installed with Findlib; try the
+following command and it should return a path:
+<pre>
+$ ocamlfind query mikmatch_pcre
+/home/martin/godi3110/lib/ocaml/site-lib/mikmatch_pcre
+</pre>
+
+<p>
+In this case, use these directives:
+<pre>
+$ ocaml
+        Objective Caml version 3.11.0
+
+# #use "topfind";;
+- : unit = ()
+Findlib has been successfully loaded. Additional directives:
+  #require "package";;      to load a package
+  #list;;                   to list the available packages
+  #camlp4o;;                to load camlp4 (standard syntax)
+  #camlp4r;;                to load camlp4 (revised syntax)
+  #predicates "p,q,...";;   to set these predicates
+  Topfind.reset();;         to force that packages will be reloaded
+  #thread;;                 to enable threads
+
+- : unit = ()
+# #require "tophide";;
+/home/martin/godi3110/lib/ocaml/pkg-lib/tophide: added to search path
+/home/martin/godi3110/lib/ocaml/pkg-lib/tophide/tophide.cmo: loaded
+# #require "dynlink";;
+/home/martin/godi/lib/ocaml/std-lib/dynlink.cma: loaded
+# #camlp4o;;
+/home/martin/godi/lib/ocaml/std-lib/camlp4: added to search path
+/home/martin/godi/lib/ocaml/std-lib/camlp4/camlp4o.cma: loaded
+        Camlp4 Parsing version 3.11.0
+
+# #require "mikmatch_pcre";;
+/home/martin/godi3110/lib/ocaml/pkg-lib/pcre: added to search path
+/home/martin/godi3110/lib/ocaml/pkg-lib/pcre/pcre.cma: loaded
+/home/martin/godi/lib/ocaml/std-lib/unix.cma: loaded
+/home/martin/godi3110/lib/ocaml/site-lib/mikmatch_pcre: added to search path
+/home/martin/godi3110/lib/ocaml/site-lib/mikmatch_pcre/pa_mikmatch_pcre.cma: loa
+ded
+/home/martin/godi3110/lib/ocaml/site-lib/mikmatch_pcre/run_mikmatch_pcre.cma: lo
+aded
+</pre>
+<p>
+Phew. Dynlink and Tophide must be loaded before camlp4o, for some 
+uninteresting reasons. It's probably easier to put all of these
+in a file and load it using <code>ocaml -init mikmatch.init</code>, 
+and make it a script so that it can be passed to ledit (as described above).
+The <code>mikmatch.init</code> file would be:
+<pre>
+#use "topfind";;
+#require "tophide";;
+#require "dynlink";;
+#camlp4o;;
+#require "mikmatch_pcre";;
+</pre>
+
+
+
+
+<h3 id=standalone>5.2 Compilation into bytecode or native code</h3>
+
+<p>
+Programs using Micmatch can of course be compiled into bytecode or 
+native code like any other OCaml program that uses Camlp4 parsing. See 
+<a href="http://ocaml-tutorial.org/compiling_ocaml_projects">this tutorial</a>
+for a quick start.
+
+
+
+<h2 id=regexps>6. How to define a text pattern</h2>
+
+<p>
+A text pattern is defined by a regular expression, also known 
+as regexp or regex.
+In Micmatch, the regexps follow a specific syntax which is relatively 
+easy to learn.
+
+<h3 id=regexp-basics>6.1 Basics of the syntax</h3>
+
+<p>
+If you want to match a character or a sequence of characters,
+just write them as an OCaml string:
+<pre><span class="Cconstructor">RE</span> hello <span class="Cnonalphakeyword">=</span> <span class="Cstring">"Hello!"</span> <span class="Ccomment">(* matches exactly the string "Hello!" *)</span>
+<span class="Cconstructor">RE</span> hello <span class="Cnonalphakeyword">=</span> <span class="Cstring">"***"</span>    <span class="Ccomment">(* matches exactly three stars *)</span></pre>
+<p>
+There is no special character to remember! All the special characters appear
+outside of the string or character literals.
+<p>
+If you want to match one character taken from a given set of characters,
+use the bracket notation:
+<pre><span class="Ccomment">(* All of the following definitions are equivalent,</span>
+<span class="Ccomment">   they match one digit within the range 0-7: *)</span>
+<span class="Cconstructor">RE</span> octal  <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span><span class="Cstring">'0'</span><span class="Cnonalphakeyword">-</span><span class="Cstring">'7'</span><span class="Cnonalphakeyword">]</span>
+<span class="Cconstructor">RE</span> octal1 <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span><span class="Cstring">"01234567"</span><span class="Cnonalphakeyword">]</span>
+<span class="Cconstructor">RE</span> octal2 <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span><span class="Cstring">'0'</span> <span class="Cstring">'1'</span> <span class="Cstring">'2'</span> <span class="Cstring">'3'</span> <span class="Cstring">'4'</span> <span class="Cstring">'5'</span> <span class="Cstring">'6'</span> <span class="Cstring">'7'</span><span class="Cnonalphakeyword">]</span>
+<span class="Cconstructor">RE</span> octal3 <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span><span class="Cstring">'0'</span><span class="Cnonalphakeyword">-</span><span class="Cstring">'4'</span> <span class="Cstring">'5'</span><span class="Cnonalphakeyword">-</span><span class="Cstring">'7'</span><span class="Cnonalphakeyword">]</span>
+<span class="Cconstructor">RE</span> octal4 <span class="Cnonalphakeyword">=</span> digit <span class="Cnonalphakeyword">#</span> <span class="Cnonalphakeyword">[</span><span class="Cstring">'8'</span> <span class="Cstring">'9'</span><span class="Cnonalphakeyword">]</span>  <span class="Ccomment">(* digit is a predefined set of characters *)</span>
+<span class="Cconstructor">RE</span> octal5 <span class="Cnonalphakeyword">=</span> <span class="Cstring">"0"</span> <span class="Cbar">|</span> <span class="Cnonalphakeyword">[</span><span class="Cstring">'1'</span><span class="Cnonalphakeyword">-</span><span class="Cstring">'7'</span><span class="Cnonalphakeyword">]</span>
+<span class="Cconstructor">RE</span> octal6 <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span><span class="Cstring">'0'</span><span class="Cnonalphakeyword">-</span><span class="Cstring">'4'</span><span class="Cnonalphakeyword">]</span> <span class="Cbar">|</span> <span class="Cnonalphakeyword">[</span><span class="Cstring">'5'</span><span class="Cnonalphakeyword">-</span><span class="Cstring">'7'</span><span class="Cnonalphakeyword">]</span></pre>
+<p>
+We can also specify which characters should not be matched:
+<pre><span class="Cconstructor">RE</span> octal <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span><span class="Cstring">'0'</span><span class="Cnonalphakeyword">-</span><span class="Cstring">'7'</span><span class="Cnonalphakeyword">]</span>       <span class="Ccomment">(* this matches an octal digit *)</span>
+<span class="Cconstructor">RE</span> not_octal  <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span>^<span class="Cstring">'0'</span><span class="Cnonalphakeyword">-</span><span class="Cstring">'7'</span><span class="Cnonalphakeyword">]</span> <span class="Ccomment">(* this matches any character but an octal digit *)</span>
+<span class="Cconstructor">RE</span> not_octal' <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span>^ octal<span class="Cnonalphakeyword">]</span>  <span class="Ccomment">(* another way to write it *)</span></pre>
+<p>
+If we want to match any character we use the underscore symbol:
+<pre><span class="Cconstructor">RE</span> paren <span class="Cnonalphakeyword">=</span> <span class="Cstring">"("</span> <span class="Cnonalphakeyword">_</span> <span class="Cstring">")"</span>   <span class="Ccomment">(* matches one character between parentheses *)</span></pre>
+
+<p>
+Patterns can be repeated:
+<pre><span class="Cconstructor">RE</span> anything  <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">*</span>         <span class="Ccomment">(* any string, as long as possible *)</span>
+<span class="Cconstructor">RE</span> anything' <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">*</span> <span class="Cconstructor">Lazy</span>    <span class="Ccomment">(* any string, as short as possible *)</span>
+
+<span class="Cconstructor">RE</span> opt_hello  <span class="Cnonalphakeyword">=</span> <span class="Cstring">"hello"</span><span class="Cnonalphakeyword">?</span>      <span class="Ccomment">(* matches hello if possible, or nothing *)</span>
+<span class="Cconstructor">RE</span> opt_hello' <span class="Cnonalphakeyword">=</span> <span class="Cstring">"hello"</span><span class="Cnonalphakeyword">?</span> <span class="Cconstructor">Lazy</span> <span class="Ccomment">(* matches nothing if possible, or hello *)</span>
+
+<span class="Cconstructor">RE</span> num <span class="Cnonalphakeyword">=</span> digit<span class="Cnonalphakeyword">+</span>        <span class="Ccomment">(* a non-empty sequence of digits, as long as possible;</span>
+<span class="Ccomment"></span>        <span class="Ccomment"></span>        <span class="Ccomment"></span>        <span class="Ccomment">  shortcut for: digit digit* *)</span>
+<span class="Cconstructor">RE</span> lazy_junk <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">+</span> <span class="Cconstructor">Lazy</span> <span class="Ccomment">(* match one character then match any sequence</span>
+<span class="Ccomment"></span>        <span class="Ccomment"></span>        <span class="Ccomment"></span>        <span class="Ccomment">  of characters and give up as early as possible *)</span>
+
+<span class="Cconstructor">RE</span> at_least_one_digit <span class="Cnonalphakeyword">=</span> digit<span class="Cnonalphakeyword">{</span>1<span class="Cnonalphakeyword">+</span><span class="Cnonalphakeyword">}</span>     <span class="Ccomment">(* same as digit+ *)</span>
+<span class="Cconstructor">RE</span> at_least_three_digits <span class="Cnonalphakeyword">=</span> digit<span class="Cnonalphakeyword">{</span>3<span class="Cnonalphakeyword">+</span><span class="Cnonalphakeyword">}</span>
+<span class="Cconstructor">RE</span> three_digits <span class="Cnonalphakeyword">=</span> digit<span class="Cnonalphakeyword">{</span>3<span class="Cnonalphakeyword">}</span>
+<span class="Cconstructor">RE</span> three_to_five_digits <span class="Cnonalphakeyword">=</span> digit<span class="Cnonalphakeyword">{</span>3-5<span class="Cnonalphakeyword">}</span>
+<span class="Cconstructor">RE</span> lazy_three_to_five_digits <span class="Cnonalphakeyword">=</span> digit<span class="Cnonalphakeyword">{</span>3-5<span class="Cnonalphakeyword">}</span> <span class="Cconstructor">Lazy</span></pre>
+
+
+
+<h3 id=regexp-matching>6.2 Matching a text pattern</h3>
+
+<p>
+Matching a string against a regexp pattern can be performed
+with the usual <code>match ... with</code> construct, 
+except that the
+<code>RE</code> keyword is used to introduce a regular expression.
+Say we want to test if a given string <code>s</code> matches the word "hello", 
+in normal OCaml we would write:
+<pre><span class="Cmatch">match</span> s <span class="Cwith">with</span>
+    <span class="Cstring">"hello"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Ctrue">true</span>
+  <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cfalse">false</span></pre>
+<p>
+But if we want to test if <code>s</code> starts with "hello", there is 
+no way to do this with the usual pattern matching. With a regexp, it is
+as simple as this:
+<pre><span class="Cmatch">match</span> s <span class="Cwith">with</span>
+    <span class="Cconstructor">RE</span> <span class="Cstring">"hello"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Ctrue">true</span>
+  <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cfalse">false</span></pre>
+<p>
+Note that in both examples, the underscore character (<code>_</code>) 
+is regular OCaml and means "anything" or in this case "any string", 
+which is different from its meaning in a regular expression.
+<p>
+The regexp must match from the beginning of the string, but the remaining,
+unmatched part of the string doesn't have to be empty.
+Have a look at this test:
+<pre>
+$ ledit micmatch
+        Objective Caml version 3.08.2
+
+        Camlp4 Parsing version 3.08.2
+
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Cmatch">match</span> <span class="Cstring">"hello world"</span> <span class="Cwith">with</span>
+    <span class="Cstring">"hello"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Ctrue">true</span>
+  <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cfalse">false</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : bool <span class="Cnonalphakeyword">=</span> <span class="Cfalse">false</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Cmatch">match</span> <span class="Cstring">"hello world"</span> <span class="Cwith">with</span>
+    <span class="Cconstructor">RE</span> <span class="Cstring">"hello"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Ctrue">true</span>
+  <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cfalse">false</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : bool <span class="Cnonalphakeyword">=</span> <span class="Ctrue">true</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Cmatch">match</span> <span class="Cstring">"world hello"</span> <span class="Cwith">with</span>
+    <span class="Cconstructor">RE</span> <span class="Cstring">"hello"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Ctrue">true</span>
+  <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cfalse">false</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : bool <span class="Cnonalphakeyword">=</span> <span class="Cfalse">false</span>
+</span></pre>
+
+<p>
+It is important to know that the matching process will try any possible
+combination until the pattern is matched. However,
+the combinations are tried from left to right, and
+repeats are either greedy (the longest match is tried first) or 
+lazy (the shortest match is tried first).
+The greedy behavior is the default, laziness is triggered by the presence
+of the <code>Lazy</code> keyword.
+
+<p>
+More possibilities are offered by Micmatch, such as the extraction of
+subgroups or positions in the matched string, and various 
+constructs for searching and replacing patterns conveniently.
+
+<p>
+Sometimes, the structure of the string to match is known in advance,
+and we just need to extract some substrings.
+The <code>let</code> constructs can be used directly with a regexp pattern.
+And since <code>let RE ... = ...</code> doesn't look nice in this
+situation, the sandwich
+notation (<code>/ ... /</code>) has been introduced.
+The version of the OCaml compiler that was used to compile the program
+can be decomposed quite easily:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Cconstructor">Sys</span><span class="Cnonalphakeyword">.</span>ocaml_version<span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : string <span class="Cnonalphakeyword">=</span> <span class="Cstring">"3.08.3"</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Cconstructor">RE</span> num <span class="Cnonalphakeyword">=</span> digit<span class="Cnonalphakeyword">+</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"></span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> / <span class="Cnonalphakeyword">(</span>num <span class="Cas">as</span> major : int<span class="Cnonalphakeyword">)</span> 
+        <span class="Cstring">"."</span> <span class="Cnonalphakeyword">(</span>num <span class="Cas">as</span> minor : int<span class="Cnonalphakeyword">)</span> 
+
+        <span class="Cnonalphakeyword">(</span><span class="Cstring">"."</span> <span class="Cnonalphakeyword">(</span>num <span class="Cas">as</span> patchlevel <span class="Cnonalphakeyword">:=</span> <span class="Cfun">fun</span> s <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">Some</span> <span class="Cnonalphakeyword">(</span>int_of_string s<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> 
+        <span class="Cbar">|</span> <span class="Cnonalphakeyword">(</span><span class="Cstring">""</span> <span class="Cas">as</span> patchlevel <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">None</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span>
+
+        <span class="Cnonalphakeyword">(</span><span class="Cstring">"+"</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">*</span> <span class="Cas">as</span> additional_info <span class="Cnonalphakeyword">:=</span> <span class="Cfun">fun</span> s <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">Some</span> s<span class="Cnonalphakeyword">)</span> 
+        <span class="Cbar">|</span> <span class="Cnonalphakeyword">(</span><span class="Cstring">""</span> <span class="Cas">as</span> additional_info <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">None</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span>
+
+        eos / <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Sys</span><span class="Cnonalphakeyword">.</span>ocaml_version
+<span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cval">val</span> additional_info : string option <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">None</span>
+<span class="Cval">val</span> major : int <span class="Cnonalphakeyword">=</span> 3
+<span class="Cval">val</span> minor : int <span class="Cnonalphakeyword">=</span> 8
+<span class="Cval">val</span> patchlevel : int option <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Some</span> 3
+</span></pre>
+
+<p>
+The sandwich notation can be used in <code>match</code> cases as well.
+Whether to use it or not is just a matter of taste.
+
+<p>
+See also <a href="#numbers">how to parse numbers</a>.
+
+<h2 id=lines>7. How to scan the lines of a file</h2>
+
+<p>
+The function <code>Micmatch.Text.iter_lines_of_file</code> allows an iteration
+over the lines of a file. Similarly, 
+<code>Micmatch.Text.iter_lines_of_channel</code> can be used to scan an open
+file, such as the standard input <code>stdin</code>.
+In the following example, we reprint input with line numbers at the beginning
+of each line:
+<pre><span class="Ccomment">(* file line_numbering.ml *)</span>
+<span class="Copen">open</span> <span class="Cconstructor">Printf</span>
+<span class="Copen">open</span> <span class="Cconstructor">Micmatch</span>
+
+<span class="Clet">let</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">=</span> 
+  <span class="Clet">let</span> n <span class="Cnonalphakeyword">=</span> ref 0 <span class="Cin">in</span>
+  <span class="Cconstructor">Text</span><span class="Cnonalphakeyword">.</span>iter_lines_of_channel
+    <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> s <span class="Cnonalphakeyword">-&gt;</span> 
+       incr n<span class="Cnonalphakeyword">;</span>
+       printf <span class="Cstring">"%3i: %s\n%!"</span> !n s<span class="Cnonalphakeyword">)</span>
+    stdin</pre>
+<p>
+Result, with the source file itself as input:
+
+<pre>
+$ micmatch line_numbering.ml &lt; line_numbering.ml
+  1: (* file line_numbering.ml *)
+  2: open Printf
+  3: open Micmatch
+  4: 
+  5: let () = 
+  6:   let n = ref 0 in
+  7:   Text.iter_lines_of_channel
+  8:     (fun s -&gt; 
+  9:        incr n;
+ 10:        printf "%3i: %s\n%!" !n s)
+ 11:     stdin
+</pre>
+
+
+<h2 id=filter>8. Does it just match?</h2>
+
+<p>
+The <code>FILTER</code> macro allows you to define a function that
+takes one string and returns <code>true</code> or <code>false</code>
+whether the string matches the regexp or not. For instance, it can be
+used to select strings from a list:
+<pre><span class="Cnonalphakeyword">#</span> <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>filter <span class="Cnonalphakeyword">(</span><span class="Cconstructor">FILTER</span> int eos<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">[</span> <span class="Cstring">"-123"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"a"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"0"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"-1.2"</span> <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;;</span>
+<span class="Cnonalphakeyword">-</span> : string list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span><span class="Cstring">"-123"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"0"</span><span class="Cnonalphakeyword">]</span></pre>
+
+<p>
+<code>FILTER</code> is mostly useful when passed to a function that expects
+a predicate. For example the <code>Micmatch.Glob</code> module offers
+functions for listing files and selecting file paths.
+An equivalent of the shell expression <code>ls /home/martin/.*/*.conf</code>
+would be:
+<pre><span class="Cnonalphakeyword">#</span> <span class="Copen">open</span> <span class="Cconstructor">Micmatch</span><span class="Cnonalphakeyword">;;</span>
+<span class="Cnonalphakeyword">#</span> <span class="Cconstructor">Glob</span><span class="Cnonalphakeyword">.</span>list <span class="Cnonalphakeyword">~</span>root:<span class="Cstring">"/home/martin"</span> <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">FILTER</span> <span class="Cstring">"."</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">FILTER</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">*</span> <span class="Cstring">".conf"</span> eos <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;;</span>
+<span class="Cnonalphakeyword">-</span> : string list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span><span class="Cstring">".gnupg/gpg.conf"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">".mplayer/gui.conf"</span><span class="Cnonalphakeyword">]</span></pre>
+
+
+
+<h2 id=substrings>9. How to extract substrings from a matched pattern</h2>
+
+<p>
+The <code>as</code> keyword is used to give a name to a part of 
+a pattern. When the whole pattern matches, the substring
+which is matched by our named subpattern becomes available directly
+under this name.
+In the following example, we extract the contents of the parentheses:
+<pre><span class="Cmatch">match</span> <span class="Cstring">"acbde (result), blabla..."</span> <span class="Cwith">with</span>
+    <span class="Cconstructor">RE</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">*</span> <span class="Cstring">"("</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">*</span> <span class="Cas">as</span> x<span class="Cnonalphakeyword">)</span> <span class="Cstring">")"</span> <span class="Cnonalphakeyword">-&gt;</span> print_endline x
+  <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> print_endline <span class="Cstring">"Failed"</span></pre>
+<p>
+Please note that the regular expression that we just used will not work
+as intended when the string contains several pairs of parentheses, because
+the matching engine is greedy by default. It means that 
+the repetitions (<code>*</code>) 
+are made as long as possible before trying to match the
+rest of the pattern, an possibly giving up one character and retrying
+(backtracking). The opposite behavior, the lazy one, is to advance 
+in the pattern as soon as possible. We can rewrite our example using
+lazy repetitions and a more challenging subject string:
+<pre><span class="Cmatch">match</span> <span class="Cstring">"acbde (result), bla(bla)..."</span> <span class="Cwith">with</span>
+    <span class="Cconstructor">RE</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">*</span> <span class="Cconstructor">Lazy</span> <span class="Cstring">"("</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">*</span> <span class="Cconstructor">Lazy</span> <span class="Cas">as</span> x<span class="Cnonalphakeyword">)</span> <span class="Cstring">")"</span> <span class="Cnonalphakeyword">-&gt;</span> print_endline x
+  <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> print_endline <span class="Cstring">"Failed"</span></pre>
+<p>
+In that new case, <code>result</code> 
+is still correctly extracted and displayed.
+<p>
+Exercise: what would be the result if this string 
+(<code><span class="Cstring">"acbde&nbsp;(result),&nbsp;bla(bla)..."</span></code>) is matched
+using our first regexp, the greedy one?
+
+<p>
+See <a href="#laziness">the section on laziness</a> for more information.
+
+
+
+<h2 id=laziness>10. Lazy vs. greedy matching</h2>
+
+<p>
+There are two ways of matching a repeated pattern <b>pat</b> within a regexp:
+<ul>
+<li> the greedy way: repeat the pattern <b>pat</b>
+as many times as possible before trying to match the rest of the regexp,
+and then give up one repetition of <b>pat</b> and retry, and so on.
+This is the default.
+<li> the lazy or impatient way: try to advance in the regexp first, 
+and only if it fails, try to match one more occurence of <b>pat</b>
+and continue.
+</ul>
+
+<p>
+It is just a question of order in which the matching engine proceeds:
+if there is only one way of matching a given string with a given pattern,
+then the result will not be affected by the lazy or greedy behavior 
+for matching repeated subpatterns.
+
+<p>
+Often, the lazy behavior in regexps is described as "shortest match".
+This is misleading since introducing lazy behavior may well lead to 
+a larger matched substring. Consider the following where being
+impatient finally leads to a longer substring:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> / <span class="Cstring">"a"</span><span class="Cnonalphakeyword">?</span>      <span class="Cnonalphakeyword">(</span><span class="Cstring">"b"</span> <span class="Cbar">|</span> <span class="Cstring">"abc"</span><span class="Cnonalphakeyword">)</span> <span class="Cas">as</span> x / <span class="Cnonalphakeyword">=</span> <span class="Cstring">"abc"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cval">val</span> x : string <span class="Cnonalphakeyword">=</span> <span class="Cstring">"ab"</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> / <span class="Cstring">"a"</span><span class="Cnonalphakeyword">?</span> <span class="Cconstructor">Lazy</span> <span class="Cnonalphakeyword">(</span><span class="Cstring">"b"</span> <span class="Cbar">|</span> <span class="Cstring">"abc"</span><span class="Cnonalphakeyword">)</span> <span class="Cas">as</span> x / <span class="Cnonalphakeyword">=</span> <span class="Cstring">"abc"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cval">val</span> x : string <span class="Cnonalphakeyword">=</span> <span class="Cstring">"abc"</span>
+</span></pre>
+
+<p>
+All you have is to understand this example...
+Remember that the matching engine:
+<ul>
+<li> proceeds always from left to right,
+<li> tries alternatives from left to right,
+<li> by default is greedy,
+<li> can be made lazy by placing <code>Lazy</code> after 
+a quantifier (<code>?</code>, <code>*</code>, <code>+</code> or 
+<code>{</code>...<code>}</code>)
+</ul>
+
+
+<h2 id=conversions>11. Shortcuts to convert substrings to ints, floats or something else</h2>
+
+<p>
+In-place conversions of the substrings can be performed, using either
+the predefined converters <code>int</code>, <code>float</code> or
+<code>option</code> or custom converters:
+<pre><span class="Cmatch">match</span> <span class="Cstring">"123/456"</span> <span class="Cwith">with</span>
+    <span class="Cconstructor">RE</span> <span class="Cnonalphakeyword">(</span>digit<span class="Cnonalphakeyword">+</span> <span class="Cas">as</span> x : int<span class="Cnonalphakeyword">)</span> <span class="Cstring">"/"</span> <span class="Cnonalphakeyword">(</span>digit<span class="Cnonalphakeyword">+</span> <span class="Cas">as</span> y : int<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> x<span class="Cnonalphakeyword">,</span> y
+  <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> 0<span class="Cnonalphakeyword">,</span> 0</pre>
+<p>
+which is equivalent to:
+<pre><span class="Cmatch">match</span> <span class="Cstring">"123/456"</span> <span class="Cwith">with</span>
+    <span class="Cconstructor">RE</span> <span class="Cnonalphakeyword">(</span>digit<span class="Cnonalphakeyword">+</span> <span class="Cas">as</span> sx<span class="Cnonalphakeyword">)</span> <span class="Cstring">"/"</span> <span class="Cnonalphakeyword">(</span>digit<span class="Cnonalphakeyword">+</span> <span class="Cas">as</span> sy<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> int_of_string sx<span class="Cnonalphakeyword">,</span> int_of_string sy
+  <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> 0<span class="Cnonalphakeyword">,</span> 0</pre>
+<p>
+However the notation is useful when used in more complex patterns:
+<pre><span class="Cmatch">match</span> 123<span class="Cnonalphakeyword">,</span> 45<span class="Cnonalphakeyword">,</span> <span class="Cstring">"6789"</span> <span class="Cwith">with</span>
+    i<span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">RE</span> digit<span class="Cnonalphakeyword">+</span> <span class="Cas">as</span> j : int<span class="Cnonalphakeyword">)</span> 
+  <span class="Cbar">|</span> j<span class="Cnonalphakeyword">,</span> i<span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> i <span class="Cnonalphakeyword">*</span> j <span class="Cnonalphakeyword">+</span> 1</pre>
+
+<p>
+Also, a matched substring can be converted to anything with a user-defined
+function or simply set to an arbitrary value.
+In practice, we might want to 
+extract some tokens that have different meanings but appear in 
+the same context:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Copen">open</span> <span class="Cconstructor">Micmatch</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"></span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> get_tokens s <span class="Cnonalphakeyword">=</span> 
+  <span class="Clet">let</span> f <span class="Cnonalphakeyword">=</span>
+    <span class="Cconstructor">MAP</span> 
+      <span class="Cnonalphakeyword">(</span><span class="Cstring">"+"</span> <span class="Cas">as</span> x <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">`</span><span class="Cconstructor">Plus</span><span class="Cnonalphakeyword">)</span>
+    <span class="Cbar">|</span> <span class="Cnonalphakeyword">(</span><span class="Cstring">"-"</span> <span class="Cas">as</span> x <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">`</span><span class="Cconstructor">Minus</span><span class="Cnonalphakeyword">)</span>
+    <span class="Cbar">|</span> <span class="Cnonalphakeyword">(</span><span class="Cstring">"/"</span> <span class="Cas">as</span> x <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">`</span><span class="Cconstructor">Div</span><span class="Cnonalphakeyword">)</span>
+    <span class="Cbar">|</span> <span class="Cnonalphakeyword">(</span><span class="Cstring">"*"</span> <span class="Cas">as</span> x <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">`</span><span class="Cconstructor">Mul</span><span class="Cnonalphakeyword">)</span>
+    <span class="Cbar">|</span> <span class="Cnonalphakeyword">(</span>digit<span class="Cnonalphakeyword">+</span> <span class="Cas">as</span> x <span class="Cnonalphakeyword">:=</span> <span class="Cfun">fun</span> s <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">`</span><span class="Cconstructor">Int</span> <span class="Cnonalphakeyword">(</span>int_of_string s<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span>
+    <span class="Cbar">|</span> <span class="Cnonalphakeyword">(</span>alpha <span class="Cnonalphakeyword">[</span>alpha digit<span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">+</span> <span class="Cas">as</span> x <span class="Cnonalphakeyword">:=</span> <span class="Cfun">fun</span> s <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">`</span><span class="Cconstructor">Ident</span> s<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> x <span class="Cin">in</span>
+  <span class="Cconstructor">Text</span><span class="Cnonalphakeyword">.</span>map 
+    <span class="Cnonalphakeyword">(</span><span class="Cfunction">function</span> <span class="Ccomment">(* removes the inter-token spaces *)</span>
+         <span class="Cconstructor">`</span><span class="Cconstructor">Text</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">RE</span> space<span class="Cnonalphakeyword">*</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> raise <span class="Cconstructor">Text</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Skip</span>
+       <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">Text</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> invalid_arg <span class="Cstring">"get_tokens"</span>
+       <span class="Cbar">|</span> token <span class="Cnonalphakeyword">-&gt;</span> token<span class="Cnonalphakeyword">)</span>
+    <span class="Cnonalphakeyword">(</span>f s<span class="Cnonalphakeyword">)</span>
+<span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cval">val</span> get_tokens :
+  string <span class="Cnonalphakeyword">-&gt;</span>
+  <span class="Cnonalphakeyword">[&gt;</span> <span class="Cconstructor">`</span><span class="Cconstructor">Div</span>
+   <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">Ident</span> <span class="Cof">of</span> string
+   <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">Int</span> <span class="Cof">of</span> int
+   <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">Minus</span>
+   <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">Mul</span>
+   <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">Plus</span>
+   <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">Text</span> <span class="Cof">of</span> string <span class="Cnonalphakeyword">]</span>
+  list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">&lt;</span><span class="Cfun">fun</span><span class="Cnonalphakeyword">&gt;</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> get_tokens <span class="Cstring">"a1 + b3 / 45"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : <span class="Cnonalphakeyword">[&gt;</span> <span class="Cconstructor">`</span><span class="Cconstructor">Div</span>
+     <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">Ident</span> <span class="Cof">of</span> string
+     <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">Int</span> <span class="Cof">of</span> int
+     <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">Minus</span>
+     <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">Mul</span>
+     <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">Plus</span>
+     <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">Text</span> <span class="Cof">of</span> string <span class="Cnonalphakeyword">]</span>
+    list
+<span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span><span class="Cconstructor">`</span><span class="Cconstructor">Ident</span> <span class="Cstring">"a1"</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">`</span><span class="Cconstructor">Plus</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">`</span><span class="Cconstructor">Ident</span> <span class="Cstring">"b3"</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">`</span><span class="Cconstructor">Div</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">`</span><span class="Cconstructor">Int</span> 45<span class="Cnonalphakeyword">]</span>
+</span></pre>
+<p>
+Note that in general ocamllex is better suited for this kind of job
+(more elegant and faster).
+
+
+<h2 id=numbers>12. How to parse numbers</h2>
+
+<p>
+There are two predefined regexps named <code>int</code> 
+and <code>float</code> which will work in a vast majority of cases
+for parsing integers and floating point numbers (yellow in the example).
+
+<p>
+In parallel, <a href="#conversions">converters</a>
+from strings to OCaml ints and floats exist (grey in the example), 
+so extracting the first 
+float from a line of text can be done like this:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> search_float <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SEARCH_FIRST</span> <span style="background:yellow">float</span> <span class="Cas">as</span> x <span style="background:silver">: float</span> <span class="Cnonalphakeyword">-&gt;</span> x <span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cval">val</span> search_float : <span class="Cnonalphakeyword">?</span>share:bool <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">?</span>pos:int <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">-&gt;</span> float <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">&lt;</span><span class="Cfun">fun</span><span class="Cnonalphakeyword">&gt;</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> search_float <span class="Cstring">"bla bla -1.234e12 bla"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : float <span class="Cnonalphakeyword">=</span> -1.234e+12
+</span></pre>
+
+<p>
+A line of numbers can be easily parsed using <code>COLLECT</code>:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> get_numbers <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">COLLECT</span> float <span class="Cas">as</span> x : float <span class="Cnonalphakeyword">-&gt;</span> x <span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cval">val</span> get_numbers : <span class="Cnonalphakeyword">?</span>pos:int <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">-&gt;</span> float list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">&lt;</span><span class="Cfun">fun</span><span class="Cnonalphakeyword">&gt;</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> get_numbers <span class="Cstring">"1.2   83  nan  -inf 5e-10"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : float list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span>1.2<span class="Cnonalphakeyword">;</span> 83.<span class="Cnonalphakeyword">;</span> nan<span class="Cnonalphakeyword">;</span> neg_infinity<span class="Cnonalphakeyword">;</span> 5e-10<span class="Cnonalphakeyword">]</span>
+</span></pre>
+
+<p>
+Reading all the numbers from each line of a given file can be done this way:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Copen">open</span> <span class="Cconstructor">Micmatch</span><span class="Cnonalphakeyword">;;</span>                          
+<span style="font-style:italic"></span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> read_file <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Text</span><span class="Cnonalphakeyword">.</span>map_lines_of_file <span class="Cnonalphakeyword">(</span><span class="Cconstructor">COLLECT</span> float <span class="Cas">as</span> x : float <span class="Cnonalphakeyword">-&gt;</span> x<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cval">val</span> read_file : string <span class="Cnonalphakeyword">-&gt;</span> float list list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">&lt;</span><span class="Cfun">fun</span><span class="Cnonalphakeyword">&gt;</span>
+</span></pre>
+
+<p>
+If you want to extract numbers from some text which contains not only
+numbers, our <code>get_numbers</code> function may recognize pieces of
+words as numbers:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> get_numbers <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">COLLECT</span> float <span class="Cas">as</span> x : float <span class="Cnonalphakeyword">-&gt;</span> x <span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cval">val</span> get_numbers : <span class="Cnonalphakeyword">?</span>pos:int <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">-&gt;</span> float list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">&lt;</span><span class="Cfun">fun</span><span class="Cnonalphakeyword">&gt;</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> get_numbers <span class="Cstring">"time = 1.2 nanoseconds, speed2=+4.5295E3"</span><span class="Cnonalphakeyword">;;</span>              
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : float list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span>1.2<span class="Cnonalphakeyword">;</span> nan<span class="Cnonalphakeyword">;</span> 2.<span class="Cnonalphakeyword">;</span> 4529.5<span class="Cnonalphakeyword">]</span>
+</span></pre>
+<p>
+This kind of problems may be solved using negative assertions (pink):
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> get_only_numbers <span class="Cnonalphakeyword">=</span> 
+    <span class="Cconstructor">COLLECT</span> <span style="background:pink"><span class="Cnonalphakeyword">&lt;</span> <span class="Cconstructor">Not</span> alnum <span class="Cnonalphakeyword">.</span> <span class="Cnonalphakeyword">&gt;</span></span> <span class="Cnonalphakeyword">(</span>float <span class="Cas">as</span> x : float<span class="Cnonalphakeyword">)</span> <span style="background:pink"><span class="Cnonalphakeyword">&lt;</span> <span class="Cnonalphakeyword">.</span> <span class="Cconstructor">Not</span> alnum <span class="Cnonalphakeyword">&gt;</span></span> <span class="Cnonalphakeyword">-&gt;</span> x <span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cval">val</span> get_only_numbers : <span class="Cnonalphakeyword">?</span>pos:int <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">-&gt;</span> float list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">&lt;</span><span class="Cfun">fun</span><span class="Cnonalphakeyword">&gt;</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> get_only_numbers <span class="Cstring">"time = 1.2 nanoseconds, speed2=+4.5295E3"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : float list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span>1.2<span class="Cnonalphakeyword">;</span> 4529.5<span class="Cnonalphakeyword">]</span>
+</span></pre>
+
+<p>
+For fun, let's look at the Perl-compatible 
+regexp that is produced and used internally:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> src <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">RE_PCRE</span> <span class="Cnonalphakeyword">&lt;</span> <span class="Cconstructor">Not</span> alnum <span class="Cnonalphakeyword">.</span> <span class="Cnonalphakeyword">&gt;</span> <span class="Cnonalphakeyword">(</span>float <span class="Cas">as</span> x : float<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">&lt;</span> <span class="Cnonalphakeyword">.</span> <span class="Cconstructor">Not</span> alnum <span class="Cnonalphakeyword">&gt;</span> <span class="Cin">in</span>
+  print_endline <span class="Cnonalphakeyword">(</span>fst src<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;;</span>
+(?&lt;![0-9A-Za-z])([+\-]?(?:(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[Ee][+\-]?[0-9]+)?|
+(?:[Nn][Aa][Nn]|[Ii][Nn][Ff])))(?![0-9A-Za-z])
+<span style="font-style:italic"></span></pre>
+
+<h2 id=capture-object>13. Packing subgroups into a single object</h2>
+
+<p>
+The <code>CAPTURE</code> macro allows to automatically pack 
+the matched subgroups into a single object (see also <code>COLLECTOBJ</code>):
+<pre><span class="Cnonalphakeyword">#</span> <span class="Cconstructor">RE</span> pair <span class="Cnonalphakeyword">=</span> <span class="Cstring">"("</span> space<span class="Cnonalphakeyword">*</span> <span class="Cnonalphakeyword">(</span>int <span class="Cas">as</span> x : int<span class="Cnonalphakeyword">)</span> space<span class="Cnonalphakeyword">*</span> <span class="Cstring">","</span>
+                space<span class="Cnonalphakeyword">*</span> <span class="Cnonalphakeyword">(</span>int <span class="Cas">as</span> y : int<span class="Cnonalphakeyword">)</span> space<span class="Cnonalphakeyword">*</span> <span class="Cstring">")"</span><span class="Cnonalphakeyword">;;</span>   
+<span class="Cnonalphakeyword">#</span> <span class="Clet">let</span> opt <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">CAPTURE</span> pair<span class="Cnonalphakeyword">)</span> <span class="Cstring">"(12, 23)"</span><span class="Cnonalphakeyword">;;</span>
+<span class="Cval">val</span> opt : <span class="Cnonalphakeyword">&lt;</span> x : int<span class="Cnonalphakeyword">;</span> y : int <span class="Cnonalphakeyword">&gt;</span> option <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Some</span> <span class="Cnonalphakeyword">&lt;</span>obj<span class="Cnonalphakeyword">&gt;</span>
+<span class="Cnonalphakeyword">#</span> <span class="Cmatch">match</span> opt <span class="Cwith">with</span>
+    <span class="Cconstructor">None</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+  <span class="Cbar">|</span> <span class="Cconstructor">Some</span> obj <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">Printf</span><span class="Cnonalphakeyword">.</span>printf <span class="Cstring">"x=%i y=%i\n"</span> obj<span class="Cnonalphakeyword">#</span>x obj<span class="Cnonalphakeyword">#</span>y<span class="Cnonalphakeyword">;;</span>    
+x<span class="Cnonalphakeyword">=</span>12 y<span class="Cnonalphakeyword">=</span>23
+<span class="Cnonalphakeyword">-</span> : unit <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span></pre>
+
+
+
+<h2 id=locate>14. How to locate a pattern in a string</h2>
+
+<p>
+<code>SEARCH</code> can be used to locate all the occurrences of a given
+pattern in a string. The positions are recorded using positional markers,
+introduced by the <code>%</code> symbol. The following program
+looks for any appearance of arrows in the string read from the standard input:
+<pre><span class="Ccomment">(* file locate_arrows.ml *)</span>
+<span class="Copen">open</span> <span class="Cconstructor">Printf</span>
+<span class="Copen">open</span> <span class="Cconstructor">Micmatch</span>
+
+<span class="Clet">let</span> locate_arrows <span class="Cnonalphakeyword">=</span> 
+  <span class="Cconstructor">SEARCH</span> %pos1 <span class="Cstring">"-&gt;"</span> %pos2 <span class="Cnonalphakeyword">-&gt;</span> 
+    printf <span class="Cstring">"Found one arrow (characters %i-%i)\n"</span> pos1 <span class="Cnonalphakeyword">(</span>pos2 <span class="Cnonalphakeyword">-</span> 1<span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">=</span> 
+  <span class="Clet">let</span> s <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Text</span><span class="Cnonalphakeyword">.</span>channel_contents stdin <span class="Cin">in</span>
+  locate_arrows s</pre>
+<p>
+Result, when applied to the source code itself:
+
+<pre>
+$ micmatch locate_arrows.ml &lt; locate_arrows.ml
+Found one arrow (characters 92-93)
+Found one arrow (characters 102-103)
+</pre>
+
+
+<p>
+The positional markers can appear anywhere in the regular expression.
+In the following example, we locate the contents of HTML tags, i.e. 
+the text contained within <code>&lt;</code> or 
+<code>&lt;/</code> and <code>&gt;</code>:
+<pre><span class="Ccomment">(* file locate_tags.ml *)</span>
+<span class="Copen">open</span> <span class="Cconstructor">Printf</span>
+<span class="Copen">open</span> <span class="Cconstructor">Micmatch</span>
+
+<span class="Clet">let</span> locate_tags <span class="Cnonalphakeyword">=</span> 
+  <span class="Cconstructor">SEARCH</span> <span class="Cstring">"&lt;"</span> <span class="Cstring">"/"</span><span class="Cnonalphakeyword">?</span> %tag_start <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">*</span> <span class="Cconstructor">Lazy</span> <span class="Cas">as</span> tag_contents<span class="Cnonalphakeyword">)</span> %tag_end <span class="Cstring">"&gt;"</span> <span class="Cnonalphakeyword">-&gt;</span> 
+    printf <span class="Cstring">"Tag %S, characters %i-%i\n"</span> tag_contents tag_start <span class="Cnonalphakeyword">(</span>tag_end <span class="Cnonalphakeyword">-</span> 1<span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">=</span> 
+  <span class="Clet">let</span> s <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Text</span><span class="Cnonalphakeyword">.</span>channel_contents stdin <span class="Cin">in</span>
+  locate_tags s</pre>
+Result:
+
+<pre>
+$ micmatch locate_tags.ml &lt; some_page.html
+Tag "html", characters 1-4
+Tag "head", characters 8-11
+Tag "title", characters 15-19
+Tag "title", characters 52-56
+...
+</pre>
+
+
+
+
+<h2 id=case>15. How to ignore the case of the characters</h2>
+
+<p>
+Use the postfix <code>~</code> operator:
+<pre><span class="Cmatch">match</span> <span class="Cstring">"OCaml"</span> <span class="Cwith">with</span>
+    <span class="Cconstructor">RE</span> <span class="Cstring">"ocaml"</span><span class="Cnonalphakeyword">~</span> <span class="Cnonalphakeyword">-&gt;</span> print_endline <span class="Cstring">"Success"</span>
+  <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> print_endline <span class="Cstring">"Failure"</span></pre>
+<p>
+The case can be ignored only locally. In our example, we can specify
+that the first letter has to be an big L but ignore the case of the rest:
+<pre><span class="Cmatch">match</span> <span class="Cstring">"OCaml"</span> <span class="Cwith">with</span> <span class="Ccomment">(* "oCaml" doesn't work here *)</span>
+    <span class="Cconstructor">RE</span> <span class="Cstring">"O"</span> <span class="Cstring">"caml"</span><span class="Cnonalphakeyword">~</span> <span class="Cnonalphakeyword">-&gt;</span> print_endline <span class="Cstring">"Success"</span>
+  <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> print_endline <span class="Cstring">"Failure"</span></pre>
+
+<h2 id=collect>16. How to get a list of the matched substrings</h2>
+
+<p>
+The <code>COLLECT</code> macro lets you do this:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> list_words <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">COLLECT</span> <span class="Cnonalphakeyword">(</span>upper <span class="Cbar">|</span> lower<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">+</span> <span class="Cas">as</span> x <span class="Cnonalphakeyword">-&gt;</span> x<span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cval">val</span> list_words : <span class="Cnonalphakeyword">?</span>pos:int <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">-&gt;</span> string list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">&lt;</span><span class="Cfun">fun</span><span class="Cnonalphakeyword">&gt;</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> list_words <span class="Cstring">"Objective Caml, version 3.08.3"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : string list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span><span class="Cstring">"Objective"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"Caml"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"version"</span><span class="Cnonalphakeyword">]</span>
+</span></pre>
+
+<p>
+<code>COLLECT</code> creates a function that can actually return a list of
+any type. For instance, if we want to extract the pairs of numbers
+from a piece of text, we would do this:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> get_int_pairs <span class="Cnonalphakeyword">=</span> 
+    <span class="Cconstructor">COLLECT</span> <span class="Cstring">"("</span> space<span class="Cnonalphakeyword">*</span> <span class="Cnonalphakeyword">(</span>digit<span class="Cnonalphakeyword">+</span> <span class="Cas">as</span> x : int<span class="Cnonalphakeyword">)</span> space<span class="Cnonalphakeyword">*</span> <span class="Cstring">","</span>
+                space<span class="Cnonalphakeyword">*</span> <span class="Cnonalphakeyword">(</span>digit<span class="Cnonalphakeyword">+</span> <span class="Cas">as</span> y : int<span class="Cnonalphakeyword">)</span> space<span class="Cnonalphakeyword">*</span> <span class="Cstring">")"</span> <span class="Cnonalphakeyword">-&gt;</span>
+       <span class="Cnonalphakeyword">(</span>x<span class="Cnonalphakeyword">,</span> y<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cval">val</span> get_int_pairs : <span class="Cnonalphakeyword">?</span>pos:int <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>int <span class="Cnonalphakeyword">*</span> int<span class="Cnonalphakeyword">)</span> list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">&lt;</span><span class="Cfun">fun</span><span class="Cnonalphakeyword">&gt;</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> get_int_pairs <span class="Cstring">"(123,456): (a,2) ( 5, 34) (0, 0)"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : <span class="Cnonalphakeyword">(</span>int <span class="Cnonalphakeyword">*</span> int<span class="Cnonalphakeyword">)</span> list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">(</span>123<span class="Cnonalphakeyword">,</span> 456<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span> <span class="Cnonalphakeyword">(</span>5<span class="Cnonalphakeyword">,</span> 34<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span> <span class="Cnonalphakeyword">(</span>0<span class="Cnonalphakeyword">,</span> 0<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">]</span>
+</span></pre>
+
+<p>
+<code>COLLECTOBJ</code>, a variant of <code>COLLECT</code>, directly builds
+an object with methods that allow access to the captured subgroups.
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Cconstructor">RE</span> pair <span class="Cnonalphakeyword">=</span> <span class="Cstring">"("</span> space<span class="Cnonalphakeyword">*</span> <span class="Cnonalphakeyword">(</span>digit<span class="Cnonalphakeyword">+</span> <span class="Cas">as</span> x : int<span class="Cnonalphakeyword">)</span> space<span class="Cnonalphakeyword">*</span> <span class="Cstring">","</span>
+                space<span class="Cnonalphakeyword">*</span> <span class="Cnonalphakeyword">(</span>digit<span class="Cnonalphakeyword">+</span> <span class="Cas">as</span> y : int<span class="Cnonalphakeyword">)</span> space<span class="Cnonalphakeyword">*</span> <span class="Cstring">")"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"></span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> get_objlist <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">COLLECTOBJ</span> pair<span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cval">val</span> get_objlist : <span class="Cnonalphakeyword">?</span>pos:int <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">&lt;</span> x : int<span class="Cnonalphakeyword">;</span> y : int <span class="Cnonalphakeyword">&gt;</span> list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">&lt;</span><span class="Cfun">fun</span><span class="Cnonalphakeyword">&gt;</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> objlist <span class="Cnonalphakeyword">=</span> get_objlist <span class="Cstring">"(123,456): (a,2) ( 5, 34) (0, 0)"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cval">val</span> objlist : <span class="Cnonalphakeyword">&lt;</span> x : int<span class="Cnonalphakeyword">;</span> y : int <span class="Cnonalphakeyword">&gt;</span> list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[&lt;</span>obj<span class="Cnonalphakeyword">&gt;</span><span class="Cnonalphakeyword">;</span> <span class="Cnonalphakeyword">&lt;</span>obj<span class="Cnonalphakeyword">&gt;</span><span class="Cnonalphakeyword">;</span> <span class="Cnonalphakeyword">&lt;</span>obj<span class="Cnonalphakeyword">&gt;]</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>iter <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> o <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">Printf</span><span class="Cnonalphakeyword">.</span>printf <span class="Cstring">"x=%i, y=%i\n"</span> o<span class="Cnonalphakeyword">#</span>x o<span class="Cnonalphakeyword">#</span>y<span class="Cnonalphakeyword">)</span> objlist<span class="Cnonalphakeyword">;;</span>
+x=123, y=456
+x=5, y=34
+x=0, y=0
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : unit <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+</span></pre>
+
+<p>
+In the example above, <code>COLLECTOBJ pair</code> is really just a shortcut
+for:
+<pre><span class="Cconstructor">COLLECT</span> pair <span class="Cnonalphakeyword">-&gt;</span> <span class="Cobject">object</span> 
+                  <span class="Cmethod">method</span> x <span class="Cnonalphakeyword">=</span> x
+                  <span class="Cmethod">method</span> y <span class="Cnonalphakeyword">=</span> y
+                <span class="Cend">end</span></pre>
+
+
+<h2 id=replace>17. How to replace specific patterns in a string</h2>
+
+<p>
+Let's say we want to remove all the comments from a file where comments
+start with any occurrence of <code>#</code> and end at the end of the line.
+For this purpose, we will use the <code>REPLACE</code> construct.
+We need to specify the regex which matches a comment, and the expression which
+will serve as a replacement text. Here we will specify the pattern that 
+matches a comment and replace it with the empty string. There we go:
+<pre><span class="Clet">let</span> remove_comments <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">REPLACE</span> <span class="Cstring">"#"</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">*</span> <span class="Cconstructor">Lazy</span> eol <span class="Cnonalphakeyword">-&gt;</span> <span class="Cstring">""</span></pre>
+<p>
+We defined a function <code>remove_comments</code> that removes the
+comments from a given string. You may notice that we use the 
+predefined <code>eol</code> pattern. <code>eol</code> does not match any 
+character: it is an assertion which matches before newline characters and at
+the end of the string. Thus, the newline characters are preserved.
+<pre>
+$ ledit micmatch
+        Objective Caml version 3.08.2
+
+        Camlp4 Parsing version 3.08.2
+
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> remove_comments <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">REPLACE</span> <span class="Cstring">"#"</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">*</span> <span class="Cconstructor">Lazy</span> eol <span class="Cnonalphakeyword">-&gt;</span> <span class="Cstring">""</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cval">val</span> remove_comments : <span class="Cnonalphakeyword">?</span>pos:int <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">&lt;</span><span class="Cfun">fun</span><span class="Cnonalphakeyword">&gt;</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> remove_comments <span class="Cstring">"Hello # comment\nWorld # another comment"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : string <span class="Cnonalphakeyword">=</span> <span class="Cstring">"Hello \nWorld "</span>
+</span></pre>
+<p>
+It works!
+See also <code>REPLACE_FIRST</code>. It does the same, except that it 
+replaces at most one occurrence of the pattern, the first one.
+<p>
+Also, you may have noticed the option <code>pos</code> argument in the type
+of <code>remove_comments</code>. You can use it to specify where the search
+for the pattern should start. The default is of course 0, i.e. the beginning
+of the string.
+
+<h2 id=split>18. How to split a string into a list of components</h2>
+
+<p>
+The <code>SPLIT</code> macro creates a function which removes the
+given pattern from a given string:
+<pre>
+$ ledit micmatch
+        Objective Caml version 3.08.3
+
+        Camlp4 Parsing version 3.08.3
+
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">SPLIT</span> space<span class="Cnonalphakeyword">*</span> <span class="Cnonalphakeyword">[</span><span class="Cstring">",;"</span><span class="Cnonalphakeyword">]</span> space<span class="Cnonalphakeyword">*</span> <span class="Cnonalphakeyword">)</span> <span class="Cstring">"a, b, c ; 1, zz;"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : string list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span><span class="Cstring">"a"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"b"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"c"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"1"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"zz"</span><span class="Cnonalphakeyword">]</span>
+</span></pre>
+
+<p>
+A function is created from the given regexp: we can name it and see
+that it accepts two optional arguments:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> split <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SPLIT</span> space<span class="Cnonalphakeyword">*</span> <span class="Cnonalphakeyword">[</span><span class="Cstring">",;"</span><span class="Cnonalphakeyword">]</span> space<span class="Cnonalphakeyword">*</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cval">val</span> split : <span class="Cnonalphakeyword">?</span>full:bool <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">?</span>pos:int <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">-&gt;</span> string list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">&lt;</span><span class="Cfun">fun</span><span class="Cnonalphakeyword">&gt;</span>
+</span></pre>
+
+<p>
+The <code>full</code> option is false by default. When true, it
+considers the regexp as a separator between substrings even if the first or
+the last one is empty:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> split <span class="Cnonalphakeyword">~</span>full:<span class="Ctrue">true</span> <span class="Cstring">"a, b, c ; 1, zz;"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : string list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span><span class="Cstring">"a"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"b"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"c"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"1"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"zz"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">""</span><span class="Cnonalphakeyword">]</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> split <span class="Cnonalphakeyword">~</span>full:<span class="Cfalse">false</span> <span class="Cstring">"a, b, c ; 1, zz;"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : string list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span><span class="Cstring">"a"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"b"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"c"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"1"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"zz"</span><span class="Cnonalphakeyword">]</span>
+</span></pre>
+
+<p>
+The <code>pos</code> option tells where to start to scan the string:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> split <span class="Cnonalphakeyword">~</span>pos:5 <span class="Cstring">"a, b, c ; 1, zz;"</span><span class="Cnonalphakeyword">;;</span>     
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : string list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span><span class="Cstring">" c"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"1"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"zz"</span><span class="Cnonalphakeyword">]</span>
+</span></pre>
+
+
+<h2 id=assertions>19. How to test characters without consuming them</h2>
+
+<p>
+These are called zero-width assertions and can be used to insert additional
+tests within a given regular expression. For instance, a word can be defined
+using one of the following expressions:
+<pre>           <span class="Ccomment">(* no letter before *)</span> <span class="Ccomment">(* the word itself *)</span> <span class="Ccomment">(* no letter after *)</span>
+<span class="Cconstructor">RE</span> word  <span class="Cnonalphakeyword">=</span>    <span class="Cnonalphakeyword">&lt;</span> <span class="Cconstructor">Not</span> alpha <span class="Cnonalphakeyword">.</span> <span class="Cnonalphakeyword">&gt;</span>            alpha<span class="Cnonalphakeyword">+</span>           <span class="Cnonalphakeyword">&lt;</span> <span class="Cnonalphakeyword">.</span> <span class="Cconstructor">Not</span> alpha <span class="Cnonalphakeyword">&gt;</span>
+<span class="Cconstructor">RE</span> word' <span class="Cnonalphakeyword">=</span>    <span class="Cnonalphakeyword">&lt;</span> <span class="Cconstructor">Not</span> alpha <span class="Cnonalphakeyword">.</span> <span class="Cnonalphakeyword">&gt;</span>            alpha<span class="Cnonalphakeyword">+</span>              <span class="Cnonalphakeyword">&lt;</span><span class="Cconstructor">Not</span> alpha<span class="Cnonalphakeyword">&gt;</span></pre>
+<p>
+Of course <code>Not</code> indicates that a given regular expression
+should not match (negative assertion).
+<p>
+Assertions can also be used in searching for overlapping patterns in 
+a string. If we want to extract all possible subsequences
+of 3 consecutive letters in a string, we will define the following
+function:
+<pre><span class="Cconstructor">RE</span> triplet <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">&lt;</span>alpha<span class="Cnonalphakeyword">{</span>3<span class="Cnonalphakeyword">}</span> <span class="Cas">as</span> x<span class="Cnonalphakeyword">&gt;</span>
+<span class="Clet">let</span> print_triplets_of_letters <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SEARCH</span> triplet <span class="Cnonalphakeyword">-&gt;</span> print_endline x</pre>
+<p>
+Check the result:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Cconstructor">RE</span> triplet <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">&lt;</span>alpha<span class="Cnonalphakeyword">{</span>3<span class="Cnonalphakeyword">}</span> <span class="Cas">as</span> x<span class="Cnonalphakeyword">&gt;</span> <span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"></span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> print_triplets_of_letters <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SEARCH</span> triplet <span class="Cnonalphakeyword">-&gt;</span> print_endline x<span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cval">val</span> print_triplets_of_letters : <span class="Cnonalphakeyword">?</span>pos:int <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">-&gt;</span> unit <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">&lt;</span><span class="Cfun">fun</span><span class="Cnonalphakeyword">&gt;</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> print_triplets_of_letters <span class="Cstring">"Hello World!"</span><span class="Cnonalphakeyword">;;</span>
+Hel
+ell
+llo
+Wor
+orl
+rld
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : unit <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+</span></pre>
+
+<p>
+OK, now you may be wondering "Why do we have to use assertions at all?".
+Well, if you don't define your pattern as an assertion, 
+the substrings that match the pattern do not overlap.
+With the same pattern as in the previous example 
+but not defined as a lookahead assertion, we get these results:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">SEARCH</span> alpha<span class="Cnonalphakeyword">{</span>3<span class="Cnonalphakeyword">}</span> <span class="Cas">as</span> x <span class="Cnonalphakeyword">-&gt;</span> print_endline x<span class="Cnonalphakeyword">)</span> <span class="Cstring">"Hello World!"</span><span class="Cnonalphakeyword">;;</span>
+Hel
+Wor
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : unit <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">SEARCH</span> alpha<span class="Cnonalphakeyword">{</span>3<span class="Cnonalphakeyword">}</span> <span class="Cas">as</span> x <span class="Cnonalphakeyword">-&gt;</span> print_endline x<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">~</span>pos:2 <span class="Cstring">"Hello World!"</span><span class="Cnonalphakeyword">;;</span>
+llo
+Wor
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : unit <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+</span></pre>
+
+
+
+<h2 id=arguments>20. How to search for a string which
+is unknown at compile-time</h2>
+
+<p>
+This is achieved by placing the given string expression
+in the regexp, preceded by the <code>@</code> symbol.
+It means that at the place where it appears in the regexp, this 
+string will be matched literally:
+
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> text <span class="Cnonalphakeyword">=</span> <span class="Cstring">"name=Max age=27 hobby=programming"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cval">val</span> text : string <span class="Cnonalphakeyword">=</span> <span class="Cstring">"name=Max age=27 hobby=programming"</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> get_field x <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SEARCH_FIRST</span> @x <span class="Cstring">"="</span> <span class="Cnonalphakeyword">(</span>alnum<span class="Cnonalphakeyword">*</span> <span class="Cas">as</span> y<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> y<span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cval">val</span> get_field : string <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">?</span>share:bool <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">?</span>pos:int <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">&lt;</span><span class="Cfun">fun</span><span class="Cnonalphakeyword">&gt;</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> get_field <span class="Cstring">"age"</span> text<span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : string <span class="Cnonalphakeyword">=</span> <span class="Cstring">"27"</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> get_field <span class="Cstring">"name"</span> text<span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : string <span class="Cnonalphakeyword">=</span> <span class="Cstring">"Max"</span>
+</span></pre>
+
+
+<h2 id=include>21. How to reuse named regexps in other files</h2>
+
+<p>
+The standard pa_macro syntax extension provides an <code>INCLUDE</code>
+instruction which is similar to <code>#include</code> for <code>cpp</code>. 
+It parses the included file using the current grammar, 
+so it is possible to use it to store Micmatch
+regexps:
+<pre>
+$ cat regexps.mml 
+RE pdb_id = digit alnum{3}
+$ micmatch pa_macro.cmo
+        Objective Caml version 3.08.4
+
+        Camlp4 Parsing version 3.08.4
+
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Cconstructor">INCLUDE</span> <span class="Cstring">"regexps.mml"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"></span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> / <span class="Cstring">"pdb"</span> <span class="Cnonalphakeyword">(</span>pdb_id <span class="Cas">as</span> id<span class="Cnonalphakeyword">)</span> <span class="Cstring">".ent"</span> eos / <span class="Cnonalphakeyword">=</span> <span class="Cstring">"pdb2pel.ent"</span><span class="Cnonalphakeyword">;;</span> 
+<span style="font-style:italic"><span class="Cval">val</span> id : string <span class="Cnonalphakeyword">=</span> <span class="Cstring">"2pel"</span>
+</span></pre>
+
+
+<h2 id=encodings>22. Does Micmatch support non-ASCII character encodings?</h2>
+
+<p>
+Yes, with some limitations.
+A char in OCaml and in Micmatch is simply a <b>byte</b> 
+(8 bits of information).
+There is no specific support for multibyte encodings such as UTFs,
+every single byte being treated independently.
+
+<p>
+If either your text-editor or the text you want to parse 
+uses an encoding which is not ASCII or Latin1,
+the simplest way to make things work is to avoid
+the square brackets for denoting alternatives between bytes.
+Instead of <code><span class="Cnonalphakeyword">[</span><span class="Cstring">"abc"</span><span class="Cnonalphakeyword">]</span></code>, write
+<code><span class="Cnonalphakeyword">(</span><span class="Cstring">"a"</span>&nbsp;<span class="Cbar">|</span>&nbsp;<span class="Cstring">"b"</span>&nbsp;<span class="Cbar">|</span>&nbsp;<span class="Cstring">"c"</span><span class="Cnonalphakeyword">)</span></code> 
+unless you know what you are doing.
+Also, avoid using the <code><span class="Cnonalphakeyword">~</span></code> operator.
+
+
+
+<h2 id=non-regexp>23. Miscellaneous non-regexp problems</h2>
+
+<p>
+Micmatch can be used for a variety of string-related problems 
+that do not strictly require the use of regexps. In many cases, the
+efficiency is suboptimal but the code is often simpler and safer
+than using traditional methods.
+
+<p>
+An <code>explode</code> function that converts a string into a list of 
+characters:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> explode <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">COLLECT</span> <span class="Cnonalphakeyword">_</span> <span class="Cas">as</span> x <span class="Cnonalphakeyword">-&gt;</span> x<span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">[</span>0<span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"></span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> explode <span class="Cstring">"Hello, World!"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : char list <span class="Cnonalphakeyword">=</span>
+<span class="Cnonalphakeyword">[</span><span class="Cstring">'H'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'e'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'l'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'l'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'o'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">','</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">' '</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'W'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'o'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'r'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'l'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'d'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'!'</span><span class="Cnonalphakeyword">]</span>
+</span></pre>
+
+<p>
+A function that splits a string into fragments of at most 3 characters:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> cut3 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">COLLECT</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">{</span>1-3<span class="Cnonalphakeyword">}</span> <span class="Cas">as</span> x <span class="Cnonalphakeyword">-&gt;</span> x<span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cval">val</span> cut3 : <span class="Cnonalphakeyword">?</span>pos:int <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">-&gt;</span> string list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">&lt;</span><span class="Cfun">fun</span><span class="Cnonalphakeyword">&gt;</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> cut3 <span class="Cstring">"Hello, World!"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : string list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span><span class="Cstring">"Hel"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"lo,"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">" Wo"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"rld"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"!"</span><span class="Cnonalphakeyword">]</span>
+</span></pre>
+
+<p>
+A function that removes everything that starts with a 
+<code><span class="Cstring">'#'</span></code> character:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> uncomment <span class="Cnonalphakeyword">=</span> <span class="Cfunction">function</span> / <span class="Cnonalphakeyword">[</span>^<span class="Cstring">'#'</span><span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">*</span> <span class="Cas">as</span> s / <span class="Cnonalphakeyword">-&gt;</span> s<span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cval">val</span> uncomment : string <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">&lt;</span><span class="Cfun">fun</span><span class="Cnonalphakeyword">&gt;</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> uncomment <span class="Cstring">"1 + 1   # = 3?"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : string <span class="Cnonalphakeyword">=</span> <span class="Cstring">"1 + 1   "</span>
+</span></pre>
+
+<p>
+A function that counts the number of occurrences of a given word in
+a text:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> count_abc s <span class="Cnonalphakeyword">=</span>
+    <span class="Clet">let</span> n <span class="Cnonalphakeyword">=</span> ref 0 <span class="Cin">in</span>
+    <span class="Cnonalphakeyword">(</span><span class="Cconstructor">SEARCH</span> <span class="Cstring">"abc"</span> <span class="Cnonalphakeyword">-&gt;</span> incr n<span class="Cnonalphakeyword">)</span> s<span class="Cnonalphakeyword">;</span>
+    !n<span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cval">val</span> count_abc : string <span class="Cnonalphakeyword">-&gt;</span> int <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">&lt;</span><span class="Cfun">fun</span><span class="Cnonalphakeyword">&gt;</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> count_abc <span class="Cstring">"xabcdjkfmabcdefabcrt"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : int <span class="Cnonalphakeyword">=</span> 3
+</span></pre>
+
+<p>
+... or, if creating a list for nothing is not a problem for you:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> count_abc2 s <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>length <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">(</span><span class="Cconstructor">COLLECT</span> <span class="Cstring">"abc"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> s<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cval">val</span> count_abc2 : string <span class="Cnonalphakeyword">-&gt;</span> int <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">&lt;</span><span class="Cfun">fun</span><span class="Cnonalphakeyword">&gt;</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> count_abc2 <span class="Cstring">"xabcdjkfmabcdefabcrt"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : int <span class="Cnonalphakeyword">=</span> 3
+</span></pre>
+
+<p>
+If the text to search is not known in advance, then you can do this:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> count word s <span class="Cnonalphakeyword">=</span>
+    <span class="Clet">let</span> n <span class="Cnonalphakeyword">=</span> ref 0 <span class="Cin">in</span>
+    <span class="Cnonalphakeyword">(</span><span class="Cconstructor">SEARCH</span> @word <span class="Cnonalphakeyword">-&gt;</span> incr n<span class="Cnonalphakeyword">)</span> s<span class="Cnonalphakeyword">;</span>
+    !n<span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cval">val</span> count : string <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">-&gt;</span> int <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">&lt;</span><span class="Cfun">fun</span><span class="Cnonalphakeyword">&gt;</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> count <span class="Cstring">"abc"</span> <span class="Cstring">"xabcdjkfmabcdefabcrt"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : int <span class="Cnonalphakeyword">=</span> 3
+</span></pre>
+
+<p>
+A function which locates a given substring:
+<pre>
+<span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> <span class="Clet">let</span> locate <span class="Cnonalphakeyword">~</span>subs <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">COLLECT</span> %start @subs %stop <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>start<span class="Cnonalphakeyword">,</span> stop<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cval">val</span> locate : subs:string <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">?</span>pos:int <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>int <span class="Cnonalphakeyword">*</span> int<span class="Cnonalphakeyword">)</span> list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">&lt;</span><span class="Cfun">fun</span><span class="Cnonalphakeyword">&gt;</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> locate <span class="Cnonalphakeyword">~</span>subs:<span class="Cstring">"xy"</span> <span class="Cstring">"xyz; xxyxy"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : <span class="Cnonalphakeyword">(</span>int <span class="Cnonalphakeyword">*</span> int<span class="Cnonalphakeyword">)</span> list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">(</span>0<span class="Cnonalphakeyword">,</span> 2<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span> <span class="Cnonalphakeyword">(</span>6<span class="Cnonalphakeyword">,</span> 8<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span> <span class="Cnonalphakeyword">(</span>8<span class="Cnonalphakeyword">,</span> 10<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">]</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> locate <span class="Cnonalphakeyword">~</span>subs:<span class="Cstring">"xx"</span> <span class="Cstring">"xxxxx"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : <span class="Cnonalphakeyword">(</span>int <span class="Cnonalphakeyword">*</span> int<span class="Cnonalphakeyword">)</span> list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">(</span>0<span class="Cnonalphakeyword">,</span> 2<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span> <span class="Cnonalphakeyword">(</span>2<span class="Cnonalphakeyword">,</span> 4<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">]</span>
+</span><span style="font-style:italic;color:red"><span class="Cnonalphakeyword">#</span></span> locate <span class="Cnonalphakeyword">~</span>subs:<span class="Cstring">""</span> <span class="Cstring">"1234"</span><span class="Cnonalphakeyword">;;</span>
+<span style="font-style:italic"><span class="Cnonalphakeyword">-</span> : <span class="Cnonalphakeyword">(</span>int <span class="Cnonalphakeyword">*</span> int<span class="Cnonalphakeyword">)</span> list <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">(</span>0<span class="Cnonalphakeyword">,</span> 0<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span> <span class="Cnonalphakeyword">(</span>1<span class="Cnonalphakeyword">,</span> 1<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span> <span class="Cnonalphakeyword">(</span>2<span class="Cnonalphakeyword">,</span> 2<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span> <span class="Cnonalphakeyword">(</span>3<span class="Cnonalphakeyword">,</span> 3<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span> <span class="Cnonalphakeyword">(</span>4<span class="Cnonalphakeyword">,</span> 4<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">]</span>
+</span></pre>
+
+
+
+
+<div id=footer>
+&copy;&nbsp;2007&nbsp;Martin&nbsp;Jambon &lt;<a href="mailto:martin@mjambon.com">martin@mjambon.com</a>&gt;
+</div>
+
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-640255-1";
+urchinTracker();
+</script>
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+<!-- 
+var sc_project=370325; 
+var sc_partition=1; 
+//-->
+</script>
+
+<script type="text/javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><p><a href="http://www.statcounter.com/"><img src="http://c2.statcounter.com/counter.php?sc_project=370325&amp;java=0" alt="counter"></a></p></noscript>
+<!-- End of StatCounter Code -->
+
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>
+latin1.ml</title>
+  <meta name="GENERATOR" content="caml2html 1.2.0">
+</head>
+<body>
+
+<pre><span style="color:#990000">(* </span>
+<span style="color:#990000">   Alphabetical ordering of ASCII or Latin1 (iso-8859-1) characters</span>
+<span style="color:#990000">   and strings of characters.</span>
+<span style="color:#990000"></span>
+<span style="color:#990000">   Function "compare" compares characters.</span>
+<span style="color:#990000">   Function "compare_strings" compares strings.</span>
+<span style="color:#990000"></span>
+<span style="color:#990000">   Uppercase/lowercase conversions are already implemented in the standard</span>
+<span style="color:#990000">   Char module.</span>
+<span style="color:#990000">*)</span>
+
+<span style="color:#990000">(* </span>
+<span style="color:#990000">   Author(s): Martin Jambon</span>
+<span style="color:#990000">   Requirements: Objective Caml (OCaml)</span>
+<span style="color:#990000">   This file is in the public domain. </span>
+<span style="color:#990000">*)</span>
+
+<span style="color:green">let</span> characters = 
+  [| <span style="color:#990000">(* non-alphanumeric characters in original order *)</span>
+    <span style="color:#aa4444">'\000'</span>; <span style="color:#aa4444">'\001'</span>; <span style="color:#aa4444">'\002'</span>; <span style="color:#aa4444">'\003'</span>; <span style="color:#aa4444">'\004'</span>; <span style="color:#aa4444">'\005'</span>; <span style="color:#aa4444">'\006'</span>; <span style="color:#aa4444">'\007'</span>; <span style="color:#aa4444">'\008'</span>;
+    <span style="color:#aa4444">'\t'</span>; <span style="color:#aa4444">'\n'</span>; <span style="color:#aa4444">'\011'</span>; <span style="color:#aa4444">'\012'</span>; <span style="color:#aa4444">'\013'</span>; <span style="color:#aa4444">'\014'</span>; <span style="color:#aa4444">'\015'</span>; <span style="color:#aa4444">'\016'</span>; <span style="color:#aa4444">'\017'</span>; <span style="color:#aa4444">'\018'</span>;
+    <span style="color:#aa4444">'\019'</span>; <span style="color:#aa4444">'\020'</span>; <span style="color:#aa4444">'\021'</span>; <span style="color:#aa4444">'\022'</span>; <span style="color:#aa4444">'\023'</span>; <span style="color:#aa4444">'\024'</span>; <span style="color:#aa4444">'\025'</span>; <span style="color:#aa4444">'\026'</span>; <span style="color:#aa4444">'\027'</span>;
+    <span style="color:#aa4444">'\028'</span>; <span style="color:#aa4444">'\029'</span>; <span style="color:#aa4444">'\030'</span>; <span style="color:#aa4444">'\031'</span>; <span style="color:#aa4444">' '</span>; <span style="color:#aa4444">'!'</span>; <span style="color:#aa4444">'"'</span>; <span style="color:#aa4444">'#'</span>; <span style="color:#aa4444">'$'</span>; <span style="color:#aa4444">'%'</span>; <span style="color:#aa4444">'&amp;'</span>; <span style="color:#aa4444">'\''</span>;
+    <span style="color:#aa4444">'('</span>; <span style="color:#aa4444">')'</span>; <span style="color:#aa4444">'*'</span>; <span style="color:#aa4444">'+'</span>; <span style="color:#aa4444">','</span>; <span style="color:#aa4444">'-'</span>; <span style="color:#aa4444">'.'</span>; <span style="color:#aa4444">'/'</span>; 
+    <span style="color:#aa4444">':'</span>; <span style="color:#aa4444">';'</span>; <span style="color:#aa4444">'&lt;'</span>; <span style="color:#aa4444">'='</span>; <span style="color:#aa4444">'&gt;'</span>; <span style="color:#aa4444">'?'</span>; <span style="color:#aa4444">'@'</span>; 
+    <span style="color:#aa4444">'['</span>; <span style="color:#aa4444">'\\'</span>; <span style="color:#aa4444">']'</span>; <span style="color:#aa4444">'^'</span>; <span style="color:#aa4444">'_'</span>; <span style="color:#aa4444">'`'</span>;
+    <span style="color:#aa4444">'{'</span>; <span style="color:#aa4444">'|'</span>; <span style="color:#aa4444">'}'</span>; <span style="color:#aa4444">'~'</span>; <span style="color:#aa4444">'\127'</span>; 
+
+    <span style="color:#aa4444">'\128'</span>;
+    <span style="color:#aa4444">'\129'</span>; <span style="color:#aa4444">'\130'</span>; <span style="color:#aa4444">'\131'</span>; <span style="color:#aa4444">'\132'</span>; <span style="color:#aa4444">'\133'</span>; <span style="color:#aa4444">'\134'</span>; <span style="color:#aa4444">'\135'</span>; <span style="color:#aa4444">'\136'</span>; <span style="color:#aa4444">'\137'</span>;
+    <span style="color:#aa4444">'\138'</span>; <span style="color:#aa4444">'\139'</span>; <span style="color:#aa4444">'\140'</span>; <span style="color:#aa4444">'\141'</span>; <span style="color:#aa4444">'\142'</span>; <span style="color:#aa4444">'\143'</span>; <span style="color:#aa4444">'\144'</span>; <span style="color:#aa4444">'\145'</span>; <span style="color:#aa4444">'\146'</span>;
+    <span style="color:#aa4444">'\147'</span>; <span style="color:#aa4444">'\148'</span>; <span style="color:#aa4444">'\149'</span>; <span style="color:#aa4444">'\150'</span>; <span style="color:#aa4444">'\151'</span>; <span style="color:#aa4444">'\152'</span>; <span style="color:#aa4444">'\153'</span>; <span style="color:#aa4444">'\154'</span>; <span style="color:#aa4444">'\155'</span>;
+    <span style="color:#aa4444">'\156'</span>; <span style="color:#aa4444">'\157'</span>; <span style="color:#aa4444">'\158'</span>; <span style="color:#aa4444">'\159'</span>; <span style="color:#aa4444">' '</span>; <span style="color:#aa4444">'¡'</span>; <span style="color:#aa4444">'¢'</span>; <span style="color:#aa4444">'£'</span>; <span style="color:#aa4444">'¤'</span>; <span style="color:#aa4444">'¥'</span>; <span style="color:#aa4444">'¦'</span>; <span style="color:#aa4444">'§'</span>;
+    <span style="color:#aa4444">'¨'</span>; <span style="color:#aa4444">'©'</span>; <span style="color:#aa4444">'ª'</span>; <span style="color:#aa4444">'«'</span>; <span style="color:#aa4444">'¬'</span>; <span style="color:#aa4444">'­'</span>; <span style="color:#aa4444">'®'</span>; <span style="color:#aa4444">'¯'</span>; <span style="color:#aa4444">'°'</span>; <span style="color:#aa4444">'±'</span>; <span style="color:#aa4444">'´'</span>; <span style="color:#aa4444">'µ'</span>; <span style="color:#aa4444">'¶'</span>;
+    <span style="color:#aa4444">'·'</span>; <span style="color:#aa4444">'¸'</span>; <span style="color:#aa4444">'º'</span>; <span style="color:#aa4444">'»'</span>; <span style="color:#aa4444">'¿'</span>;
+    <span style="color:#aa4444">'×'</span>; <span style="color:#aa4444">'÷'</span>;
+    
+    <span style="color:#990000">(* digits and numbers *)</span>
+    <span style="color:#aa4444">'0'</span>; <span style="color:#aa4444">'¼'</span>; <span style="color:#aa4444">'½'</span>; <span style="color:#aa4444">'¾'</span>; <span style="color:#aa4444">'1'</span>; <span style="color:#aa4444">'¹'</span>; <span style="color:#aa4444">'2'</span>; <span style="color:#aa4444">'²'</span>; <span style="color:#aa4444">'3'</span>; <span style="color:#aa4444">'³'</span>; <span style="color:#aa4444">'4'</span>; 
+    <span style="color:#aa4444">'5'</span>; <span style="color:#aa4444">'6'</span>; <span style="color:#aa4444">'7'</span>; <span style="color:#aa4444">'8'</span>; <span style="color:#aa4444">'9'</span>; 
+    
+    <span style="color:#990000">(* letters *)</span>
+    <span style="color:#aa4444">'A'</span>; <span style="color:#aa4444">'À'</span>; <span style="color:#aa4444">'Á'</span>; <span style="color:#aa4444">'Â'</span>; <span style="color:#aa4444">'Ã'</span>; <span style="color:#aa4444">'Ä'</span>; <span style="color:#aa4444">'Å'</span>; <span style="color:#aa4444">'Æ'</span>; <span style="color:#aa4444">'a'</span>; <span style="color:#aa4444">'à'</span>; <span style="color:#aa4444">'á'</span>; <span style="color:#aa4444">'â'</span>; <span style="color:#aa4444">'ã'</span>; 
+    <span style="color:#aa4444">'ä'</span>; <span style="color:#aa4444">'å'</span>; <span style="color:#aa4444">'æ'</span>; 
+    <span style="color:#aa4444">'B'</span>; <span style="color:#aa4444">'b'</span>; 
+    <span style="color:#aa4444">'C'</span>; <span style="color:#aa4444">'Ç'</span>; <span style="color:#aa4444">'c'</span>; <span style="color:#aa4444">'ç'</span>; 
+    <span style="color:#aa4444">'D'</span>; <span style="color:#aa4444">'d'</span>; 
+    <span style="color:#aa4444">'E'</span>; <span style="color:#aa4444">'È'</span>; <span style="color:#aa4444">'É'</span>; <span style="color:#aa4444">'Ê'</span>; <span style="color:#aa4444">'Ë'</span>; <span style="color:#aa4444">'e'</span>; <span style="color:#aa4444">'è'</span>; <span style="color:#aa4444">'é'</span>; <span style="color:#aa4444">'ê'</span>; <span style="color:#aa4444">'ë'</span>; 
+    
+    <span style="color:#aa4444">'F'</span>; <span style="color:#aa4444">'f'</span>; <span style="color:#aa4444">'G'</span>; <span style="color:#aa4444">'g'</span>; <span style="color:#aa4444">'H'</span>; <span style="color:#aa4444">'h'</span>; 
+    <span style="color:#aa4444">'I'</span>; <span style="color:#aa4444">'i'</span>; <span style="color:#aa4444">'Ì'</span>; <span style="color:#aa4444">'Í'</span>; <span style="color:#aa4444">'Î'</span>; <span style="color:#aa4444">'Ï'</span>; <span style="color:#aa4444">'ì'</span>; <span style="color:#aa4444">'í'</span>; <span style="color:#aa4444">'î'</span>; <span style="color:#aa4444">'ï'</span>; 
+    <span style="color:#aa4444">'J'</span>; <span style="color:#aa4444">'j'</span>; <span style="color:#aa4444">'K'</span>; <span style="color:#aa4444">'k'</span>; <span style="color:#aa4444">'L'</span>; <span style="color:#aa4444">'l'</span>; <span style="color:#aa4444">'M'</span>; <span style="color:#aa4444">'m'</span>; <span style="color:#aa4444">'N'</span>; <span style="color:#aa4444">'Ñ'</span>; <span style="color:#aa4444">'n'</span>; <span style="color:#aa4444">'ñ'</span>; 
+    
+    <span style="color:#aa4444">'O'</span>; <span style="color:#aa4444">'Ò'</span>; <span style="color:#aa4444">'Ó'</span>; <span style="color:#aa4444">'Ô'</span>; <span style="color:#aa4444">'Õ'</span>; <span style="color:#aa4444">'Ö'</span>; <span style="color:#aa4444">'Ø'</span>; <span style="color:#aa4444">'o'</span>; <span style="color:#aa4444">'ò'</span>;
+    <span style="color:#aa4444">'ó'</span>; <span style="color:#aa4444">'ô'</span>; <span style="color:#aa4444">'õ'</span>; <span style="color:#aa4444">'ö'</span>; <span style="color:#aa4444">'ø'</span>; 
+    
+    <span style="color:#aa4444">'P'</span>; <span style="color:#aa4444">'p'</span>; <span style="color:#aa4444">'Q'</span>; <span style="color:#aa4444">'q'</span>; <span style="color:#aa4444">'R'</span>; <span style="color:#aa4444">'r'</span>; <span style="color:#aa4444">'S'</span>; <span style="color:#aa4444">'ß'</span>; <span style="color:#aa4444">'s'</span>; <span style="color:#aa4444">'T'</span>; <span style="color:#aa4444">'t'</span>; 
+    <span style="color:#aa4444">'U'</span>; <span style="color:#aa4444">'Ù'</span>; <span style="color:#aa4444">'Ú'</span>; <span style="color:#aa4444">'Û'</span>; <span style="color:#aa4444">'Ü'</span>; <span style="color:#aa4444">'u'</span>; <span style="color:#aa4444">'ù'</span>; <span style="color:#aa4444">'ú'</span>; <span style="color:#aa4444">'û'</span>; <span style="color:#aa4444">'ü'</span>; 
+    
+    <span style="color:#aa4444">'V'</span>; <span style="color:#aa4444">'v'</span>; <span style="color:#aa4444">'W'</span>; <span style="color:#aa4444">'w'</span>; <span style="color:#aa4444">'X'</span>; <span style="color:#aa4444">'x'</span>; 
+
+    <span style="color:#aa4444">'Y'</span>; <span style="color:#aa4444">'Ý'</span>; <span style="color:#aa4444">'y'</span>; <span style="color:#aa4444">'ÿ'</span>; <span style="color:#aa4444">'ý'</span>; 
+
+    <span style="color:#aa4444">'Z'</span>; <span style="color:#aa4444">'z'</span>; 
+   
+    <span style="color:#990000">(* old English letters *)</span>
+    <span style="color:#aa4444">'Ð'</span>; <span style="color:#aa4444">'ð'</span>; <span style="color:#aa4444">'Þ'</span>; <span style="color:#aa4444">'þ'</span> |]
+
+<span style="color:green">let</span> _ = <span style="color:#cc9900">assert</span> (<span style="color:#0033cc">Array</span>.length characters = 256)
+
+<span style="color:green">let</span> tbl = 
+  <span style="color:green">let</span> a = <span style="color:#0033cc">Array</span>.make 256 0 <span style="color:green">in</span>
+  <span style="color:#77aaaa">for</span> i = 0 <span style="color:#77aaaa">to</span> 255 <span style="color:#77aaaa">do</span>
+    a.(<span style="color:#0033cc">Char</span>.code characters.(i)) &lt;- i
+  <span style="color:#77aaaa">done</span>;
+  a
+
+<span style="color:green">let</span> compare c1 c2 =
+  <span style="color:#0033cc">Pervasives</span>.compare tbl.(<span style="color:#0033cc">Char</span>.code c1) tbl.(<span style="color:#0033cc">Char</span>.code c2)
+
+<span style="color:green">exception</span> <span style="color:#0033cc">Int</span> <span style="color:green">of</span> int
+
+<span style="color:green">let</span> compare_strings s1 s2 =
+  <span style="color:green">let</span> len1 = <span style="color:#0033cc">String</span>.length s1 
+  <span style="color:green">and</span> len2 = <span style="color:#0033cc">String</span>.length s2 <span style="color:green">in</span>
+  <span style="color:#77aaaa">try</span>
+    <span style="color:#77aaaa">for</span> i = 0 <span style="color:#77aaaa">to</span> min len1 len2 - 1 <span style="color:#77aaaa">do</span>
+      <span style="color:green">let</span> x = compare s1.[i] s2.[i] <span style="color:green">in</span>
+      <span style="color:#77aaaa">if</span> x &lt;&gt; 0 <span style="color:#77aaaa">then</span> raise (<span style="color:#0033cc">Int</span> x)
+    <span style="color:#77aaaa">done</span>;
+    <span style="color:#0033cc">Pervasives</span>.compare len1 len2
+  <span style="color:#77aaaa">with</span> <span style="color:#0033cc">Int</span> x -&gt; x
+</pre>
+</body>
+</html>

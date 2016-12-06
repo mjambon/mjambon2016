@@ -1,0 +1,95 @@
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<link rel="Start" href="index.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Opaque" rel="Chapter" href="Opaque.html"><link title="Opaque ints " rel="Section" href="#6_Opaqueints">
+<link title="Opaque strings " rel="Section" href="#6_Opaquestrings">
+<title>Opaque</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a href="index.html">Up</a>
+&nbsp;</div>
+<center><h1>Module <a href="type_Opaque.html">Opaque</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> Opaque: <code class="type">sig  end</code></pre><div class="info">
+Opaque types for <code class="code">int</code> and <code class="code">string</code>.
+This module provides a convenient way to convert <code class="code">int</code> or <code class="code">string</code> types
+to abstract types.
+<p>
+
+Motivation: type <code class="code">int</code> may be used for representing several kinds of 
+data. Confusion is easy, so we often need to make it abstract, 
+while keeping:<ul>
+<li>the functions that used to work with type <code class="code">int</code></li>
+<li>efficiency</li>
+<li>no creation of specific modules</li>
+</ul>
+
+This solution was suggested by Jacques Garrigue.
+What the user has to do is <code class="code">open Opaque</code> and then
+use a type parameter to define
+the specialized version of <code class="code">int</code> or <code class="code">string</code>.
+We will write the type declarations as
+<code class="code">type port = [`Port] int_t</code> or <code class="code">type date = [`Date] int_t</code>.
+Data is converted with the <code class="code">int_t</code> and <code class="code">t_int</code> polymorphic 
+functions as in <code class="code">let port : port = int_t 0</code>.<br>
+<b>Author(s): </b>Martin Jambon<br>
+</div>
+<hr width="100%">
+<br>
+<br>
+<a name="6_Opaqueints"></a>
+<table cellpadding=5 cellspacing=5 width="100%">
+<tr class="title6"><td><div align=center>
+<span class="title6">Opaque <code class="code">int</code>s </span>
+</div>
+</td>
+</tr>
+</table>
+<br><br>
+<pre><span class="keyword">type</span> <a name="TYPEint_t"></a><code class="type">'a</code> int_t </pre>
+<div class="info">
+data of type <code class="code">'a int_t</code> has the same internal representation
+   as type <code class="code">int</code>.<br>
+</div>
+
+<pre><span class="keyword">val</span> <a name="VALint_t"></a>int_t : <code class="type">int -> 'a <a href="Opaque.html#TYPEint_t">int_t</a></code></pre><pre><span class="keyword">val</span> <a name="VALt_int"></a>t_int : <code class="type">'a <a href="Opaque.html#TYPEint_t">int_t</a> -> int</code></pre><pre><span class="keyword">val</span> <a name="VALany_int"></a>any_int : <code class="type">'a <a href="Opaque.html#TYPEint_t">int_t</a> -> 'b <a href="Opaque.html#TYPEint_t">int_t</a></code></pre><div class="info">
+<code class="code">int_t</code>, <code class="code">t_int</code> and <code class="code">any_int</code> are type conversion functions.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALadd"></a>add : <code class="type">'a <a href="Opaque.html#TYPEint_t">int_t</a> -> 'a <a href="Opaque.html#TYPEint_t">int_t</a> -> 'a <a href="Opaque.html#TYPEint_t">int_t</a></code></pre><pre><span class="keyword">val</span> <a name="VALsub"></a>sub : <code class="type">'a <a href="Opaque.html#TYPEint_t">int_t</a> -> 'a <a href="Opaque.html#TYPEint_t">int_t</a> -> 'a <a href="Opaque.html#TYPEint_t">int_t</a></code></pre><pre><span class="keyword">val</span> <a name="VALmul"></a>mul : <code class="type">'a <a href="Opaque.html#TYPEint_t">int_t</a> -> 'a <a href="Opaque.html#TYPEint_t">int_t</a> -> 'a <a href="Opaque.html#TYPEint_t">int_t</a></code></pre><pre><span class="keyword">val</span> <a name="VALdiv"></a>div : <code class="type">'a <a href="Opaque.html#TYPEint_t">int_t</a> -> 'a <a href="Opaque.html#TYPEint_t">int_t</a> -> 'a <a href="Opaque.html#TYPEint_t">int_t</a></code></pre><pre><span class="keyword">val</span> <a name="VALneg"></a>neg : <code class="type">'a <a href="Opaque.html#TYPEint_t">int_t</a> -> 'a <a href="Opaque.html#TYPEint_t">int_t</a></code></pre><div class="info">
+<code class="code">add</code>, <code class="code">sub</code>, <code class="code">mul</code>, <code class="code">div</code> and <code class="code">neg</code> are the equivalents
+  of <code class="code">( + )</code>, <code class="code">( - )</code>, <code class="code">( * )</code>, <code class="code">( / )</code> and <code class="code">( ~- )</code>.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALsuccessor"></a>successor : <code class="type">'a <a href="Opaque.html#TYPEint_t">int_t</a> -> 'a <a href="Opaque.html#TYPEint_t">int_t</a></code></pre><pre><span class="keyword">val</span> <a name="VALpredecessor"></a>predecessor : <code class="type">'a <a href="Opaque.html#TYPEint_t">int_t</a> -> 'a <a href="Opaque.html#TYPEint_t">int_t</a></code></pre><pre><span class="keyword">val</span> <a name="VALincrement"></a>increment : <code class="type">'a <a href="Opaque.html#TYPEint_t">int_t</a> Pervasives.ref -> unit</code></pre><div class="info">
+<code class="code">successor</code>, <code class="code">predecessor</code> and <code class="code">increment</code> are the equivalents
+  of <code class="code">( + )</code>, <code class="code">( - )</code>, <code class="code">( * )</code>, <code class="code">( / )</code> and <code class="code">( ~- )</code>.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALprint_int_t"></a>print_int_t : <code class="type">'a <a href="Opaque.html#TYPEint_t">int_t</a> -> unit</code></pre><br>
+<br>
+<a name="6_Opaquestrings"></a>
+<table cellpadding=5 cellspacing=5 width="100%">
+<tr class="title6"><td><div align=center>
+<span class="title6">Opaque <code class="code">string</code>s </span>
+</div>
+</td>
+</tr>
+</table>
+<br><br>
+<pre><span class="keyword">type</span> <a name="TYPEstring_t"></a><code class="type">'a</code> string_t </pre>
+<div class="info">
+data of type <code class="code">'a string_t</code> has the same internal representation
+   as type <code class="code">string</code>.<br>
+</div>
+
+<pre><span class="keyword">val</span> <a name="VALstring_t"></a>string_t : <code class="type">string -> 'a <a href="Opaque.html#TYPEstring_t">string_t</a></code></pre><pre><span class="keyword">val</span> <a name="VALt_string"></a>t_string : <code class="type">'a <a href="Opaque.html#TYPEstring_t">string_t</a> -> string</code></pre><pre><span class="keyword">val</span> <a name="VALany_string"></a>any_string : <code class="type">'a <a href="Opaque.html#TYPEstring_t">string_t</a> -> 'b <a href="Opaque.html#TYPEstring_t">string_t</a></code></pre><div class="info">
+<code class="code">int_string</code>, <code class="code">t_string</code> and <code class="code">any_string</code> are type conversion functions.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALconcat"></a>concat : <code class="type">'a <a href="Opaque.html#TYPEstring_t">string_t</a> -> 'a <a href="Opaque.html#TYPEstring_t">string_t</a> -> 'a <a href="Opaque.html#TYPEstring_t">string_t</a></code></pre><pre><span class="keyword">val</span> <a name="VALconcat_list"></a>concat_list : <code class="type">string -> 'a <a href="Opaque.html#TYPEstring_t">string_t</a> list -> 'a <a href="Opaque.html#TYPEstring_t">string_t</a></code></pre><div class="info">
+<code class="code">concat</code> and <code class="code">concat_list</code> are equivalents of <code class="code">( ^ )</code> 
+and <code class="code">String.concat</code>.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALprint_string_t"></a>print_string_t : <code class="type">'a <a href="Opaque.html#TYPEstring_t">string_t</a> -> unit</code></pre></body></html>

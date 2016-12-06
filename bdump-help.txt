@@ -1,0 +1,14 @@
+Usage: ./bdump [file] [options]
+  -d file
+          File containing words to add to the dictionary, one per line
+  -h file
+          Location of the dictionary used for unhashing.
+          Default: $HOME/.bdump-dict on Unix,
+                   $HOMEPATH\_bdump-dict on Windows
+  -w word1,word2,...
+          Comma-separated list of words to add to the dictionary
+  -x 
+          Do not load nor update the dictionary used for name
+          unhashing.
+  -help  Display this list of options
+  --help  Display this list of options

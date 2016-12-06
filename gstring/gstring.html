@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>
+gstring.mli, gstring.ml, pa_freeze.ml</title>
+  <meta name="GENERATOR" content="caml2html 1.2.3">
+</head>
+<body>
+<h1><a name="gstring.mli"></a><code>gstring.mli</code></h1>
+
+<pre><span style="background-color:silver">   1:</span> <span style="color:#990000">(* </span>
+<span style="background-color:silver">   2:</span> <span style="color:#990000">   Gstring: mixed mutable and immutable string type based on the standard </span>
+<span style="background-color:silver">   3:</span> <span style="color:#990000">   string type.</span>
+<span style="background-color:silver">   4:</span> <span style="color:#990000"></span>
+<span style="background-color:silver">   5:</span> <span style="color:#990000">   This is just a demonstration, but anyone is welcome to use</span>
+<span style="background-color:silver">   6:</span> <span style="color:#990000">   and modify any part of this package.</span>
+<span style="background-color:silver">   7:</span> <span style="color:#990000"></span>
+<span style="background-color:silver">   8:</span> <span style="color:#990000">   Author: Martin Jambon</span>
+<span style="background-color:silver">   9:</span> <span style="color:#990000">   Date: May 2006</span>
+<span style="background-color:silver">  10:</span> <span style="color:#990000">*)</span>
+<span style="background-color:silver">  11:</span> 
+<span style="background-color:silver">  12:</span> <span style="color:#990000">(* Polymorphic string type which includes read-only, write-only and read-write</span>
+<span style="background-color:silver">  13:</span> <span style="color:#990000">   string types: *)</span>
+<span style="background-color:silver">  14:</span> <span style="color:green">type</span> 'a gstring <span style="color:green">constraint</span> 'a = [&lt; <span style="color:#0033cc">`R</span> <span style="color:#77aaaa">|</span> <span style="color:#0033cc">`W</span> ]
+<span style="background-color:silver">  15:</span> 
+<span style="background-color:silver">  16:</span> <span style="color:#990000">(* Other polymorphic types. Readability refers to the content of the string,</span>
+<span style="background-color:silver">  17:</span> <span style="color:#990000">   not its length which is always accessible, even in the write-only type. *)</span>
+<span style="background-color:silver">  18:</span> <span style="color:green">type</span> 'a readable = 'a gstring <span style="color:green">constraint</span> 'a = [&gt; <span style="color:#0033cc">`R</span>]
+<span style="background-color:silver">  19:</span> <span style="color:green">type</span> 'a writable = 'a gstring <span style="color:green">constraint</span> 'a = [&gt; <span style="color:#0033cc">`W</span>]
+<span style="background-color:silver">  20:</span> 
+<span style="background-color:silver">  21:</span> <span style="color:#990000">(* Non polymorphic types: read-only, read-write and write-only *)</span>
+<span style="background-color:silver">  22:</span> <span style="color:green">type</span> rstring = [ <span style="color:#0033cc">`R</span> ] gstring
+<span style="background-color:silver">  23:</span> <span style="color:green">type</span> rwstring = [ <span style="color:#0033cc">`R</span> <span style="color:#77aaaa">|</span> <span style="color:#0033cc">`W</span> ] gstring
+<span style="background-color:silver">  24:</span> <span style="color:green">type</span> wstring = [ <span style="color:#0033cc">`W</span> ] gstring
+<span style="background-color:silver">  25:</span> 
+<span style="background-color:silver">  26:</span> <span style="color:#990000">(* The goal of this module is to provide constant strings, </span>
+<span style="background-color:silver">  27:</span> <span style="color:#990000">   so it is the "default" type: *)</span>
+<span style="background-color:silver">  28:</span> <span style="color:green">type</span> t = rstring
+<span style="background-color:silver">  29:</span> 
+<span style="background-color:silver">  30:</span> <span style="color:#990000">(* Type conversions from/to the standard string type (shared, no copy) *)</span>
+<span style="background-color:silver">  31:</span> <span style="color:green">external</span> import : string -&gt; 'a writable = <span style="color:#aa4444">"%identity"</span>
+<span style="background-color:silver">  32:</span> <span style="color:green">external</span> export : 'a writable -&gt; string = <span style="color:#aa4444">"%identity"</span>
+<span style="background-color:silver">  33:</span> 
+<span style="background-color:silver">  34:</span> <span style="color:#990000">(* Conversions involving copy (safe) *)</span>
+<span style="background-color:silver">  35:</span> <span style="color:green">val</span> freeze : 'a readable -&gt; rstring
+<span style="background-color:silver">  36:</span> <span style="color:green">val</span> freeze_import : string -&gt; rstring
+<span style="background-color:silver">  37:</span> 
+<span style="background-color:silver">  38:</span> <span style="color:#990000">(* Conversion without copy! The argument is physically the same</span>
+<span style="background-color:silver">  39:</span> <span style="color:#990000">   as the result. *)</span>
+<span style="background-color:silver">  40:</span> <span style="color:green">external</span> unsafe_freeze : 'a readable -&gt; rstring = <span style="color:#aa4444">"%identity"</span>
+<span style="background-color:silver">  41:</span> <span style="color:green">external</span> unsafe_import : string -&gt; rstring = <span style="color:#aa4444">"%identity"</span>
+<span style="background-color:silver">  42:</span> 
+<span style="background-color:silver">  43:</span> <span style="color:#990000">(* Shortcuts *)</span>
+<span style="background-color:silver">  44:</span> <span style="color:green">module</span> <span style="color:#0033cc">Op</span> :
+<span style="background-color:silver">  45:</span> <span style="color:#990099">sig</span>
+<span style="background-color:silver">  46:</span>   <span style="color:#990000">(* import + freeze *)</span>
+<span style="background-color:silver">  47:</span>   <span style="color:green">val</span> ( !! ) : string -&gt; rstring
+<span style="background-color:silver">  48:</span>   <span style="color:#990000">(* import *)</span>
+<span style="background-color:silver">  49:</span>   <span style="color:green">external</span> ( !% ) : string -&gt; 'a writable = <span style="color:#aa4444">"%identity"</span>
+<span style="background-color:silver">  50:</span>   <span style="color:#990000">(* mixed append *)</span>
+<span style="background-color:silver">  51:</span>   <span style="color:green">val</span> ( ^% ) : 'a readable -&gt; 'b readable -&gt; rstring
+<span style="background-color:silver">  52:</span> <span style="color:#990099">end</span>
+<span style="background-color:silver">  53:</span> 
+<span style="background-color:silver">  54:</span> <span style="color:#990000">(* Copy (export) *)</span>
+<span style="background-color:silver">  55:</span> <span style="color:green">val</span> copy : 'a readable -&gt; string
+<span style="background-color:silver">  56:</span> 
+<span style="background-color:silver">  57:</span> <span style="color:#990000">(* Stuff from Pervasives *)</span>
+<span style="background-color:silver">  58:</span> <span style="color:green">val</span> output : out_channel -&gt; 'a readable -&gt; unit
+<span style="background-color:silver">  59:</span> <span style="color:green">val</span> print : 'a readable -&gt; unit
+<span style="background-color:silver">  60:</span> <span style="color:green">val</span> print_endline : 'a readable -&gt; unit
+<span style="background-color:silver">  61:</span> <span style="color:green">val</span> append : 'a readable -&gt; 'a readable -&gt; 'a readable
+<span style="background-color:silver">  62:</span> 
+<span style="background-color:silver">  63:</span> <span style="color:#990000">(* Modified interface of String *)</span>
+<span style="background-color:silver">  64:</span> <span style="color:green">external</span> length : 'a gstring -&gt; int = <span style="color:#aa4444">"%string_length"</span>
+<span style="background-color:silver">  65:</span> <span style="color:green">external</span> get : 'a readable -&gt; int -&gt; char = <span style="color:#aa4444">"%string_safe_get"</span>
+<span style="background-color:silver">  66:</span> <span style="color:green">external</span> set : 'a writable -&gt; int -&gt; char -&gt; unit = <span style="color:#aa4444">"%string_safe_set"</span>
+<span style="background-color:silver">  67:</span> <span style="color:green">external</span> create : int -&gt; 'a writable = <span style="color:#aa4444">"caml_create_string"</span>
+<span style="background-color:silver">  68:</span> <span style="color:green">val</span> make : int -&gt; char -&gt; rstring
+<span style="background-color:silver">  69:</span> <span style="color:green">val</span> sub : 'a readable -&gt; int -&gt; int -&gt; 'a readable
+<span style="background-color:silver">  70:</span> <span style="color:green">val</span> fill : 'a writable -&gt; int -&gt; int -&gt; char -&gt; unit
+<span style="background-color:silver">  71:</span> <span style="color:green">val</span> blit : 'a readable -&gt; int -&gt; 'b writable -&gt; int -&gt; int -&gt; unit
+<span style="background-color:silver">  72:</span> <span style="color:green">val</span> concat : 'a readable -&gt; 'b readable list -&gt; 'b readable
+<span style="background-color:silver">  73:</span> <span style="color:green">val</span> iter : (char -&gt; unit) -&gt; 'a readable -&gt; unit
+<span style="background-color:silver">  74:</span> <span style="color:green">val</span> escaped : 'a readable -&gt; 'a readable
+<span style="background-color:silver">  75:</span> <span style="color:green">val</span> index : 'a readable -&gt; char -&gt; int
+<span style="background-color:silver">  76:</span> <span style="color:green">val</span> rindex : 'a readable -&gt; char -&gt; int
+<span style="background-color:silver">  77:</span> <span style="color:green">val</span> index_from : 'a readable -&gt; int -&gt; char -&gt; int
+<span style="background-color:silver">  78:</span> <span style="color:green">val</span> rindex_from : 'a readable -&gt; int -&gt; char -&gt; int
+<span style="background-color:silver">  79:</span> <span style="color:green">val</span> contains : 'a readable -&gt; char -&gt; bool
+<span style="background-color:silver">  80:</span> <span style="color:green">val</span> contains_from : 'a readable -&gt; int -&gt; char -&gt; bool
+<span style="background-color:silver">  81:</span> <span style="color:green">val</span> rcontains_from : 'a readable -&gt; int -&gt; char -&gt; bool
+<span style="background-color:silver">  82:</span> <span style="color:green">val</span> uppercase : 'a readable -&gt; 'a readable
+<span style="background-color:silver">  83:</span> <span style="color:green">val</span> lowercase : 'a readable -&gt; 'a readable
+<span style="background-color:silver">  84:</span> <span style="color:green">val</span> capitalize : 'a readable -&gt; 'a readable
+<span style="background-color:silver">  85:</span> <span style="color:green">val</span> uncapitalize : 'a readable -&gt; 'a readable
+<span style="background-color:silver">  86:</span> <span style="color:green">val</span> compare : 'a readable -&gt; 'a readable -&gt; int
+<span style="background-color:silver">  87:</span> <span style="color:green">external</span> unsafe_get : 'a readable -&gt; int -&gt; char = <span style="color:#aa4444">"%string_unsafe_get"</span>
+<span style="background-color:silver">  88:</span> <span style="color:green">external</span> unsafe_set : 'a writable -&gt; int -&gt; char -&gt; unit = <span style="color:#aa4444">"%string_unsafe_set"</span>
+<span style="background-color:silver">  89:</span> <span style="color:green">external</span> unsafe_blit : 'a readable -&gt; int -&gt; 'b writable -&gt; int -&gt; int -&gt; unit
+<span style="background-color:silver">  90:</span>   = <span style="color:#aa4444">"caml_blit_string"</span> <span style="color:#aa4444">"noalloc"</span>
+<span style="background-color:silver">  91:</span> <span style="color:green">external</span> unsafe_fill : 'a writable -&gt; int -&gt; int -&gt; char -&gt; unit
+<span style="background-color:silver">  92:</span>   = <span style="color:#aa4444">"caml_fill_string"</span> <span style="color:#aa4444">"noalloc"</span>
+</pre>
+
+<hr>
+<h1><a name="gstring.ml"></a><code>gstring.ml</code></h1>
+
+<pre><span style="background-color:silver">   1:</span> <span style="color:green">type</span> 'a gstring = string <span style="color:green">constraint</span> 'a = [&lt; <span style="color:#0033cc">`R</span> <span style="color:#77aaaa">|</span> <span style="color:#0033cc">`W</span> ]
+<span style="background-color:silver">   2:</span> 
+<span style="background-color:silver">   3:</span> <span style="color:green">type</span> 'a readable = 'a gstring <span style="color:green">constraint</span> 'a = [&gt; <span style="color:#0033cc">`R</span>]
+<span style="background-color:silver">   4:</span> <span style="color:green">type</span> 'a writable = 'a gstring <span style="color:green">constraint</span> 'a = [&gt; <span style="color:#0033cc">`W</span>]
+<span style="background-color:silver">   5:</span> 
+<span style="background-color:silver">   6:</span> <span style="color:green">type</span> rstring = [ <span style="color:#0033cc">`R</span> ] gstring
+<span style="background-color:silver">   7:</span> <span style="color:green">type</span> rwstring = [ <span style="color:#0033cc">`R</span> <span style="color:#77aaaa">|</span> <span style="color:#0033cc">`W</span> ] gstring
+<span style="background-color:silver">   8:</span> <span style="color:green">type</span> wstring = [ <span style="color:#0033cc">`W</span> ] gstring
+<span style="background-color:silver">   9:</span> 
+<span style="background-color:silver">  10:</span> <span style="color:green">external</span> import : string -&gt; rwstring = <span style="color:#aa4444">"%identity"</span>
+<span style="background-color:silver">  11:</span> <span style="color:green">external</span> export : rwstring -&gt; string = <span style="color:#aa4444">"%identity"</span>
+<span style="background-color:silver">  12:</span> 
+<span style="background-color:silver">  13:</span> <span style="color:green">let</span> freeze = <span style="color:#0033cc">String</span>.copy
+<span style="background-color:silver">  14:</span> <span style="color:green">let</span> freeze_import = <span style="color:#0033cc">String</span>.copy
+<span style="background-color:silver">  15:</span> <span style="color:green">external</span> unsafe_freeze : 'a readable -&gt; rstring = <span style="color:#aa4444">"%identity"</span>
+<span style="background-color:silver">  16:</span> <span style="color:green">external</span> unsafe_import : string -&gt; rstring = <span style="color:#aa4444">"%identity"</span>
+<span style="background-color:silver">  17:</span> 
+<span style="background-color:silver">  18:</span> <span style="color:green">module</span> <span style="color:#0033cc">Op</span> =
+<span style="background-color:silver">  19:</span> <span style="color:#990099">struct</span>
+<span style="background-color:silver">  20:</span>   <span style="color:green">let</span> ( !! ) = <span style="color:#0033cc">String</span>.copy
+<span style="background-color:silver">  21:</span>   <span style="color:green">external</span> ( !% ) : string -&gt; rwstring = <span style="color:#aa4444">"%identity"</span>
+<span style="background-color:silver">  22:</span>   <span style="color:green">let</span> ( ^% ) = ( ^ )
+<span style="background-color:silver">  23:</span> <span style="color:#990099">end</span>
+<span style="background-color:silver">  24:</span> 
+<span style="background-color:silver">  25:</span> <span style="color:green">let</span> output = output_string
+<span style="background-color:silver">  26:</span> <span style="color:green">let</span> print = print_string
+<span style="background-color:silver">  27:</span> <span style="color:green">let</span> print_endline = print_endline
+<span style="background-color:silver">  28:</span> <span style="color:green">let</span> append = ( ^ )
+<span style="background-color:silver">  29:</span> 
+<span style="background-color:silver">  30:</span> <span style="color:#cc9900">include</span> <span style="color:#0033cc">String</span>
+</pre>
+
+<hr>
+<h1><a name="pa_freeze.ml"></a><code>pa_freeze.ml</code></h1>
+
+<pre><span style="background-color:silver">   1:</span> <span style="color:#990000">(* Camlp4 syntax extension which allows the conversion of string literals</span>
+<span style="background-color:silver">   2:</span> <span style="color:#990000">   without a copy *)</span>
+<span style="background-color:silver">   3:</span> 
+<span style="background-color:silver">   4:</span> <span style="color:#0033cc">EXTEND</span>
+<span style="background-color:silver">   5:</span>   <span style="color:#0033cc">Pcaml</span>.expr: <span style="color:#0033cc">LEVEL</span> <span style="color:#aa4444">"apply"</span> [
+<span style="background-color:silver">   6:</span>     [ <span style="color:#aa4444">"!!"</span>; e = [ s = <span style="color:#0033cc">STRING</span> -&gt; &lt;:expr&lt; <span style="color:#0033cc">Gstring</span>.unsafe_import $str:s$ &gt;&gt;
+<span style="background-color:silver">   7:</span>                 <span style="color:#77aaaa">|</span> e = <span style="color:#0033cc">Pcaml</span>.expr -&gt; &lt;:expr&lt; <span style="color:#0033cc">Gstring</span>.freeze_import $e$ &gt;&gt; ] -&gt; e ]
+<span style="background-color:silver">   8:</span>   ];
+<span style="background-color:silver">   9:</span> <span style="color:#0033cc">END</span>
+</pre>
+
+<hr>
+<p>
+<em>This document was generated using 
+<a href="http://martin.jambon.free.fr/caml2html.html">caml2html</a></em>
+</body>
+</html>

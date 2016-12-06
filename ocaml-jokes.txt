@@ -1,0 +1,5 @@
+What is the difference between Python and Caml?
+Python creeps, Caml runs!
+
+Which is the best keyword to describe OCaml?
+fun!

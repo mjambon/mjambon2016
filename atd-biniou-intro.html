@@ -1,0 +1,341 @@
+
+<!doctype html>
+
+<html>
+<head>
+<title>Adjustable type definitions for data exchange</title>
+<meta http-equiv="content-Type" content="text/html; charset=utf-8">
+
+<link rel="stylesheet" href="/base.css" type="text/css">
+
+<link rel="stylesheet" href="/ocaml.css" type="text/css">
+
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+<link rel="home" href="/">
+<link rel="author" href="/people.html#martin">
+
+</head>
+<body>
+
+<div id="page">
+
+
+<div>
+<table id=top_menu cellspacing=0>
+<tr>
+  <td><a href="/">Main</a></td>
+  <td class="current_topic"><a href="/ocaml.html">Software</a></td>
+  <td><a href="/releases">Downloads</a></td>
+  <td><a href="/other.html">Other</a></td>
+</tr>
+</table>
+</div>
+
+<h1>Adjustable type definitions for data exchange</h1>
+<div class=longtitle>Toward harmony between data types, 
+programming languages and data formats</div>
+
+<p>
+The purpose of this document is to introduce a series of upcoming tools
+for data exchange and the reasons for their existence. First published
+2010-08-01.
+
+
+<div class=toc>
+<b>Contents</b><br>
+<a href="#division" class=toc0>1. Problem division</a><br>
+  <a href="#types" class=toc1>1.1 Ideal types and actuals types</a><br>
+  <a href="#languages" class=toc1>1.2 Accomodating multiple programming languages</a><br>
+  <a href="#formats" class=toc1>1.3 Accomodating multiple data formats</a><br>
+<a href="#tools" class=toc0>2. Tools</a><br>
+  <a href="#atd" class=toc1>2.1 ATD</a><br>
+  <a href="#yojson" class=toc1>2.2 Yojson</a><br>
+  <a href="#biniou" class=toc1>2.3 Biniou</a><br>
+  <a href="#atdgen" class=toc1>2.4 Atdgen</a><br>
+</div>
+
+<h2 id=division>1. Problem division</h2>
+
+<p>
+Experience shows that the problem of exchanging, storing and evolving data
+would benefit from being split into independent subproblems.
+
+<p>
+Although data usually have one canonical way of being thought of,
+a variety of technical constraints call for a variety
+of data formats and implementations.
+
+<p>
+The first problem is therefore to come up with a common language 
+for describing data types without relying on features that are 
+specific to a particular programming language or data format.
+
+<p>
+The second problem is to allow any programming language to join the
+party without having to redefine and reimplement the tools for 
+describing the data types.
+
+<p>
+The third problem is to allow different serialization formats to 
+be used to represent the same data.
+
+<p>
+Instead of pushing for a supposedly best combination of programming language
+and data format, we acknowledge that real-world data will be
+represented in different ways by different tools no matter what.
+<!-- We are going to present various features of existing data,
+programming languages and data formats and how they can all live in harmony
+without sacrifices. -->
+
+
+<h3 id=types>1.1 Ideal types and actuals types</h3>
+
+<p>
+After a little bit of thinking and not so much tweaking,
+all data can be described using:
+<ul>
+<li> bool: a type containing two values, usually called true and false,
+<li> int: a type representing integers exactly;
+<li> float: a type representing real numbers (approximately);
+<li> string: a type representing a finite sequence of bytes;
+<li> product types: tuples and records/structs;
+<li> sum types: variants with 0 or 1 argument, or tagged unions;
+<li> list types: sequences of items of a given type;
+<li> option types: 0 or 1 element of a given type;
+<li> parametrized types, also known as generics or templates;
+<li> unit type: type of just one value, useful when using parametrized types;
+<li> abstract types: types defined elsewhere but known to the code generators
+or interpreters;
+<li> inheritance of record fields or variants.
+</ul>
+
+<p>
+These are the core features allowed by the
+ATD syntax (ATD = "Adjustable Type Definitions").
+In practice, each programming language may have a choice of different
+representations of a particular ATD type. The idea here is to allow annotations
+in the ATD file that can be used to specify language-specific options.
+
+
+<h3 id=languages>1.2 Accomodating multiple programming languages</h3>
+
+<p>
+Although the syntax of ATD is strongly based on the syntax of OCaml type
+definitions, and although the current tools using ATD are implemented
+in OCaml, the target languages can be really anything.
+OCaml shines when it comes to processing code and produce more code.
+The language of the input code here is ATD but the output can be anything:
+OCaml code, Java code, JSON, HTML documentation, etc.
+
+<p>
+It is of course possible to reimplement the tools of the <code>atd</code>
+package in another programming language at a reasonable cost, that is maybe
+a few weeks to months of work for a clean job,
+but this is not expected to happen anytime soon.
+Using the <code>atd</code> library for building code generators
+for other languages than OCaml makes perfect sense and is something
+OCaml is suited for.
+To date at MyLife we have been using the following tools all based on ATD 
+type specifications:
+<ul>
+<li> OCaml readers and writers for JSON generated using 
+<a href="#atdgen"><code>atdgen</code></a> and using  
+<a href="#yojson"><code>yojson</code></a> for runtime support,
+<li> Java readers and writers for JSON.
+<li> and a few other validation tools and code generators used privately.
+</ul>
+
+
+<h3 id=formats>1.3 Accomodating multiple data formats</h3>
+
+<p>
+A variety of data formats (JSON, XML, etc.) can be used and data
+types can be specified using ATD.
+The ATD syntax allows for annotations in various places which
+make it possible to adjust the basic ATD type definition to the idioms
+of the target language.
+
+<!--
+<p>
+Although this has not been implemented, one can imagine that 
+various conventions to map ATD record types and variant types to XML.
+A code generator producing XML readers and writers would use
+one specific convention by default, by the presence of annotations
+could override the default convention.
+-->
+
+<h2 id=tools>2. Tools</h2>
+
+<p>
+Several tools that make the ATD language relevant will be released
+around the same time.
+This is a list of features that these tools offer.
+
+<h3 id=atd>2.1 ATD</h3>
+
+<p>
+<code>atd</code>
+is the OCaml library providing a parser for the ATD language
+and various utilities. ATD stands for Adjustable Type Definitions
+in reference to its main property of supporting annotations
+that allow a good fit with a variety of data formats.
+
+<pre><span class="Ccomment">(* This is an ATD file *)</span>
+
+<span class="Ctype">type</span> 'a tree <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">Node</span> <span class="Cof">of</span> <span class="Cnonalphakeyword">(</span>'a tree <span class="Cnonalphakeyword">*</span> 'a tree<span class="Cnonalphakeyword">)</span> <span class="Cbar">|</span> <span class="Cconstructor">Leaf</span> <span class="Cof">of</span> 'a <span class="Cnonalphakeyword">]</span>
+
+<span class="Ctype">type</span> record <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">{</span>
+  name : string<span class="Cnonalphakeyword">;</span>
+    <span class="Ccomment">(* Required field *)</span>
+
+  <span class="Cnonalphakeyword">~</span>friends : string list <span class="Cnonalphakeyword">&lt;</span>ocaml repr<span class="Cnonalphakeyword">=</span><span class="Cstring">"array"</span><span class="Cnonalphakeyword">&gt;</span><span class="Cnonalphakeyword">;</span>
+    <span class="Ccomment">(*</span>
+<span class="Ccomment">      Optional field with a default value, by default the empty list.</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">      &lt;ocaml repr="array"&gt; is an annotation for the OCaml code generators</span>
+<span class="Ccomment">      that only them need to interpret.</span>
+<span class="Ccomment">    *)</span>
+
+  <span class="Cnonalphakeyword">?</span>descr : string option<span class="Cnonalphakeyword">;</span>
+    <span class="Ccomment">(* Optional field without a default value. *)</span>
+
+  tree : int tree<span class="Cnonalphakeyword">;</span>
+<span class="Cnonalphakeyword">}</span></pre>
+
+<p>
+The <code>atd</code> package provides:
+<ul>
+<li> Parser for the ATD syntax, consisting in
+     <a href="#types">type definitions</a>.
+<li> Expander of inherited fields or variants.
+<li> Monomorphizer, useful for producing optimized code or 
+     for mapping to languages that do not support parametrized types.
+<li> Simple indentation utility.
+<li> Annotation processing utilities.
+<li> Pretty-printer of ATD definitions.
+<li> <code>atdcat</code>, a program that reads type definitions, optionally
+applies inheritance or monomorphization, and prints them back.
+</ul>
+
+<p>
+An interesting use of ATD annotations is that <code>&lt;doc text=...&gt;</code>
+nodes can be used to specify comments applicable to the generated code.
+Such comments can be interpreted by the code generators
+converted into ocamldoc-compliant or javadoc-compliant
+comments, allowing the production of quality
+HTML documentation.
+
+
+<h3 id=yojson>2.2 Yojson</h3>
+
+<p>
+<a href="yojson.html">Yojson</a> is an optimized parser/printer 
+and pretty-printer for <a href="http://json.org/">JSON</a>.
+It addresses a few limitations of 
+<a href="/json-wheel.html"><code>json-wheel</code></a>
+and provides a number of low-level runtime functions 
+on which code generated by 
+<code>atdgen</code> hooks up.
+
+<p>
+The main differences with <code>json-wheel</code> are:
+<ul>
+<li> Uses polymorphic variants for the JSON tree type,
+which reduces interpackage dependencies
+and makes extensions easier.
+<li> By default tolerates convenient non-standard JSON features: NaNs,
+infinities, root atoms, unquoted field names.
+<li> Optional, extended syntax for tuples and variants.
+</ul>
+
+<h3 id=biniou>2.3 Biniou</h3>
+
+<p>
+<a href="biniou.html">Biniou</a> (pronounced "be new")
+is a new binary format vastly equivalent to JSON since it has the
+following properties:
+<ul>
+<li> all data can be visualized in pretty-printed JSON-like text
+form without a type definition (except
+for field names and variant names);
+<li> record fields can be omitted if the data consumer knows the default value;
+<li> unknown record field names can be ignored by the data consumer;
+<li> the order of record fields does not matter;
+<li> the order in which record fields or variants are defined 
+in type definitions does not matter;
+<li> new record fields can be freely added to type definitions
+by the data producers ahead of the consumers;
+<li> new variants can be freely added to type definitions 
+by the data consumers ahead of the producers.
+</ul>
+
+<p>
+Field names and variant names are represented using 31-bit hashes like
+method names and polymorphic variants in OCaml.
+
+<p>
+Strings have no encoding requirement and are stored without any escaping.
+
+<p>
+Arrays of records can be represented using a specific representation 
+called tables. A table does not repeat field information shared
+by all its records, resulting in space gains.
+
+
+<p>
+Biniou data typically take 25-30% less space than their JSON equivalent.
+<code>biniou</code> is the OCaml package that provides optimized readers,
+writers and pretty-printers for the biniou format.
+The library also provides the runtime functions used by the code 
+generated by <a href="#atdgen"><code>atdgen</code></a>,
+as well as the buffer types used by <code>yojson</code>.
+
+
+<h3 id=atdgen>2.4 Atdgen</h3>
+
+<p>
+<a href="/atdgen"><code>atdgen</code></a> 
+is a program that generates optimized OCaml code
+for reading and writing either biniou or JSON data.
+Generated code directly converts
+between byte buffers and the desired OCaml representation without
+going through a generic tree like 
+<a href="json-static.html">json-static</a> does.
+
+<p>
+Benchmarks performed on an amd64-Linux machine for combined reading
+and writing show that:
+<ul>
+<li> <code>atdgen-json</code> produces code that is 3 times faster than 
+json-static but 4 times slower than <code>atdgen-biniou</code>.
+<li> Code generated by <code>atdgen-biniou</code> is 2-3 times slower than
+OCaml's Marshal.
+</ul>
+
+
+
+<div id=footer>
+&copy;&nbsp;2010&nbsp;Martin&nbsp;Jambon &lt;<a href="mailto:martin@mjambon.com">martin@mjambon.com</a>&gt;
+</div>
+
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-640255-1";
+urchinTracker();
+</script>
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+<!-- 
+var sc_project=370325; 
+var sc_partition=1; 
+//-->
+</script>
+
+<script type="text/javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><p><a href="http://www.statcounter.com/"><img src="http://c2.statcounter.com/counter.php?sc_project=370325&amp;java=0" alt="counter"></a></p></noscript>
+<!-- End of StatCounter Code -->
+
+</body>
+</html>

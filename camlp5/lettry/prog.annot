@@ -1,0 +1,132 @@
+"prog.ml" 1 0 8 "prog.ml" 1 0 11
+type(
+  unit -> unit
+)
+ident(
+  def cat "prog.ml" 1 0 0 --
+)
+"prog.ml" 1 0 12 "prog.ml" 1 0 14
+type(
+  unit
+)
+"prog.ml" 2 17 27 "prog.ml" 2 17 28
+type(
+  char
+)
+ident(
+  def c "prog.ml" 2 17 19 "prog.ml" 5 76 100
+)
+"prog.ml" 2 17 31 "prog.ml" 2 17 41
+type(
+  in_channel -> char
+)
+ident(
+  ext_ref Pervasives.input_char
+)
+"prog.ml" 2 17 42 "prog.ml" 2 17 47
+type(
+  in_channel
+)
+ident(
+  ext_ref Pervasives.stdin
+)
+"prog.ml" 2 17 31 "prog.ml" 2 17 47
+type(
+  char
+)
+"prog.ml" 3 51 53 "prog.ml" 3 51 63
+type(
+  char -> unit
+)
+ident(
+  ext_ref Pervasives.print_char
+)
+"prog.ml" 3 51 64 "prog.ml" 3 51 65
+type(
+  char
+)
+ident(
+  int_ref c "prog.ml" 2 17 27 "prog.ml" 2 17 28
+)
+"prog.ml" 3 51 53 "prog.ml" 3 51 65
+type(
+  unit
+)
+"prog.ml" 4 67 69 "prog.ml" 4 67 72
+type(
+  unit -> unit
+)
+ident(
+  int_ref cat "prog.ml" 1 0 8 "prog.ml" 1 0 11
+)
+"prog.ml" 4 67 73 "prog.ml" 4 67 75
+type(
+  unit
+)
+"prog.ml" 4 67 69 "prog.ml" 4 67 75
+type(
+  unit
+)
+"prog.ml" 3 51 53 "prog.ml" 4 67 75
+type(
+  unit
+)
+"prog.ml" 5 76 83 "prog.ml" 5 76 94
+type(
+  exn
+)
+"prog.ml" 5 76 98 "prog.ml" 5 76 100
+type(
+  unit
+)
+"prog.ml" 5 76 83 "prog.ml" 5 76 100
+type(
+  unit -> unit
+)
+type(
+  unit
+)
+"prog.ml" 2 17 19 "prog.ml" 5 76 100
+call(
+  tail
+)
+type(
+  unit
+)
+type(
+  unit
+)
+type(
+  unit -> unit
+)
+type(
+  unit -> unit
+)
+type(
+  unit -> unit
+)
+type(
+  unit
+)
+"prog.ml" 1 0 12 "prog.ml" 5 76 100
+type(
+  unit -> unit
+)
+"prog.ml" 7 102 110 "prog.ml" 7 102 113
+type(
+  unit -> unit
+)
+ident(
+  int_ref cat "prog.ml" 1 0 8 "prog.ml" 1 0 11
+)
+"prog.ml" 7 102 114 "prog.ml" 7 102 116
+type(
+  unit
+)
+"prog.ml" 7 102 110 "prog.ml" 7 102 116
+call(
+  stack
+)
+type(
+  unit
+)

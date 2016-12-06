@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>
+phys.ml</title>
+  <meta name="GENERATOR" content="caml2html 1.3.1">
+<style type="text/css">
+code,pre { color:black;background-color:white }a.Cannot { color:black;text-decoration:none }.Cannot:hover { background-color: #b4eeb4; }
+.Cbar,
+.Cdo,
+.Cdone,
+.Cdownto,
+.Celse,
+.Cfor,
+.Cif,
+.Clazy,
+.Cmatch,
+.Cnew,
+.Cor,
+.Cthen,
+.Cto,
+.Ctry,
+.Cwhen,
+.Cwhile,
+.Cwith { color: #77aaaa; }
+.Cassert,
+.Cinclude,
+.Copen { color: #cc9900; }
+.Cstring { color: #aa4444; }
+.Cand,
+.Cas,
+.Cclass,
+.Cconstraint,
+.Cexception,
+.Cexternal,
+.Cfun,
+.Cfunction,
+.Cfunctor,
+.Cin,
+.Cinherit,
+.Cinitializer,
+.Clet,
+.Cmethod,
+.Cmodule,
+.Cmutable,
+.Cof,
+.Cprivate,
+.Crec,
+.Ctype,
+.Cval,
+.Cvirtual { color: green; }
+.Cbackground { background-color: white; }
+.Craise { color: red; }
+.Cconstructor { color: #0033cc; }
+.Ccomment { color: #990000; }
+.Calphakeyword,
+.Casr,
+.Cland,
+.Clor,
+.Clsl,
+.Clsr,
+.Clxor,
+.Cmod { color: #808080; }
+.Clinenum { color: black; background-color: silver; }
+.Cbegin,
+.Cend,
+.Cobject,
+.Csig,
+.Cstruct { color: #990099; }
+.Cfalse,
+.Cnonalphakeyword,
+.Cquotation,
+.Ctrue { }
+</style>
+</head>
+<body>
+
+<pre><a name="phys.ml"></a><span class="Ccomment">(*</span>
+<span class="Ccomment">  Polymorphic hash table using physical equality on the keys.</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">  Released in the Public Domain. Use at your own risk.</span>
+<span class="Ccomment">  Author: Martin Jambon (January 2009)</span>
+<span class="Ccomment">*)</span>
+
+<span class="Ccomment">(*</span>
+<span class="Ccomment">  This implementation uses the Obj module which allows to transgress</span>
+<span class="Ccomment">  the type system. It is not regular OCaml.</span>
+<span class="Ccomment">*)</span>
+
+<span class="Cmodule">module</span> <span class="Cconstructor">Magic_key</span> <span class="Cnonalphakeyword">=</span>
+<span class="Cstruct">struct</span>
+  <span class="Ctype">type</span> t <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Obj</span><span class="Cnonalphakeyword">.</span>t
+  <span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a -&gt; 'a -&gt; bool">equal</a> <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a -&gt; 'a -&gt; bool"><span class="Cnonalphakeyword">(</span> == <span class="Cnonalphakeyword">)</span></a>
+  <span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b -&gt; int">hash</a> <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b -&gt; int"><span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>hash</a>
+<span class="Cend">end</span>
+
+<span class="Cmodule">module</span> <span class="Cconstructor">Magic_table</span> <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Make</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Magic_key</span><span class="Cnonalphakeyword">)</span>
+
+
+<span class="Ctype">type</span> <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">=</span> 'a <span class="Cconstructor">Magic_table</span><span class="Cnonalphakeyword">.</span>t
+
+<span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t -&gt; 'b -&gt; 'a -&gt; unit">add</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t">tbl</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b">k</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a">v</a> <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t -&gt; Magic_table.key -&gt; 'a -&gt; unit"><span class="Cconstructor">Magic_table</span><span class="Cnonalphakeyword">.</span>add</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t">tbl</a> <span class="Cnonalphakeyword">(</span><a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b -&gt; Magic_table.key"><span class="Cconstructor">Obj</span><span class="Cnonalphakeyword">.</span>repr</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b">k</a><span class="Cnonalphakeyword">)</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a">v</a>
+<span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t -&gt; unit">clear</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t">tbl</a> <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t -&gt; unit"><span class="Cconstructor">Magic_table</span><span class="Cnonalphakeyword">.</span>clear</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t">tbl</a>
+<span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t -&gt; 'a Magic_table.t">copy</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t">tbl</a> <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t -&gt; 'a Magic_table.t"><span class="Cconstructor">Magic_table</span><span class="Cnonalphakeyword">.</span>copy</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t">tbl</a>
+<span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="int -&gt; 'a Magic_table.t">create</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="int">n</a> <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="int -&gt; 'a Magic_table.t"><span class="Cconstructor">Magic_table</span><span class="Cnonalphakeyword">.</span>create</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="int">n</a>
+<span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t -&gt; 'b -&gt; 'a">find</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t">tbl</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b">k</a> <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t -&gt; Magic_table.key -&gt; 'a"><span class="Cconstructor">Magic_table</span><span class="Cnonalphakeyword">.</span>find</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t">tbl</a> <span class="Cnonalphakeyword">(</span><a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b -&gt; Magic_table.key"><span class="Cconstructor">Obj</span><span class="Cnonalphakeyword">.</span>repr</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b">k</a><span class="Cnonalphakeyword">)</span>
+<span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t -&gt; 'b -&gt; 'a list">find_all</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t">tbl</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b">k</a> <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t -&gt; Magic_table.key -&gt; 'a list"><span class="Cconstructor">Magic_table</span><span class="Cnonalphakeyword">.</span>find_all</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t">tbl</a> <span class="Cnonalphakeyword">(</span><a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b -&gt; Magic_table.key"><span class="Cconstructor">Obj</span><span class="Cnonalphakeyword">.</span>repr</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b">k</a><span class="Cnonalphakeyword">)</span>
+<span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a -&gt; 'b -&gt; 'c -&gt; 'c">fold</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a">f</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b">tbl</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'c">accu</a> <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="(Magic_table.key -&gt; '_d -&gt; 'c -&gt; 'c) -&gt; '_d Magic_table.t -&gt; 'c -&gt; 'c"><span class="Cconstructor">Magic_table</span><span class="Cnonalphakeyword">.</span>fold</a> <span class="Cnonalphakeyword">(</span><a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a -&gt; Magic_table.key -&gt; '_d -&gt; 'c -&gt; 'c"><span class="Cconstructor">Obj</span><span class="Cnonalphakeyword">.</span>magic</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a">f</a><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">(</span><a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b -&gt; '_d Magic_table.t"><span class="Cconstructor">Obj</span><span class="Cnonalphakeyword">.</span>magic</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b">tbl</a><span class="Cnonalphakeyword">)</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'c">accu</a>
+<span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a -&gt; 'b -&gt; unit">iter</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a">f</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b">tbl</a> <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="(Magic_table.key -&gt; '_c -&gt; unit) -&gt; '_c Magic_table.t -&gt; unit"><span class="Cconstructor">Magic_table</span><span class="Cnonalphakeyword">.</span>iter</a> <span class="Cnonalphakeyword">(</span><a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a -&gt; Magic_table.key -&gt; '_c -&gt; unit"><span class="Cconstructor">Obj</span><span class="Cnonalphakeyword">.</span>magic</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a">f</a><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">(</span><a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b -&gt; '_c Magic_table.t"><span class="Cconstructor">Obj</span><span class="Cnonalphakeyword">.</span>magic</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b">tbl</a><span class="Cnonalphakeyword">)</span>
+<span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t -&gt; int">length</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t">tbl</a> <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t -&gt; int"><span class="Cconstructor">Magic_table</span><span class="Cnonalphakeyword">.</span>length</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t">tbl</a>
+<span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t -&gt; 'b -&gt; bool">mem</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t">tbl</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b">k</a> <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t -&gt; Magic_table.key -&gt; bool"><span class="Cconstructor">Magic_table</span><span class="Cnonalphakeyword">.</span>mem</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t">tbl</a> <span class="Cnonalphakeyword">(</span><a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b -&gt; Magic_table.key"><span class="Cconstructor">Obj</span><span class="Cnonalphakeyword">.</span>repr</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b">k</a><span class="Cnonalphakeyword">)</span>
+<span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t -&gt; 'b -&gt; unit">remove</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t">tbl</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b">k</a> <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t -&gt; Magic_table.key -&gt; unit"><span class="Cconstructor">Magic_table</span><span class="Cnonalphakeyword">.</span>remove</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t">tbl</a> <span class="Cnonalphakeyword">(</span><a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b -&gt; Magic_table.key"><span class="Cconstructor">Obj</span><span class="Cnonalphakeyword">.</span>repr</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b">k</a><span class="Cnonalphakeyword">)</span>
+<span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t -&gt; 'b -&gt; 'a -&gt; unit">replace</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t">tbl</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b">k</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a">v</a> <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t -&gt; Magic_table.key -&gt; 'a -&gt; unit"><span class="Cconstructor">Magic_table</span><span class="Cnonalphakeyword">.</span>replace</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a Magic_table.t">tbl</a> <span class="Cnonalphakeyword">(</span><a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b -&gt; Magic_table.key"><span class="Cconstructor">Obj</span><span class="Cnonalphakeyword">.</span>repr</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'b">k</a><span class="Cnonalphakeyword">)</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="'a">v</a>
+</pre>
+</body>
+</html>

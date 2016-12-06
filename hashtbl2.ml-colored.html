@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>
+hashtbl2.ml</title>
+  <meta name="GENERATOR" content="caml2html 1.2.0">
+</head>
+<body>
+
+<pre><span style="color:green">type</span> ('a, 'b) t = ('a, 'b list ref) <span style="color:#0033cc">Hashtbl</span>.t
+
+<span style="color:green">let</span> create = <span style="color:#0033cc">Hashtbl</span>.create
+<span style="color:green">let</span> clear = <span style="color:#0033cc">Hashtbl</span>.clear
+
+<span style="color:green">let</span> add tbl key data =
+  <span style="color:green">let</span> r =
+    <span style="color:#77aaaa">try</span> <span style="color:#0033cc">Hashtbl</span>.find tbl key
+    <span style="color:#77aaaa">with</span> <span style="color:#0033cc">Not_found</span> -&gt;
+      <span style="color:green">let</span> r = ref [] <span style="color:green">in</span>
+      <span style="color:#0033cc">Hashtbl</span>.add tbl key r;
+      r <span style="color:green">in</span>
+  r := data :: !r
+
+<span style="color:green">let</span> copy tbl =
+  <span style="color:green">let</span> tbl2 = <span style="color:#0033cc">Hashtbl</span>.copy tbl <span style="color:green">in</span>
+  <span style="color:#0033cc">Hashtbl</span>.iter (<span style="color:green">fun</span> key r -&gt; <span style="color:#0033cc">Hashtbl</span>.replace tbl2 key (ref !r)) tbl;
+  tbl2
+
+<span style="color:green">let</span> find tbl key =
+  <span style="color:#0033cc">List</span>.hd !(<span style="color:#0033cc">Hashtbl</span>.find tbl key)
+
+<span style="color:green">let</span> find_all tbl key =
+  !(<span style="color:#0033cc">Hashtbl</span>.find tbl key)
+
+<span style="color:green">let</span> mem = <span style="color:#0033cc">Hashtbl</span>.mem
+
+<span style="color:green">let</span> remove tbl key =
+  <span style="color:#77aaaa">try</span>
+    <span style="color:green">let</span> r = <span style="color:#0033cc">Hashtbl</span>.find tbl key <span style="color:green">in</span>
+    <span style="color:#77aaaa">match</span> !r <span style="color:#77aaaa">with</span>
+        [data] -&gt; <span style="color:#0033cc">Hashtbl</span>.remove tbl key
+      <span style="color:#77aaaa">|</span> hd :: tl -&gt; r := tl
+      <span style="color:#77aaaa">|</span> [] -&gt; invalid_arg <span style="color:#aa4444">"remove"</span>
+  <span style="color:#77aaaa">with</span> <span style="color:#0033cc">Not_found</span> -&gt; ()
+
+<span style="color:green">let</span> remove_all = <span style="color:#0033cc">Hashtbl</span>.remove
+
+<span style="color:green">let</span> replace tbl key data =
+  <span style="color:#77aaaa">try</span>
+    <span style="color:green">let</span> r = <span style="color:#0033cc">Hashtbl</span>.find tbl key <span style="color:green">in</span>
+    r := data :: (<span style="color:#0033cc">List</span>.tl !r)
+  <span style="color:#77aaaa">with</span> 
+      <span style="color:#0033cc">Not_found</span> -&gt; <span style="color:#0033cc">Hashtbl</span>.add tbl key (ref [data])
+
+<span style="color:green">let</span> replace_all tbl key l =
+  <span style="color:#77aaaa">try</span>
+    <span style="color:green">let</span> r = <span style="color:#0033cc">Hashtbl</span>.find tbl key <span style="color:green">in</span>
+    r := l
+  <span style="color:#77aaaa">with</span> 
+      <span style="color:#0033cc">Not_found</span> -&gt; <span style="color:#0033cc">Hashtbl</span>.add tbl key (ref l)
+
+<span style="color:green">let</span> iter f tbl =
+  <span style="color:#0033cc">Hashtbl</span>.iter (<span style="color:green">fun</span> key r -&gt; f key (<span style="color:#0033cc">List</span>.hd !r)) tbl
+
+<span style="color:green">let</span> iter_all f tbl =
+  <span style="color:#0033cc">Hashtbl</span>.iter (<span style="color:green">fun</span> key r -&gt; f key !r) tbl
+
+<span style="color:green">let</span> fold f tbl init =
+  <span style="color:#0033cc">Hashtbl</span>.fold (<span style="color:green">fun</span> key r accu -&gt; f key (<span style="color:#0033cc">List</span>.hd !r) accu) tbl init
+
+<span style="color:green">let</span> fold_all f tbl init =
+  <span style="color:#0033cc">Hashtbl</span>.fold 
+    (<span style="color:green">fun</span> key r accu -&gt; f key !r accu)
+    tbl init
+
+<span style="color:green">let</span> list_keys tbl =
+  fold (<span style="color:green">fun</span> key _ accu -&gt; key :: accu) tbl []
+
+<span style="color:green">let</span> list_values tbl =
+  fold (<span style="color:green">fun</span> _ data accu -&gt; data :: accu) tbl []
+
+<span style="color:green">let</span> list_all_values tbl =
+  fold_all (<span style="color:green">fun</span> _ l accu -&gt; l :: accu) tbl []
+
+<span style="color:green">let</span> list tbl =
+  fold (<span style="color:green">fun</span> key data accu -&gt; (key, data) :: accu) tbl []
+
+<span style="color:green">let</span> list_all tbl =
+  fold_all (<span style="color:green">fun</span> key l accu -&gt; (key, l) :: accu) tbl []
+
+<span style="color:green">let</span> of_list n l =
+  <span style="color:green">let</span> tbl = create n <span style="color:green">in</span>
+  <span style="color:#0033cc">List</span>.iter (<span style="color:green">fun</span> (key, data) -&gt; add tbl key data) l;
+  tbl
+
+<span style="color:green">let</span> of_keys n l =
+  <span style="color:green">let</span> tbl = create n <span style="color:green">in</span>
+  <span style="color:#0033cc">List</span>.iter (<span style="color:green">fun</span> key -&gt; replace tbl key ()) l;
+  tbl
+</pre>
+</body>
+</html>

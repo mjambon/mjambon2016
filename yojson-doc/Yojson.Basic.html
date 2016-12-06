@@ -1,0 +1,273 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Yojson.Lexer_state.html">
+<link rel="next" href="Yojson.Safe.html">
+<link rel="Up" href="Yojson.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Yojson" rel="Chapter" href="Yojson.html">
+<link title="Yojson_biniou" rel="Chapter" href="Yojson_biniou.html"><link title="JSON writers" rel="Section" href="#2_JSONwriters">
+<link title="JSON pretty-printing" rel="Section" href="#2_JSONprettyprinting">
+<link title="JSON readers" rel="Section" href="#2_JSONreaders">
+<link title="Type of the JSON tree" rel="Subsection" href="#3_TypeoftheJSONtree">
+<title>Yojson.Basic</title>
+</head>
+<body>
+<div class="navbar"><a href="Yojson.Lexer_state.html">Previous</a>
+&nbsp;<a href="Yojson.html">Up</a>
+&nbsp;<a href="Yojson.Safe.html">Next</a>
+</div>
+<center><h1>Module <a href="type_Yojson.Basic.html">Yojson.Basic</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> Basic: <code class="code">sig</code> <a href="Yojson.Basic.html">..</a> <code class="code">end</code></pre><hr width="100%">
+<br>
+This module supports standard JSON nodes only, i.e. no special syntax
+   for variants or tuples as supported by <a href="Yojson.Safe.html"><code class="code">Yojson.Safe</code></a>.
+   Arbitrary integers are not supported as they must all fit within the
+   standard OCaml int type (31 or 63 bits depending on the platform).
+<p>
+
+   The main advantage of this module is its simplicity.<br>
+<br>
+<span id="3_TypeoftheJSONtree"><h3>Type of the JSON tree</h3></span><br>
+<pre><span id="TYPEjson"><span class="keyword">type</span> <code class="type"></code>json</span> = <code class="type">[ `Assoc of (string * <a href="Yojson.Basic.html#TYPEjson">json</a>) list<br>       | `Bool of bool<br>       | `Float of float<br>       | `Int of int<br>       | `List of <a href="Yojson.Basic.html#TYPEjson">json</a> list<br>       | `Null<br>       | `String of string ]</code> </pre>
+<div class="info">
+All possible cases defined in Yojson:<ul>
+<li>`Null: JSON null</li>
+<li>`Bool of bool: JSON boolean</li>
+<li>`Int of int: JSON number without decimal point or exponent.</li>
+<li>`Intlit of string: JSON number without decimal point or exponent,
+	    preserved as a string.</li>
+<li>`Float of float: JSON number, Infinity, -Infinity or NaN.</li>
+<li>`Floatlit of string: JSON number, Infinity, -Infinity or NaN,
+	    preserved as a string.</li>
+<li>`String of string: JSON string. Bytes in the range 128-255 are preserved
+	    as-is without encoding validation for both reading
+	    and writing.</li>
+<li>`Stringlit of string: JSON string literal including the double quotes.</li>
+<li>`Assoc of (string * json) list: JSON object.</li>
+<li>`List of json list: JSON array.</li>
+<li>`Tuple of json list: Tuple (non-standard extension of JSON).
+	    Syntax: <code class="code">("abc", 123)</code>.</li>
+<li>`Variant of (string * json option): Variant (non-standard extension of JSON).
+	    Syntax: <code class="code">&lt;"Foo"&gt;</code> or <code class="code">&lt;"Bar":123&gt;</code>.</li>
+</ul>
+<br>
+</div>
+
+<br>
+<span id="2_JSONwriters"><h2>JSON writers</h2></span><br>
+<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type">?buf:Bi_outbuf.t -> ?len:int -> ?std:bool -> <a href="Yojson.Basic.html#TYPEjson">json</a> -> string</code></pre><div class="info">
+Write a compact JSON value to a string.<br>
+</div>
+<div class="param_info"><code class="code">buf</code> : allows to reuse an existing buffer created with 
+      <code class="code">Bi_outbuf.create</code>. The buffer is cleared of all contents
+      before starting and right before returning.</div>
+<div class="param_info"><code class="code">len</code> : initial length of the output buffer.</div>
+<div class="param_info"><code class="code">std</code> : use only standard JSON syntax,
+      i.e. convert tuples and variants into standard JSON (if applicable),
+      refuse to print NaN and infinities,
+      require the root node to be either an object or an array.
+      Default is <code class="code">false</code>.</div>
+<pre><span id="VALto_channel"><span class="keyword">val</span> to_channel</span> : <code class="type">?buf:Bi_outbuf.t -><br>       ?len:int -> ?std:bool -> Pervasives.out_channel -> <a href="Yojson.Basic.html#TYPEjson">json</a> -> unit</code></pre><div class="info">
+Write a compact JSON value to a channel.<br>
+</div>
+<div class="param_info"><code class="code">buf</code> : allows to reuse an existing buffer created with 
+      <code class="code">Bi_outbuf.create_channel_writer</code> on the same channel.
+      <code class="code">buf</code> is flushed right
+      before <code class="code">to_channel</code> returns but the <code class="code">out_channel</code> is
+      not flushed automatically.
+<p>
+
+      See <code class="code">to_string</code> for the role of the other optional arguments.</div>
+<pre><span id="VALto_output"><span class="keyword">val</span> to_output</span> : <code class="type">?buf:Bi_outbuf.t -><br>       ?len:int -><br>       ?std:bool -><br>       < output : string -> int -> int -> int; .. > -> <a href="Yojson.Basic.html#TYPEjson">json</a> -> unit</code></pre><div class="info">
+Write a compact JSON value to an OO channel.<br>
+</div>
+<div class="param_info"><code class="code">buf</code> : allows to reuse an existing buffer created with 
+      <code class="code">Bi_outbuf.create_output_writer</code> on the same channel.
+      <code class="code">buf</code> is flushed right
+      before <code class="code">to_output</code> returns but the channel itself is
+      not flushed automatically.
+<p>
+
+      See <code class="code">to_string</code> for the role of the other optional arguments.</div>
+<pre><span id="VALto_file"><span class="keyword">val</span> to_file</span> : <code class="type">?len:int -> ?std:bool -> string -> <a href="Yojson.Basic.html#TYPEjson">json</a> -> unit</code></pre><div class="info">
+Write a compact JSON value to a file.
+      See <code class="code">to_string</code> for the role of the optional arguments.<br>
+</div>
+<pre><span id="VALto_outbuf"><span class="keyword">val</span> to_outbuf</span> : <code class="type">?std:bool -> Bi_outbuf.t -> <a href="Yojson.Basic.html#TYPEjson">json</a> -> unit</code></pre><div class="info">
+Write a compact JSON value to an existing buffer.
+      See <code class="code">to_string</code> for the role of the optional argument.<br>
+</div>
+<pre><span id="VALstream_to_string"><span class="keyword">val</span> stream_to_string</span> : <code class="type">?buf:Bi_outbuf.t -><br>       ?len:int -> ?std:bool -> <a href="Yojson.Basic.html#TYPEjson">json</a> Stream.t -> string</code></pre><div class="info">
+Write a newline-separated sequence of compact one-line JSON values to
+      a string.
+      See <code class="code">to_string</code> for the role of the optional arguments.<br>
+</div>
+<pre><span id="VALstream_to_channel"><span class="keyword">val</span> stream_to_channel</span> : <code class="type">?buf:Bi_outbuf.t -><br>       ?len:int -><br>       ?std:bool -> Pervasives.out_channel -> <a href="Yojson.Basic.html#TYPEjson">json</a> Stream.t -> unit</code></pre><div class="info">
+Write a newline-separated sequence of compact one-line JSON values to
+      a channel.
+      See <code class="code">to_channel</code> for the role of the optional arguments.<br>
+</div>
+<pre><span id="VALstream_to_file"><span class="keyword">val</span> stream_to_file</span> : <code class="type">?len:int -> ?std:bool -> string -> <a href="Yojson.Basic.html#TYPEjson">json</a> Stream.t -> unit</code></pre><div class="info">
+Write a newline-separated sequence of compact one-line JSON values to
+      a file.
+      See <code class="code">to_string</code> for the role of the optional arguments.<br>
+</div>
+<pre><span id="VALstream_to_outbuf"><span class="keyword">val</span> stream_to_outbuf</span> : <code class="type">?std:bool -> Bi_outbuf.t -> <a href="Yojson.Basic.html#TYPEjson">json</a> Stream.t -> unit</code></pre><div class="info">
+Write a newline-separated sequence of compact one-line JSON values to
+      an existing buffer.
+      See <code class="code">to_string</code> for the role of the optional arguments.<br>
+</div>
+<br>
+<span id="2_JSONprettyprinting"><h2>JSON pretty-printing</h2></span><br>
+<pre><span id="VALpretty_format"><span class="keyword">val</span> pretty_format</span> : <code class="type">?std:bool -> <a href="Yojson.Basic.html#TYPEjson">json</a> -> Easy_format.t</code></pre><div class="info">
+Convert into a pretty-printable tree.
+      See <code class="code">to_string</code> for the role of the optional <code class="code">std</code> argument.<br>
+<b>See also</b> <a href="http://martin.jambon.free.fr/easy-format.html">Easy-format</a><br>
+</div>
+<pre><span id="VALpretty_to_string"><span class="keyword">val</span> pretty_to_string</span> : <code class="type">?std:bool -> <a href="Yojson.Basic.html#TYPEjson">json</a> -> string</code></pre><div class="info">
+Pretty-print into a string.
+      See <code class="code">to_string</code> for the role of the optional <code class="code">std</code> argument.<br>
+</div>
+<pre><span id="VALpretty_to_channel"><span class="keyword">val</span> pretty_to_channel</span> : <code class="type">?std:bool -> Pervasives.out_channel -> <a href="Yojson.Basic.html#TYPEjson">json</a> -> unit</code></pre><div class="info">
+Pretty-print to a channel.
+      See <code class="code">to_string</code> for the role of the optional <code class="code">std</code> argument.<br>
+</div>
+<pre><span id="VALprettify"><span class="keyword">val</span> prettify</span> : <code class="type">?std:bool -> string -> string</code></pre><div class="info">
+Combined parser and pretty-printer.
+      See <code class="code">to_string</code> for the role of the optional <code class="code">std</code> argument.<br>
+</div>
+<pre><span id="VALcompact"><span class="keyword">val</span> compact</span> : <code class="type">?std:bool -> string -> string</code></pre><div class="info">
+Combined parser and printer.
+      See <code class="code">to_string</code> for the role of the optional <code class="code">std</code> argument.<br>
+</div>
+<br>
+<span id="2_JSONreaders"><h2>JSON readers</h2></span><br>
+<pre><span id="VALfrom_string"><span class="keyword">val</span> from_string</span> : <code class="type">?buf:Bi_outbuf.t -> ?fname:string -> ?lnum:int -> string -> <a href="Yojson.Basic.html#TYPEjson">json</a></code></pre><div class="info">
+Read a JSON value from a string.<br>
+</div>
+<div class="param_info"><code class="code">buf</code> : use this buffer at will during parsing instead of creating
+      a new one.</div>
+<div class="param_info"><code class="code">fname</code> : data file name to be used in error messages. It does
+      not have to be a real file.</div>
+<div class="param_info"><code class="code">lnum</code> : number of the first line of input. Default is 1.</div>
+<pre><span id="VALfrom_channel"><span class="keyword">val</span> from_channel</span> : <code class="type">?buf:Bi_outbuf.t -><br>       ?fname:string -> ?lnum:int -> Pervasives.in_channel -> <a href="Yojson.Basic.html#TYPEjson">json</a></code></pre><div class="info">
+Read a JSON value from a channel.
+      See <code class="code">from_string</code> for the meaning of the optional arguments.<br>
+</div>
+<pre><span id="VALfrom_file"><span class="keyword">val</span> from_file</span> : <code class="type">?buf:Bi_outbuf.t -> ?fname:string -> ?lnum:int -> string -> <a href="Yojson.Basic.html#TYPEjson">json</a></code></pre><div class="info">
+Read a JSON value from a file.
+      See <code class="code">from_string</code> for the meaning of the optional arguments.<br>
+</div>
+<pre><span id="TYPElexer_state"><span class="keyword">type</span> <code class="type"></code>lexer_state</span> = <code class="type"><a href="Yojson.Lexer_state.html#TYPEt">Yojson.Lexer_state.t</a></code> = {</pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>buf&nbsp;: <code class="type">Bi_outbuf.t</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>lnum&nbsp;: <code class="type">int</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>bol&nbsp;: <code class="type">int</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>fname&nbsp;: <code class="type">string option</code>;</code></td>
+
+</tr></table>
+}
+
+<div class="info">
+This alias is provided for backward compatibility.
+        New code should refer to <a href="Yojson.html#TYPElexer_state"><code class="code">Yojson.lexer_state</code></a> directly.<br>
+</div>
+
+<pre><span id="VALinit_lexer"><span class="keyword">val</span> init_lexer</span> : <code class="type">?buf:Bi_outbuf.t -><br>       ?fname:string -> ?lnum:int -> unit -> <a href="Yojson.Basic.html#TYPElexer_state">lexer_state</a></code></pre><div class="info">
+This alias is provided for backward compatibility.
+      New code should use <a href="Yojson.html#VALinit_lexer"><code class="code">Yojson.init_lexer</code></a> directly.<br>
+</div>
+<pre><span id="VALfrom_lexbuf"><span class="keyword">val</span> from_lexbuf</span> : <code class="type"><a href="Yojson.Basic.html#TYPElexer_state">lexer_state</a> -><br>       ?stream:bool -> Lexing.lexbuf -> <a href="Yojson.Basic.html#TYPEjson">json</a></code></pre><div class="info">
+Read a JSON value from a lexbuf.
+      A valid initial <code class="code">lexer_state</code> can be created with <code class="code">init_lexer</code>.
+      See <code class="code">from_string</code> for the meaning of the optional arguments.<br>
+</div>
+<div class="param_info"><code class="code">stream</code> : indicates whether more data may follow. The default value
+      is false and indicates that only JSON whitespace can be found between
+      the end of the JSON value and the end of the input.</div>
+<pre><span id="VALstream_from_string"><span class="keyword">val</span> stream_from_string</span> : <code class="type">?buf:Bi_outbuf.t -><br>       ?fname:string -> ?lnum:int -> string -> <a href="Yojson.Basic.html#TYPEjson">json</a> Stream.t</code></pre><div class="info">
+Input a sequence of JSON values from a string.
+      Whitespace between JSON values is fine but not required.
+      See <code class="code">from_string</code> for the meaning of the optional arguments.<br>
+</div>
+<pre><span id="VALstream_from_channel"><span class="keyword">val</span> stream_from_channel</span> : <code class="type">?buf:Bi_outbuf.t -><br>       ?fin:(unit -> unit) -><br>       ?fname:string -><br>       ?lnum:int -> Pervasives.in_channel -> <a href="Yojson.Basic.html#TYPEjson">json</a> Stream.t</code></pre><div class="info">
+Input a sequence of JSON values from a channel.
+      Whitespace between JSON values is fine but not required.<br>
+</div>
+<div class="param_info"><code class="code">fin</code> : finalization function executed once when the end of the
+      stream is reached either because there is no more input or because
+      the input could not be parsed, raising an exception.
+<p>
+
+      See <code class="code">from_string</code> for the meaning of the other optional arguments.</div>
+<pre><span id="VALstream_from_file"><span class="keyword">val</span> stream_from_file</span> : <code class="type">?buf:Bi_outbuf.t -><br>       ?fname:string -> ?lnum:int -> string -> <a href="Yojson.Basic.html#TYPEjson">json</a> Stream.t</code></pre><div class="info">
+Input a sequence of JSON values from a file.
+      Whitespace between JSON values is fine but not required.
+<p>
+
+      See <code class="code">from_string</code> for the meaning of the optional arguments.<br>
+</div>
+<pre><span id="VALstream_from_lexbuf"><span class="keyword">val</span> stream_from_lexbuf</span> : <code class="type"><a href="Yojson.Basic.html#TYPElexer_state">lexer_state</a> -><br>       ?fin:(unit -> unit) -> Lexing.lexbuf -> <a href="Yojson.Basic.html#TYPEjson">json</a> Stream.t</code></pre><div class="info">
+Input a sequence of JSON values from a lexbuf.
+      A valid initial <code class="code">lexer_state</code> can be created with <code class="code">init_lexer</code>.
+      Whitespace between JSON values is fine but not required.
+<p>
+
+      See <code class="code">stream_from_channel</code> for the meaning of the optional <code class="code">fin</code>
+      argument.<br>
+</div>
+<pre><span id="TYPEjson_line"><span class="keyword">type</span> <code class="type"></code>json_line</span> = <code class="type">[ `Exn of exn | `Json of <a href="Yojson.Basic.html#TYPEjson">json</a> ]</code> </pre>
+<div class="info">
+The type of values resulting from a parsing attempt of a JSON value.<br>
+</div>
+
+<pre><span id="VALlinestream_from_channel"><span class="keyword">val</span> linestream_from_channel</span> : <code class="type">?buf:Bi_outbuf.t -><br>       ?fin:(unit -> unit) -><br>       ?fname:string -><br>       ?lnum:int -> Pervasives.in_channel -> <a href="Yojson.Basic.html#TYPEjson_line">json_line</a> Stream.t</code></pre><div class="info">
+Input a sequence of JSON values, one per line, from a channel.
+      Exceptions raised when reading malformed lines are caught
+      and represented using <code class="code">`Exn</code>.
+<p>
+
+      See <code class="code">stream_from_channel</code> for the meaning of the optional <code class="code">fin</code>
+      argument.
+      See <code class="code">from_string</code> for the meaning of the other optional arguments.<br>
+</div>
+<pre><span id="VALlinestream_from_file"><span class="keyword">val</span> linestream_from_file</span> : <code class="type">?buf:Bi_outbuf.t -><br>       ?fname:string -> ?lnum:int -> string -> <a href="Yojson.Basic.html#TYPEjson_line">json_line</a> Stream.t</code></pre><div class="info">
+Input a sequence of JSON values, one per line, from a file.
+      Exceptions raised when reading malformed lines are caught
+      and represented using <code class="code">`Exn</code>.
+<p>
+
+      See <code class="code">stream_from_channel</code> for the meaning of the optional <code class="code">fin</code>
+      argument.
+      See <code class="code">from_string</code> for the meaning of the other optional arguments.<br>
+</div>
+<pre><span class="keyword">module</span> <a href="Yojson.Basic.Util.html">Util</a>: <code class="code">sig</code> <a href="Yojson.Basic.Util.html">..</a> <code class="code">end</code></pre></body></html>

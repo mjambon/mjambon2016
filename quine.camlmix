@@ -1,0 +1,52 @@
+##
+let delimit_code s =
+  let first = String.index s '#'
+  and last = String.rindex s '#' in
+  (String.sub s 0 first,
+   String.sub s first (last - first + 1),
+   String.sub s (last + 1) (String.length s - last - 1))
+
+let _ =
+  let printer s =
+    let (free1, code, free2) = delimit_code s in
+    print_string (code ^ free1 ^ "#" ^ code ^ "#" ^ free2) in
+  Camlmix.printer := printer
+##
+
+We are inside of a quine which is written in Camlmix:
+  http://martin.jambon.free.fr/camlmix
+
+To run this quine, install Camlmix, save this file as "quine.camlmix", 
+and execute the following command:
+  camlmix quine.camlmix
+
+Of course, any text file that doesn't contain an isolated sequence of
+2 sharp symbols is also a Camlmix quine, because in that case Camlmix
+just behaves like cat. But that's too easy. The current quine
+includes a non-empty portion of OCaml.
+
+You may notice that only the OCaml code is duplicated. 
+Moreover, it is duplicated without a single change.
+2 regions of free text are allowed:
+  - one after the OCaml block (this one)
+  - one after the escaped OCaml block (the last part of the file)
+Only the sharp character is forbidden in these regions.
+However, in everyday Camlmix, a single sharp can appear at any point
+without causing trouble.
+
+###
+let delimit_code s =
+  let first = String.index s '#'
+  and last = String.rindex s '#' in
+  (String.sub s 0 first,
+   String.sub s first (last - first + 1),
+   String.sub s (last + 1) (String.length s - last - 1))
+
+let _ =
+  let printer s =
+    let (free1, code, free2) = delimit_code s in
+    print_string (code ^ free1 ^ "#" ^ code ^ "#" ^ free2) in
+  Camlmix.printer := printer
+###
+
+Camlmix quine (c) 2004 Martin Jambon

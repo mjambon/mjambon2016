@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>
+opaque.mli</title>
+  <meta name="GENERATOR" content="caml2html 1.2.0">
+</head>
+<body>
+
+<pre><span style="color:#990000">(** Opaque types for [int] and [string].</span>
+<span style="color:#990000">This module provides a convenient way to convert [int] or [string] types</span>
+<span style="color:#990000">to abstract types.</span>
+<span style="color:#990000"></span>
+<span style="color:#990000">Motivation: type [int] may be used for representing several kinds of </span>
+<span style="color:#990000">data. Confusion is easy, so we often need to make it abstract, </span>
+<span style="color:#990000">while keeping:</span>
+<span style="color:#990000">- the functions that used to work with type [int]</span>
+<span style="color:#990000">- efficiency</span>
+<span style="color:#990000">- no creation of specific modules</span>
+<span style="color:#990000"></span>
+<span style="color:#990000">This solution was suggested by Jacques Garrigue.</span>
+<span style="color:#990000">What the user has to do is [open Opaque] and then</span>
+<span style="color:#990000">use a type parameter to define</span>
+<span style="color:#990000">the specialized version of [int] or [string].</span>
+<span style="color:#990000">We will write the type declarations as</span>
+<span style="color:#990000">[type port = [`Port] int_t] or [type date = [`Date] int_t].</span>
+<span style="color:#990000">Data is converted with the [int_t] and [t_int] polymorphic </span>
+<span style="color:#990000">functions as in [let port : port = int_t 0].</span>
+<span style="color:#990000"></span>
+<span style="color:#990000">@author Martin Jambon *)</span>
+
+<span style="color:#990000">(** {6 Opaque [int]s } *)</span>
+
+<span style="color:green">type</span> 'a int_t
+<span style="color:#990000">(** data of type ['a int_t] has the same internal representation</span>
+<span style="color:#990000">   as type [int]. *)</span>
+
+<span style="color:green">val</span> int_t : int -&gt; 'a int_t
+<span style="color:green">val</span> t_int : 'a int_t -&gt; int
+<span style="color:green">val</span> any_int : 'a int_t -&gt; 'b int_t
+<span style="color:#990000">(** [int_t], [t_int] and [any_int] are type conversion functions. *)</span>
+
+
+<span style="color:green">val</span> add : 'a int_t -&gt; 'a int_t -&gt; 'a int_t
+<span style="color:green">val</span> sub : 'a int_t -&gt; 'a int_t -&gt; 'a int_t
+<span style="color:green">val</span> mul : 'a int_t -&gt; 'a int_t -&gt; 'a int_t
+<span style="color:green">val</span> div : 'a int_t -&gt; 'a int_t -&gt; 'a int_t
+<span style="color:green">val</span> neg : 'a int_t -&gt; 'a int_t
+<span style="color:#990000">(** [add], [sub], [mul], [div] and [neg] are the equivalents</span>
+<span style="color:#990000">  of [( + )], [( - )], [( * )], [( / )] and [( ~- )]. *)</span>
+
+<span style="color:green">val</span> successor : 'a int_t -&gt; 'a int_t
+<span style="color:green">val</span> predecessor : 'a int_t -&gt; 'a int_t
+<span style="color:green">val</span> increment : 'a int_t ref -&gt; unit
+<span style="color:#990000">(** [successor], [predecessor] and [increment] are the equivalents</span>
+<span style="color:#990000">  of [( + )], [( - )], [( * )], [( / )] and [( ~- )]. *)</span>
+
+<span style="color:green">val</span> print_int_t : 'a int_t -&gt; unit
+
+
+<span style="color:#990000">(** {6 Opaque [string]s } *)</span>
+
+<span style="color:green">type</span> 'a string_t
+<span style="color:#990000">(** data of type ['a string_t] has the same internal representation</span>
+<span style="color:#990000">   as type [string]. *)</span>
+
+<span style="color:green">val</span> string_t : string -&gt; 'a string_t
+<span style="color:green">val</span> t_string : 'a string_t -&gt; string
+<span style="color:green">val</span> any_string : 'a string_t -&gt; 'b string_t
+<span style="color:#990000">(** [int_string], [t_string] and [any_string] are type conversion functions. *)</span>
+
+<span style="color:green">val</span> concat : 'a string_t -&gt; 'a string_t -&gt; 'a string_t
+<span style="color:green">val</span> concat_list : string -&gt; 'a string_t list -&gt; 'a string_t
+<span style="color:#990000">(** [concat] and [concat_list] are equivalents of [( ^ )] </span>
+<span style="color:#990000">and [String.concat]. *)</span>
+
+<span style="color:green">val</span> print_string_t : 'a string_t -&gt; unit
+</pre>
+</body>
+</html>

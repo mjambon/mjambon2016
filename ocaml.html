@@ -1,0 +1,451 @@
+
+<!doctype html>
+
+<html>
+<head>
+<title>Software by Martin Jambon</title>
+<meta http-equiv="content-Type" content="text/html; charset=utf-8">
+
+<link rel="stylesheet" href="/base.css" type="text/css">
+
+<link rel="stylesheet" href="/ocaml.css" type="text/css">
+
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+<link rel="home" href="/">
+<link rel="author" href="/people.html#martin">
+
+</head>
+<body>
+
+<div id="page">
+
+
+<div>
+<table id=top_menu cellspacing=0>
+<tr>
+  <td><a href="/">Main</a></td>
+  <td class="current_topic"><a>Software</a></td>
+  <td><a href="/releases">Downloads</a></td>
+  <td><a href="/other.html">Other</a></td>
+</tr>
+</table>
+</div>
+
+<h1>Software made here</h1>
+
+<p>
+This page lists software and software documentation
+that I wrote or co-wrote,
+often using the <a href="http://caml.inria.fr">OCaml</a> programming
+language.
+Most of the projects are
+<a href="http://www.debian.org/social_contract.html#guidelines">free
+software</a>.
+
+<p>
+See also my personal activity on GitHub
+<a href="https://github.com/mjambon">as myself (mjambon)</a> and
+within <a href="https://github.com/mylifelabs">MyLife (MyLifeLabs)</a>.
+
+<table class=list cellspacing="1em">
+
+
+<tr><td colspan="2" style="background:silver; text-align:center; font-weight:bold">Software documentation</td></tr>
+
+<tr><th><span id="atd-biniou-intro">Adjustable type 
+definitions for data exchange</span></th>
+<td class=normal><a href="atd-biniou-intro.html">An introduction to 
+ATD, biniou, yojson and atdgen</a>.
+</td>
+</tr>
+
+<tr><th><span id=extendocaml>How to customize the syntax of OCaml, 
+using Camlp5</span></th>
+<td class=normal><a href="extend-ocaml-syntax.html">A
+Camlp5 tutorial</a> illustrated with many examples and programming
+guidelines.
+</td>
+
+
+<tr><td colspan="2" style="background:silver; text-align:center; font-weight:bold">Software</td></tr>
+
+<tr><td colspan="2">
+All of the following packages are under development or maintained.
+</td></tr>
+
+<tr id=atdgen><th>Atdgen</th>
+<td class=normal><a href="/atdgen">Atdgen</a>
+generates optimized OCaml boilerplate code for 
+<a href="http://json.org/">JSON</a> and <a href="biniou.html">biniou</a> IO 
+from type definitions.
+</td>
+</tr>
+
+<tr id=atd><th>Atd</th>
+<td class=normal><a href="/atdgen">Atd</a>
+is a type-definition syntax designed for cross-language interoperability.
+</td>
+</tr>
+
+<tr id=yojson><th>Yojson</th>
+<td class=normal><a href="yojson.html">Yojson</a> is a library
+for data interchange using the <a href="http://www.json.org">JSON format</a>.
+Supersedes json-wheel.
+</td>
+</tr>
+
+<tr id=biniou><th>Biniou</th>
+<td class=normal><a href="biniou.html">Biniou</a> is a 
+binary data format designed for speed, safety, ease of use and
+backward compatibility as protocols evolve.
+</td>
+</tr>
+
+<tr id="cppo"><th>Cppo</th>
+<td class="normal"><a href="cppo.html">Cpp for OCaml</a>
+</td>
+</tr>
+
+<tr id="nproc"><th>Nproc</th>
+<td class="normal"><a href="https://github.com/MyLifeLabs/nproc">
+Multi-processing library providing process pools</a> 
+for <a href="http://ocsigen.org/lwt/">Lwt</a>.
+</td>
+</tr>
+
+<tr id="dutop"><th>dutop</th>
+<td class="normal"><a href="https://github.com/MyLifeLabs/dutop">disk 
+usage top</a>.
+</td>
+</tr>
+
+<tr id="sampl"><th>sampl</th>
+<td class="normal"><a href="https://github.com/MyLifeLabs/sampl">like
+"head" or "tail" but picks 10 random lines</a> from large data files.
+</td>
+</tr>
+
+<tr id="wcl"><th>wcl</th>
+<td class="normal"><a href="https://github.com/MyLifeLabs/wcl">"wc -l" 
+for the impatient</a>, with estimation of total line count 
+as it progresses.
+</td>
+</tr>
+
+<tr id="easy-format"><th>Easy-format</th>
+<td class="normal"><a href="easy-format.html">Easy-format</a> is a 
+functional layer relying on the standard Format module
+to produce indented text.
+</td>
+</tr>
+
+<tr><th><span id=micmatch>Mikmatch</span></th>
+<td class=normal><a href="mikmatch.html">Mikmatch</a> is a package that 
+extends the pattern matching syntax of OCaml with regular expressions, 
+thus providing unique shortcuts for text manipulation in OCaml programs
+together with safety, readability and efficiency.
+</td>
+</tr>
+
+<tr><th><span id=camlmix>Camlmix</span></th>
+<td class=normal><a href="camlmix/index.html">Camlmix</a> is a 
+general purpose preprocessor using OCaml as a language to fill the gaps
+of templates.
+</td>
+</tr>
+
+<tr id=ocamlscript><th>ocamlscript</th>
+<td class=normal><a href="ocamlscript.html">ocamlscript</a> compiles scripts 
+into native code for optimal speed and ease of use.
+[Camlp4 3.10 port: 3.10.1]
+</td>
+</tr>
+
+<tr><th><span id=caml2html>Caml2html</span></th>
+<td class=normal><a href="caml2html.html">Caml2html</a> is a program that
+converts OCaml source files into colored HTML pages. Also available
+as a library. Originally written by S&eacute;bastien Ailleret.
+</td>
+</tr>
+
+<tr id=json-wheel><th>json-wheel
+(superseded by <a href="#yojson">Yojson</a>)</th>
+<td class=normal><a href="json-wheel.html">json-wheel</a> is a library
+for data interchange using the <a href="http://www.json.org">JSON format</a>.
+</td>
+</tr>
+
+<tr id=json-static><th>json-static
+(superseded by <a href="#atdgen">Atdgen</a>)</th>
+<td class=normal><a href="json-static.html">json-static</a> is a syntax
+extension that goes on top of <a href="#json-wheel">json-wheel</a>
+and translates type definitions into converters from/to untyped JSON data,
+much like <a href="#col">col</a> does for CSV files.
+</td>
+</tr>
+
+<tr id=asciipict><th>Asciipict</th>
+<td class=normal>converts images to ASCII art!
+See for example <a href="martin.png">martin.png</a>.
+Download <a href="asciipict.tar.bz2">asciipict.tar.bz2</a> or 
+<a href="asciipict.tar.gz">asciipict.tar.gz</a>
+</td>
+</tr>
+
+<tr id=unpurple><th>Unpurple</th>
+<td class=normal><a href="https://github.com/mjambon/purple-fringe"><code>unpurple</code></a>
+removes purple fringing from digital photos.
+See <a href="http://mjambon.com/purple-fringe/examples.html">examples</a>.
+</td>
+</tr>
+
+<tr id=upnym><th>Upnym</th>
+<td class=normal><a href="http://upnym.com">Upnym</a> is a web application that 
+helps pick a name for a new brand. It offers as-you-type suggestions
+and name availability lookups for .com, Facebook and Twitter. [closed source]
+</td>
+</tr>
+
+<tr><td colspan="2" style="background:silver; text-align:center; font-weight:bold">Dormant or unmaintained software</td></tr>
+
+<tr id=col><th>Col</th>
+<td class=normal>This package provides a syntax extension for 
+easier manipulation of flat records, objects or tuples
+and conversions from/to CSV files
+for your favorite spreadsheet or plotting program.
+The <a href="col-doc.html">documentation</a> is not complete yet but
+<a href="http://ocaml.pbwiki.com/Col">you can help</a>.
+
+Old version for OCaml 3.09:
+<a href="col-1.1.1.tar.bz2">col-1.1.1.tar.bz2</a> or 
+<a href="col-1.1.1.tar.gz">col-1.1.1.tar.gz</a> 
+[<a href="col-license.txt">license</a> |
+<a href="col-changes.txt">changes</a>].
+<a href="https://github.com/pveber/col">Col is now maintained by
+Philippe Veber</a>.
+</td>
+</tr>
+
+<tr id=biblio><th>Biblio.php</th>
+<td class=normal><a href="/biblio_php.html">Biblio.php</a>
+is a MediaWiki extension allowing to insert bibliographic references
+into wiki pages by only giving a reference (PMID or ISBN).
+</td>
+</tr>
+
+
+<tr><td colspan="2" style="background:silver; text-align:center; font-weight:bold">Smaller programs</td></tr>
+
+<tr id=tophide><th>Tophide</th>
+<td class=normal>Hides toplevel values whose name starts with an underscore. 
+Primarily for use with Camlp4 syntax extensions.
+
+Download <a href="tophide-1.0.0.tar.bz2">tophide-1.0.0.tar.bz2</a> or 
+<a href="tophide-1.0.0.tar.gz">tophide-1.0.0.tar.gz</a> 
+[<a href="tophide-license.txt">license</a>|<a 
+href="tophide-readme.txt">documentation</a>|<a href="https://github.com/mjambon/tophide">development</a>].
+</td>
+</tr>
+
+<tr><th><span id=toolbox>Camlmix Toolbox</span></th>
+<td class=normal>The <a href="/toolbox.html">Camlmix toolbox</a>
+is a collection of short code samples.
+They may serve as a source of inspiration for 
+<a href="/camlmix">Camlmix</a> users and
+beginners using OCaml as a scripting language.
+</td>
+</tr>
+
+<tr><th><span id=hashtbl2>Hashtbl2</span></th>
+<td class=normal>Hashtbl2 is useful for using hash tables as a
+clustering engine, 
+i.e. for grouping several objects under the same key, retrieving a
+non-redundant list of keys in one pass, and much more.
+View the <a href="hashtbl2/Hashtbl2.html">documentation</a>, 
+<a href="hashtbl2.mli.html">hashtbl2.mli</a>,
+<a href="hashtbl2.ml.html">hashtbl2.ml</a>, or download 
+<a href="hashtbl2.tar.gz">hashtbl2.tar.gz</a>. License: Public Domain.
+</td>
+</tr>
+
+<tr><th><span id=opaque>Opaque</span></th>
+<td class=normal>This short module provides a trick to force the compiler to 
+distinguish different kinds of <code>int</code>s or <code>string</code>s.
+Useful in complex programs with lots of indexed containers such as
+hash tables.
+View the <a href="opaque/Opaque.html">documentation</a>,
+<a href="opaque.mli.html">opaque.mli</a>,
+<a href="opaque.ml.html">opaque.ml</a>, or download 
+<a href="opaque.tar.gz">opaque.tar.gz</a>. License: Public Domain.
+</td>
+</tr>
+
+<tr><th><span id=latin1>Latin1</span></th>
+<td class=normal>
+Provides functions for comparing ASCII or Latin1 (ISO 8859-1) characters
+and strings according to the alphabetical order like in the
+dictionaries.
+[<a href="latin1.ml.html">view</a>|<a href="latin1.ml">save</a>]. License: Public Domain.
+</td>
+</tr>
+
+<tr id=gstring><th>Gstring</th>
+<td class=normal>
+An example of a mixed mutable/immutable string type, and an interface
+to a few basic functions from the standard library.
+[<a href="gstring/gstring.html">view source</a>|<a href="gstring">browse files</a>]. License: Public Domain.
+</td>
+</tr>
+
+<tr id=phys><th>Phys</th>
+<td class=normal>
+Polymorphic hash table using physical equality to compare keys.
+[<a href="phys.html">view source</a>]. License: Public Domain.
+</td>
+</tr>
+
+<tr><th><span id=infix>Infix</span></th>
+<td class=normal>
+Provides support for alphanumeric infix operators in OCaml. 
+Now available through <a href="p4ck.html">P4ck</a>.
+[<a href="pa_infix.ml.html">view</a>|<a href="pa_infix.ml">save</a>].
+[Camlp4 3.10 port: no]
+</td>
+</tr>
+
+<tr><th><span id=forin>Forin</span></th>
+<td class=normal>
+Provides a foreach-style replacement of <code>List.iter</code>.
+Now available through <a href="p4ck.html">P4ck</a>.
+[<a href="pa_forin.ml.html">view</a>|<a href="pa_forin.ml">save</a>].
+[Camlp4 3.10 port: no] License: Public Domain.
+</td>
+</tr>
+
+<tr><th><span id=forstep>Forstep</span></th>
+<td class=normal>
+Provides an extension of "for" loops with an optional "step" parameter.
+Now available through <a href="p4ck.html">P4ck</a>.
+[<a href="pa_forstep.ml.html">view</a>|<a href="pa_forstep.ml">save</a>].
+[Camlp4 3.10 port: no] License: Public Domain.
+</td>
+</tr>
+
+<tr><th><span id=repeat>Repeat</span></th>
+<td class=normal>
+Provides a tiny extension of OCaml: "repeat" loops.
+Now available through <a href="p4ck.html">P4ck</a>.
+[<a href="pa_repeat.ml.html">view</a>|<a href="pa_repeat.ml">save</a>].
+[Camlp4 3.10 port: no] License: Public Domain.
+</td>
+</tr>
+
+<tr><th><span id=memo>Memo</span></th>
+<td class=normal>
+Provides a syntax extension for functions with memoization.
+Also available through <a href="p4ck.html">P4ck</a>.
+[3.09-compatible <a href="309/pa_memo.ml.html">view</a>|<a href="309/pa_memo.ml">save</a>]
+[3.10-compatible <a href="310/pa_memo.ml.html">view</a>|<a href="310/pa_memo.ml">save</a>].
+License: Public Domain.
+</td>
+</tr>
+
+<tr><th><span id=tryfinally>TryFinally</span></th>
+<td class=normal>
+A small syntax extension which provides a "try ... finally ..." construct.
+Available through <a href="p4ck.html">P4ck</a>.
+[3.09-compatible: <a href="309/pa_tryfinally.ml.html">view</a>|<a href="309/pa_tryfinally.ml">save</a>]
+[3.10-compatible: <a href="310/pa_tryfinally.ml.html">view</a>|<a href="310/pa_tryfinally.ml">save</a>].
+License: Public Domain.
+</td>
+</tr>
+
+
+<tr><th><span id=bounds>Bounds</span></th>
+<td class=normal>
+An incredibly long syntax extension 
+which allows out-of-bounds accesses of arrays and alike to be reported
+with the exact location in the source code.
+Available through <a href="p4ck.html">P4ck</a>.
+[<a href="pa_bounds/README">README</a>|<a href="pa_bounds/pa_bounds.ml.html">view</a>|<a 
+href="pa_bounds/pa_bounds.ml">file</a>|<a 
+href="pa_bounds.tar.gz">archive</a>|<a 
+href="pa_bounds/">tree</a>].
+Camlp4 3.10 port: not needed for fresh code
+since ocamlopt 3.10 can dump stack backtraces.
+Andrew Schein offers a 
+<a href="http://code.google.com/p/paboundsfor310/">syntax 
+extension for backward compatibility</a>.
+ License: BSD-style.
+</td>
+</tr>
+
+<tr><th><span id=camlp4find>Camlp4find</span></th>
+<td class=normal><a href="camlp4find">Camlp4find</a> is a shell script
+that can be used as a replacement for the camlp4o or camlp4r commands
+and takes advantage of syntax packages that were installed with ocamlfind.
+[Camlp4 3.10 port: no] License: Public Domain.
+</td>
+</tr>
+
+
+<tr><td colspan="2" style="background:silver; text-align:center; font-weight:bold">Hackish amusements</td></tr>
+
+<tr><th><span id=icfp2004>ICFP contest 2004</span></th>
+<td class=normal>Some 
+<a href="/icfpcontest2004.html">documentation about my participation</a> 
+in the 
+<a href="http://www.cis.upenn.edu/proj/plclub/contest">ICFP 
+programming contest 2004</a>.
+</td>
+</tr>
+
+
+
+<tr><th><span id=quine>Quines</span></th>
+<td class=normal>A quine is a self-reproducing program. It generates a
+copy of 
+its own source code as its complete output.
+Here is a small one in OCaml: <a href="quine.ml.html">quine.ml</a>.
+Another quine is <a href="q.ml">here</a>, although it only works when
+executed with <code>ocaml q.ml</code> and outputs to stderr...
+<b>Bonus</b>: a true <a href="quine.sh">quine written in Bourne Shell</a> 
+(<a href="compact_quine.sh">compact form</a>).
+<b>Meta-bonus</b>: a complete Camlmix quine <a href="quine.camlmix">quine.camlmix</a>.
+</td>
+</tr>
+
+<tr><th><span id=polyglot>C/OCaml Hello</span></th>
+<td class=normal>This is a 
+<a href="hello.ml.html">"Hello World!" polyglot program</a> which is
+written in C and in OCaml at the same time.
+</td>
+</tr>
+</table>
+
+
+<div id=footer>
+&copy;&nbsp;2004-2012&nbsp;Martin&nbsp;Jambon &lt;<a href="mailto:martin@mjambon.com">martin@mjambon.com</a>&gt;
+</div>
+
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-640255-1";
+urchinTracker();
+</script>
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+<!-- 
+var sc_project=370325; 
+var sc_partition=1; 
+//-->
+</script>
+
+<script type="text/javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><p><a href="http://www.statcounter.com/"><img src="http://c2.statcounter.com/counter.php?sc_project=370325&amp;java=0" alt="counter"></a></p></noscript>
+<!-- End of StatCounter Code -->
+
+</body>
+</html>

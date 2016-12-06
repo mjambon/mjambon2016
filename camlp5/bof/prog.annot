@@ -1,0 +1,25 @@
+"" 2 8 10 "" 2 8 23
+type(
+  (string -> unit, out_channel, unit) format -> string -> unit
+)
+ident(
+  ext_ref Printf.printf
+)
+"" 2 8 24 "" 2 8 39
+type(
+  (string -> unit, out_channel, unit) format
+)
+"" 2 8 40 "" 2 8 47
+type(
+  string
+)
+ident(
+  int_ref version "" -1 0 0 "" -1 0 0
+)
+"" 2 8 10 "" 2 8 47
+call(
+  stack
+)
+type(
+  unit
+)

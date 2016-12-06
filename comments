@@ -1,0 +1,17 @@
+#! /usr/bin/env micmatch
+
+(* This script reads lines of input and
+   inserts line numbers as new comments (starting with '#')
+   or at the beginning of existing comments. *)
+
+let _ =
+  let n = ref 0 in
+  Micmatch.Text.iter_lines_of_channel
+    (fun line ->
+       let code, comment =
+	 match line with
+	     RE (_* Lazy as code) "#" (_* as comment) -> code, comment
+	   | code -> code, "" in
+       incr n;
+       Printf.printf "%s# %i %s\n" code !n comment)
+    stdin

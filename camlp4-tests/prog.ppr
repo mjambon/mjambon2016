@@ -1,0 +1,12 @@
+open Printf;
+
+value super_formula x =
+  let \+ = \+.
+  and \- = \-.
+  and \/ = \/.
+  and \* = \*.
+  and \mod = mod_float in
+  1.23 * 10. - x
+;
+
+printf "%g\n" (super_formula 3.);

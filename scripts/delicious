@@ -1,0 +1,48 @@
+#!/usr/bin/env ocamlscript
+(*-*- tuareg -*-*)
+Ocaml.packs := [ "netclient"; "json-static" ]
+--
+type json results = 
+    < hash: string;
+      top_tags: (string * int) assoc;
+      url: string;
+      total_posts: int > list
+
+let query_url urls =
+  "http://badges.del.icio.us/feeds/json/url/data?" ^
+  String.concat "&"
+    (List.map (fun url -> "hash=" ^ Digest.to_hex (Digest.string url)) urls)
+
+let get url =
+  results_of_json
+    (Json_io.json_of_string
+       (Http_client.Convenience.http_get (query_url url)))
+
+open Printf
+
+let display l =
+  List.iter
+    (fun x ->
+       printf "%i posts for %s\n(%s)\n" x#total_posts x#url x#hash;
+       let l = 
+	 List.sort (fun (s, n) (s', n') ->
+		      let c = compare n' n in
+		      if c <> 0 then c else String.compare s s')
+	   x#top_tags in
+       List.iter (fun (tag, n) -> printf "  %s %i\n" tag n) l)
+    l
+
+let _ =
+  let n = Array.length Sys.argv - 1 in
+  if n <= 0 || n > 15 then
+    (eprintf "\
+This program queries del.icio.us to see how popular a given URL is 
+and how it was tagged by del.icio.us users.
+
+Usage: delicious URL1 URL2 ...
+(max. 15 URLs)
+
+Example: delicious http://www.google.com/";
+     exit 1)
+  else
+    display (get (Array.to_list (Array.sub Sys.argv 1 n)))

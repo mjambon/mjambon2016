@@ -1,0 +1,22 @@
+##
+#load "utils.cmo";;
+open Utils
+##
+## include_file "doctype" ##
+<html>
+<head>
+## title "Page not found..." ##
+## include_file "charset" ##
+## include_file "stylesheet" ##
+## include_file "icon" ##
+## include_file "commonlinks" ##
+</head>
+<body>
+## include_file "start_big_table" ##
+## top_menu nowhere ##
+<h1>Page not found...</h1>
+
+## camlmix_footer () ##
+## include_file "end_big_table" ##
+</body>
+</html>

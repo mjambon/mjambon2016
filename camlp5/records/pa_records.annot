@@ -1,0 +1,1689 @@
+"pa_records.ml" 1 0 4 "pa_records.ml" 1 0 20
+type(
+  MLast.loc -> ((MLast.loc * string * 'a * 'b) * 'c) list -> MLast.expr
+)
+ident(
+  def make_record_expr "pa_records.ml" 7 184 184 --
+)
+"pa_records.ml" 1 0 21 "pa_records.ml" 1 0 24
+type(
+  MLast.loc
+)
+ident(
+  def loc "pa_records.ml" 1 0 25 "pa_records.ml" 5 152 182
+)
+"pa_records.ml" 1 0 25 "pa_records.ml" 1 0 26
+type(
+  ((MLast.loc * string * 'a * 'b) * 'c) list
+)
+ident(
+  def l "pa_records.ml" 2 29 31 "pa_records.ml" 5 152 182
+)
+"pa_records.ml" 2 29 35 "pa_records.ml" 2 29 41
+type(
+  (MLast.patt * MLast.expr) list
+)
+"pa_records.ml" 3 44 48 "pa_records.ml" 3 44 56
+type(
+  ((MLast.loc * string * 'a * 'b) * 'c -> MLast.patt * MLast.expr) ->
+  ((MLast.loc * string * 'a * 'b) * 'c) list ->
+  (MLast.patt * MLast.expr) list
+)
+ident(
+  ext_ref List.map
+)
+"pa_records.ml" 3 44 64 "pa_records.ml" 3 44 67
+type(
+  MLast.loc
+)
+ident(
+  def loc "pa_records.ml" 4 97 99 "pa_records.ml" 4 97 145
+)
+"pa_records.ml" 3 44 69 "pa_records.ml" 3 44 73
+type(
+  string
+)
+ident(
+  def name "pa_records.ml" 4 97 99 "pa_records.ml" 4 97 145
+)
+"pa_records.ml" 3 44 75 "pa_records.ml" 3 44 78
+type(
+  'a
+)
+ident(
+  def mut "pa_records.ml" 4 97 99 "pa_records.ml" 4 97 145
+)
+"pa_records.ml" 3 44 80 "pa_records.ml" 3 44 81
+type(
+  'b
+)
+ident(
+  def t "pa_records.ml" 4 97 99 "pa_records.ml" 4 97 145
+)
+"pa_records.ml" 3 44 64 "pa_records.ml" 3 44 81
+type(
+  MLast.loc * string * 'a * 'b
+)
+"pa_records.ml" 3 44 84 "pa_records.ml" 3 44 91
+type(
+  'c
+)
+ident(
+  def default "pa_records.ml" 4 97 99 "pa_records.ml" 4 97 145
+)
+"pa_records.ml" 3 44 63 "pa_records.ml" 3 44 91
+type(
+  (MLast.loc * string * 'a * 'b) * 'c
+)
+"pa_records.ml" 4 97 113 "pa_records.ml" 4 97 117
+type(
+  string
+)
+ident(
+  int_ref name "pa_records.ml" 3 44 69 "pa_records.ml" 3 44 73
+)
+type(
+  string Ploc.vala
+)
+"pa_records.ml" 4 97 100 "pa_records.ml" 4 97 121
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_records.ml" 3 44 64 "pa_records.ml" 3 44 67
+)
+type(
+  MLast.patt
+)
+"pa_records.ml" 4 97 136 "pa_records.ml" 4 97 140
+type(
+  string
+)
+ident(
+  int_ref name "pa_records.ml" 3 44 69 "pa_records.ml" 3 44 73
+)
+type(
+  string Ploc.vala
+)
+"pa_records.ml" 4 97 123 "pa_records.ml" 4 97 144
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_records.ml" 3 44 64 "pa_records.ml" 3 44 67
+)
+type(
+  MLast.expr
+)
+"pa_records.ml" 4 97 99 "pa_records.ml" 4 97 145
+type(
+  MLast.patt * MLast.expr
+)
+"pa_records.ml" 3 44 57 "pa_records.ml" 4 97 146
+type(
+  (MLast.loc * string * 'a * 'b) * 'c -> MLast.patt * MLast.expr
+)
+"pa_records.ml" 4 97 147 "pa_records.ml" 4 97 148
+type(
+  ((MLast.loc * string * 'a * 'b) * 'c) list
+)
+ident(
+  int_ref l "pa_records.ml" 1 0 25 "pa_records.ml" 1 0 26
+)
+"pa_records.ml" 3 44 48 "pa_records.ml" 4 97 148
+call(
+  stack
+)
+type(
+  (MLast.patt * MLast.expr) list
+)
+"pa_records.ml" 5 152 170 "pa_records.ml" 5 152 176
+type(
+  (MLast.patt * MLast.expr) list
+)
+ident(
+  int_ref fields "pa_records.ml" 2 29 35 "pa_records.ml" 2 29 41
+)
+type(
+  (MLast.patt * MLast.expr) list Ploc.vala
+)
+"pa_records.ml" 5 152 154 "pa_records.ml" 5 152 182
+type(
+  MLast.expr option
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_records.ml" 1 0 21 "pa_records.ml" 1 0 24
+)
+type(
+  MLast.expr
+)
+"pa_records.ml" 2 29 31 "pa_records.ml" 5 152 182
+type(
+  MLast.expr
+)
+"pa_records.ml" 1 0 25 "pa_records.ml" 5 152 182
+type(
+  ((MLast.loc * string * 'a * 'b) * 'c) list -> MLast.expr
+)
+"pa_records.ml" 1 0 21 "pa_records.ml" 5 152 182
+type(
+  MLast.loc -> ((MLast.loc * string * 'a * 'b) * 'c) list -> MLast.expr
+)
+"pa_records.ml" 7 184 188 "pa_records.ml" 7 184 201
+type(
+  MLast.loc ->
+  string ->
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list ->
+  MLast.str_item
+)
+ident(
+  def expand_record "pa_records.ml" 26 796 796 --
+)
+"pa_records.ml" 7 184 202 "pa_records.ml" 7 184 205
+type(
+  MLast.loc
+)
+ident(
+  def loc "pa_records.ml" 7 184 206 "pa_records.ml" 24 742 794
+)
+"pa_records.ml" 7 184 206 "pa_records.ml" 7 184 215
+type(
+  string
+)
+ident(
+  def type_name "pa_records.ml" 7 184 216 "pa_records.ml" 24 742 794
+)
+"pa_records.ml" 7 184 216 "pa_records.ml" 7 184 217
+type(
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list
+)
+ident(
+  def l "pa_records.ml" 8 220 222 "pa_records.ml" 24 742 794
+)
+"pa_records.ml" 8 220 226 "pa_records.ml" 8 220 234
+type(
+  MLast.str_item
+)
+"pa_records.ml" 9 238 246 "pa_records.ml" 9 238 252
+type(
+  (MLast.loc * string * bool * MLast.ctyp) list
+)
+"pa_records.ml" 9 238 255 "pa_records.ml" 9 238 263
+type(
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option ->
+   MLast.loc * string * bool * MLast.ctyp) ->
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list ->
+  (MLast.loc * string * bool * MLast.ctyp) list
+)
+ident(
+  ext_ref List.map
+)
+"pa_records.ml" 9 238 264 "pa_records.ml" 9 238 267
+type(
+  (MLast.loc * string * bool * MLast.ctyp) * MLast.expr option ->
+  MLast.loc * string * bool * MLast.ctyp
+)
+ident(
+  ext_ref Pervasives.fst
+)
+"pa_records.ml" 9 238 268 "pa_records.ml" 9 238 269
+type(
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list
+)
+ident(
+  int_ref l "pa_records.ml" 7 184 216 "pa_records.ml" 7 184 217
+)
+"pa_records.ml" 9 238 255 "pa_records.ml" 9 238 269
+call(
+  stack
+)
+type(
+  (MLast.loc * string * bool * MLast.ctyp) list
+)
+"pa_records.ml" 10 273 299 "pa_records.ml" 10 273 308
+type(
+  string
+)
+ident(
+  int_ref type_name "pa_records.ml" 7 184 206 "pa_records.ml" 7 184 215
+)
+type(
+  string Ploc.vala
+)
+"pa_records.ml" 10 273 320 "pa_records.ml" 10 273 326
+type(
+  (MLast.loc * string * bool * MLast.ctyp) list
+)
+ident(
+  int_ref fields "pa_records.ml" 9 238 246 "pa_records.ml" 9 238 252
+)
+type(
+  (MLast.loc * string * bool * MLast.ctyp) list Ploc.vala
+)
+"pa_records.ml" 10 273 277 "pa_records.ml" 10 273 332
+type(
+  MLast.type_decl list
+)
+type(
+  MLast.type_decl
+)
+type(
+  (MLast.ctyp * MLast.ctyp) list
+)
+type(
+  (MLast.ctyp * MLast.ctyp) list Ploc.vala
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_records.ml" 7 184 202 "pa_records.ml" 7 184 205
+)
+type(
+  MLast.ctyp
+)
+type(
+  bool
+)
+type(
+  bool Ploc.vala
+)
+type(
+  MLast.type_var list
+)
+type(
+  MLast.type_var list Ploc.vala
+)
+type(
+  MLast.loc * string Ploc.vala
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_records.ml" 7 184 202 "pa_records.ml" 7 184 205
+)
+type(
+  (MLast.loc * string Ploc.vala) Ploc.vala
+)
+type(
+  MLast.type_decl list
+)
+type(
+  MLast.type_decl list Ploc.vala
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_records.ml" 7 184 202 "pa_records.ml" 7 184 205
+)
+type(
+  MLast.str_item
+)
+"pa_records.ml" 9 238 242 "pa_records.ml" 10 273 332
+type(
+  MLast.str_item
+)
+"pa_records.ml" 11 336 342 "pa_records.ml" 11 336 350
+type(
+  MLast.str_item
+)
+"pa_records.ml" 12 353 361 "pa_records.ml" 12 353 372
+type(
+  MLast.expr
+)
+"pa_records.ml" 12 353 375 "pa_records.ml" 12 353 391
+type(
+  MLast.loc ->
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list ->
+  MLast.expr
+)
+ident(
+  int_ref make_record_expr "pa_records.ml" 1 0 4 "pa_records.ml" 1 0 20
+)
+"pa_records.ml" 12 353 392 "pa_records.ml" 12 353 395
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_records.ml" 7 184 202 "pa_records.ml" 7 184 205
+)
+"pa_records.ml" 12 353 396 "pa_records.ml" 12 353 397
+type(
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list
+)
+ident(
+  int_ref l "pa_records.ml" 7 184 216 "pa_records.ml" 7 184 217
+)
+"pa_records.ml" 12 353 375 "pa_records.ml" 12 353 397
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_records.ml" 13 401 409 "pa_records.ml" 13 401 410
+type(
+  MLast.expr
+)
+"pa_records.ml" 14 413 419 "pa_records.ml" 14 413 434
+type(
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option ->
+   MLast.expr -> MLast.expr) ->
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list ->
+  MLast.expr -> MLast.expr
+)
+ident(
+  ext_ref List.fold_right
+)
+"pa_records.ml" 15 435 443 "pa_records.ml" 15 435 446
+type(
+  MLast.loc
+)
+ident(
+  def loc "pa_records.ml" 15 435 472 "pa_records.ml" 20 579 624
+)
+"pa_records.ml" 15 435 448 "pa_records.ml" 15 435 452
+type(
+  string
+)
+ident(
+  def name "pa_records.ml" 15 435 472 "pa_records.ml" 20 579 624
+)
+"pa_records.ml" 15 435 454 "pa_records.ml" 15 435 457
+type(
+  bool
+)
+ident(
+  def mut "pa_records.ml" 15 435 472 "pa_records.ml" 20 579 624
+)
+"pa_records.ml" 15 435 459 "pa_records.ml" 15 435 460
+type(
+  MLast.ctyp
+)
+ident(
+  def t "pa_records.ml" 15 435 472 "pa_records.ml" 20 579 624
+)
+"pa_records.ml" 15 435 443 "pa_records.ml" 15 435 460
+type(
+  MLast.loc * string * bool * MLast.ctyp
+)
+"pa_records.ml" 15 435 463 "pa_records.ml" 15 435 470
+type(
+  MLast.expr option
+)
+ident(
+  def default "pa_records.ml" 15 435 472 "pa_records.ml" 20 579 624
+)
+"pa_records.ml" 15 435 442 "pa_records.ml" 15 435 470
+type(
+  (MLast.loc * string * bool * MLast.ctyp) * MLast.expr option
+)
+"pa_records.ml" 15 435 472 "pa_records.ml" 15 435 473
+type(
+  MLast.expr
+)
+ident(
+  def e "pa_records.ml" 16 477 481 "pa_records.ml" 20 579 624
+)
+"pa_records.ml" 16 477 487 "pa_records.ml" 16 477 494
+type(
+  MLast.expr option
+)
+ident(
+  int_ref default "pa_records.ml" 15 435 463 "pa_records.ml" 15 435 470
+)
+"pa_records.ml" 17 500 508 "pa_records.ml" 17 500 512
+type(
+  MLast.expr option
+)
+"pa_records.ml" 18 516 545 "pa_records.ml" 18 516 549
+type(
+  string
+)
+ident(
+  int_ref name "pa_records.ml" 15 435 448 "pa_records.ml" 15 435 452
+)
+"pa_records.ml" 18 516 534 "pa_records.ml" 18 516 549
+type(
+  string Ploc.vala
+)
+"pa_records.ml" 18 516 555 "pa_records.ml" 18 516 556
+type(
+  MLast.expr
+)
+ident(
+  int_ref e "pa_records.ml" 15 435 472 "pa_records.ml" 15 435 473
+)
+"pa_records.ml" 18 516 519 "pa_records.ml" 18 516 560
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+type(
+  MLast.patt * MLast.expr option Ploc.vala * MLast.expr
+)
+type(
+  MLast.expr option
+)
+type(
+  MLast.expr option Ploc.vala
+)
+type(
+  (MLast.patt * MLast.patt option Ploc.vala) list
+)
+type(
+  MLast.patt * MLast.patt option Ploc.vala
+)
+type(
+  MLast.patt option
+)
+type(
+  MLast.patt option Ploc.vala
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_records.ml" 15 435 443 "pa_records.ml" 15 435 446
+)
+type(
+  MLast.patt
+)
+type(
+  (MLast.patt * MLast.patt option Ploc.vala) list
+)
+type(
+  (MLast.patt * MLast.patt option Ploc.vala) list Ploc.vala
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_records.ml" 15 435 443 "pa_records.ml" 15 435 446
+)
+type(
+  MLast.patt
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list Ploc.vala
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_records.ml" 15 435 443 "pa_records.ml" 15 435 446
+)
+type(
+  MLast.expr
+)
+"pa_records.ml" 19 561 574 "pa_records.ml" 19 561 575
+type(
+  MLast.expr
+)
+ident(
+  def x "pa_records.ml" 20 579 582 "pa_records.ml" 20 579 624
+)
+"pa_records.ml" 19 561 569 "pa_records.ml" 19 561 575
+type(
+  MLast.expr option
+)
+"pa_records.ml" 20 579 602 "pa_records.ml" 20 579 606
+type(
+  string
+)
+ident(
+  int_ref name "pa_records.ml" 15 435 448 "pa_records.ml" 15 435 452
+)
+type(
+  string Ploc.vala
+)
+"pa_records.ml" 20 579 611 "pa_records.ml" 20 579 612
+type(
+  MLast.expr
+)
+ident(
+  int_ref x "pa_records.ml" 19 561 574 "pa_records.ml" 19 561 575
+)
+"pa_records.ml" 20 579 619 "pa_records.ml" 20 579 620
+type(
+  MLast.expr
+)
+ident(
+  int_ref e "pa_records.ml" 15 435 472 "pa_records.ml" 15 435 473
+)
+"pa_records.ml" 20 579 582 "pa_records.ml" 20 579 624
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+type(
+  MLast.patt * MLast.expr option Ploc.vala * MLast.expr
+)
+type(
+  MLast.expr option
+)
+type(
+  MLast.expr option Ploc.vala
+)
+type(
+  MLast.expr option
+)
+type(
+  MLast.expr option Ploc.vala
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_records.ml" 15 435 443 "pa_records.ml" 15 435 446
+)
+type(
+  MLast.patt
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_records.ml" 15 435 443 "pa_records.ml" 15 435 446
+)
+type(
+  MLast.patt
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list Ploc.vala
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_records.ml" 15 435 443 "pa_records.ml" 15 435 446
+)
+type(
+  MLast.expr
+)
+"pa_records.ml" 16 477 481 "pa_records.ml" 20 579 624
+type(
+  MLast.expr
+)
+"pa_records.ml" 15 435 472 "pa_records.ml" 20 579 624
+type(
+  MLast.expr -> MLast.expr
+)
+"pa_records.ml" 15 435 436 "pa_records.ml" 20 579 625
+type(
+  (MLast.loc * string * bool * MLast.ctyp) * MLast.expr option ->
+  MLast.expr -> MLast.expr
+)
+"pa_records.ml" 21 626 627 "pa_records.ml" 21 626 628
+type(
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list
+)
+ident(
+  int_ref l "pa_records.ml" 7 184 216 "pa_records.ml" 7 184 217
+)
+"pa_records.ml" 22 629 656 "pa_records.ml" 22 629 667
+type(
+  MLast.expr
+)
+ident(
+  int_ref record_expr "pa_records.ml" 12 353 361 "pa_records.ml" 12 353 372
+)
+"pa_records.ml" 22 629 637 "pa_records.ml" 22 629 671
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+type(
+  MLast.patt * MLast.expr option Ploc.vala * MLast.expr
+)
+type(
+  MLast.expr option
+)
+type(
+  MLast.expr option Ploc.vala
+)
+type(
+  string
+)
+type(
+  string Ploc.vala
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_records.ml" 7 184 202 "pa_records.ml" 7 184 205
+)
+type(
+  MLast.patt
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list Ploc.vala
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_records.ml" 7 184 202 "pa_records.ml" 7 184 205
+)
+type(
+  MLast.expr
+)
+"pa_records.ml" 14 413 419 "pa_records.ml" 22 629 671
+call(
+  stack
+)
+type(
+  MLast.expr
+)
+"pa_records.ml" 23 675 707 "pa_records.ml" 23 675 716
+type(
+  string
+)
+"pa_records.ml" 23 675 719 "pa_records.ml" 23 675 728
+type(
+  string
+)
+ident(
+  int_ref type_name "pa_records.ml" 7 184 206 "pa_records.ml" 7 184 215
+)
+"pa_records.ml" 23 675 707 "pa_records.ml" 23 675 728
+call(
+  stack
+)
+type(
+  string
+)
+type(
+  string -> string -> string
+)
+ident(
+  ext_ref Pervasives.( ^ )
+)
+type(
+  string Ploc.vala
+)
+"pa_records.ml" 23 675 733 "pa_records.ml" 23 675 734
+type(
+  MLast.expr
+)
+ident(
+  int_ref f "pa_records.ml" 13 401 409 "pa_records.ml" 13 401 410
+)
+"pa_records.ml" 23 675 679 "pa_records.ml" 23 675 738
+type(
+  (MLast.patt * MLast.expr) list
+)
+type(
+  MLast.patt * MLast.expr
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_records.ml" 7 184 202 "pa_records.ml" 7 184 205
+)
+type(
+  MLast.patt
+)
+type(
+  (MLast.patt * MLast.expr) list
+)
+type(
+  (MLast.patt * MLast.expr) list Ploc.vala
+)
+type(
+  bool
+)
+type(
+  bool Ploc.vala
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_records.ml" 7 184 202 "pa_records.ml" 7 184 205
+)
+type(
+  MLast.str_item
+)
+"pa_records.ml" 13 401 405 "pa_records.ml" 23 675 738
+type(
+  MLast.str_item
+)
+"pa_records.ml" 12 353 357 "pa_records.ml" 23 675 738
+type(
+  MLast.str_item
+)
+"pa_records.ml" 24 742 765 "pa_records.ml" 24 742 773
+type(
+  MLast.str_item
+)
+ident(
+  int_ref type_def "pa_records.ml" 8 220 226 "pa_records.ml" 8 220 234
+)
+"pa_records.ml" 24 742 777 "pa_records.ml" 24 742 785
+type(
+  MLast.str_item
+)
+ident(
+  int_ref expr_def "pa_records.ml" 11 336 342 "pa_records.ml" 11 336 350
+)
+"pa_records.ml" 24 742 744 "pa_records.ml" 24 742 794
+type(
+  MLast.str_item list
+)
+type(
+  MLast.str_item list
+)
+type(
+  MLast.str_item list
+)
+type(
+  MLast.str_item list Ploc.vala
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_records.ml" 7 184 202 "pa_records.ml" 7 184 205
+)
+type(
+  MLast.str_item
+)
+"pa_records.ml" 11 336 338 "pa_records.ml" 24 742 794
+type(
+  MLast.str_item
+)
+"pa_records.ml" 8 220 222 "pa_records.ml" 24 742 794
+type(
+  MLast.str_item
+)
+"pa_records.ml" 7 184 216 "pa_records.ml" 24 742 794
+type(
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list ->
+  MLast.str_item
+)
+"pa_records.ml" 7 184 206 "pa_records.ml" 24 742 794
+type(
+  string ->
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list ->
+  MLast.str_item
+)
+"pa_records.ml" 7 184 202 "pa_records.ml" 24 742 794
+type(
+  MLast.loc ->
+  string ->
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list ->
+  MLast.str_item
+)
+"pa_records.ml" 26 796 802 "pa_records.ml" 26 796 803
+type(
+  (Grammar.token Gramext.g_entry * Gramext.position option *
+   (string option * Gramext.g_assoc option *
+    (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+   list)
+  list -> unit
+)
+ident(
+  ext_ref Grammar.extend
+)
+"pa_records.ml" 27 803 813 "pa_records.ml" 27 803 827
+type(
+  MLast.str_item Grammar.Entry.e
+)
+ident(
+  ext_ref Pcaml.str_item
+)
+type(
+  MLast.str_item Grammar.Entry.e
+)
+type(
+  MLast.str_item Grammar.Entry.e
+)
+ident(
+  ext_ref Pcaml.str_item
+)
+type(
+  MLast.str_item Grammar.Entry.e
+)
+"pa_records.ml" 29 830 832 "pa_records.ml" 29 830 846
+type(
+  Grammar.token Gramext.g_entry * Gramext.position option *
+  (string option * Gramext.g_assoc option *
+   (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+  list
+)
+type(
+  (string option * Gramext.g_assoc option *
+   (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+  list
+)
+type(
+  string option * Gramext.g_assoc option *
+  (Grammar.token Gramext.g_symbol list * Gramext.g_action) list
+)
+type(
+  (Grammar.token Gramext.g_symbol list * Gramext.g_action) list
+)
+type(
+  Grammar.token Gramext.g_symbol list * Gramext.g_action
+)
+type(
+  Gramext.g_action
+)
+type(
+  '_a ->
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list ->
+  '_b -> '_c -> string -> '_d -> MLast.loc -> MLast.str_item
+)
+type(
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list ->
+  '_b -> '_c -> string -> '_d -> MLast.loc -> MLast.str_item
+)
+type(
+  '_b -> '_c -> string -> '_d -> MLast.loc -> MLast.str_item
+)
+type(
+  '_c -> string -> '_d -> MLast.loc -> MLast.str_item
+)
+type(
+  string -> '_d -> MLast.loc -> MLast.str_item
+)
+type(
+  '_d -> MLast.loc -> MLast.str_item
+)
+type(
+  MLast.loc -> MLast.str_item
+)
+type(
+  MLast.loc
+)
+ident(
+  def loc "pa_records.ml" 29 830 832 "pa_records.ml" 29 830 846
+)
+type(
+  '_d
+)
+type(
+  '_c
+)
+type(
+  '_b
+)
+type(
+  '_a
+)
+type(
+  ('_a ->
+   ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list ->
+   '_b -> '_c -> string -> '_d -> MLast.loc -> MLast.str_item) ->
+  Gramext.g_action
+)
+ident(
+  ext_ref Gramext.action
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  (Grammar.token Gramext.g_symbol list * Gramext.g_action) list
+)
+type(
+  Gramext.g_assoc option
+)
+type(
+  string option
+)
+type(
+  (string option * Gramext.g_assoc option *
+   (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+  list
+)
+type(
+  Gramext.position option
+)
+type(
+  MLast.str_item Grammar.Entry.e
+)
+type(
+  MLast.str_item Grammar.Entry.e
+)
+ident(
+  ext_ref Pcaml.str_item
+)
+"pa_records.ml" 29 830 854 "pa_records.ml" 29 830 859
+type(
+  string
+)
+"pa_records.ml" 29 830 848 "pa_records.ml" 29 830 859
+type(
+  Gramext.position
+)
+"pa_records.ml" 30 862 868 "pa_records.ml" 30 862 876
+type(
+  Plexing.pattern
+)
+type(
+  string
+)
+type(
+  string
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_records.ml" 30 862 890 "pa_records.ml" 30 862 896
+type(
+  Plexing.pattern
+)
+type(
+  string
+)
+type(
+  string
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_records.ml" 30 862 878 "pa_records.ml" 30 862 896
+type(
+  string
+)
+ident(
+  def type_name "pa_records.ml" 29 830 832 "pa_records.ml" 29 830 846
+)
+"pa_records.ml" 30 862 898 "pa_records.ml" 30 862 901
+type(
+  Plexing.pattern
+)
+type(
+  string
+)
+type(
+  string
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_records.ml" 31 904 910 "pa_records.ml" 31 904 913
+type(
+  Plexing.pattern
+)
+type(
+  string
+)
+type(
+  string
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_records.ml" 31 904 925 "pa_records.ml" 31 904 935
+type(
+  Grammar.token Gramext.g_entry
+)
+type(
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option)
+  Grammar.Entry.e
+)
+type(
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option)
+  Grammar.Entry.e
+)
+ident(
+  int_ref field_decl "pa_records.ml" 34 990 992 "pa_records.ml" 34 990 1002
+)
+type(
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option)
+  Grammar.Entry.e -> Grammar.token Gramext.g_entry
+)
+ident(
+  ext_ref Grammar.Entry.obj
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_records.ml" 31 904 940 "pa_records.ml" 31 904 943
+type(
+  Plexing.pattern
+)
+type(
+  string
+)
+type(
+  string
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_records.ml" 31 904 919 "pa_records.ml" 31 904 943
+type(
+  bool
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_records.ml" 31 904 915 "pa_records.ml" 31 904 943
+type(
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list
+)
+ident(
+  def l "pa_records.ml" 29 830 832 "pa_records.ml" 29 830 846
+)
+"pa_records.ml" 31 904 945 "pa_records.ml" 31 904 948
+type(
+  Plexing.pattern
+)
+type(
+  string
+)
+type(
+  string
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_records.ml" 31 904 952 "pa_records.ml" 31 904 965
+type(
+  MLast.loc ->
+  string ->
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list ->
+  MLast.str_item
+)
+ident(
+  int_ref expand_record "pa_records.ml" 7 184 188 "pa_records.ml" 7 184 201
+)
+"pa_records.ml" 31 904 966 "pa_records.ml" 31 904 969
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_records.ml" 29 830 832 "pa_records.ml" 29 830 846
+)
+"pa_records.ml" 31 904 970 "pa_records.ml" 31 904 979
+type(
+  string
+)
+ident(
+  int_ref type_name "pa_records.ml" 30 862 878 "pa_records.ml" 30 862 896
+)
+"pa_records.ml" 31 904 980 "pa_records.ml" 31 904 981
+type(
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) list
+)
+ident(
+  int_ref l "pa_records.ml" 31 904 915 "pa_records.ml" 31 904 943
+)
+"pa_records.ml" 31 904 952 "pa_records.ml" 31 904 981
+call(
+  tail
+)
+type(
+  MLast.str_item
+)
+type(
+  MLast.str_item
+)
+"pa_records.ml" 34 990 992 "pa_records.ml" 34 990 1002
+call(
+  stack
+)
+type(
+  Grammar.token Gramext.g_entry * Gramext.position option *
+  (string option * Gramext.g_assoc option *
+   (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+  list
+)
+type(
+  (string option * Gramext.g_assoc option *
+   (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+  list
+)
+type(
+  string option * Gramext.g_assoc option *
+  (Grammar.token Gramext.g_symbol list * Gramext.g_action) list
+)
+type(
+  (Grammar.token Gramext.g_symbol list * Gramext.g_action) list
+)
+type(
+  Grammar.token Gramext.g_symbol list * Gramext.g_action
+)
+type(
+  Gramext.g_action
+)
+type(
+  MLast.expr option ->
+  MLast.ctyp ->
+  '_e ->
+  string ->
+  string option ->
+  MLast.loc -> (MLast.loc * string * bool * MLast.ctyp) * MLast.expr option
+)
+type(
+  MLast.ctyp ->
+  '_e ->
+  string ->
+  string option ->
+  MLast.loc -> (MLast.loc * string * bool * MLast.ctyp) * MLast.expr option
+)
+type(
+  '_e ->
+  string ->
+  string option ->
+  MLast.loc -> (MLast.loc * string * bool * MLast.ctyp) * MLast.expr option
+)
+type(
+  string ->
+  string option ->
+  MLast.loc -> (MLast.loc * string * bool * MLast.ctyp) * MLast.expr option
+)
+type(
+  string option ->
+  MLast.loc -> (MLast.loc * string * bool * MLast.ctyp) * MLast.expr option
+)
+type(
+  MLast.loc -> (MLast.loc * string * bool * MLast.ctyp) * MLast.expr option
+)
+type(
+  MLast.loc
+)
+ident(
+  def loc "pa_records.ml" 34 990 992 "pa_records.ml" 34 990 1002
+)
+type(
+  '_e
+)
+type(
+  (MLast.expr option ->
+   MLast.ctyp ->
+   '_e ->
+   string ->
+   string option ->
+   MLast.loc -> (MLast.loc * string * bool * MLast.ctyp) * MLast.expr option) ->
+  Gramext.g_action
+)
+ident(
+  ext_ref Gramext.action
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  (Grammar.token Gramext.g_symbol list * Gramext.g_action) list
+)
+type(
+  Gramext.g_assoc option
+)
+type(
+  string option
+)
+type(
+  (string option * Gramext.g_assoc option *
+   (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+  list
+)
+type(
+  Gramext.position option
+)
+type(
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option)
+  Grammar.Entry.e
+)
+type(
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option)
+  Grammar.Entry.e
+)
+ident(
+  int_ref field_decl "pa_records.ml" 34 990 992 "pa_records.ml" 34 990 1002
+)
+type(
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option)
+  Grammar.Entry.e
+)
+type(
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option)
+  Grammar.Entry.e
+)
+type(
+  string
+)
+type(
+  string ->
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option)
+  Grammar.Entry.e
+)
+ident(
+  int_ref grammar_entry_create "pa_records.ml" 27 803 805 "pa_records.ml" 39 1188 1192
+)
+type(
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option)
+  Grammar.Entry.e
+)
+"pa_records.ml" 35 1006 1022 "pa_records.ml" 35 1006 1031
+type(
+  Plexing.pattern
+)
+type(
+  string
+)
+type(
+  string
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_records.ml" 35 1006 1018 "pa_records.ml" 35 1006 1031
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_records.ml" 35 1006 1012 "pa_records.ml" 35 1006 1031
+type(
+  string option
+)
+ident(
+  def mut "pa_records.ml" 34 990 992 "pa_records.ml" 34 990 1002
+)
+"pa_records.ml" 36 1033 1046 "pa_records.ml" 36 1033 1052
+type(
+  Plexing.pattern
+)
+type(
+  string
+)
+type(
+  string
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_records.ml" 36 1033 1039 "pa_records.ml" 36 1033 1052
+type(
+  string
+)
+ident(
+  def name "pa_records.ml" 34 990 992 "pa_records.ml" 34 990 1002
+)
+"pa_records.ml" 36 1033 1054 "pa_records.ml" 36 1033 1057
+type(
+  Plexing.pattern
+)
+type(
+  string
+)
+type(
+  string
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_records.ml" 36 1033 1063 "pa_records.ml" 36 1033 1073
+type(
+  Grammar.token Gramext.g_entry
+)
+type(
+  MLast.ctyp Grammar.Entry.e
+)
+type(
+  MLast.ctyp Grammar.Entry.e
+)
+ident(
+  ext_ref Pcaml.ctyp
+)
+type(
+  MLast.ctyp Grammar.Entry.e -> Grammar.token Gramext.g_entry
+)
+ident(
+  ext_ref Grammar.Entry.obj
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_records.ml" 36 1033 1059 "pa_records.ml" 36 1033 1073
+type(
+  MLast.ctyp
+)
+ident(
+  def t "pa_records.ml" 34 990 992 "pa_records.ml" 34 990 1002
+)
+"pa_records.ml" 37 1076 1098 "pa_records.ml" 37 1076 1101
+type(
+  Plexing.pattern
+)
+type(
+  string
+)
+type(
+  string
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_records.ml" 37 1076 1107 "pa_records.ml" 37 1076 1132
+type(
+  string
+)
+type(
+  Grammar.token Gramext.g_entry
+)
+type(
+  MLast.expr Grammar.Entry.e
+)
+type(
+  MLast.expr Grammar.Entry.e
+)
+ident(
+  ext_ref Pcaml.expr
+)
+type(
+  MLast.expr Grammar.Entry.e -> Grammar.token Gramext.g_entry
+)
+ident(
+  ext_ref Grammar.Entry.obj
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_records.ml" 37 1076 1103 "pa_records.ml" 37 1076 1132
+type(
+  MLast.expr
+)
+ident(
+  def e "pa_records.ml" 37 1076 1096 "pa_records.ml" 37 1076 1139
+)
+"pa_records.ml" 37 1076 1136 "pa_records.ml" 37 1076 1137
+type(
+  MLast.expr
+)
+type(
+  MLast.expr
+)
+ident(
+  int_ref e "pa_records.ml" 37 1076 1103 "pa_records.ml" 37 1076 1132
+)
+"pa_records.ml" 37 1076 1096 "pa_records.ml" 37 1076 1139
+call(
+  stack
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+type(
+  (Grammar.token Gramext.g_symbol list * Gramext.g_action) list
+)
+type(
+  Grammar.token Gramext.g_symbol list * Gramext.g_action
+)
+type(
+  Gramext.g_action
+)
+type(
+  MLast.expr -> '_f -> Ploc.t -> MLast.expr
+)
+type(
+  '_f -> Ploc.t -> MLast.expr
+)
+type(
+  Ploc.t -> MLast.expr
+)
+type(
+  Ploc.t
+)
+ident(
+  def loc "pa_records.ml" 37 1076 1096 "pa_records.ml" 37 1076 1139
+)
+type(
+  '_f
+)
+type(
+  (MLast.expr -> '_f -> Ploc.t -> MLast.expr) -> Gramext.g_action
+)
+ident(
+  ext_ref Gramext.action
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  (Grammar.token Gramext.g_symbol list * Gramext.g_action) list
+)
+type(
+  (Grammar.token Gramext.g_symbol list * Gramext.g_action) list ->
+  Grammar.token Gramext.g_symbol
+)
+ident(
+  ext_ref Gramext.srules
+)
+"pa_records.ml" 37 1076 1092 "pa_records.ml" 37 1076 1139
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_records.ml" 37 1076 1082 "pa_records.ml" 37 1076 1139
+type(
+  MLast.expr option
+)
+ident(
+  def default "pa_records.ml" 34 990 992 "pa_records.ml" 34 990 1002
+)
+"pa_records.ml" 38 1144 1147 "pa_records.ml" 38 1144 1150
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_records.ml" 34 990 992 "pa_records.ml" 34 990 1002
+)
+"pa_records.ml" 38 1144 1152 "pa_records.ml" 38 1144 1156
+type(
+  string
+)
+ident(
+  int_ref name "pa_records.ml" 36 1033 1039 "pa_records.ml" 36 1033 1052
+)
+"pa_records.ml" 38 1144 1159 "pa_records.ml" 38 1144 1162
+type(
+  string option
+)
+ident(
+  int_ref mut "pa_records.ml" 35 1006 1012 "pa_records.ml" 35 1006 1031
+)
+"pa_records.ml" 38 1144 1166 "pa_records.ml" 38 1144 1170
+type(
+  string option
+)
+"pa_records.ml" 38 1144 1159 "pa_records.ml" 38 1144 1170
+type(
+  string option -> string option -> bool
+)
+ident(
+  ext_ref Pervasives.( <> )
+)
+"pa_records.ml" 38 1144 1158 "pa_records.ml" 38 1144 1171
+type(
+  bool
+)
+"pa_records.ml" 38 1144 1173 "pa_records.ml" 38 1144 1174
+type(
+  MLast.ctyp
+)
+ident(
+  int_ref t "pa_records.ml" 36 1033 1059 "pa_records.ml" 36 1033 1073
+)
+"pa_records.ml" 38 1144 1146 "pa_records.ml" 38 1144 1175
+type(
+  MLast.loc * string * bool * MLast.ctyp
+)
+"pa_records.ml" 38 1144 1177 "pa_records.ml" 38 1144 1184
+type(
+  MLast.expr option
+)
+ident(
+  int_ref default "pa_records.ml" 37 1076 1082 "pa_records.ml" 37 1076 1139
+)
+"pa_records.ml" 38 1144 1145 "pa_records.ml" 38 1144 1185
+type(
+  (MLast.loc * string * bool * MLast.ctyp) * MLast.expr option
+)
+type(
+  (MLast.loc * string * bool * MLast.ctyp) * MLast.expr option
+)
+"pa_records.ml" 27 803 805 "pa_records.ml" 39 1188 1192
+call(
+  stack
+)
+call(
+  tail
+)
+call(
+  stack
+)
+type(
+  unit
+)
+type(
+  (Grammar.token Gramext.g_entry * Gramext.position option *
+   (string option * Gramext.g_assoc option *
+    (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+   list)
+  list
+)
+type(
+  (Grammar.token Gramext.g_entry * Gramext.position option *
+   (string option * Gramext.g_assoc option *
+    (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+   list)
+  list
+)
+type(
+  (Grammar.token Gramext.g_entry * Gramext.position option *
+   (string option * Gramext.g_assoc option *
+    (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+   list)
+  list
+)
+type(
+  (Grammar.token Gramext.g_entry * Gramext.position option *
+   (string option * Gramext.g_assoc option *
+    (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+   list)
+  list
+)
+type(
+  Grammar.token Gramext.g_entry
+)
+type(
+  ((MLast.loc * string * bool * MLast.ctyp) * MLast.expr option)
+  Grammar.Entry.e -> Grammar.token Gramext.g_entry
+)
+ident(
+  ext_ref Grammar.Entry.obj
+)
+type(
+  (Grammar.token Gramext.g_entry * Gramext.position option *
+   (string option * Gramext.g_assoc option *
+    (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+   list)
+  list
+)
+type(
+  Grammar.token Gramext.g_entry
+)
+type(
+  MLast.str_item Grammar.Entry.e -> Grammar.token Gramext.g_entry
+)
+ident(
+  ext_ref Grammar.Entry.obj
+)
+type(
+  (Grammar.token Gramext.g_entry * Gramext.position option *
+   (string option * Gramext.g_assoc option *
+    (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+   list)
+  list
+)
+type(
+  string -> 'g Grammar.Entry.e
+)
+type(
+  'g Grammar.Entry.e
+)
+type(
+  string
+)
+ident(
+  int_ref s "pa_records.ml" 27 803 805 "pa_records.ml" 39 1188 1192
+)
+type(
+  Grammar.g
+)
+type(
+  MLast.str_item Grammar.Entry.e -> Grammar.g
+)
+ident(
+  ext_ref Grammar.of_entry
+)
+type(
+  Grammar.g -> string -> 'g Grammar.Entry.e
+)
+ident(
+  ext_ref Grammar.create_local_entry
+)
+type(
+  string
+)
+ident(
+  def s "pa_records.ml" 27 803 805 "pa_records.ml" 39 1188 1192
+)
+type(
+  string -> 'g Grammar.Entry.e
+)

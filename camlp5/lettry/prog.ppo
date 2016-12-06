@@ -1,0 +1,6 @@
+let rec cat () =
+  (try let c = input_char stdin in fun () -> print_char c; cat () with
+     End_of_file -> fun () -> ())
+    ()
+
+let _ = cat ()

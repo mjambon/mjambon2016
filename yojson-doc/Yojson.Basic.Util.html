@@ -1,0 +1,210 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="Up" href="Yojson.Basic.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Yojson" rel="Chapter" href="Yojson.html">
+<link title="Yojson_biniou" rel="Chapter" href="Yojson_biniou.html"><link title="Exception-free filters" rel="Section" href="#3_Exceptionfreefilters">
+<title>Yojson.Basic.Util</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a href="Yojson.Basic.html">Up</a>
+&nbsp;</div>
+<center><h1>Module <a href="type_Yojson.Basic.Util.html">Yojson.Basic.Util</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> Util: <code class="code">sig</code> <a href="Yojson.Basic.Util.html">..</a> <code class="code">end</code></pre><hr width="100%">
+<br>
+This module provides combinators for extracting fields from JSON
+   values. This approach is recommended for reading a few fields
+   from data returned by public APIs. However for more complex applications 
+   we recommend <a href="https://github.com/MyLifeLabs/atdgen">Atdgen</a>.
+<p>
+
+   Here is some sample JSON data:
+<pre>{
+  "id": "398eb027",
+  "name": "John Doe",
+  "pages": [
+    {
+      "id": 1,
+      "title": "The Art of Flipping Coins",
+      "url": "http://example.com/398eb027/1"
+    },
+    {
+      "id": 2,
+      "deleted": true
+    },
+    {
+      "id": 3,
+      "title": "Artichoke Salad",
+      "url": "http://example.com/398eb027/3"
+    },
+    {
+      "id": 4,
+      "title": "Flying Bananas",
+      "url": "http://example.com/398eb027/4"
+    }
+  ]
+}</pre>
+<p>
+
+   In order to extract the "id" field, assuming it is mandatory,
+   we would use the following OCaml code that operates on single JSON
+   nodes:
+<pre>open Yojson.Basic.Util
+...
+  let id = json |&gt; member "id" |&gt; to_string in
+  ...</pre>
+<p>
+
+   In order to extract all the "title" fields, we would write the following
+   OCaml code that operates on lists of JSON nodes, skipping
+   undefined nodes and nodes of unexpected type:
+<pre>open Yojson.Basic.Util
+
+let extract_titles (json : Yojson.Basic.json) : string list =
+  [json]
+    |&gt; filter_member "pages"
+    |&gt; flatten
+    |&gt; filter_member "title"
+    |&gt; filter_string</pre><br>
+<pre><span id="EXCEPTIONType_error"><span class="keyword">exception</span> Type_error</span> <span class="keyword">of</span> <code class="type">string * <a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a></code></pre>
+<div class="info">
+Raised when the JSON value is not of the correct type to support an
+      operation, e.g. <code class="code">member</code> on an <code class="code">`Int</code>. The string message explains the
+      mismatch.<br>
+</div>
+<pre><span id="EXCEPTIONUndefined"><span class="keyword">exception</span> Undefined</span> <span class="keyword">of</span> <code class="type">string * <a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a></code></pre>
+<div class="info">
+Raised when the equivalent JavaScript operation on the JSON value would
+      return undefined. Currently this only happens when an array index is out
+      of bounds.<br>
+</div>
+<pre><span id="VAL(|>)"><span class="keyword">val</span> (|&gt;)</span> : <code class="type">'a -> ('a -> 'b) -> 'b</code></pre><div class="info">
+Forward pipe operator; useful for composing JSON access functions
+      without too many parentheses<br>
+</div>
+<pre><span id="VALmember"><span class="keyword">val</span> member</span> : <code class="type">string -> <a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> -> <a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a></code></pre><div class="info">
+<code class="code">member k obj</code> returns the value associated with the key <code class="code">k</code> in the JSON
+      object <code class="code">obj</code>, or <code class="code">`Null</code> if <code class="code">k</code> is not present in <code class="code">obj</code>.<br>
+</div>
+<pre><span id="VALindex"><span class="keyword">val</span> index</span> : <code class="type">int -> <a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> -> <a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a></code></pre><div class="info">
+<code class="code">index i arr</code> returns the value at index <code class="code">i</code> in the JSON array <code class="code">arr</code>.
+      Negative indices count from the end of the list (so -1 is the last
+      element).<br>
+</div>
+<pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">(<a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> -> <a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a>) -><br>       <a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> -> <a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a></code></pre><div class="info">
+<code class="code">map f arr</code> calls the function <code class="code">f</code> on each element of the JSON array
+      <code class="code">arr</code>, and returns a JSON array containing the results.<br>
+</div>
+<pre><span id="VALto_assoc"><span class="keyword">val</span> to_assoc</span> : <code class="type"><a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> -> (string * <a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a>) list</code></pre><div class="info">
+Extract the items of a JSON array or raise <code class="code">Type_error</code>.<br>
+</div>
+<pre><span id="VALto_option"><span class="keyword">val</span> to_option</span> : <code class="type">(<a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> -> 'a) -> <a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> -> 'a option</code></pre><div class="info">
+Return <code class="code">None</code> if the JSON value is null or map the JSON value
+      to <code class="code">Some</code> value using the provided function.<br>
+</div>
+<pre><span id="VALto_bool"><span class="keyword">val</span> to_bool</span> : <code class="type"><a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> -> bool</code></pre><div class="info">
+Extract a boolean value or raise <code class="code">Type_error</code>.<br>
+</div>
+<pre><span id="VALto_bool_option"><span class="keyword">val</span> to_bool_option</span> : <code class="type"><a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> -> bool option</code></pre><div class="info">
+Extract <code class="code">Some</code> boolean value, 
+      return <code class="code">None</code> if the value is null,
+      or raise <code class="code">Type_error</code> otherwise.<br>
+</div>
+<pre><span id="VALto_number"><span class="keyword">val</span> to_number</span> : <code class="type"><a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> -> float</code></pre><div class="info">
+Extract a number or raise <code class="code">Type_error</code>.<br>
+</div>
+<pre><span id="VALto_number_option"><span class="keyword">val</span> to_number_option</span> : <code class="type"><a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> -> float option</code></pre><div class="info">
+Extract <code class="code">Some</code> number, 
+      return <code class="code">None</code> if the value is null,
+      or raise <code class="code">Type_error</code> otherwise.<br>
+</div>
+<pre><span id="VALto_float"><span class="keyword">val</span> to_float</span> : <code class="type"><a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> -> float</code></pre><div class="info">
+Extract a float value or raise <code class="code">Type_error</code>.
+      <code class="code">to_number</code> is generally preferred as it also works with int literals.<br>
+</div>
+<pre><span id="VALto_float_option"><span class="keyword">val</span> to_float_option</span> : <code class="type"><a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> -> float option</code></pre><div class="info">
+Extract <code class="code">Some</code> float value, 
+      return <code class="code">None</code> if the value is null,
+      or raise <code class="code">Type_error</code> otherwise.
+      <code class="code">to_number_option</code> is generally preferred as it also works
+      with int literals.<br>
+</div>
+<pre><span id="VALto_int"><span class="keyword">val</span> to_int</span> : <code class="type"><a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> -> int</code></pre><div class="info">
+Extract an int from a JSON int or raise <code class="code">Type_error</code>.<br>
+</div>
+<pre><span id="VALto_int_option"><span class="keyword">val</span> to_int_option</span> : <code class="type"><a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> -> int option</code></pre><div class="info">
+Extract <code class="code">Some</code> int from a JSON int, 
+      return <code class="code">None</code> if the value is null,
+      or raise <code class="code">Type_error</code> otherwise.<br>
+</div>
+<pre><span id="VALto_list"><span class="keyword">val</span> to_list</span> : <code class="type"><a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> -> <a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> list</code></pre><div class="info">
+Extract a list from JSON array or raise <code class="code">Type_error</code>.<br>
+</div>
+<pre><span id="VALto_string"><span class="keyword">val</span> to_string</span> : <code class="type"><a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> -> string</code></pre><div class="info">
+Extract a string from a JSON string or raise <code class="code">Type_error</code>.<br>
+</div>
+<pre><span id="VALto_string_option"><span class="keyword">val</span> to_string_option</span> : <code class="type"><a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> -> string option</code></pre><div class="info">
+Extract <code class="code">Some</code> string from a JSON string, 
+      return <code class="code">None</code> if the value is null,
+      or raise <code class="code">Type_error</code> otherwise.<br>
+</div>
+<pre><span id="VALconvert_each"><span class="keyword">val</span> convert_each</span> : <code class="type">(<a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> -> 'a) -> <a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> -> 'a list</code></pre><div class="info">
+The conversion functions above cannot be used with <code class="code">map</code>, because they do
+      not return JSON values. This convenience function <code class="code">convert_each to_f arr</code>
+      is equivalent to <code class="code">List.map to_f (to_list arr)</code>.<br>
+</div>
+<br>
+<span id="3_Exceptionfreefilters"><h3>Exception-free filters</h3></span><br>
+<br>
+The following functions operate on lists of JSON nodes.
+   None of them raises an exception when a certain kind of node is expected
+   but no node or the wrong kind of node is found.
+   Instead of raising an exception, nodes that are not as expected
+   are simply ignored.<br>
+<pre><span id="VALfilter_map"><span class="keyword">val</span> filter_map</span> : <code class="type">('a -> 'b option) -> 'a list -> 'b list</code></pre><div class="info">
+<code class="code">filter_map f l</code> maps each element of the list <code class="code">l</code> to an optional value
+      using function <code class="code">f</code> and unwraps the resulting values.<br>
+</div>
+<pre><span id="VALflatten"><span class="keyword">val</span> flatten</span> : <code class="type"><a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> list -> <a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> list</code></pre><div class="info">
+Expects JSON arrays and returns all their elements as a single
+      list. <code class="code">flatten l</code> is equivalent to <code class="code">List.flatten (filter_list l)</code>.<br>
+</div>
+<pre><span id="VALfilter_index"><span class="keyword">val</span> filter_index</span> : <code class="type">int -> <a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> list -> <a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> list</code></pre><div class="info">
+Expects JSON arrays and returns all their elements existing at the given
+      position.<br>
+</div>
+<pre><span id="VALfilter_list"><span class="keyword">val</span> filter_list</span> : <code class="type"><a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> list -> <a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> list list</code></pre><div class="info">
+Expects JSON arrays and unwraps them.<br>
+</div>
+<pre><span id="VALfilter_member"><span class="keyword">val</span> filter_member</span> : <code class="type">string -> <a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> list -> <a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> list</code></pre><div class="info">
+Expects JSON objects and returns all the fields of the given name
+      (at most one field per object).<br>
+</div>
+<pre><span id="VALfilter_assoc"><span class="keyword">val</span> filter_assoc</span> : <code class="type"><a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> list -> (string * <a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a>) list list</code></pre><div class="info">
+Expects JSON objects and unwraps them.<br>
+</div>
+<pre><span id="VALfilter_bool"><span class="keyword">val</span> filter_bool</span> : <code class="type"><a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> list -> bool list</code></pre><div class="info">
+Expects JSON booleans and unwraps them.<br>
+</div>
+<pre><span id="VALfilter_int"><span class="keyword">val</span> filter_int</span> : <code class="type"><a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> list -> int list</code></pre><div class="info">
+Expects JSON integers (<code class="code">`Int</code> nodes) and unwraps them.<br>
+</div>
+<pre><span id="VALfilter_float"><span class="keyword">val</span> filter_float</span> : <code class="type"><a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> list -> float list</code></pre><div class="info">
+Expects JSON floats (<code class="code">`Float</code> nodes) and unwraps them.<br>
+</div>
+<pre><span id="VALfilter_number"><span class="keyword">val</span> filter_number</span> : <code class="type"><a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> list -> float list</code></pre><div class="info">
+Expects JSON numbers (<code class="code">`Int</code> or <code class="code">`Float</code>) and unwraps them.
+      Ints are converted to floats.<br>
+</div>
+<pre><span id="VALfilter_string"><span class="keyword">val</span> filter_string</span> : <code class="type"><a href="Yojson.Basic.html#TYPEjson">Yojson.Basic.json</a> list -> string list</code></pre><div class="info">
+Expects JSON strings and unwraps them.<br>
+</div>
+</body></html>

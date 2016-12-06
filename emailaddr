@@ -1,0 +1,54 @@
+#! /usr/bin/env micmatch
+
+(* This program reads a line of text from stdin and
+   tells with a smiley if it is a possible email address 
+   according to the RFC822 standard.
+
+   See the standard at http://www.faqs.org/rfcs/rfc822.html
+
+   Would you prefer to write the regexp like this:
+   http://www.ex-parrot.com/~pdw/Mail-RFC822-Address.html ? *)
+
+(* Lexical tokens *)
+
+RE crlf = ['\r''\n']
+RE space = ' '
+RE htab = '\t'
+RE lwsp_char = space | htab
+RE linear_white_space = (crlf lwsp_char)+
+
+RE char = ['\000'-'\127']
+RE specials = ["()<>@,;:\\\".[]"]
+RE ctl = ['\000'-'\031' '\127']
+RE atom = [^ specials space ctl]+
+RE qtext = char # ['"' '\\' '\r'] | linear_white_space
+RE quoted_pair = '\\' char
+RE quoted_string = '"' (qtext | quoted_pair)* '"'
+RE word = atom | quoted_string
+RE dtext = char # ["[]\\\r"] | linear_white_space
+RE phrase = word+
+
+(* Address specification *)
+
+RE local_part = word ('.' word)*
+RE domain_ref = atom
+RE domain_literal = "[" (dtext | quoted_pair)* "]"
+RE sub_domain = domain_ref | domain_literal
+RE domain = sub_domain ('.' sub_domain)*
+RE addr_spec = local_part "@" domain
+RE route = ("@" domain (","+ "@" domain)*) ":"
+RE route_addr = "<" route? addr_spec ">"
+RE mailbox = addr_spec | phrase route_addr
+RE group = phrase ":" (mailbox (","+ mailbox)*)? ";"
+RE address = mailbox | group
+
+let () =
+  Micmatch.Text.iter_lines_of_channel
+    (fun line ->
+       let smiley = 
+	 match line with
+	     RE address eol -> ":-)"
+	   | _ -> ":-(" in
+       print_string smiley;
+       print_newline ())
+    stdin

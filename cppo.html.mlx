@@ -1,0 +1,83 @@
+##
+#load "utils.cmo";;
+#use "topfind";;
+#require "caml2html";;
+#require "mikmatch_pcre";;
+#load "unmix.cmo";;
+#load "print_ocaml.cmo";;
+#use "cppo-version.ml";;
+open Print_ocaml
+open Utils
+open Camlmix
+##
+## include_file "doctype" ##
+<html>
+<head>
+## title 
+"Cppo: the C preprocessor for OCaml"
+##
+## include_file "charset" ##
+## include_file "stylesheet" ##
+## include_file "ocaml-stylesheet" ##
+## include_file "icon" ##
+## include_file "commonlinks" ##
+</head>
+<body>
+## include_file "hitcounter" ##
+## include_file "start_big_table" ##
+## top_menu ocaml ##
+
+##
+open Printf
+##
+
+<h1>Cppo: the C preprocessor for OCaml
+## include_file "1camel" ##</h1>
+
+<h2>Introduction</h2>
+
+<p>
+Cppo is an equivalent of the C preprocessor 
+targeted at the OCaml language and its variants.
+</p>
+
+<p>
+The main purpose of cppo is to provide a lightweight tool for
+simple macro substitution (<code>#define</code>)
+and file inclusion (<code>#include</code>)
+for the occasional case when this is useful in OCaml.
+Processing specific sections of files by calling external programs is
+also possible via <code>#ext</code> directives.
+</p>
+
+<p>
+The implementation of cppo relies on the standard library of OCaml and 
+on the standard parsing tools Ocamllex and Ocamlyacc, which contribute
+to the robustness of cppo across OCaml versions.
+</p>
+
+
+<h2>Download</h2>
+
+<p>
+This software was written by Martin Jambon. 
+It is distributed under a 
+<a href="cppo-license.txt">BSD license</a>.
+<a href="/releases/cppo">Download it here</a>.
+</p>
+
+<p>
+The <a href="https://github.com/mjambon/cppo">development version
+of Cppo</a> is hosted on GitHub.
+
+
+<h2>Documentation</h2>
+
+<a href="##= sprintf "cppo-manual-%s.txt" cppo_version ##">Cppo manual
+(text)</a>.
+
+
+## camlmix_footer ~years:"2009-2011" () ##
+## include_file "end_big_table" ##
+</body>
+</html>

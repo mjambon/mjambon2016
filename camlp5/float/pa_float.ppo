@@ -1,0 +1,76 @@
+(* The following function takes an expr syntax node and replaces 
+   all occurrences of int constants and operators by their float equivalent.
+
+   The code is directly derived from the section on the quotations 
+   for manipulating OCaml syntax trees in the reference manual.
+
+   This code can be easily reused by copy-pasting.
+*)
+let rec subst_float expr =
+  let loc = MLast.loc_of_expr expr in
+  let se = subst_float in
+  let sel = List.map subst_float in
+  let spwel = List.map (fun (p, w, e) -> p, w, se e) in
+  match expr with
+    MLast.ExAcc (_, e1, e2) -> MLast.ExAcc (loc, se e1, se e2)
+  | MLast.ExAnt (_, e) -> MLast.ExAnt (loc, se e)
+  | MLast.ExApp (_, e1, e2) -> MLast.ExApp (loc, se e1, se e2)
+  | MLast.ExAre (_, e1, e2) -> MLast.ExAre (loc, se e1, se e2)
+  | MLast.ExArr (_, Ploc.VaVal el) -> MLast.ExArr (loc, Ploc.VaVal (sel el))
+  | MLast.ExAss (_, e1, e2) -> MLast.ExAss (loc, se e1, se e2)
+  | MLast.ExChr (_, Ploc.VaVal c) -> expr
+  | MLast.ExCoe (_, e, None, t) -> MLast.ExCoe (loc, se e, None, t)
+  | MLast.ExCoe (_, e, Some t1, t2) -> MLast.ExCoe (loc, se e, Some t1, t2)
+  | MLast.ExFlo (_, Ploc.VaVal s) -> expr
+  | MLast.ExFor (_, Ploc.VaVal s, e1, e2, Ploc.VaVal b, Ploc.VaVal el) ->
+      MLast.ExFor
+        (loc, Ploc.VaVal s, se e1, se e2, Ploc.VaVal b, Ploc.VaVal (sel el))
+  | MLast.ExFun (_, Ploc.VaVal pwel) ->
+      MLast.ExFun (loc, Ploc.VaVal (spwel pwel))
+  | MLast.ExIfe (_, e1, e2, e3) -> MLast.ExIfe (loc, se e1, se e2, se e3)
+  | MLast.ExInt (_, Ploc.VaVal s, "") ->
+      (* we change the int constants into floats *)
+      let x = string_of_float (float (int_of_string s)) in
+      MLast.ExFlo (loc, Ploc.VaVal x)
+  | MLast.ExLab (_, Ploc.VaVal [MLast.PaLid (_, i), Ploc.VaVal (Some e)]) ->
+      MLast.ExLab
+        (loc, Ploc.VaVal [MLast.PaLid (loc, i), Ploc.VaVal (Some (se e))])
+  | MLast.ExLaz (_, e) -> MLast.ExLaz (loc, se e)
+  | MLast.ExLet (_, Ploc.VaVal b, Ploc.VaVal pel, e) ->
+      let pel' = List.map (fun (p, e) -> p, se e) pel in
+      MLast.ExLet (loc, Ploc.VaVal b, Ploc.VaVal pel', se e)
+  | MLast.ExLid (_, Ploc.VaVal s) ->
+      (* we override the basic operators + - * / *)
+      begin match s with
+        "+" | "-" | "*" | "/" -> MLast.ExLid (loc, Ploc.VaVal (s ^ "."))
+      | _ -> expr
+      end
+  | MLast.ExMat (_, e, Ploc.VaVal pwel) ->
+      MLast.ExMat (loc, se e, Ploc.VaVal (spwel pwel))
+  | MLast.ExRec (_, Ploc.VaVal pel, None) ->
+      let pel' = List.map (fun (p, e) -> p, se e) pel in
+      MLast.ExRec (loc, Ploc.VaVal pel', None)
+  | MLast.ExSeq (_, Ploc.VaVal el) -> MLast.ExSeq (loc, Ploc.VaVal (sel el))
+  | MLast.ExSte (_, e1, e2) -> MLast.ExSte (loc, se e1, se e2)
+  | MLast.ExStr (_, Ploc.VaVal s) -> expr
+  | MLast.ExTry (_, e, Ploc.VaVal pwel) ->
+      MLast.ExTry (loc, e, Ploc.VaVal (spwel pwel))
+  | MLast.ExTup (_, Ploc.VaVal el) -> MLast.ExTup (loc, Ploc.VaVal (sel el))
+  | MLast.ExTyc (_, e, t) -> MLast.ExTyc (loc, se e, t)
+  | MLast.ExUid (_, Ploc.VaVal s) -> expr
+  | MLast.ExWhi (_, e, Ploc.VaVal el) ->
+      MLast.ExWhi (loc, se e, Ploc.VaVal (sel el))
+  | _ ->
+      Stdpp.raise_with_loc loc
+        (Failure "syntax not supported due to the \
+              lack of Camlp5 documentation")
+
+let _ =
+  Grammar.extend
+    [Grammar.Entry.obj (Pcaml.expr : 'Pcaml__expr Grammar.Entry.e),
+     Some (Gramext.Level "expr1"),
+     [None, None,
+      [[Gramext.Stoken ("", "FLOAT"); Gramext.Sself],
+       Gramext.action
+         (fun (e : 'Pcaml__expr) _ (loc : Ploc.t) ->
+            (subst_float e : 'Pcaml__expr))]]]

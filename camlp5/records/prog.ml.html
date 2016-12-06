@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>
+prog.ml</title>
+  <meta name="GENERATOR" content="caml2html 1.4.2">
+<style type="text/css">
+code,pre { color:black;background-color:white }a.Cannot { color:black;text-decoration:none }.Cannot:hover { background-color: #b4eeb4; }
+.Cbar,
+.Cdo,
+.Cdone,
+.Cdownto,
+.Celse,
+.Cfor,
+.Cif,
+.Clazy,
+.Cmatch,
+.Cnew,
+.Cor,
+.Cthen,
+.Cto,
+.Ctry,
+.Cwhen,
+.Cwhile,
+.Cwith { color: #77aaaa; }
+.Cassert,
+.Cinclude,
+.Copen { color: #cc9900; }
+.Cstring { color: #aa4444; }
+.Cand,
+.Cas,
+.Cclass,
+.Cconstraint,
+.Cexception,
+.Cexternal,
+.Cfun,
+.Cfunction,
+.Cfunctor,
+.Cin,
+.Cinherit,
+.Cinitializer,
+.Clet,
+.Cmethod,
+.Cmodule,
+.Cmutable,
+.Cof,
+.Cprivate,
+.Crec,
+.Ctype,
+.Cval,
+.Cvirtual { color: green; }
+.Cbackground { background-color: white; }
+.Craise { color: red; }
+.Cconstructor { color: #0033cc; }
+.Ccomment { color: #990000; }
+.Calphakeyword,
+.Casr,
+.Cland,
+.Clor,
+.Clsl,
+.Clsr,
+.Clxor,
+.Cmod { color: #808080; }
+.Clinenum { color: black; background-color: silver; }
+.Cbegin,
+.Cend,
+.Cobject,
+.Csig,
+.Cstruct { color: #990099; }
+.Cfalse,
+.Cnonalphakeyword,
+.Cquotation,
+.Ctrue { }
+</style>
+</head>
+<body>
+<h1><a name="prog.ml"></a><code>prog.ml</code></h1>
+
+<pre><span class="Clinenum">   1:</span><span class="Cbackground"> </span>record bob <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">{</span> foo : string <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="string"><span class="Cstring">"Hello"</span></a><span class="Cnonalphakeyword">;</span>
+<span class="Clinenum">   2:</span><span class="Cbackground"> </span>               <a href="javascript:;" style="text-decoration:none" class="Cannot" title="string">bar : string</a><span class="Cnonalphakeyword">;</span>
+<span class="Clinenum">   3:</span><span class="Cbackground"> </span>               <span class="Cmutable">mutable</span> n : int <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="int">1</a> <span class="Cnonalphakeyword">}</span>
+<span class="Clinenum">   4:</span><span class="Cbackground"> </span>
+<span class="Clinenum">   5:</span><span class="Cbackground"> </span>record weird <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">{</span> x : weird option <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Some</span> <span class="Cnonalphakeyword">(</span><a href="javascript:;" style="text-decoration:none" class="Cannot" title="?x:weird option -&gt; unit -&gt; weird">create_weird</a> <span class="Cnonalphakeyword">~</span>x:<a href="javascript:;" style="text-decoration:none" class="Cannot" title="weird option"><span class="Cconstructor">None</span></a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="unit"><span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span></a><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">}</span>
+<span class="Clinenum">   6:</span><span class="Cbackground"> </span>
+<span class="Clinenum">   7:</span><span class="Cbackground"> </span><span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span>
+<span class="Clinenum">   8:</span><span class="Cbackground"> </span>  <span class="Clet">let</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="bob">x</a> <span class="Cnonalphakeyword">=</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="?foo:string -&gt; bar:string -&gt; ?n:int -&gt; unit -&gt; bob">create_bob</a> <span class="Cnonalphakeyword">~</span>bar:<a href="javascript:;" style="text-decoration:none" class="Cannot" title="string"><span class="Cstring">"World"</span></a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="unit"><span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span></a> <span class="Cin">in</span>
+<span class="Clinenum">   9:</span><span class="Cbackground"> </span>  <a href="javascript:;" style="text-decoration:none" class="Cannot" title="bob">x</a><span class="Cnonalphakeyword">.</span>n <span class="Cnonalphakeyword">&lt;-</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="bob">x</a><span class="Cnonalphakeyword">.</span>n <span class="Cnonalphakeyword">+</span> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="int">1</a><span class="Cnonalphakeyword">;</span>
+<span class="Clinenum">  10:</span><span class="Cbackground"> </span>  <a href="javascript:;" style="text-decoration:none" class="Cannot" title="(string -&gt; string -&gt; int -&gt; unit, out_channel, unit) format -&gt; string -&gt; string -&gt; int -&gt; unit"><span class="Cconstructor">Printf</span><span class="Cnonalphakeyword">.</span>printf</a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="(string -&gt; string -&gt; int -&gt; unit, out_channel, unit) format"><span class="Cstring">"%s %s %i\n"</span></a> <a href="javascript:;" style="text-decoration:none" class="Cannot" title="bob">x</a><span class="Cnonalphakeyword">.</span>foo <a href="javascript:;" style="text-decoration:none" class="Cannot" title="bob">x</a><span class="Cnonalphakeyword">.</span>bar <a href="javascript:;" style="text-decoration:none" class="Cannot" title="bob">x</a><span class="Cnonalphakeyword">.</span>n
+</pre>
+
+<hr>
+<p>
+<em>This document was generated using 
+<a href="http://martin.jambon.free.fr/caml2html.html">caml2html</a></em>
+</body>
+</html>

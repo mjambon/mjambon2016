@@ -1,0 +1,118 @@
+##
+#load "utils.cmo";;
+#use "topfind";;
+#require "caml2html";;
+#require "mikmatch_pcre";;
+#load "unmix.cmo";;
+#load "print_ocaml.cmo";;
+#use "ocamlscript-version.ml";;
+open Print_ocaml
+open Utils
+open Camlmix
+##
+## include_file "doctype" ##
+<html>
+<head>
+## title 
+"ocamlscript: natively-compiled OCaml scripts"
+##
+## include_file "charset" ##
+## include_file "stylesheet" ##
+## include_file "ocaml-stylesheet" ##
+## include_file "icon" ##
+## include_file "commonlinks" ##
+</head>
+<body>
+## include_file "hitcounter" ##
+## include_file "start_big_table" ##
+## top_menu ocaml ##
+
+##
+open Printf
+##
+
+<h1>ocamlscript: natively-compiled OCaml scripts
+## include_file "1camel" ##</h1>
+
+<h2>Introduction</h2>
+
+<p>
+ocamlscript compiles scripts, i.e. one-file programs, into 
+natively-compiled binaries, and executes them.
+
+<p>
+Basically, a script named <code>alpha</code> is compiled into
+<code>alpha.exe</code>. If <code>alpha.exe</code> is more recent
+than <code>alpha</code>, then <code>alpha.exe</code> is executed directly,
+otherwise <code>alpha</code> is recompiled first.
+
+<p>
+Compilation commands reside in the first section of the script. They are
+written in OCaml and consist normally in setting one or two variables.
+
+
+<h2>Documentation</h2>
+
+<p>
+The ocamlscript tool is made of two essential components: a command
+named ocamlscript and a library which is made available in the compilation
+section of the scripts.
+
+<p>
+The basic usage of the ocamlscript command was designed to be intuitive:
+<pre>
+ocamlscript scriptfile.ml
+</pre>
+
+<p>
+Script files do not have to follow the conventions of standard OCaml
+file names. They can also be read from stdin or directly from the command-line.
+Full details on the command-line options are returned by 
+<a href="ocamlscript-help.txt"><code>ocamlscript --help</code></a>.
+
+<p>
+An ocamlscript script differs from a standard OCaml file at its beginning.
+There is an optional first section that instructs ocamlscript on how to
+compile the script. Basically, variables that hold package names
+and additional preprocessing or compilation option can be set.
+A simple script that fetches a web page using the HTTP client provided by
+the netclient package could be:
+## print_with ocamlpre ##
+#! /usr/bin/env ocamlscript
+Ocaml.packs := [ "netclient" ]
+--
+match Sys.argv with
+    [| _; url |] -> print_string (Http_client.Convenience.http_get url)
+  | _ -> prerr_string "Usage: getpage URL\n"; exit 1
+## () ##
+
+<p>
+For complete details, see the <a href="ocamlscript-doc/index.html">API 
+of the ocamlscript compilation library</a>.
+
+<p>
+For simple examples of original uses of ocamlscript, you can browse 
+<a href="ocamlscript-examples">the collection of examples</a>
+extracted from the distribution of ocamlscript.
+
+<p>
+More documentation, although somewhat incomplete, is given on the 
+<a href="http://ocaml.pbwiki.com/Ocamlscript">wiki site</a>.
+
+
+<h2>Download</h2>
+
+<p>
+This software was written by David Mentr&eacute; and Martin Jambon. 
+It is distributed under a 
+<a href="ocamlscript-license.txt">Boost Software License</a>.
+<a href="/releases/ocamlscript">Download it here</a>.
+
+<p>
+The <a href="https://github.com/mjambon/ocamlscript">development version
+of Ocamlscript</a> is hosted on GitHub.
+
+## camlmix_footer ~years:"2007" () ##
+## include_file "end_big_table" ##
+</body>
+</html>

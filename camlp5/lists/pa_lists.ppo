@@ -1,0 +1,21 @@
+let expr_list loc l =
+  List.fold_right
+    (fun head tail ->
+       MLast.ExApp
+         (loc, MLast.ExApp (loc, MLast.ExUid (loc, Ploc.VaVal "::"), head),
+          tail))
+    l (MLast.ExUid (loc, Ploc.VaVal "[]"))
+
+
+let _ =
+  Grammar.extend
+    [Grammar.Entry.obj (Pcaml.expr : 'Pcaml__expr Grammar.Entry.e), None,
+     [None, None,
+      [[Gramext.Stoken ("", "LIST");
+        Gramext.Slist0
+          (Gramext.Snterml
+             (Grammar.Entry.obj (Pcaml.expr : 'Pcaml__expr Grammar.Entry.e),
+              "."))],
+       Gramext.action
+         (fun (l : 'Pcaml__expr list) _ (loc : Ploc.t) ->
+            (expr_list loc l : 'Pcaml__expr))]]]

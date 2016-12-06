@@ -1,0 +1,2232 @@
+##
+#load "utils.cmo";;
+#use "topfind";;
+#require "caml2html";;
+#require "mikmatch_pcre";;
+#load "unmix.cmo";;
+#load "print_ocaml.cmo";;
+open Print_ocaml
+open Utils
+open Camlmix
+
+open Printf
+
+let warning ?(name = "Warning") s =
+  printf "<span style=\"color:red\"><b>%s</b>: \
+          %s</span>" name s
+
+let manual () = 
+  printf
+    "<a href=\"http://pauillac.inria.fr/~ddr/camlp5/doc/htmlc/\">manual</a>"
+
+let command ?(noexit = false) cmd =
+  eprintf "%s\n%!" cmd;
+  match Sys.command cmd with
+      0 -> ()
+    | status -> 
+	if noexit then ()
+	else 
+	  (eprintf "exit %i\n%!" status;
+	   exit status)
+##
+## include_file "doctype" ##
+<html>
+<head>
+## title 
+"Tutorial: How to customize the syntax of OCaml, using Camlp5"
+##
+## include_file "charset" ##
+## include_file "stylesheet" ##
+## include_file "ocaml-stylesheet" ##
+## include_file "icon" ##
+## include_file "commonlinks" ##
+</head>
+<body>
+## include_file "hitcounter" ##
+## include_file "start_big_table" ##
+## top_menu ocaml ##
+
+##
+open Printf
+##
+
+<h1>How to customize the syntax of OCaml, using Camlp5
+## include_file "3camels" ##<br>
+<span class=title2>Everything you always wanted to know, 
+but were afraid to ask</span></h1>
+
+<p style="padding-left:3cm;padding-right:3cm">
+<i>
+Copyright &copy; 2005, 2010 Martin Jambon.
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.2
+or any later version published by the Free Software Foundation;
+with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+Texts.  A copy of the license is included in the file
+<a href="fdl.txt">fdl.txt</a>. The source code of this document is the file
+<a href="extend-ocaml-syntax.html.mlx" 
+   rel="nofollow">extend-ocaml-syntax.html.mlx</a>.
+</i>
+
+<p>
+This tutorial is an individual initiative to provide
+additional documentation for
+<a href="http://pauillac.inria.fr/~ddr/camlp5/">Camlp5</a>, 
+a sophisticated tool for
+<a href="http://caml.inria.fr/">Objective Caml</a>
+programmers.
+
+<p>
+<b>2010 revision</b>: This document was updated to reflect the name
+change of the legacy Camlp4, now called Camlp5.
+The following table clarifies name issues:
+<table class="real-table">
+<tr>
+  <th>Period</th><th>Name of "legacy Camlp4"</th><th>Name of "new Camlp4"</th>
+</tr>
+<tr>
+  <td>before 2007</td>
+  <td>Camlp4</td>
+  <td>-</td>
+</tr>
+<tr>
+  <td>from 2007 (OCaml 3.10)</td>
+  <td>Camlp5</td>
+  <td>Camlp4</td>
+</tr>
+</table>
+<p>
+The examples of this tutorial will not work with the new Camlp4 starting 
+with OCaml 3.10.
+
+## let (toc_item0, toc_item1, toc_item2, toc_entry, toc_link) = make_toc () ##
+
+<div class=toc>
+<b>Contents</b><br>
+## toc_item0 ~id:"what" "What is it about?" ##
+## toc_item0 ~id:"when" "Is Camlp5 what I need?" ##
+## toc_item0 ~id:"who" "Intended audience" ##
+## toc_item0 ~id:"getting-started" "Getting started" ##
+## toc_item0 ~id:"languages" "Which language does Camlp5 speak?" ##
+## toc_item0 ~id:"machinery" "What goes in and what comes out" ##
+## toc_item0 ~id:"dissection" "Dissection of a syntax expander" ##
+
+## toc_item0 ~id:"variations" "Variations around the same example" ##
+## toc_item1 ~id:"quotations" "Using only one quotation" ##
+## toc_item1 ~id:"reordering" "Removing the hidden reserved identifier" ##
+## toc_item1 ~id:"more-rules" "Adding more constructs" ##
+
+
+## toc_item0 ~id:"replacing" 
+  "Local syntax extensions, transformations of the AST" ##
+## toc_item0 ~id:"inserting-bof" 
+  "Inserting some code at the beginning of the file" ##
+## toc_item0 ~id:"inserting-str_items"
+  "Inserting toplevel expressions" ##
+## toc_item0 ~id:"inserting-just-before"
+  "Inserting hidden expressions which are evaluated once" ##
+
+## toc_item0 ~id:"priorities" "Mastering priorities" ##
+
+## toc_item0 ~id:"custom_parsers" "Local use of external parsers" ##
+## toc_item1 ~id:"parse_string" "Parsing raw blocks of text" ##
+## toc_item1 ~id:"parse_token_stream" "Parsing the stream of tokens" ##
+
+## toc_item0 ~id:"error_location" "Producing useful error messages" ##
+
+## toc_item0 ~id:"packaging" "Suggestions for a better interaction between multiple syntax extensions" ##
+
+## toc_item1 ~id:"cohabitation" "Avoiding strong incompatibilities" ##
+## toc_item1 ~id:"names" "Avoiding name clashes" ##
+
+
+
+## toc_item0 ~id:"youcan" "Things you can do" ##
+## toc_item1 ~id:"lettry" 
+	"Catching exceptions only where needed: \
+         <code>let try <i>name</i> = <i>expr1</i> in \
+         <i>expr2</i> with <i>exception-handler</i></code>" ##
+## toc_item1 ~id:"onlyfloats" 
+	"Read <code>1/2</code> as <code>1. /. 2.</code>, but only locally" ##
+## toc_item1 ~id:"types" 
+	"Default values for record fields" ##
+## toc_item1 ~id:"rec-expr" "Anonymous recursive functions" ##
+
+## toc_item0 ~id:"youcant" "Things you cannot do and workarounds" ##
+## toc_item1 ~id:"inserting-anywhere" "Inserting anything, anywhere" ##
+## toc_item1 ~id:"comments" "Adding end of line comments" ##
+## toc_item1 ~id:"strings" "Adding a notation for raw strings" ##
+## toc_item1 ~id:"infix" "Adding Haskell's \"infixing\" backquotes
+such as <code>f `map` list</code>" ##
+## toc_item1 ~id:"selectors" "Adding SML's #<i>n</i> notation 
+to extract field number <i>n</i> of any tuple" ##
+
+
+## toc_item0 ~id:"troubleshooting" "Common problems" ##
+## 
+let quot = html_quote "<:expr< [ $list:my_list$ ] >>" in
+toc_item1 ~id:"lists" 
+  (sprintf "I can't build a list with something like <code>%s</code>" quot) ##
+## 
+let quot = html_quote "<:expr< let f $list:args$ = $e$ >>" in
+toc_item1 ~id:"functions" 
+  (sprintf "I can't build a function declaration with \
+something like <code>%s</code>" quot) ##
+## toc_item1 ~id:"badloc" "Incorrect locations in error reports" ##
+## toc_item1 ~id:"loc"
+  "Unbound value <code>_loc</code> (or <code>loc</code>)" ##
+## 
+let quot = html_quote "<:expr< f ~$lid:labelname$ >>" in
+toc_item1 ~id:"labels"
+  (sprintf "What's wrong with labels: <code>%s</code> doesn't work" quot) ##
+## toc_item1 ~id:"Not_found"
+  "<code>Not_found</code> is raised during the preprocessing" ##
+</div>
+
+
+## toc_entry "what" ##
+
+<p>
+We are talking about truly modifying the syntax of OCaml.
+Yes, in theory anyone could modify the syntax of this programming
+language, without rewriting a whole dedicated parser. 
+Camlp5 is the tool that lets you do this. And many syntax enhancements
+can be performed in relatively few lines of code.
+
+<p>
+However, there are quite a few things to know before starting to write
+your own syntax extension which will implement exactly what you want.
+This tutorial is meant to address the common difficulties that people
+encounter when they start using Camlp5 for this purpose. 
+It is essentially based on my 
+<a href="micmatch.html">recent experience</a> 
+in integrating a dedicated syntax for regular
+expressions in OCaml and mix this form of pattern matching with the
+traditional pattern matching of OCaml.
+
+
+## toc_entry "when" ##
+
+<p>
+Camlp5 lets you do amazing things that have no equivalent in most other
+programming languages.
+You might want to define a domain-specific language (DSL) without
+wasting your time in developing one more interpreter of poor quality which is
+not reusable at all. With Camlp5, you may create syntaxic shortcuts 
+for the most common operations that your DSL requires and at the same
+time benefit from all the qualities of OCaml: automatic type
+inference, static typing, early detection of errors, precise location
+of mistakes in your code, most of the advantages of text-editor
+modes for OCaml, interface with other languages, an interactive interpreter
+and of course the generation of high performance native code.
+
+<p>
+Camlp5 is an excellent solution if you want to add a syntax which is a
+shortcut for something that is obviously, mechanically expandable into
+standard OCaml without having resort to the type information. Camlp5
+lets you work on the abstract syntax tree (AST), which does not
+contain information on the actual type of the object being manipulated.
+
+<p>
+If the syntax extension you want to provide requires the knowledge of
+the type of each object, you can still design a dedicated embedded
+language that will be compiled into OCaml. 
+Camlp5 provides a convenient mechanism for producing OCaml
+code, therefore compiling any given language to OCaml is an excellent
+choice in many cases even if the parsing facilities of Camlp5 are not used.
+
+<p>
+This tutorial is about learning how to develop your own syntax extensions
+but you might want to have a look at existing syntax extensions that
+are available on the web. The main sources for finding 
+Camlp5 extensions are: 
+<a
+href="http://caml.inria.fr/cgi-bin/hump.en.cgi?sort=0&amp;browse=92">the
+Caml hump</a> on the <a href="http://caml.inria.fr">official Caml site</a>, 
+<a 
+href="http://www.npc.de/ocaml/linkdb/list.cgi?type=classification&amp;frames=false">the
+OCaml Link Database</a> 
+(under "OCaml syntax extension") and <a href="p4ck.html">P4ck</a>.
+
+
+## toc_entry "who" ##
+
+<p>
+If you are interested in modifying the syntax of OCaml and you are a
+bit confused by the official tutorial and ## manual () ## for Camlp5, then I
+hope this document will help you get started.
+
+<p>
+In order to start discovering Camlp5, you need to be fluent in OCaml
+since it will be our main language (with variants) for doing everything.
+You need to be familiar with the higher order functions (HOF) of OCaml
+such as <code>List.map</code>, <code>List.fold_right</code> and 
+<code>List.fold_left</code> since we will use them a lot for manipulating
+syntax trees.
+So if you are not familiar with
+these and functional programming in general, practice a little first.
+
+
+## toc_entry "getting-started" ##
+
+<p>
+You will need a standard installation of OCaml, which should include
+the OCaml compilers (<code>ocaml</code>, <code>ocamlc</code>, 
+<code>ocamlopt</code>) and the Camlp5 system (<code>camlp5</code>,
+<code>camlp5o</code>)
+
+<p>
+As usual for editing and testing OCaml code, you will need a good
+editing mode for OCaml in your favorite text editor,
+but we assume you know all about this.
+
+<p>
+You also need some way to compile automatically your code. 
+I use <code>make</code> with <code>OCamlMakefile</code>.
+The good thing about <code>make</code> is that if you don't want to be
+too subtle, you can just write one target and the hardcoded sequence
+of commands that recompiles everything. This might still be the best
+choice in many cases. Anyway, don't waste your time with such things.
+
+<p>
+All the files that are given as examples along this document can be
+browsed from
+## download ~path:true "http://martin.jambon.free.fr/camlp5" ##
+or downloaded as a 
+<a href="http://martin.jambon.free.fr/camlp5.tar.gz">compressed archive</a>.
+
+## toc_entry "languages" ##
+
+<p>
+One of the main source of confusion for beginners is the presence of 
+multiple languages that are used for different things but which all
+look more or less like OCaml. We will see later the details about all
+of this, but just keep in mind that we will use the following
+languages:
+<ul>
+<li> regular OCaml
+<li> modified OCaml using <code>EXTEND ... END</code> constructs for
+defining syntax extensions (we use a predefined syntax extension in
+order to define our own syntax extensions)
+<li> quotations: these look like ## verb "<:ident< ... >>" ## or
+just ## verb "<< ... >>" ##. Quotations are a generic syntax extension
+which are supported in any OCaml code which is preprocessed by Camlp5.
+The contents of the quotation will be expanded in place according to
+<code>ident</code> which has to be known by the preprocessor.
+<li> revised OCaml syntax. This syntax is different from the standard
+OCaml syntax. We will use it inside of quotations for building OCaml
+syntax trees, in combination with
+<li> antiquotations which look like ## verb "$this$" ## and are
+arbitrary OCaml code written in the regular syntax which lets you
+insert automatically generated nodes into the syntax tree being
+defined by the current quotation.
+</ul>
+
+<p>
+Now that you are completely confused, you understand why some Camlp5
+syntax extensions that may seem natural, simple and readable may be
+very discouraging when you are a beginner who is trying to use
+existing code as a template.
+
+
+## toc_entry "machinery" ##
+
+<p>
+We have two kinds of files: those which define a syntax or  
+modify an existing syntax, and the files that are written in this syntax.
+<p>
+## warning 
+"the syntax of a file is never defined within the file itself, 
+but in a separate file" ##
+
+<p>
+An OCaml file written in the standard syntax does not need to be
+preprocessed. It is directly compiled into bytecode or native code by
+one of the OCaml compilers (<code>ocamlc</code>,
+<code>ocamlopt</code> or <code>ocaml</code>).
+<p>
+Extending the syntax of OCaml simply means that we will use a modified
+syntax for writing our programs and this non-standard syntax is not
+understood by the OCaml compilers.
+Therefore our programs need to be <b>preprocessed</b> by a converter
+from our exotic syntax into plain old OCaml.
+Camlp5 provides us with tools for writing <b>our specific preprocessor</b>.
+
+<p>
+The command-line tool which will serve as a base for building our
+specific preprocessor is <code>camlp5</code>. <code>camlp5</code>
+alone does nothing very interesting for us: we need to feed it with
+our definition of how to convert our syntax into regular OCaml.
+This is done by passing object files (<code>.cmo</code>) 
+to <code>camlp5</code>.
+As a convention, we will name these files according to their role:
+<ul>
+<li> <code>pa_</code> (as in <b>pa</b>rsing) 
+is used as a prefix for the files that define or modify a grammar,
+i.e. how the input file should be converted into an <b>abstract syntax
+tree (AST)</b>
+<li> <code>q_</code> (as in <b>q</b>uotation) 
+is used as a prefix for the files that define how to expand the
+contents of quotations. Quotations are single, predefined tokens in the OCaml
+syntax but are meant to be expanded into some normal OCaml expression
+or pattern using arbitrary lexing and parsing rules. 
+These files are not named with the <code>pa_</code>
+prefix since technically they do not add rules in the general grammar
+that we may extend.
+<li> <code>pr_</code> (as in <b>pr</b>inting) 
+is used as a prefix for the files that define how to export the
+AST.
+</ul>
+
+<p>
+Camlp5 provides a file named <code>pa_o.cmo</code> which parses the
+standard syntax of OCaml (with only one addition, the quotations: see
+later). It provides a file named <code>pr_o.cmo</code> which converts
+an OCaml AST into the concrete syntax of OCaml, i.e. a valid source file
+for the OCaml compilers.
+Thus the command <code>camlp5 pa_o.cmo pr_o.cmo</code> should read a
+standard OCaml source file and reprint an equivalent program
+from the point of view of the compilers:
+## print_with verbatim ##
+$ cat hello.ml
+print_endline "Hello World!";;
+$ camlp5 pa_o.cmo pr_o.cmo hello.ml
+let _ = print_endline "Hello World!"
+## () ##
+
+<p>
+Another useful printing file is <code>pr_dump.cmo</code>. If you try
+it instead of <code>pr_o.cmo</code>, you will get an unreadable
+output. This is a binary representation of the AST which can be read
+back efficiently by the OCaml compilers and more importantly without
+losing trace of the location of the original tokens in the source
+file. We will therefore reserve the usage of <code>pr_o.cmo</code>
+for reviewing the generated OCaml code but not compile it further.
+<code>camlp5o</code> is a predefined shortcut for 
+<code>camlp5 pa_o.cmo pa_op.cmo pr_dump.cmo</code>: it parses the
+regular syntax of OCaml and outputs a compiler-friendly representation 
+of the AST. The additional file <code>pa_op.cmo</code> is a predefined
+<b>syntax extension</b> of OCaml. It actually implements an
+experimental syntax for streams and parsers which was used in earlier
+versions of OCaml.
+The interesting thing to notice here is that we load two files
+starting with <code>pa_</code>: <code>pa_o.cmo</code> defines the
+grammar of OCaml from scratch while <code>pa_op.cmo</code> only adds
+syntax rules to this grammar. This is really a syntax extension: we
+load different files which will successively create and modify the
+concrete syntax that is understood by the preprocessor.
+
+<p>
+Since we are interesting in parsing a syntax which is a modified OCaml
+and converting it into an OCaml AST, we will always use
+<code>camlp5o</code>, and tell it to load our <code>pa_*.cmo</code> files.
+
+<p>
+## print_with warning ##
+don't get confused: 
+the files that define syntax extensions use themselves a
+modified syntax of OCaml and therefore have to be preprocessed with
+<code>camlp5o</code> loaded with the adequate files 
+(usually <code>pa_extend.cmo</code> and <code>q_MLast.cmo</code>)
+## () ##
+
+<p>
+The most important point to remember for now is that the center of
+everything is the abstract syntax tree. The type of the nodes of this tree
+is fixed and is the only one which can be understood by the OCaml
+compilers.
+
+<p>
+The next step is to see how to add new syntaxic constructs to the
+grammar of OCaml and how to expand them into the intended AST.
+
+
+## toc_entry "dissection" ##
+
+<p>
+For testing our example, we are going to use a
+Makefile which is merely a
+sequence of commands. We are going to write two programs: 
+<code>pa_tryfinally.ml</code> defines our syntax extension
+and <code>prog.ml</code> is a simple test program.
+Here is the ## download "camlp5/tryfinally/Makefile" ##:
+## html_verbatim "camlp5/tryfinally/Makefile" ##
+
+<p>
+We want to add a <code>try ... finally</code> construct which behavior is 
+illustrated by this example:
+## print_with (bg_ocaml ~file:"camlp5/tryfinally/prog.ml" ~html:true) .##
+let _ =
+  @yellow@try@@
+    @silver@failwith "this is not an error"@@
+  @yellow@finally@@
+    @silver@print_endline "OK"@@
+## () ##
+<p>
+should be converted into the following program written in the 
+standard syntax of OCaml:
+## print_with (bg_ocaml ~file:"camlp5/tryfinally/expected.ml") .##
+let _ =
+  let @pink@__finally1@@ =
+    try
+      @silver@failwith "this is not an error"@@;
+      None
+    with @pink@exn@@ ->
+      Some exn in
+  @silver@print_endline "OK"@@;
+  match __finally1 with
+      None -> ()
+    | Some @pink@exn@@ -> raise exn
+## () ##
+<p>
+This new syntaxic construct is formed by two <b>keywords</b> (yellow regions)
+and two <b>expressions</b> (grey regions): 
+<code>try</code> is already a keyword in OCaml
+and <code>finally</code> is a new keyword. 
+The two expressions are conserved during the conversion to standard OCaml and 
+some auxilliary code is added around in order to achieve the desired
+effect. The desired effect consists in evaluating an expression e1 first,
+and then evaluate an expression e2 later, even if the evaluation
+of e1 raised an exception in which case this exception is re-raised after
+the evaluation of e2.
+
+<p>
+In real programs it is often useful for closing
+an open file at the end of its manipulation even if an error occured. Please
+note that a <a href="ocaml.html">more useful version of 
+this syntax extension</a> exists, but it's not the point here.
+
+<p>
+During the transformation of our program, 
+we introduced new identifiers at three different
+places (pink). One of them, <code>__finally1</code> must have a name
+that is unlikely to interfere with existing names. We had to decide that 
+identifiers starting with <code>__finally</code> are reserved for the syntax
+expander and should not be used directly. The two other identifiers
+are named <code>exn</code> at two different places and are not visible
+in the user-defined code (grey). Therefore it is perfectly safe to use
+canonical names such as <code>exn</code>, <code>x</code>, <code>s</code> or
+whatever we like.
+
+<p>
+Now we will see how to implement this transformation.
+Here is a solution:
+## print_with 
+    (bg_ocaml ~file:"camlp5/tryfinally/pa_tryfinally.ml" ~html:true) .##
+(* The function that returns unique identifiers *)
+let new_id = 
+  let counter = ref 0 in
+  fun () ->
+    incr counter;
+    "__finally" ^ string_of_int !counter
+
+(* The function that converts our syntax into a single OCaml expression,
+   i.e. an "expr" node of the syntax tree *)
+let expand loc e1 e2 =
+  let id = new_id () in
+  let id_patt = @silver@<:patt< $lid:id$ >>@@ in
+  let id_expr = @silver@<:expr< $lid:id$ >>@@ in
+  @silver@<:expr<
+  let $id_patt$ =
+    try do { $e1$; None } 
+    with [ exn -> Some exn ] in
+  do { $e2$;
+       match $id_expr$ with
+	   [ None -> ()
+	   | Some exn -> raise exn ] }
+  >>@@
+
+(* The statement that extends the default grammar, 
+   i.e. the regular syntax of OCaml if we use camlp5o 
+   or the revised syntax if we use camlp5r *)
+@pink@EXTEND
+  Pcaml.expr: LEVEL "expr1" [
+    [ "try"; e1 = Pcaml.expr; "finally"; e2 = Pcaml.expr -> expand loc e1 e2 ]
+  ];
+END@@;;
+## () ##
+## (* Now that the sources have been updated, let's compile and run *)
+command "cd camlp5/tryfinally && make 1>&2"
+##
+
+<p>
+This program is written with a strange syntax: it uses
+three <b>quotations</b> (grey areas) which start with something of the form
+## verb "<:name<" ## where <code>name</code>
+is the name of a predefined <b>quotation expander</b>
+and are terminated by ## verb ">>" ##.
+Here we use two different quotation expanders: <code>expr</code> 
+and <code>patt</code>. These quotation expanders are loaded from the file
+<code>q_MLast.cmo</code> (<code>q_</code> means quotations, 
+and the rest means ML AST = OCaml abstract syntax tree).
+The contents of these quotations looks very much like OCaml code but not
+exactly: 
+it is actually expanded into a representation of the AST using
+concrete types. Have a look at the program 
+after preprocessing, ## download "camlp5/tryfinally/pa_tryfinally.ppo" ##,
+in order to see the effect of the quotation expanders.
+
+<p>
+## warning "The quotations which serve as shortcuts for building
+nodes of the OCaml AST do not use the usual syntax
+of OCaml, but must be written in the <b>revised syntax</b>. Unfortunately 
+you will have to learn this new syntax. One way is
+to read the reference manual of Camlp5. Another way is to convert
+your own programs to this syntax with <code>camlp5o pr_r.cmo</code>
+and compare the output with the input." ## 
+
+<p>
+## warning "The contents of these quotations are written in 
+the revised syntax of OCaml, at the exception of 
+the pieces which appear between
+dollars (<code>$...$</code>). They are called <b>antiquotations</b>
+and are way to insert nodes of the syntax tree which have been 
+defined previously." ##
+
+<p>
+In the example, <code>id_patt</code> and <code>id_expr</code> are 
+two simple nodes of the AST which are respectively of the types
+<code>MLast.patt</code> and <code>MLast.expr</code>. They both stand
+for a lowercase identifier, but once in a <b>pattern</b> and once in 
+a <b>expression</b>. We just said that antiquotations are a pair of dollars
+containing an OCaml expression which stands for a predefined node of the
+AST. Actually, in addition we can use labels such as <code>lid:</code> in this
+portion of our example:
+## print_with bg_ocaml .## 
+let id_patt = <:patt< $lid:id$ >> in
+...
+## () ##
+<p>
+It means that the actual contents of the antiquotation (yellow) 
+is a string which represents a lowercase identifier (lid).
+Here <code>id</code> has to represent a valid lowercase identifier, which 
+is the case (<code>id = "__finally1"</code>).
+Using labels in antiquotation is required to convert one basic type
+to a node of the syntax tree. It is also important for disambiguation
+since a string can represent a lowercase identifier, but also an
+an uppercase identifier, an escaped string literal or an escaped
+character literal. They all have a corresponding label (see the reference 
+## manual () ## for details).
+
+<p>
+An important feature is to keep track in the AST of the location of
+the original source code. Therefore, a <b>location</b> is associated
+to each node of the AST. When manipulating the AST with quotations,
+the quotation expander use a predefined name for the locations.
+This name is by default <code>loc</code> in the versions of Camlp5 up to
+3.08.2 and <code>_loc</code> in the following versions. The best way
+to avoid trouble is to pass the <code>-loc loc</code> option
+to <code>camlp5o</code> and use <code>loc</code>. So a location
+must be available under the name <code>loc</code> when building
+the AST with quotations. In return, when destructuring the AST
+with pattern-matching using quotations, a variable named <code>loc</code>
+is automatically defined. The same thing happens in grammar rules
+of <code>EXTEND</code> statements, which explains the availability 
+of a <code>loc</code> object which seems
+to come from nowhere in our <code>EXTEND</code> statement.
+
+<p>
+Now you should really take the time to understand completely the system
+of quotations. You must realize that they are used for building
+nodes of the AST which types are defined in the <code>MLast</code>
+module of the Camlp5 library. 
+These quotations can also be used in pattern matching if you need
+to extract some information for an existing AST or if you want
+to substitute it.
+
+<p>
+Let's now have a look at the <code>EXTEND</code> statement.
+What we extend is the default grammar.
+The default grammar has been set by <code>pa_o.cmo</code> which
+is implicitely loaded by <code>camlp5o</code>. This is the
+grammar of the regular syntax of OCaml.
+We will not extend the set of possible <b>tokens</b> or how they
+are recognized, but only their meaning according to their sequential 
+arrangement.
+An <code>EXTEND</code> statement 
+contains a list of <b>grammar entries</b> that will be extended.
+Each grammar entry consists in a collection of <b>rules</b>.
+The entries can be predefined or newly defined.
+They can be made visible and therefore extensible by other syntax extensions
+or not. Here we just extend the <code>Pcaml.expr</code> entry
+which defines the syntax of an OCaml expression as its name indicates.
+A rule within a given entry
+is made of a <b>pattern</b> (yellow block) which is 
+associated with an OCaml expression which defines a syntax node (grey block):
+## print_with bg_ocaml .##
+EXTEND
+  Pcaml.expr: @pink@LEVEL "expr1"@@ [
+    [ @yellow@"try"; e1 = Pcaml.expr; "finally"; e2 = Pcaml.expr@@ -> @silver@expand loc e1 e2@@ ]
+  ];
+END;;
+## () ##
+<p>
+The patterns are matched according to <b>precedence levels</b>.
+Here we know that a level named <code>expr1</code> exists, and we
+know its meaning and relative priority with respect to existing
+syntaxic constructs. 
+We know this from the file
+pa_o.ml of the Camlp5 library.
+So we insert a rule exactly in this level, no new level is created which would
+be the case if we wouldn't have used a <code>LEVEL</code> annotation.
+
+
+<p>
+The rest is self explanatory: 
+<code>try</code> and <code>finally</code> are implicitely made
+reserved keywords of the language if not already, and
+we extract <code>e1</code> and <code>e2</code>
+which are two expression nodes (<code>Pcaml.expr</code> is a grammar entry
+which returns objects of type <code>MLast.expr</code>).
+Our new rule itself must return a node of type <code>MLast.expr</code>.
+This is the role of our <code>expand</code> function.
+
+<p>
+After compilation of the syntax extension, we use it to rewrite
+our program in the regular OCaml syntax:
+## ocaml_file "camlp5/tryfinally/prog.ppo" ##
+and in the revised syntax, which is closer to what we wrote
+in the quotations of our file <code>pa_tryfinally.ml</code>:
+## ocaml_file "camlp5/tryfinally/prog.ppr" ##
+
+<p>
+And the program <code>prog</code> runs as expected:
+<pre>
+$ ./prog
+## command ~noexit:true "camlp5/tryfinally/prog 2>&1" ##</pre>
+
+
+## toc_entry "variations" ##
+
+<p>
+We will rearrange the source code of our <code>try ... finally</code> syntax
+extension in order to see better which element is responsible for which
+effect and learn more about Camlp5.
+
+## toc_entry "quotations" ##
+
+<p>
+First, we might use only one quotation to represent the node of the
+AST which is returned by the <code>try ... finally</code> rule.
+We are talking of the <code>expand</code> function, which was defined like 
+this:
+## print_with bg_ocaml .##
+let expand loc e1 e2 =
+  let id = new_id () in
+  let id_patt = <:patt< $lid:id$ >> in
+  let id_expr = <:expr< $lid:id$ >> in
+  <:expr<
+  let $id_patt$ =
+    try do { $e1$; None } 
+    with [ exn -> Some exn ] in
+  do { $e2$;
+       match $id_expr$ with
+	   [ None -> ()
+	   | Some exn -> raise exn ] }
+  >>
+## () ##
+
+<p>
+So, we can inline the definitions of <code>id_patt</code>
+and <code>id_expr</code>, which here simplifies our source code:
+## print_with bg_ocaml .##
+let expand loc e1 e2 =
+  let id = new_id () in
+  <:expr<
+  let $lid:id$ =
+    try do { $e1$; None } 
+    with [ exn -> Some exn ] in
+  do { $e2$;
+       match $lid:id$ with
+	   [ None -> ()
+	   | Some exn -> raise exn ] }
+  >>
+## () ##
+<p>
+The first occurrence in the quotation
+of our newly created identifier <code>id</code>
+is a pattern according to the Camlp5 terminology, 
+and the second occurrence is an expression. This is inferred
+simply by the context: <code>let <i>patt</i> =</code> in the first case
+and <code>match <i>expr</i> with</code> in the second case.
+
+<p>
+Here is some dummy OCaml code where some patterns and expressions
+have been highlighted in yellow (patterns) and pink (expressions):
+## print_with bg_ocaml .##
+let @yellow@x@@ = "abc"
+let @yellow@_@@ =
+  let @yellow@z2@@ =
+    @pink@let z = 5 * 3 in z * z@@ in
+  @pink@print_float@@ @pink@z2@@;
+  match x, z2, @pink@Some true@@ with
+      @yellow@"a", _, None@@ -> @pink@()@@
+    | @yellow@("abc" | "ab")@@, 0, Some @yellow@false@@ -> @pink@print_endline "something"@@
+    | @yellow@_@@ when @pink@z < 10@@ -> ()
+    | _ -> ()
+## () ##
+
+<p>
+"Toplevel expressions" such as ## ocamlcode "let x = 2" ##
+or ## ocamlcode "type t = A | B of string" ##
+are actually not expressions, but declarations
+which are elements of the implementation of the current module.
+In Camlp5, these are called <code>str_item</code> (<code>str</code> reminds of
+the <code>struct</code> keyword
+which introduces submodule implementations).
+There is a quotation expander for str_items, as well as for other families
+of syntaxic elements that we did not encounter yet.
+
+
+## toc_entry "reordering" ##
+
+<p>
+Let's now remove the uncessary identifier which has a reserved prefix.
+It avoids the user of our syntax extension
+to remember that <code>__finally</code> is
+a forbidden prefix. And there is unfortunately no way of generating
+identifiers in a reserved Camlp5 namespace.
+<p>
+We completely rewrite the quotation so that
+all the identifiers we introduce are not accessible by 
+user-defined expressions.
+Here is one solution:
+## print_with bg_ocaml .##
+let expand loc e1 e2 =
+  <:expr<
+  let f1 () = $e1$
+  and f2 () = $e2$ in
+  do { (try f1 ()
+        with exn -> do { f2 (); raise exn });
+       f2 () }
+  >>
+## () ##
+<p>
+There are several reasons why we have to write such twisted code:
+<ul>
+<li> the closures <code>f1</code> and <code>f2</code> play their role well
+since they both record the environment before any new binding is added
+(and they don't see each other);
+<li> we want to avoid exponential growth in size of the generated code,
+which could happen if we duplicate 
+the whole contents of the expression <code>e2</code>
+(<code>e2</code> itself might contain <code>try ... finally</code>
+statements).
+</ul>
+<p>
+And we hope that the compiler handles the closures efficiently.
+
+<p>
+In general, a good approach would be to implement the initial solution
+which is more natural,
+and choose our automatically-generated identifiers so that
+there is no clash with the user-defined identifiers.
+There is no simple generic solution for doing this (yet) since it 
+requires a lexical analysis of whole subtrees with a lot of different 
+kind of nodes.
+We will see an example in which we actually do something like this
+## toc_link "replacing" "later" ##.
+
+
+
+
+## toc_entry "more-rules" ##
+
+<p>
+We want to add another syntax for expressing the same as with
+<code>try ... finally</code>. We want that the following:
+## print_with bg_ocaml .##
+try e1 finally e2
+## () ##
+<p>
+could as well be written as:
+## print_with bg_ocaml .##
+before e2 try e1
+## () ##
+
+<p>
+We will insert a rule for this syntax in the same priority <b>level</b>
+as we did previously for <code>try ... finally</code>.
+For now, just notice that we place a vertical bar directly between
+the rules within in the innermost pair of square brackets which represent
+the extension of the same level:
+## print_with bg_ocaml .##
+EXTEND
+  Pcaml.expr: LEVEL "expr1" [
+    @pink@[@@ "try"; e1 = Pcaml.expr; "finally"; e2 = Pcaml.expr -> expand loc e1 e2
+    @pink@|@@ "before"; e2 = Pcaml.expr; "try"; e1 = Pcaml.expr -> expand loc e1 e2 @pink@]@@
+  ];
+END;;
+## () ##
+
+<p>
+Understanding the system of levels is the object of
+## toc_link "priorities" "a dedicated section" ## of this tutorial.
+
+
+## toc_entry "replacing" ##
+
+<p>
+Using the <code>EXTEND</code> statement, we are able to add or replace 
+grammar rules. We have seen that a rule consists in building a syntax
+node for the OCaml AST.
+Earlier we defined a rule like this:
+## print_with ocamlpre ##
+   "try"; e1 = Pcaml.expr; "finally"; e2 = Pcaml.expr -> expand loc e1 e2
+## () ##
+<p>
+<code>e1</code> and <code>e2</code> are two expressions, i.e. two nodes
+of type <code>MLast.expr</code>. From these expressions, 
+we build a syntax node
+which is itself an expression. This is the role of our <code>expand</code>
+function.
+<p>
+In that case, we don't have to transform <code>e1</code> or <code>e2</code>.
+However, things are not always so simple. Let's consider the following problem:
+we want to create a syntax which has the following properties:
+<ul>
+<li> locally we can switch to a special syntax,
+<li> this special syntax is a slight modification of the OCaml syntax.
+</ul>
+<p>
+Consider the following problem: in order to make the code for numeric
+computations easier to read, we want to read ints as floats
+and their operators (<code>+ - * /</code>) 
+as the equivalent operators over floats
+(<code>+. -. *. /.</code>). However we don't want this to be applied 
+everywhere in the file, but only in expressions that are introduced
+by a new <code>FLOAT</code> keyword since it makes quasi impossible to use
+ints within the new syntax:
+## print_with ocamlpre ##
+let x = FLOAT 3/2 - sqrt (1/3)
+let i = 1 + 2 + 3
+## () ##
+<p>
+would be converted into:
+## print_with ocamlpre ##
+let x = 3. /. 2. - sqrt (1. /. 3.)
+let i = 1 + 2 + 3
+## () ##
+<p>
+which is less pleasant for the eye.
+<p>
+Using an <code>EXTEND</code> statement, we could relatively
+easily add rules that interpret int constants as their float equivalent, 
+interpret <code>+</code> as <code>+.</code> and so on
+(if this is not obvious to you, implement it as an exercise using
+the knowledge introduced in the previous sections and 
+the file <code>pa_o.ml</code> of the distribution).
+This would however interpret any occurrence of <code>2</code>
+as the float <code>2.0</code> for instance, which is not satisfactory.
+<p>
+On the other hand, we want to benefit from the full OCaml syntax
+within our "<code>FLOAT</code>" expressions (which by the way 
+do not have to be of type <code>float</code>).
+<p>
+One solution to this problem is to define a 
+quotation expander which uses a globally-modified OCaml syntax.
+In other words, our example would look like this:
+## print_with bg_ocaml .##
+let x = @pink@<:float< 3/2 - sqrt (1/3) >>@@
+let i = 1 + 2 + 3
+## () ##
+<p>
+But this is not exactly what we want and I don't know how to do this.
+Moreover it might be not so simple since we would have to manipulate two 
+variants of OCaml grammars at the same time, not only the default one
+(maybe a look at the implementation of
+<a href="http://www.eleves.ens.fr/home/frisch/soft.html#HereDoc">HereDoc</a>
+could help).
+
+<p>
+The solution we will adopt is extremely inelegant, but works after all
+and does not require as many efforts as it seems at first sight.
+<p>
+For testing our syntax extension, we are going to use this
+## download "camlp5/float/Makefile" ##.
+We will perform the tests over the following program:
+## print_with (bg_ocaml ~file:"camlp5/float/prog.ml" ~html:true) .##
+let f x =
+  FLOAT 
+   let pi = acos (-1) in
+   x/(2*pi) - x**(2/3)
+
+let _ = 
+  let x = 2.5 in
+  Printf.printf "%g -> %g\n" x (f x)
+## () ##
+<p>
+And it should be transformed into this:
+## print_with (bg_ocaml ~file:"camlp5/float/expected.ml") .##
+let f x =
+  let pi = acos (-1.) in
+  x /. (2. *. pi) -. x ** (2. /. 3.)
+
+let _ = 
+  let x = 2.5 in
+  Printf.printf "%g -> %g\n" x (f x)
+## () ##
+
+<p>
+Here comes our syntax extension. We use predefined quotations for 
+recursively destructuring the syntax tree, as well as for reconstructing
+it. Only the yellow regions are actually specific, the rest is very repetitive
+and can be reused in other programs that need to rewrite <code>expr</code>
+nodes.
+
+## print_with (bg_ocaml ~file:"camlp5/float/pa_float.ml" ~html:true) .##
+(* The following function takes an expr syntax node and replaces 
+   all occurrences of int constants and operators by their float equivalent.
+
+   The code is directly derived from the section on the quotations 
+   for manipulating OCaml syntax trees in the reference manual.
+
+   This code can be easily reused by copy-pasting.
+*)
+let rec subst_float expr =
+  @cyan@let loc = MLast.loc_of_expr expr in@@
+@silver@  let se = subst_float in
+  let sel = List.map subst_float in
+  let spwel = List.map (fun (p, w, e) -> (p, w, se e)) in@@
+  match expr with
+      <:expr< $e1$ . $e2$ >> ->          <:expr< $se e1$ . $se e2$ >>
+    | <:expr< $anti:e$ >> ->             <:expr< $anti:se e$ >>
+    | <:expr< $e1$ $e2$ >> ->            <:expr< $se e1$ $se e2$ >>
+    | <:expr< $e1$ .( $e2$ ) >> ->       <:expr< $se e1$ .( $se e2$ ) >>
+    | <:expr< [| $list:el$ |] >> ->      <:expr< [| $list:sel el$ |] >>
+    | <:expr< $e1$ := $e2$ >> ->         <:expr< $se e1$ := $se e2$ >>
+    | <:expr< $chr:c$ >> ->              expr
+    | <:expr< ($e$ :> $t$) >> ->         <:expr< ($se e$ :> $t$) >>
+    | <:expr< ($e$ : $t1$ :> $t2$) >> -> <:expr< ($se e$ : $t1$ :> $t2$) >>
+    | <:expr< $flo:s$ >> ->              expr
+    | <:expr< for $s$ = $e1$ $to:b$ $e2$ do { $list:el$ } >> -> 
+          <:expr< for $s$ = $se e1$ $to:b$ $se e2$ do { $list:sel el$ } >>
+    | <:expr< fun [ $list:pwel$ ] >> ->  <:expr< fun [ $list:spwel pwel$ ] >>
+    | <:expr< if $e1$ then $e2$ else $e3$ >> -> 
+        <:expr< if $se e1$ then $se e2$ else $se e3$ >>
+
+@yellow@    | <:expr< $int:s$ >> -> (* we change the int constants into floats *)
+        let x = string_of_float (float (int_of_string s)) in
+	<:expr< $flo:x$ >>
+@@
+    | <:expr< ~ $i$ : $e$ >> ->          <:expr< ~ $i$ : $se e$ >>
+    | <:expr< lazy $e$ >> ->             <:expr< lazy $se e$ >>
+    | <:expr< let $opt:b$ $list:pel$ in $e$ >> -> 
+        let pel' = List.map (fun (p, e) -> (p, se e)) pel in
+        <:expr< let $opt:b$ $list:pel'$ in $se e$ >>
+
+@yellow@    | <:expr< $lid:s$ >> -> (* we override the basic operators + - * / *)
+        (match s with
+	     "+" | "-" | "*" | "/" -> <:expr< $lid: s ^ "."$ >>
+	   | _ -> expr)
+@@
+    | <:expr< match $e$ with [ $list:pwel$ ] >> ->
+	<:expr< match $se e$ with [ $list:spwel pwel$ ] >> 
+    | <:expr< { $list:pel$ } >> -> 
+        let pel' = List.map (fun (p, e) -> (p, se e)) pel in
+        <:expr< { $list:pel'$ } >>
+    | <:expr< do { $list:el$ } >> ->     <:expr< do { $list:sel el$ } >>
+    | <:expr< $e1$ .[ $e2$ ] >> ->       <:expr< $se e1$ .[ $se e2$ ] >>
+    | <:expr< $str:s$ >> -> expr
+    | <:expr< try $e$ with [ $list:pwel$ ] >> -> 
+	<:expr< try $e$ with [ $list:spwel pwel$ ] >>
+    | <:expr< ( $list:el$ ) >> ->        <:expr< ( $list:sel el$ ) >>
+    | <:expr< ( $e$ : $t$ ) >> ->        <:expr< ( $se e$ : $t$ ) >>
+    | <:expr< $uid:s$ >> ->              expr
+    | <:expr< while $e$ do { $list:el$ } >> -> 
+        <:expr< while $se e$ do { $list:sel el$ } >>
+
+@pink@    | _ -> 
+	Stdpp.raise_with_loc loc 
+	  (Failure 
+	     "syntax not supported due to the \
+              lack of Camlp5 documentation")@@
+
+EXTEND
+  Pcaml.expr: LEVEL "expr1" [
+    [ "FLOAT"; e = Pcaml.expr -> subst_float e ]
+  ];
+END;;
+## () ##
+
+## (* Now that the sources have been updated, let's compile and run *)
+command "cd camlp5/float && make 1>&2"
+##
+
+<p>
+And the program <code>prog</code> runs nicely:
+<pre>
+$ ./prog
+## command "camlp5/float/prog 2>&1" ##</pre>
+
+## (* ocaml_file "camlp5/float/pa_float.ppo" *) ##
+
+<p>
+You can check the result of the preprocessing
+of our test program 
+in the standard syntax (## download "camlp5/float/prog.ppo" ##)
+or in the revised syntax (## download "camlp5/float/prog.ppr" ##).
+
+<p>
+Nicer solutions to this kind of problems exist in theory, such
+as generic tree-traversal functions that could be defined automatically
+from type definitions. But it has to be written.
+
+
+
+## toc_entry "inserting-bof" ##
+
+<p>
+It may useful to insert some <code>open</code> directives or 
+a few definitions that are used by our runtime system.
+One solution consists in changing the global function which parses
+the stream of characters and returns the list of str_items 
+(<code>.ml</code> files) or sig_items (<code>.mli</code> files).
+This parsing function can be interrupted and reloaded because of directives
+that might modify the syntax. This is why we must check that the insertions
+of initial code is made only once.
+
+## print_with (bg_ocaml ~file:"camlp5/bof/prog.ml" ~html:true) .##
+let _ =
+  Printf.printf "Version: %s\n" version
+## () ##
+
+## print_with (bg_ocaml ~file:"camlp5/bof/pa_bof.ml" ~html:true) .##
+let insert_this () =
+  let loc = Token.dummy_loc in
+  (<:str_item< value version = "1.2.3" >>, loc)
+
+let _ =
+  let first = ref true in
+  let parse strm =
+    let (l, stopped) = Grammar.Entry.parse Pcaml.implem strm in
+    let l' = 
+      if !first then
+	insert_this () :: l
+      else l in
+    (l', stopped) in
+  Pcaml.parse_implem := parse
+## () ##
+
+
+## (* Now that the sources have been updated, let's compile and run *)
+command "cd camlp5/bof && make 1>&2"
+##
+
+<p>
+It seems that the pretty-printer is confused by this hack,
+and the output looks strange:
+## ocaml_file "camlp5/bof/prog.ppo" ##
+
+<p>
+Nevertheless, the AST in binary format is correct since the program 
+is correctly compiled and executed when <code>pr_dump.cmo</code> 
+is used (always loaded implicitely by <code>camlp5o</code>) 
+instead of <code>pr_o.cmo</code>:
+<pre>
+$ ./prog
+## command "camlp5/bof/prog 2>&1" ##</pre>
+
+
+<p>
+You can also get the ## download "camlp5/bof/Makefile" ## for this example.
+
+
+
+## toc_entry "inserting-str_items" ##
+
+<p>
+In the case of expanding the <code>str_item</code> grammar entry with 
+a new rule, often we want to insert several <code>str_item</code> nodes
+of the OCaml abstract syntax tree, or sometimes not at all.
+However, we have to return exactly one node.
+
+<p>
+In this case, we use the <code>declare</code> ... <code>end</code>
+construct of the revised syntax to group an arbitrary number of
+str_items:
+## print_with bg_ocaml .##
+<:str_item< 
+  declare 
+    $x$;
+    $y$;
+  end
+>>
+## () ##
+<p>
+Or:
+## print_with bg_ocaml .##
+<:str_item< 
+  declare 
+    $list: list_of_str_items$
+  end
+>>
+## () ##
+
+<p>
+See the ## toc_link "types" "section on customized record types" ## 
+for a meaningful example.
+
+
+## toc_entry "inserting-just-before" ##
+
+<p>
+The problem is the following: a syntax extension
+needs to use some data, such as a cache, that has to be used repeatedly
+but is initialized only once. Moreover we don't want to expose
+this definition in the module interface since it will be used
+transparently and locally.
+
+<p>
+For instance we can create a <code>count</code> keyword which counts
+how many times the execution of the program goes through
+this point, and displays the result when the program terminates:
+## print_with bg_ocaml .##
+let f l = 
+  print_string "That's a nice list of items:\n";
+  List.iter (fun x -> count; print_endline x) l
+## () ##
+<p>
+That could expanded into something like this:
+## print_with bg_ocaml .##
+let f =
+  let __count1 = ref 0 in
+  at_exit 
+    (fun () -> 
+       Printf.printf 
+         "File \"test_count.ml\", line 3, characters 22-26:\n\
+          count = %i\n" 
+         !__count1);
+  fun l ->
+    print_string "That's a nice list of items:\n";
+    List.iter
+      (fun x ->
+	 incr __count1;
+	 print_endline x)
+      l
+## () ##
+
+<p>
+Although there is no built-in functionality for doing this,
+you can use Yutaka Oiwa's Declare_once library which is included
+in the distribution of his
+<a href="http://www.oiwa.jp/~yutaka/caml/index-en.html">regexp-pp
+package</a>. Once compiled, the 
+<code>Declare_once</code> module can be used as follows:
+## print_with bg_ocaml .##
+let create_some_ast_node some_param =
+  ...
+  let expr = ... in
+  let name_for_my_expr = ... in
+  Declare_once.declare 
+    ~package:"my_package" 
+    name_for_my_expr
+    (Declare_once.Expr expr);
+  ...
+## () ##
+<p>
+It works by adding a pair (name, expr) to a list of pending declarations.
+When the value of the current str_item is computed, this list
+of declarations is inserted in a way which is similar to our example,
+so that these declarations are not visible in the module
+interface but are computed only once.
+
+
+## toc_entry "priorities" ##
+
+<p>
+This section is best illustrated with the <code>pa_o.ml</code> file
+of the Camlp5 distribution. It is time for you to retrieve it 
+and keep a copy somewhere, if you haven't already done so.
+<p>
+First, look at the <code>expr</code> entry of the grammar.
+The first occurence of <code>expr:</code> in the file defines
+what is commented as the "core expressions". It defines
+many rules, and these rules are grouped into different precedence 
+<b>levels</b>,
+and many of them are named explicitely: 
+## ocamlcode "\"top\"" ##,
+## ocamlcode "\"expr1\"" ##,
+## ocamlcode "\":=\"" ##,
+## ocamlcode "\"||\"" ##,
+## ocamlcode "\"&&\"" ##,
+## ocamlcode "\"apply\"" ##,
+## ocamlcode "\"simple\"" ##, etc.
+Later in the <code>EXTEND</code> statement, the <code>expr</code> entry
+is extended further with other rules.
+Some of these additional rules can be inserted in already existing
+levels. This extends the ## ocamlcode "\"expr1\"" ## level 
+of the <code>expr</code> entry with
+an additional rule:
+## print_with bg_ocaml .##
+  expr: LEVEL "expr1"
+    [ @silver@[ "fun"; p = labeled_patt; e = fun_def -> <:expr< fun $p$ -> $e$ >> ]@@ ]
+  ;
+## () ##
+<p>
+The innermost brackets define a level or like here, an extension of 
+an existing level (grey area).
+A level may contain several rules, separated by vertical bars.
+Lists of levels also use the vertical bar as a separator, but
+do not confuse them.
+Please do not do this:
+## print_with bg_ocaml .##
+(* 2 levels, 2 rules, 1 level to extend: 
+   Which level is extended?
+   Which level is inserted? Where? *)
+  @=font-style:italic@entry@@: LEVEL @=font-style:italic@"some level"@@
+    [ [ @=font-style:italic@some rule@@ ]
+    | [ @=font-style:italic@some other rule@@ ] ];
+## () ##
+<p>
+which is different from:
+## print_with bg_ocaml .##
+(* extending 1 level with 2 rules: this is clear *)
+  @=font-style:italic@entry@@: LEVEL @=font-style:italic@"some level"@@
+    [ [ @=font-style:italic@some rule@@
+      | @=font-style:italic@some other rule@@ ] ];
+## () ##
+
+
+<p>
+Levels have this property: when the parser is looking for 
+a given syntax entry, it starts at a given level (by default the first one)
+and looks for rules that can be satisfied. If no rule can be satisfied
+in the current level,
+it goes to the next level, and repeats the same process.
+The pratical consequences are that:
+<ul>
+<li> different levels can be used to define different levels of associativity
+such as the addition vs. the multiplication: the level of the
+addition comes first, and the multiplication comes in the next level 
+(see file <code>pa_o.ml</code>).
+Viewed like this, addition has a higher priority than multiplication.
+<li> Within rules, the level where the parser must start to match a given
+entry may be specified, so that the rules contained in the preceding
+levels of the entry are not available
+(for an example, see the ## toc_link "types" 
+   "definition of record types with default values" ## in this tutorial).
+</ul>
+
+<p>
+As stated in the reference ## manual () ##, only the <code>LEVEL</code> instruction
+can be used to extend an existing level. Other instructions
+that specify where a given level must be inserted are available:
+<code>FIRST</code>, <code>LAST</code>, <code>AFTER</code> some level,
+<code>BEFORE</code> some level. These positions refer to the order
+in which they are written, which is the order in which the parser tries to
+match the rules.
+
+<p>
+Suggested exercise: implement and test a syntax extension which supports
+a ## verb "where" ## construct. 
+For instance, ## ocamlpre "a + b where a = 1 and b = 2" ## 
+<p>means
+## ocamlpre "let a = 1 and b = 2 in a + b" ##
+<p>
+We decide that
+## ocamlpre "let a = 1 in a where a = 2" ## 
+<p>
+should be read as
+## ocamlpre "let a = 1 in (a where a = 2) (* returns 2 *)" ##
+<p>
+and not
+## ocamlpre "(let a = 1 in a) where a = 2 (* returns 1 *)" ##
+<p>
+Also, the ## verb "where" ## construct is right-associative:
+## ocamlpre "x + y where x = y where y = 1" ## 
+<p>
+means
+## ocamlpre "x + y where x = (y where y = 1) (* depends on an external y *)" ##
+<p>
+and not 
+## ocamlpre "(x + y where x = y) where y = 1 (* returns 2 *)" ##
+You are encouraged to reuse the ## verb "let_binding" ## grammar entry
+(## ocamlcode "Pcaml.let_binding" ##). Right-associativity
+must be specified with ## ocamlcode "RIGHTA" ## since the default is
+left-associativity (## ocamlcode "LEFTA" ##); you can find examples
+of these specifications in the ## verb "pa_o.ml" ## file.
+After completion of this exercise, you should be able to:
+<ul>
+<li> extend a grammar entry with new syntax rules;
+<li> give these rules the correct associativity, before even testing.
+</ul>
+
+
+## toc_entry "custom_parsers" ##
+
+<p>
+This section gives hints on how to parse some blocks using a custom parser.
+We will not give too much detail here, since the recommended way of
+doing this is by using ## toc_link "inserting-anywhere" "quotations" ##.
+Make sure you understand the rest of this document before reading this.
+
+## toc_entry "parse_string" ##
+
+
+<p>
+When the language extension that must be parsed locally cannot be
+parsed using the Camlp5 grammar system, we would normally use 
+## toc_link "inserting-anywhere" "quotations" ##.
+Consider the following example where a graph is represented using ASCII art:
+## print_with verbatim ##
+"Node 1"---B---D
+   |        \ /
+   +---------C
+## () ##
+<p>
+The graph should be expanded into the following type definitions:
+## print_with bg_ocaml .##
+type node_1 = [ `B of b | `C of c ]
+and b = [ `Node_1 of node_1 | `C of c | `D of d ]
+and c = [ `Node_1 of node_1 | `B of b | `D of d ]
+and d = [ `B of b | `C of c ]
+## () ##
+<p>
+Actually, this graph should be included in an OCaml program, so we would 
+create a quotation expander named ## verb "graph" ##, and our piece of program
+should be written like this:
+## print_with verbatim ##
+<:graph<
+"Node 1"---B---D
+   |        \ /
+   +---------C
+>>
+## () ##
+<p>
+However, one limitation of quotations is that they must be expanded into either
+an ## verb "expr" ## or a ## verb "patt" ##, but not into a type definition,
+which is a ## verb "str_item" ##. So this will not be accepted as-is
+by the parser.
+<p>
+Solution 1: instead of using of quotation, just create a 
+## ocamlcode "GRAPH" ## keyword which
+will be followed by a string literal. This can be expanded into a 
+## verb "str_item" ## without specific difficulties, given a function
+which will parse the string. The problem here is that double-quotes 
+must be protected by backslashes, which may be inconvenient.
+The program would look like this, which is now totally unreadable
+unless we don't use double-quoted labels:
+## print_with bg_ocaml .##
+GRAPH "
+\"Node 1\"---B---D
+   |        \ /
+   +---------C
+"
+## () ##
+<p>
+Solution 2: same as solution 1, but in addition we define a quotation
+expander named ## verb "string" ## which just lets us write a string
+literal using the quotation syntax. In this case, 
+only the ## verb ">>" ## sequences
+would have to be protected by backslashes.
+The example becomes:
+## print_with bg_ocaml .##
+GRAPH <:string<
+"Node 1"---B---D
+   |        \ /
+   +---------C
+>>
+## () ##
+
+
+
+## toc_entry "parse_token_stream" ##
+
+<p>
+Now, if the token stream returned by the lexer is satisfying, but your grammar
+requires to first scan the stream without consuming it, you can do it.
+You can actually hook any external parser at this point. It will operate
+on the token stream, with its limitations (whitespace is discarded, tokens
+may not be recognized the way you want in your sublanguage, ...).
+
+
+
+## toc_entry "error_location" ##
+
+<p>
+The easiest way of generating error messages that indicate a location
+in the source file is the following:
+## print_with bg_ocaml .##
+Stdpp.raise_with_loc _loc (Failure "this is an error message")
+## () ##
+It displays the location by indicating file, line number and character 
+offsets, 
+as usual in OCaml. Under Emacs with tuareg-mode it allows to go directly to
+this location in the source file. However, this raise an exception, which 
+is not always wanted.
+
+<p>
+A similar error message can be produced using the following function:
+## print_with bg_ocaml .##
+open Printf
+open Lexing
+
+(* works only if done immediately, since the file name can change when a
+   #line or #use directive is encountered *)
+
+let string_of_loc _loc =
+  let start, stop = _loc in
+  let char1 = start.pos_cnum - start.pos_bol in
+  let char2 = char1 + stop.pos_cnum - start.pos_cnum - 1 in
+  sprintf "File %S, line %i, characters %i-%i:\n"
+    !Pcaml.input_file (* should be: start.pos_fname*) 
+    start.pos_lnum
+    char1 char2
+## () ##
+<p>
+Beware that there has been bug which caused the <code>pos_fname</code>
+record field to not be set correctly 
+(<a href="http://caml.inria.fr/mantis/view.php?id=3886">bug report 3886</a>).
+This is why we don't use it, although it should be a better solution
+since it does not depend on any external state.
+
+<p>
+Of course, the user of the syntax extension must <b>not load 
+<code>pr_o.cmo</code></b> (conversion to OCaml source file in standard syntax)
+when preprocessing a source file with <code>camlp5o</code>, 
+since it does not preserve the original location indicators.
+The default output format should be used. It is provided by the 
+<code>pr_dump.cmo</code> file which is preloaded in 
+<code>camlp5o</code> or <code>camlp5r</code>. This format is a
+binary representation of the abstract syntax tree, 
+with locations that match the source code.
+
+<p>
+See also ## toc_link "loc" "loc vs. _loc" ## and why you should
+always use the <code>-loc</code> option when preprocessing 
+a syntax extension.
+
+
+## toc_entry "packaging" ##
+
+<p>
+These are guidelines which should make it easier for programmers
+to actually use the syntax extensions that you may have written.
+
+## toc_entry "cohabitation" ##
+<p>
+If possible, do not override existing rules: this might be fine if only
+your extension is being used, but if another extension does the same, only
+one of these extensions can be used at a time. Sometimes, deleting a rule
+and rewriting an extended version of it is the only way to "extend" existing
+syntax constructs, but using other keywords instead is always possible.
+
+<p>
+EXTEND statements are expressions and they can be parametrized by some runtime
+parameters. It is a good idea to provide an option which allows to specify
+a given keyword instead of the default one.
+For instance, instead of this:
+## print_with bg_ocaml .##
+(* file pa_eval.ml *)
+...
+
+EXTEND
+  Pcaml.expr: [
+    [ "eval"; e = Pcaml.expr -> ... ]
+  ]
+END
+## () ##
+<p>we would write the following:
+## print_with bg_ocaml .##
+(* file pa_eval.ml *)
+...
+
+let extend opt =
+  let kw = !opt in
+  EXTEND
+    Pcaml.expr: [
+      [ $kw$; e = Pcaml.expr -> ... ]
+    ]
+  END
+
+let _ =
+  let eval = ref "eval" in
+  Pcaml.add_option "-eval-kw" 
+    (Arg.SetString eval)
+    "<kw>  use another keyword than \"eval\"";  
+## () ##
+<p>
+Now the users of the syntax extension can load it
+with <code>camlp5o pa_eval.cmo -eval-kw EVAL</code> if they want the new keyword
+to be <code>EVAL</code> instead of <code>eval</code>.
+
+
+
+## toc_entry "names" ##
+
+In order to minimize conflicts between existing syntax extensions that could
+be used simultaneously, the following rules are suggested:
+<ul>
+<li> the name of 
+a library which extends the syntax should start with "pa_"
+(e.g. <code>pa_eval.cmo</code>) 
+<li> the name of 
+a library which defines a pretty-printer should start with "pr_"
+(e.g. <code>pr_eval.cmo</code>) 
+<li> the name of 
+a library which defines quotation expanders should start with "q_"
+(e.g. <code>q_eval.cmo</code>) 
+<li> check that the name of the library that you intend to publish is not
+already taken, with or without the "pa_", "pr_" or "q_" prefix, unless
+you are specifically writing syntactic sugar for this library.
+<li> if your syntax extension accepts options, beware that other 
+syntax extensions might use the same option names, which won't work
+when used simultaneously. You can assume the exclusivity of option names
+that start with the same name as your syntax extension
+(e.g. <code>-eval-kw</code>).
+<li> hidden identifiers that are introduced into the OCaml AST should
+start two underscores followed by the name of the extension file, including
+the "pa_" or "pr_" prefix (e.g. <code>__pa_eval1234</code>).
+</ul>
+
+<p>
+Please note that many existing extensions do not respect all of these (new,
+unofficial)
+guidelines, but if you follow them it means less trouble 
+for you in the future.
+
+
+## toc_entry "youcan" ##
+
+
+## toc_entry "lettry" ##
+
+<p>
+Sometimes, it is useful to restrict the scope of an exception handler.
+The regular ## ocamlcode "try" ## ... ## ocamlcode "with" ## 
+lets us do this:
+## print_with bg_ocaml .##
+let rec cat () =
+  try 
+    let c = input_char stdin in
+    print_char c;
+    cat ()
+  with End_of_file -> ()
+
+let _ = cat ()
+## () ##
+<p>
+but it catches exceptions that might be raised not only during the call to
+<code>input_char</code> but also <code>print_char</code>
+and <code>cat</code> itself.
+That is problematic for several reasons that we don't want to discuss here.
+<p>
+In order to catch the exceptions that are raised during the call to
+<code>input_char</code>, it can be quite difficult to keep the code
+simple and readable. Here is one solution which is relatively natural:
+## print_with bg_ocaml .##
+let rec cat () =
+  match
+    try Some (input_char stdin)
+    with End_of_file -> None
+  with
+      Some c -> 
+	print_char c;
+	cat ()
+    | None -> ()
+
+let _ = cat ()
+## () ##
+<p>
+Another solution, which is hard to read but simple to implement mechanically
+is the following:
+## print_with bg_ocaml .##
+let rec cat () =
+  (try 
+     let c = input_char stdin in
+     fun () ->
+       print_char c;
+       cat ()
+   with End_of_file -> fun () -> ()) ()
+
+let _ = cat ()
+## () ##
+<p>
+This is the solution we choose here to implement a new 
+let-try-in-with construct which was suggested by 
+Don Syme in 
+<a href="http://caml.inria.fr/pub/ml-archives/caml-list/2004/12/b5b79fcd4ea695b8e1e0aff740b07cf3.en.html">a message to caml-list</a>. 
+It looks like this:
+## print_with (bg_ocaml ~file:"camlp5/lettry/prog.ml" ~html:true) .##
+let rec cat () =
+  let try c = input_char stdin in
+  print_char c;
+  cat ()
+  with End_of_file -> ()
+
+let _ = cat ()
+## () ##
+<p>
+Note that we just inverted the ## ocamlcode "let" ## and
+## ocamlcode "try" ## keywords with respect to the original program.
+<p>
+The syntax extension is pretty straightforward and reuses
+some entries of the grammar of OCaml: ## ocamlcode "Pcaml.let_binding" ##,
+## ocamlcode "Pcaml.expr" ## and ## ocamlcode "Pcaml.patt" ##.
+You can notice that these entries are defined in the ## ocamlcode "Pcaml" ##
+module, not in ## ocamlcode "Pa_o" ## (file <code>pa_o.ml</code>). 
+The reason is that
+the grammar for the revised syntax of OCaml (file <code>pa_r.ml</code>)
+shares the same public entries.
+This leaves the possibility of writing syntax extensions of the
+regular syntax (as we do in this tutorial)
+which also work to extend the revised syntax.
+<p>
+Unfortunately, many entries found in <code>pa_o.ml</code> 
+that we would like to modify are not visible from outside.
+<p>
+In this example, we create a new entry <code>lettry_case</code>
+which is very similar to the <code>match_case</code> entry found
+in <code>pa_o.ml</code>:
+## print_with (bg_ocaml ~file:"camlp5/lettry/pa_lettry.ml" ~html:true) .##
+EXTEND
+  GLOBAL: Pcaml.expr;
+
+  Pcaml.expr: LEVEL "expr1" [
+    [ "let"; "try"; o = OPT "rec"; l = LIST1 Pcaml.let_binding SEP "and"; 
+      "in"; e = Pcaml.expr;
+      "with"; pwel = LIST1 lettry_case SEP "|" ->
+        <:expr< (try 
+                   let $opt: o <> None$ $list:l$ in 
+                   fun () -> $e$ 
+		 with 
+                   [ $list:pwel$ ]) () >>  ]
+  ];
+
+  lettry_case: [ 
+    [ p = Pcaml.patt; 
+      w = OPT [ "when"; e = Pcaml.expr -> e ]; "->"; 
+      e = Pcaml.expr -> (p, Ploc.VaVal w, <:expr< fun () -> $e$ >>) ]
+  ];
+END;;
+## () ##
+<p>
+When a <code>GLOBAL</code> statement is present, it means that
+any new entry will be created automatically and will not be
+visible outside of the <code>EXTEND</code> block.
+To make the lettry_case visible, we would proceed as follows:
+## print_with bg_ocaml .##
+let lettry_case = Grammar.Entry.create Pcaml.gram "lettry_case";;
+
+EXTEND
+  (* no GLOBAL statement *)
+  Pcaml.expr: ... ;
+  lettry_case: ... ;
+END;;
+## () ##
+
+## (* Now that the sources have been updated, let's compile and run *)
+command "cd camlp5/lettry && make 1>&2"
+##
+
+<p>
+Our program in the new syntax is successfully transformed into this
+one:
+## ocaml_file "camlp5/lettry/prog.ppo" ##
+
+<p>
+The program prints on stdout the characters read from stdin:
+<pre>
+$ echo Hello | ./prog
+## command "echo Hello | camlp5/lettry/prog 2>&1" ##</pre>
+
+<p>
+## warning "we also should extend the <code>Pcaml.str_item</code> entry,
+using the same code as for <code>Pcaml.expr</code>, just
+like for the standard let-in construct found in <code>pa_o.ml</code>." ##
+
+
+<p>
+<b>Alternate syntax:</b> 
+we might prefer a syntax where the ## ocamlcode "with" ## 
+is internal.
+It makes it easier to realize that the recursive call to our 
+## ocamlcode "cat" ## function is a tail-call.
+This was suggested by 
+<a href="http://pauillac.inria.fr/~ddr/index-english.html">Daniel 
+de Rauglaudre</a>. It goes like this:
+## print_with bg_ocaml .##
+let rec cat () =
+  let try c = input_char stdin 
+      with End_of_file -> ()
+  in
+  print_char c;
+  cat ()
+
+let _ = cat ()
+## () ##
+<p>
+Implementing this is left as an exercise for the reader.
+
+
+## toc_entry "onlyfloats" ##
+
+<p>
+A full solution to this problem is given earlier, in 
+## toc_link "replacing" "that section" ##.
+
+
+
+## toc_entry "types" ##
+
+<p>
+Although it is not very easy to extend the existing syntax for type 
+definitions, we can easily add alternative syntaxes.
+<p>
+Here we will create a <code>record</code> keyword that we
+will use for the definition of records where some fields
+are defined with default values.
+A function with labeled arguments will be generated automatically
+and should be used by the user for creating these records.
+<p>
+This is our test program:
+## print_with (bg_ocaml ~file:"camlp5/records/prog.ml" ~html:true) .##
+record bob = { foo : string = "Hello";
+	       bar : string;
+	       mutable n : int = 1 }
+
+record weird = { x : weird option = (Some (create_weird ~x:None ())) }
+
+let _ =
+  let x = create_bob ~bar:"World" () in
+  x.n <- x.n + 1;
+  Printf.printf "%s %s %i\n" x.foo x.bar x.n
+## () ##
+
+<p>
+There is no big difficulty since we chose not to extend 
+the ## ocamlcode "type" ## syntax for type definitions but to create
+a new one, just for records.
+<p>
+Note (in pink) that the expressions that are given as default values
+for record fields are parsed from the ## ocamlcode "\"simple\"" ## 
+precedence level. It means that unless parentheses are placed
+around the expression, the semicolon will be interpreted as a 
+separator between two record fields, not between two expressions.
+## print_with (bg_ocaml ~file:"camlp5/records/pa_records.ml" ~html:true) .##
+let make_record_expr loc l =
+  let fields =
+    List.map (fun ((loc, name, mut, t), default) -> 
+		(<:patt< $lid:name$ >>, <:expr< $lid:name$ >>)) l in
+  <:expr< { $list:fields$ } >>
+
+let expand_record loc type_name l =
+  let type_def = 
+    let fields = List.map fst l in
+    <:str_item< type $lid:type_name$ = { $list:fields$ } >> in
+  let expr_def =
+    let record_expr = make_record_expr loc l in
+    let f =
+      List.fold_right
+	(fun ((loc, name, mut, t), default) e ->
+	   match default with
+	       None ->
+		 <:expr< fun ~ $Ploc.VaVal name$ -> $e$ >>
+	     | Some x ->
+		 <:expr< fun ? ($lid:name$ = $x$) -> $e$ >>)
+	l
+        <:expr< fun () -> $record_expr$ >> in
+    <:str_item< value rec $lid: "create_" ^ type_name$ = $f$ >> in
+  <:str_item< declare $type_def$; $expr_def$; end >>
+
+EXTEND
+  GLOBAL: Pcaml.str_item;
+
+  Pcaml.str_item: LEVEL "top" [
+    [ "record"; type_name = LIDENT; "="; 
+      "{"; l = LIST1 field_decl SEP ";"; "}" -> expand_record loc type_name l ]
+  ];
+
+  field_decl: [
+    [ mut = OPT "mutable";
+      name = LIDENT; ":"; t = Pcaml.ctyp; 
+      default = OPT [ "="; @pink@e = Pcaml.expr LEVEL "simple"@@ -> e ] -> 
+	((loc, name, (mut <> None), t), default) ]
+  ];
+END;;
+## () ##
+
+## (* Now that the sources have been updated, let's compile and run *)
+command "cd camlp5/records && make 1>&2"
+##
+
+<p>
+Our program ## download "camlp5/records/prog.ml" ##
+has been converted into ## download "camlp5/records/prog.ppo" ##
+and works as expected:
+<pre>
+$ ./prog
+## command "camlp5/records/prog 2>&1" ##</pre>
+
+<p>
+You can download the ## download "camlp5/records/Makefile" ##.
+
+
+
+## toc_entry "rec-expr" (* anonymous recursive functions *) ##
+
+<p>
+This is left as an exercise for the reader:
+we decide that the <code>rec</code> keyword preceding a function makes this function available under
+the name <code>self</code> throughout its definition.
+For instance, the following:
+## print_with ocamlpre ##
+List.map 
+  (rec function 0 -> 1 | n -> n * self (n - 1))
+  [1;2;3;4;5]
+## () ##
+<p>
+would be transcribed into:
+## print_with ocamlpre ##
+List.map 
+  (let rec self = function 0 -> 1 | n -> n * self (n - 1) in self)
+  [1;2;3;4;5]
+## () ##
+<p>
+Hint: some expressions other than functions can be defined recursively.
+How would you define the following list in our new syntax?
+## print_with ocamlpre ##
+(* This is a circular list *)
+let rec circ = 1 :: 2 :: circ
+## () ##
+
+
+
+## toc_entry "youcant" ##
+
+## toc_entry "inserting-anywhere" ##
+
+<p>
+Extending the syntax of OCaml consists in adding or replacing rules 
+in the grammar.
+However the terminal rules, i.e. the tokens returned by the lexer such
+as <code>LIDENT</code>, <code>STRING</code> or <code>INT</code>, cannot be 
+extended.
+<p>
+Consider the following syntax extension where we create a ## verb "one" ##
+keyword which is simply replaced by ## verb "1" ## in expressions and in
+patterns:
+## print_with ocamlpre ##
+EXTEND
+  Pcaml.expr: LEVEL "simple" [ 
+    [ "one" -> <:expr< 1 >> ]
+  ];
+  Pcaml.patt: LEVEL "simple" [ 
+    [ "one" -> <:patt< 1 >> ]
+  ];
+END;;
+## () ##
+<p>
+This will not replace every occurrence of ## verb "one" ## by ## verb "1" ##,
+but only where ## verb "one" ## appears as a lowercase identifier
+as defined by the lexer, as an expression or a pattern. 
+So ## ocamlcode "one_apple" ## and ## ocamlcode "\"one + 2\"" ## will
+remain unchanged.
+<p>
+If you need for instance to parametrize the name of an identifier by adding
+a suffix such as a version number, you can't do it by defining grammar rules.
+In that case, one solution is to use a simple preprocessor which simply
+ignores the context, or to define your own quotation expander.
+<p>
+Quotations behave as one single token, which will be expanded into a node
+of the OCaml syntax tree which is either an expression (expr) or
+a pattern (patt). Quotations are a good way to introduce a syntax which
+is radically different from OCaml. All you have to do is
+define a syntax expander, i.e. a function which builds
+an expression or a pattern from a raw string. 
+For this you can use any technique you like such as Camlp5 (lexer + grammar),
+Ocamllex + Ocamlyacc, regular expressions, etc.
+See the Camlp5 ## manual () ## for the details on how to define a quotation expander.
+
+
+
+## toc_entry "comments" ##
+
+<p>
+End of lines that separate tokens and comments are eliminated by
+the lexer. This is why nothing can be done to solve this problem
+with extensible grammars, although it should be relatively easy to adapt
+the lexer for this task.
+
+## toc_entry "strings" ##
+
+<p>
+Adding customized delimiters for string literals cannot be done by 
+extending the grammar.
+
+<p>
+One alternative is to define a quotation expander which job is to 
+transform the contents of the quotation into a valid OCaml string.
+In this case, instead of escaping
+the double-quotes (## ocamlcode "\"" ##), we would have
+to escape the end-of-quotation delimiters (## ocamlcode ">>" ##).
+The code which would be compiled and loaded by the preprocessor should look
+like this (not tested):
+## print_with ocamlpre ##
+let _ =
+  (* we define a very simple quotation expander *)
+  let expander is_expr quotation_contents =
+
+    (* addition of double-quotes around the string 
+       and backslashes where necessary *)
+    let s = Printf.sprintf "%S" quotation_contents in
+
+    (* the result is plain-text OCaml code (concrete syntax) *)
+    Quotation.ExStr s in
+
+  Quotation.add "string" expander;
+  (* we decide that `string' will be the default quotation expander *)
+
+  Quotation.default := "string"
+## () ##
+<p>
+Now, in a program which is preprocessed with this, the three following
+notations are equivalent:
+## print_with verbatim ##
+  <:string< I don't want to escape this: """""""""" >>
+  << I don't want to escape this: """""""""" >>
+  " I don't want to escape this: \"\"\"\"\"\"\"\"\"\" "
+## () ##
+
+<p>
+The syntax expander can also return a node of the AST, but it is
+more complicated to implement and we lose the location 
+of the quotation, which can make debugging quite unpleasant
+(again, not tested):
+## print_with ocamlpre ##
+let _ =
+  (* we define a very simple quotation expander *)
+  let quote_string s = 
+    (* no double-quotes around the strings in AST nodes! *)
+    String.escaped s in
+
+  let loc = Token.dummy_loc (* avoid doing this whenever you can *) in
+
+  (* here the result is a pair of functions that
+     return the appropriate node of the syntax tree (abstract syntax) *)
+  let expand_expr quotation_contents =
+    let s = quote_string quotation_contents in
+    <:expr< $str:s$ >> 
+
+  and expand_patt quotation_contents =
+    let s = quote_string quotation_contents in
+    <:patt< $str:s$ >> in
+    
+  let expander = Quotation.ExAst (expand_expr, expand_patt) in
+  Quotation.add "string" expander;
+  Quotation.default := "string"
+## () ##
+
+
+## toc_entry "infix" ##
+
+<p>
+The backquote symbol (## ocamlcode "`" ##) is already in use
+as a prefix operator for constructors of polymorphic variants and in
+the Camlp5 extension for stream parsers.
+<p>
+Other notations could be used though.
+Maybe using ## ocamlcode "&" ## is not possible due to priority issues,
+but we would have something like this:
+## print_with ocamlpre ##
+let add a b = (2 * a) + b
+let c = 1 &add 2
+## () ##
+<p>
+which means:
+## print_with ocamlpre ##
+let c = add 1 2
+## () ##
+<p>
+and not:
+## print_with ocamlpre ##
+let c = (add 2) 1
+## () ##
+<p>
+That makes a good exercise for the reader! I don't know if there is
+an acceptable solution, so let me know if you find one.
+<p>
+Hint: we have to define an infix operator
+which is accepted by Camlp5 and available (or that can be overriden),
+and has a stronger precedence than function application 
+(## ocamlcode "\"apply\"" ## level) just like ## ocamlcode "." ## or
+## ocamlcode "#" ##.
+
+
+## toc_entry "selectors" ##
+
+<p>
+This problem is: how to define a function which returns the nth element 
+of a tuple of any size?
+
+<p>
+Unfortunately, Camlp5 cannot help much here since it doesn't know
+the type of the expressions it manipulates.
+<p>
+But if we accept to specify how many fields
+the records has, it becomes feasible.
+We would have to define a syntax which would be close to this:
+## print_with ocamlpre ##
+let x = (1, "abc", None)
+let third_field = x.3|3
+## () ##
+<p>
+which would mean:
+## print_with ocamlpre ##
+let x = (1, "abc", None)
+let third_field = (match x with (_, _, field) -> field)
+## () ##
+<p>
+As often, the difficulty is to find a nice syntax which
+does not create ambiguities and is accepted by Camlp5.
+
+## toc_entry "troubleshooting" ##
+
+## toc_entry "lists" ##
+
+<p>
+In the syntax tree, there is a node for each node of a list, and
+there is no predefined function that will create all these 
+AST nodes automatically.
+<p>
+Let's say we want to create a notation for lists without semicolons between
+the elements. A program using this notation would look like this:
+## print_with (bg_ocaml ~file:"camlp5/lists/prog.ml" ~html:true) .##
+let _ = 
+  let a = [| 123; 456 |] in
+  List.iter 
+    (fun i -> print_int i; 
+       print_newline ()) 
+    @pink@(LIST 1 2 3 a.(1))@@
+## () ##
+
+<p>
+The syntax extension is rather short, and easy if you understand the system
+of ## toc_link "priorities" "levels" ##:
+
+## print_with (bg_ocaml ~file:"camlp5/lists/pa_lists.ml" ~html:true) .##
+@silver@let expr_list loc l =
+  List.fold_right 
+    (fun head tail -> <:expr< [ $head$ :: $tail$ ] >>)
+    l
+    <:expr< [] >>
+@@
+
+EXTEND
+  Pcaml.expr: [
+    [ "LIST"; l = LIST0 Pcaml.expr LEVEL "." -> @silver@expr_list loc l@@ ]
+  ];
+END;;
+## () ##
+
+<p>
+As announced, we need to build the nodes of the AST that represent the
+nodes of the list. This is the purpose of the ## ocamlcode "expr_list" ##
+function.
+
+## (* Now that the sources have been updated, let's compile and run *)
+command "cd camlp5/lists && make 1>&2"
+##
+
+<p>
+The output of the program is the following:
+<pre>
+$ ./prog
+## command "camlp5/lists/prog 2>&1" ##</pre>
+
+<p>
+You can also download the following files for this example:
+the ## download "camlp5/lists/Makefile" ## and the program
+after conversion to regular OCaml ## download "camlp5/lists/prog.ppo" ##.
+
+
+## toc_entry "functions" ##
+
+<p>
+Functions as represented in the AST only take one argument.
+So this:
+## print_with ocamlpre ##
+let f x y z = x + y + z
+## () ##
+<p>
+is represented in the AST as:
+## print_with ocamlpre ##
+let f =
+  (fun x ->
+     (fun y ->
+	(fun z -> x + y + z)))
+## () ##
+
+<p>
+Such definitions have to be built using higher-order functions
+such as ## ocamlcode "List.fold_right" ## or ## ocamlcode "List.fold_left" ##
+(see ## toc_link "lists" "previous section" ##).
+
+
+## toc_entry "badloc" ##
+
+<p>
+It happens that Camlp5 returns incorrect locations in errors messages under
+some circumstances.
+Camlp5 3.08.1 was particularly difficult to use for this reason, so if
+you are using OCaml 3.08.1, you should upgrade your OCaml system.
+
+## toc_entry "loc" ##
+
+<p>
+Between the release of OCaml 3.08.2 and 3.08.3, the default identifier
+for locations used in syntax extensions silently
+changed from ## verb "loc" ## to ## verb "_loc" ##.
+<p>
+For compatibility reasons, pass the ## verb "-loc _loc" ## option
+(or ## verb "-loc loc" ##) to ## verb "camlp5o" ## as we did in the Makefiles
+of this tutorial.
+
+## toc_entry "labels" ##
+
+<p>
+Labels of function arguments are a special kind of node of the syntax tree
+which is simply represented using the ## verb "string" ## type
+and only include lowercase identifiers.
+Instead of writing this:
+## print_with bg_ocaml .##
+let label = "x" in
+<:expr< f ~$lid:label$ >>
+## () ##
+<p>
+one should simply write that:
+## print_with bg_ocaml .##
+let label = "x" in
+<:expr< f ~$label$ >>
+## () ##
+
+## toc_entry "Not_found" ##
+
+<p>
+If the ## verb "Not_found" ## exception is raised during the preprocessing
+phase (typically while running ## verb "camlp5o" ## 
+or starting a custom toplevel), the reason may be that
+a ## verb "DELETE_RULE" ## statement tries to delete a rule which 
+does not exist. Some rules may be slightly changed from one version of Camlp5
+to another or they might move to other grammar entries. 
+<p>
+For the sake of compatibility, it seems to be a good practice to catch
+and ignore any ## verb "Not_found" ## exception that might be raised
+by a ## verb "DELETE_RULE" ## statement, which is simply an expression.
+<p>
+For instance, this will fail with some older versions of Camlp5:
+## print_with bg_ocaml .##
+DELETE_RULE Pcaml.patt: LIDENT END
+## () ##
+<p>
+But that should be a much better compromise:
+## print_with bg_ocaml .##
+(try DELETE_RULE Pcaml.patt: LIDENT END
+ with Not_found -> ())
+## () ##
+
+## camlmix_footer () ##
+## include_file "end_big_table" ##
+</body>
+</html>

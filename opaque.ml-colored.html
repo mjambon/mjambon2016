@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>
+opaque.ml</title>
+  <meta name="GENERATOR" content="caml2html 1.2.0">
+</head>
+<body>
+
+<pre><span style="color:green">external</span> identity : 'a -&gt; 'a = <span style="color:#aa4444">"%identity"</span>
+
+<span style="color:green">type</span> 'a int_t = int
+<span style="color:green">let</span> int_t = identity
+<span style="color:green">let</span> t_int = identity
+<span style="color:green">let</span> any_int = identity
+
+<span style="color:green">let</span> add = ( + )
+<span style="color:green">let</span> sub = ( - )
+<span style="color:green">let</span> mul = ( * )
+<span style="color:green">let</span> div = ( / )
+<span style="color:green">let</span> neg = ( ~- )
+
+<span style="color:green">let</span> successor = succ
+<span style="color:green">let</span> predecessor = pred
+<span style="color:green">let</span> increment = incr
+
+<span style="color:green">let</span> print_int_t = print_int
+
+<span style="color:green">type</span> 'a string_t = string
+<span style="color:green">let</span> string_t = identity
+<span style="color:green">let</span> t_string = identity
+<span style="color:green">let</span> any_string = identity
+
+<span style="color:green">let</span> concat = ( ^ )
+<span style="color:green">let</span> concat_list = <span style="color:#0033cc">String</span>.concat
+
+<span style="color:green">let</span> print_string_t = print_string
+</pre>
+</body>
+</html>

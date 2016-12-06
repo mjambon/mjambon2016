@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>
+examples/domains.ml</title>
+  <meta name="GENERATOR" content="caml2html 1.2.4">
+</head>
+<body>
+
+<pre>#!/usr/bin/env ocamlscript
+<span style="color:#990000">(*-*- tuareg -*-*)</span>
+<span style="color:#0033cc">Ocaml</span>.packs := [<span style="color:#aa4444">"micmatch_pcre"</span>; <span style="color:#aa4444">"cgi"</span>]
+--
+<span style="color:#cc9900">open</span> <span style="color:#0033cc">Printf</span>
+<span style="color:#cc9900">open</span> <span style="color:#0033cc">Micmatch</span>
+
+<span style="color:#0033cc">RE</span> x = [alnum <span style="color:#aa4444">"-_"</span>]
+
+<span style="color:green">let</span> list tbl = 
+  <span style="color:#0033cc">List</span>.sort compare (<span style="color:#0033cc">Hashtbl</span>.fold (<span style="color:green">fun</span> s _ accu -&gt; s :: accu) tbl [])
+
+<span style="color:green">let</span> parse s =
+  <span style="color:green">let</span> dom = <span style="color:#0033cc">Hashtbl</span>.create 50 <span style="color:green">in</span>
+  <span style="color:green">let</span> hosts = <span style="color:#0033cc">Hashtbl</span>.create 50 <span style="color:green">in</span>
+  (<span style="color:#0033cc">SEARCH</span>
+     <span style="color:#aa4444">"http"</span> <span style="color:#aa4444">"s"</span>? <span style="color:#aa4444">"://"</span> 
+     ([x<span style="color:#aa4444">"."</span>]* <span style="color:#0033cc">Lazy</span> <span style="color:green">as</span> prefix)
+     (x+ <span style="color:#aa4444">"."</span> x+ <span style="color:green">as</span> domain) &lt;<span style="color:#0033cc">Not</span> [x<span style="color:#aa4444">"."</span>] <span style="color:#77aaaa">|</span> eos&gt; -&gt; 
+       <span style="color:#0033cc">Hashtbl</span>.replace dom domain ();
+       <span style="color:#0033cc">Hashtbl</span>.replace hosts (prefix ^ domain) ())
+    s;
+  (list dom, list hosts)
+
+<span style="color:green">let</span> format_text domains hosts = 
+  <span style="color:green">let</span> buf = <span style="color:#0033cc">Buffer</span>.create 500 <span style="color:green">in</span>
+  <span style="color:green">let</span> print_lines l = <span style="color:#0033cc">List</span>.iter (<span style="color:green">fun</span> x -&gt; bprintf buf <span style="color:#aa4444">"%s\n"</span> x) l <span style="color:green">in</span>
+  bprintf buf <span style="color:#aa4444">"# Domains:\n"</span>;
+  print_lines domains;
+  bprintf buf <span style="color:#aa4444">"\n# Hosts:\n"</span>;
+  print_lines hosts;
+  bprintf buf <span style="color:#aa4444">"\n# Quoted domains:\n"</span>;
+  print_lines (<span style="color:#0033cc">List</span>.map <span style="color:#0033cc">Pcre</span>.quote domains);
+  bprintf buf <span style="color:#aa4444">"\n# Quoted hosts:\n"</span>;
+  print_lines (<span style="color:#0033cc">List</span>.map <span style="color:#0033cc">Pcre</span>.quote hosts);
+  <span style="color:#0033cc">Buffer</span>.contents buf
+
+<span style="color:green">let</span> form = <span style="color:#aa4444">"\</span>
+<span style="color:#aa4444">&lt;html&gt;</span>
+<span style="color:#aa4444">&lt;head&gt;</span>
+<span style="color:#aa4444">&lt;title&gt;Host and domain extractor&lt;/title&gt;</span>
+<span style="color:#aa4444">&lt;/head&gt;</span>
+<span style="color:#aa4444">&lt;body&gt;</span>
+<span style="color:#aa4444">&lt;h1&gt;Host and domain extractor&lt;/h1&gt;</span>
+<span style="color:#aa4444">&lt;p&gt;</span>
+<span style="color:#aa4444">Past spam text into the form below and it will extract regexps that match</span>
+<span style="color:#aa4444">the domain names found in URLs.</span>
+<span style="color:#aa4444">&lt;p&gt;</span>
+<span style="color:#aa4444">&lt;form method=\"post\" action=\"domains\" enctype=\"multipart/form-data\"&gt;</span>
+<span style="color:#aa4444">&lt;input type=\"submit\" value=\"Submit\" name=\"submit1\"&gt;&lt;/input&gt;</span>
+<span style="color:#aa4444">&lt;input type=\"file\" value=\"Choose file\" name=\"upload\"&gt;&lt;/input&gt;&lt;br&gt;</span>
+<span style="color:#aa4444">&lt;textarea name=\"text\" rows=\"25\" cols=\"80\"&gt;</span>
+<span style="color:#aa4444">&lt;/textarea&gt;</span>
+<span style="color:#aa4444">&lt;/form&gt;</span>
+<span style="color:#aa4444">&lt;hr&gt;</span>
+<span style="color:#aa4444">&lt;a href=\"http://martin.jambon.free.fr/examples/domains.ml.html\"&gt;OCamlscript source code&lt;/a&gt;</span>
+<span style="color:#aa4444">&lt;/body&gt;</span>
+<span style="color:#aa4444">&lt;/html&gt;</span>
+<span style="color:#aa4444">"</span>
+
+<span style="color:green">let</span> get_text actobj =
+  <span style="color:green">let</span> upload =  
+    <span style="color:#77aaaa">try</span> (actobj#argument <span style="color:#aa4444">"upload"</span>)#value
+    <span style="color:#77aaaa">with</span> <span style="color:#0033cc">Not_found</span> -&gt; <span style="color:#aa4444">""</span> <span style="color:green">in</span>
+  <span style="color:#77aaaa">if</span> upload = <span style="color:#aa4444">""</span> <span style="color:#77aaaa">then</span>
+    <span style="color:#77aaaa">try</span> (actobj#argument <span style="color:#aa4444">"text"</span>)#value
+    <span style="color:#77aaaa">with</span> <span style="color:#0033cc">Not_found</span> -&gt; <span style="color:#aa4444">""</span>
+  <span style="color:#77aaaa">else</span> upload
+
+<span style="color:green">let</span> net_print (actobj : <span style="color:#0033cc">Netcgi</span>.std_activation) s =
+  <span style="color:green">let</span> text = get_text actobj <span style="color:green">in</span>
+  <span style="color:#77aaaa">if</span> text = <span style="color:#aa4444">""</span> <span style="color:#77aaaa">then</span>
+    (actobj#set_header ();
+     actobj#output#output_string form;
+     actobj#output#commit_work ())
+  <span style="color:#77aaaa">else</span>
+    (actobj#set_header ~content_type:<span style="color:#aa4444">"text/plain"</span> ();
+     actobj#output#output_string s;
+     actobj#output#commit_work ())
+
+<span style="color:green">let</span> _ =
+  <span style="color:green">let</span> s, print =
+    <span style="color:#77aaaa">match</span> <span style="color:#0033cc">Sys</span>.argv <span style="color:#77aaaa">with</span>
+        [| _; <span style="color:#aa4444">"-"</span> |] -&gt; <span style="color:#0033cc">Text</span>.channel_contents stdin, print_string
+      <span style="color:#77aaaa">|</span> [| _; s |] -&gt; s, print_string
+      <span style="color:#77aaaa">|</span> _ -&gt; 
+          <span style="color:green">let</span> actobj = <span style="color:#77aaaa">new</span> <span style="color:#0033cc">Netcgi</span>.std_activation () <span style="color:green">in</span>
+          <span style="color:green">let</span> text = get_text actobj <span style="color:green">in</span>
+          text, (net_print actobj) <span style="color:green">in</span>
+
+  <span style="color:green">let</span> domains, hosts = parse s <span style="color:green">in</span>
+  print (format_text domains hosts)
+</pre>
+</body>
+</html>

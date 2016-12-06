@@ -1,0 +1,117 @@
+<html><head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Bi_util" rel="Chapter" href="Bi_util.html">
+<link title="Bi_share" rel="Chapter" href="Bi_share.html">
+<link title="Bi_outbuf" rel="Chapter" href="Bi_outbuf.html">
+<link title="Bi_inbuf" rel="Chapter" href="Bi_inbuf.html">
+<link title="Bi_vint" rel="Chapter" href="Bi_vint.html">
+<link title="Bi_io" rel="Chapter" href="Bi_io.html"><title>Bi_io</title>
+</head>
+<body>
+<code class="code"><span class="keyword">sig</span><br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;node_tag&nbsp;=&nbsp;int<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;bool_tag&nbsp;:&nbsp;<span class="constructor">Bi_io</span>.node_tag<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;int8_tag&nbsp;:&nbsp;<span class="constructor">Bi_io</span>.node_tag<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;int16_tag&nbsp;:&nbsp;<span class="constructor">Bi_io</span>.node_tag<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;int32_tag&nbsp;:&nbsp;<span class="constructor">Bi_io</span>.node_tag<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;int64_tag&nbsp;:&nbsp;<span class="constructor">Bi_io</span>.node_tag<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;float64_tag&nbsp;:&nbsp;<span class="constructor">Bi_io</span>.node_tag<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;uvint_tag&nbsp;:&nbsp;<span class="constructor">Bi_io</span>.node_tag<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;svint_tag&nbsp;:&nbsp;<span class="constructor">Bi_io</span>.node_tag<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;string_tag&nbsp;:&nbsp;<span class="constructor">Bi_io</span>.node_tag<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;array_tag&nbsp;:&nbsp;<span class="constructor">Bi_io</span>.node_tag<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;tuple_tag&nbsp;:&nbsp;<span class="constructor">Bi_io</span>.node_tag<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;record_tag&nbsp;:&nbsp;<span class="constructor">Bi_io</span>.node_tag<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;num_variant_tag&nbsp;:&nbsp;<span class="constructor">Bi_io</span>.node_tag<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;variant_tag&nbsp;:&nbsp;<span class="constructor">Bi_io</span>.node_tag<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;unit_tag&nbsp;:&nbsp;<span class="constructor">Bi_io</span>.node_tag<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;table_tag&nbsp;:&nbsp;<span class="constructor">Bi_io</span>.node_tag<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;shared_tag&nbsp;:&nbsp;<span class="constructor">Bi_io</span>.node_tag<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_tag&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Bi_io</span>.node_tag&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;read_tag&nbsp;:&nbsp;<span class="constructor">Bi_inbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Bi_io</span>.node_tag<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;hash&nbsp;=&nbsp;int<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;hash_name&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Bi_io</span>.hash<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_hashtag&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Bi_io</span>.hash&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;string_of_hashtag&nbsp;:&nbsp;<span class="constructor">Bi_io</span>.hash&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;read_hashtag&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Bi_inbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;(<span class="constructor">Bi_inbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Bi_io</span>.hash&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a)&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;read_field_hashtag&nbsp;:&nbsp;<span class="constructor">Bi_inbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Bi_io</span>.hash<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;make_unhash&nbsp;:&nbsp;string&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Bi_io</span>.hash&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;option<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;int7&nbsp;=&nbsp;int<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_numtag&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Bi_io</span>.int7&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;read_numtag&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Bi_inbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;(<span class="constructor">Bi_inbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Bi_io</span>.int7&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a)&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_untagged_unit&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_untagged_bool&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_untagged_char&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;char&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_untagged_int8&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_untagged_int16&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_untagged_int32&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int32&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_untagged_int64&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int64&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_untagged_float64&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_untagged_string&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_untagged_uvint&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_untagged_svint&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_unit&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_bool&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_char&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;char&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_int8&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_int16&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_int32&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int32&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_int64&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int64&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_float64&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_string&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_uvint&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_svint&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;read_untagged_unit&nbsp;:&nbsp;<span class="constructor">Bi_inbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;read_untagged_bool&nbsp;:&nbsp;<span class="constructor">Bi_inbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;read_untagged_char&nbsp;:&nbsp;<span class="constructor">Bi_inbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;char<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;read_untagged_int8&nbsp;:&nbsp;<span class="constructor">Bi_inbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;read_untagged_int16&nbsp;:&nbsp;<span class="constructor">Bi_inbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;read_untagged_int32&nbsp;:&nbsp;<span class="constructor">Bi_inbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int32<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;read_untagged_int64&nbsp;:&nbsp;<span class="constructor">Bi_inbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int64<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;read_untagged_float64&nbsp;:&nbsp;<span class="constructor">Bi_inbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;read_untagged_string&nbsp;:&nbsp;<span class="constructor">Bi_inbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;read_untagged_uvint&nbsp;:&nbsp;<span class="constructor">Bi_inbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;read_untagged_svint&nbsp;:&nbsp;<span class="constructor">Bi_inbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;skip&nbsp;:&nbsp;<span class="constructor">Bi_inbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;tree&nbsp;=<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[&nbsp;<span class="keywordsign">`</span><span class="constructor">Array</span>&nbsp;<span class="keyword">of</span>&nbsp;(<span class="constructor">Bi_io</span>.node_tag&nbsp;*&nbsp;<span class="constructor">Bi_io</span>.tree&nbsp;array)&nbsp;option<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Bool</span>&nbsp;<span class="keyword">of</span>&nbsp;bool<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Float64</span>&nbsp;<span class="keyword">of</span>&nbsp;float<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Int16</span>&nbsp;<span class="keyword">of</span>&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Int32</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">Int32</span>.t<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Int64</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">Int64</span>.t<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Int8</span>&nbsp;<span class="keyword">of</span>&nbsp;char<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Num_variant</span>&nbsp;<span class="keyword">of</span>&nbsp;int&nbsp;*&nbsp;<span class="constructor">Bi_io</span>.tree&nbsp;option<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Record</span>&nbsp;<span class="keyword">of</span>&nbsp;(string&nbsp;option&nbsp;*&nbsp;<span class="constructor">Bi_io</span>.hash&nbsp;*&nbsp;<span class="constructor">Bi_io</span>.tree)&nbsp;array<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Shared</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">Bi_io</span>.tree<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">String</span>&nbsp;<span class="keyword">of</span>&nbsp;string<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Svint</span>&nbsp;<span class="keyword">of</span>&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Table</span>&nbsp;<span class="keyword">of</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;((string&nbsp;option&nbsp;*&nbsp;<span class="constructor">Bi_io</span>.hash&nbsp;*&nbsp;<span class="constructor">Bi_io</span>.node_tag)&nbsp;array&nbsp;*<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Bi_io</span>.tree&nbsp;array&nbsp;array)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;option<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Tuple</span>&nbsp;<span class="keyword">of</span>&nbsp;<span class="constructor">Bi_io</span>.tree&nbsp;array<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Unit</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Uvint</span>&nbsp;<span class="keyword">of</span>&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keywordsign">|</span>&nbsp;<span class="keywordsign">`</span><span class="constructor">Variant</span>&nbsp;<span class="keyword">of</span>&nbsp;string&nbsp;option&nbsp;*&nbsp;<span class="constructor">Bi_io</span>.hash&nbsp;*&nbsp;<span class="constructor">Bi_io</span>.tree&nbsp;option&nbsp;]<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;write_tree&nbsp;:&nbsp;<span class="constructor">Bi_outbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Bi_io</span>.tree&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;string_of_tree&nbsp;:&nbsp;<span class="constructor">Bi_io</span>.tree&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;read_tree&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?unhash:(<span class="constructor">Bi_io</span>.hash&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;option)&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Bi_inbuf</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Bi_io</span>.tree<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;tree_of_string&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?unhash:(<span class="constructor">Bi_io</span>.hash&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;option)&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Bi_io</span>.tree<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;tag_of_tree&nbsp;:&nbsp;<span class="constructor">Bi_io</span>.tree&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Bi_io</span>.node_tag<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;view&nbsp;:&nbsp;?unhash:(<span class="constructor">Bi_io</span>.hash&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;option)&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;print_view&nbsp;:&nbsp;?unhash:(<span class="constructor">Bi_io</span>.hash&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;option)&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;output_view&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?unhash:(<span class="constructor">Bi_io</span>.hash&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;option)&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Pervasives</span>.out_channel&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+<span class="keyword">end</span></code></body></html>

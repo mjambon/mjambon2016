@@ -1,0 +1,112 @@
+"prog.ml" 3 14 18 "prog.ml" 3 14 26
+type(
+  string -> '_a
+)
+ident(
+  ext_ref Pervasives.failwith
+)
+"prog.ml" 3 14 27 "prog.ml" 3 14 49
+type(
+  string
+)
+"prog.ml" 3 14 18 "prog.ml" 3 14 49
+call(
+  stack
+)
+type(
+  '_a
+)
+"prog.ml" 5 60 64 "prog.ml" 5 60 77
+type(
+  string -> unit
+)
+ident(
+  ext_ref Pervasives.print_endline
+)
+"prog.ml" 5 60 78 "prog.ml" 5 60 82
+type(
+  string
+)
+"prog.ml" 5 60 64 "prog.ml" 5 60 82
+call(
+  stack
+)
+type(
+  unit
+)
+"prog.ml" 2 8 10 "prog.ml" 5 60 82
+type(
+  unit
+)
+type(
+  unit
+)
+type(
+  unit
+)
+type(
+  unit
+)
+type(
+  exn
+)
+ident(
+  int_ref exn "prog.ml" 2 8 10 "prog.ml" 5 60 82
+)
+type(
+  exn -> unit
+)
+ident(
+  ext_ref Pervasives.raise
+)
+type(
+  unit
+)
+type(
+  exn option
+)
+type(
+  exn
+)
+ident(
+  def exn "prog.ml" 2 8 10 "prog.ml" 5 60 82
+)
+type(
+  exn option
+)
+type(
+  exn option
+)
+ident(
+  int_ref __finally1 "prog.ml" 2 8 10 "prog.ml" 5 60 82
+)
+type(
+  exn option
+)
+type(
+  exn
+)
+ident(
+  int_ref exn "prog.ml" 2 8 10 "prog.ml" 5 60 82
+)
+type(
+  exn option
+)
+type(
+  exn
+)
+ident(
+  def exn "prog.ml" 2 8 10 "prog.ml" 5 60 82
+)
+type(
+  exn option
+)
+type(
+  exn option
+)
+type(
+  exn option
+)
+ident(
+  def __finally1 "prog.ml" 2 8 10 "prog.ml" 5 60 82
+)

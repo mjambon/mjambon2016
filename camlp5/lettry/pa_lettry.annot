@@ -1,0 +1,1024 @@
+"pa_lettry.ml" 1 0 6 "pa_lettry.ml" 1 0 7
+type(
+  (Grammar.token Gramext.g_entry * Gramext.position option *
+   (string option * Gramext.g_assoc option *
+    (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+   list)
+  list -> unit
+)
+ident(
+  ext_ref Grammar.extend
+)
+"pa_lettry.ml" 2 7 17 "pa_lettry.ml" 2 7 27
+type(
+  MLast.expr Grammar.Entry.e
+)
+ident(
+  ext_ref Pcaml.expr
+)
+type(
+  MLast.expr Grammar.Entry.e
+)
+type(
+  MLast.expr Grammar.Entry.e
+)
+ident(
+  ext_ref Pcaml.expr
+)
+type(
+  MLast.expr Grammar.Entry.e
+)
+"pa_lettry.ml" 4 30 32 "pa_lettry.ml" 4 30 42
+type(
+  Grammar.token Gramext.g_entry * Gramext.position option *
+  (string option * Gramext.g_assoc option *
+   (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+  list
+)
+type(
+  (string option * Gramext.g_assoc option *
+   (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+  list
+)
+type(
+  string option * Gramext.g_assoc option *
+  (Grammar.token Gramext.g_symbol list * Gramext.g_action) list
+)
+type(
+  (Grammar.token Gramext.g_symbol list * Gramext.g_action) list
+)
+type(
+  Grammar.token Gramext.g_symbol list * Gramext.g_action
+)
+type(
+  Gramext.g_action
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list ->
+  '_a ->
+  MLast.expr ->
+  '_b ->
+  (MLast.patt * MLast.expr) list ->
+  string option -> '_c -> '_d -> MLast.loc -> MLast.expr
+)
+type(
+  '_a ->
+  MLast.expr ->
+  '_b ->
+  (MLast.patt * MLast.expr) list ->
+  string option -> '_c -> '_d -> MLast.loc -> MLast.expr
+)
+type(
+  MLast.expr ->
+  '_b ->
+  (MLast.patt * MLast.expr) list ->
+  string option -> '_c -> '_d -> MLast.loc -> MLast.expr
+)
+type(
+  '_b ->
+  (MLast.patt * MLast.expr) list ->
+  string option -> '_c -> '_d -> MLast.loc -> MLast.expr
+)
+type(
+  (MLast.patt * MLast.expr) list ->
+  string option -> '_c -> '_d -> MLast.loc -> MLast.expr
+)
+type(
+  string option -> '_c -> '_d -> MLast.loc -> MLast.expr
+)
+type(
+  '_c -> '_d -> MLast.loc -> MLast.expr
+)
+type(
+  '_d -> MLast.loc -> MLast.expr
+)
+type(
+  MLast.loc -> MLast.expr
+)
+type(
+  MLast.loc
+)
+ident(
+  def loc "pa_lettry.ml" 4 30 32 "pa_lettry.ml" 4 30 42
+)
+type(
+  '_d
+)
+type(
+  '_c
+)
+type(
+  '_b
+)
+type(
+  '_a
+)
+type(
+  ((MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list ->
+   '_a ->
+   MLast.expr ->
+   '_b ->
+   (MLast.patt * MLast.expr) list ->
+   string option -> '_c -> '_d -> MLast.loc -> MLast.expr) ->
+  Gramext.g_action
+)
+ident(
+  ext_ref Gramext.action
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  (Grammar.token Gramext.g_symbol list * Gramext.g_action) list
+)
+type(
+  Gramext.g_assoc option
+)
+type(
+  string option
+)
+type(
+  (string option * Gramext.g_assoc option *
+   (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+  list
+)
+type(
+  Gramext.position option
+)
+type(
+  MLast.expr Grammar.Entry.e
+)
+type(
+  MLast.expr Grammar.Entry.e
+)
+ident(
+  ext_ref Pcaml.expr
+)
+"pa_lettry.ml" 4 30 50 "pa_lettry.ml" 4 30 57
+type(
+  string
+)
+"pa_lettry.ml" 4 30 44 "pa_lettry.ml" 4 30 57
+type(
+  Gramext.position
+)
+"pa_lettry.ml" 5 60 66 "pa_lettry.ml" 5 60 71
+type(
+  Plexing.pattern
+)
+type(
+  string
+)
+type(
+  string
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_lettry.ml" 5 60 73 "pa_lettry.ml" 5 60 78
+type(
+  Plexing.pattern
+)
+type(
+  string
+)
+type(
+  string
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_lettry.ml" 5 60 88 "pa_lettry.ml" 5 60 93
+type(
+  Plexing.pattern
+)
+type(
+  string
+)
+type(
+  string
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_lettry.ml" 5 60 84 "pa_lettry.ml" 5 60 93
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_lettry.ml" 5 60 80 "pa_lettry.ml" 5 60 93
+type(
+  string option
+)
+ident(
+  def o "pa_lettry.ml" 4 30 32 "pa_lettry.ml" 4 30 42
+)
+"pa_lettry.ml" 5 60 105 "pa_lettry.ml" 5 60 122
+type(
+  Grammar.token Gramext.g_entry
+)
+type(
+  (MLast.patt * MLast.expr) Grammar.Entry.e
+)
+type(
+  (MLast.patt * MLast.expr) Grammar.Entry.e
+)
+ident(
+  ext_ref Pcaml.let_binding
+)
+type(
+  (MLast.patt * MLast.expr) Grammar.Entry.e -> Grammar.token Gramext.g_entry
+)
+ident(
+  ext_ref Grammar.Entry.obj
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_lettry.ml" 5 60 127 "pa_lettry.ml" 5 60 132
+type(
+  Plexing.pattern
+)
+type(
+  string
+)
+type(
+  string
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_lettry.ml" 5 60 99 "pa_lettry.ml" 5 60 132
+type(
+  bool
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_lettry.ml" 5 60 95 "pa_lettry.ml" 5 60 132
+type(
+  (MLast.patt * MLast.expr) list
+)
+ident(
+  def l "pa_lettry.ml" 4 30 32 "pa_lettry.ml" 4 30 42
+)
+"pa_lettry.ml" 6 135 141 "pa_lettry.ml" 6 135 145
+type(
+  Plexing.pattern
+)
+type(
+  string
+)
+type(
+  string
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_lettry.ml" 6 135 151 "pa_lettry.ml" 6 135 161
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_lettry.ml" 6 135 147 "pa_lettry.ml" 6 135 161
+type(
+  MLast.expr
+)
+ident(
+  def e "pa_lettry.ml" 4 30 32 "pa_lettry.ml" 4 30 42
+)
+"pa_lettry.ml" 7 163 169 "pa_lettry.ml" 7 163 175
+type(
+  Plexing.pattern
+)
+type(
+  string
+)
+type(
+  string
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_lettry.ml" 7 163 190 "pa_lettry.ml" 7 163 201
+type(
+  Grammar.token Gramext.g_entry
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) Grammar.Entry.e
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) Grammar.Entry.e
+)
+ident(
+  int_ref lettry_case "pa_lettry.ml" 15 382 384 "pa_lettry.ml" 15 382 395
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) Grammar.Entry.e ->
+  Grammar.token Gramext.g_entry
+)
+ident(
+  ext_ref Grammar.Entry.obj
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_lettry.ml" 7 163 206 "pa_lettry.ml" 7 163 209
+type(
+  Plexing.pattern
+)
+type(
+  string
+)
+type(
+  string
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_lettry.ml" 7 163 184 "pa_lettry.ml" 7 163 209
+type(
+  bool
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_lettry.ml" 7 163 177 "pa_lettry.ml" 7 163 209
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+ident(
+  def pwel "pa_lettry.ml" 4 30 32 "pa_lettry.ml" 4 30 42
+)
+"pa_lettry.ml" 9 235 264 "pa_lettry.ml" 9 235 265
+type(
+  string option
+)
+ident(
+  int_ref o "pa_lettry.ml" 5 60 80 "pa_lettry.ml" 5 60 93
+)
+"pa_lettry.ml" 9 235 269 "pa_lettry.ml" 9 235 273
+type(
+  string option
+)
+"pa_lettry.ml" 9 235 264 "pa_lettry.ml" 9 235 273
+type(
+  bool
+)
+type(
+  string option -> string option -> bool
+)
+ident(
+  ext_ref Pervasives.( <> )
+)
+type(
+  bool Ploc.vala
+)
+"pa_lettry.ml" 9 235 281 "pa_lettry.ml" 9 235 282
+type(
+  (MLast.patt * MLast.expr) list
+)
+ident(
+  int_ref l "pa_lettry.ml" 5 60 95 "pa_lettry.ml" 5 60 132
+)
+type(
+  (MLast.patt * MLast.expr) list Ploc.vala
+)
+"pa_lettry.ml" 10 288 318 "pa_lettry.ml" 10 288 319
+type(
+  MLast.expr
+)
+ident(
+  int_ref e "pa_lettry.ml" 6 135 147 "pa_lettry.ml" 6 135 161
+)
+"pa_lettry.ml" 12 331 358 "pa_lettry.ml" 12 331 362
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+ident(
+  int_ref pwel "pa_lettry.ml" 7 163 177 "pa_lettry.ml" 7 163 209
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list Ploc.vala
+)
+"pa_lettry.ml" 8 213 221 "pa_lettry.ml" 8 213 372
+type(
+  MLast.expr
+)
+type(
+  string
+)
+type(
+  string Ploc.vala
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_lettry.ml" 4 30 32 "pa_lettry.ml" 4 30 42
+)
+type(
+  MLast.expr
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+type(
+  MLast.patt * MLast.expr option Ploc.vala * MLast.expr
+)
+type(
+  MLast.expr option
+)
+type(
+  MLast.expr option Ploc.vala
+)
+type(
+  string
+)
+type(
+  string Ploc.vala
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_lettry.ml" 4 30 32 "pa_lettry.ml" 4 30 42
+)
+type(
+  MLast.patt
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list Ploc.vala
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_lettry.ml" 4 30 32 "pa_lettry.ml" 4 30 42
+)
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_lettry.ml" 4 30 32 "pa_lettry.ml" 4 30 42
+)
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_lettry.ml" 4 30 32 "pa_lettry.ml" 4 30 42
+)
+type(
+  MLast.expr
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_lettry.ml" 4 30 32 "pa_lettry.ml" 4 30 42
+)
+type(
+  MLast.expr
+)
+"pa_lettry.ml" 15 382 384 "pa_lettry.ml" 15 382 395
+call(
+  stack
+)
+type(
+  Grammar.token Gramext.g_entry * Gramext.position option *
+  (string option * Gramext.g_assoc option *
+   (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+  list
+)
+type(
+  (string option * Gramext.g_assoc option *
+   (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+  list
+)
+type(
+  string option * Gramext.g_assoc option *
+  (Grammar.token Gramext.g_symbol list * Gramext.g_action) list
+)
+type(
+  (Grammar.token Gramext.g_symbol list * Gramext.g_action) list
+)
+type(
+  Grammar.token Gramext.g_symbol list * Gramext.g_action
+)
+type(
+  Gramext.g_action
+)
+type(
+  MLast.expr ->
+  '_e ->
+  MLast.expr option ->
+  MLast.patt ->
+  MLast.loc -> MLast.patt * MLast.expr option Ploc.vala * MLast.expr
+)
+type(
+  '_e ->
+  MLast.expr option ->
+  MLast.patt ->
+  MLast.loc -> MLast.patt * MLast.expr option Ploc.vala * MLast.expr
+)
+type(
+  MLast.expr option ->
+  MLast.patt ->
+  MLast.loc -> MLast.patt * MLast.expr option Ploc.vala * MLast.expr
+)
+type(
+  MLast.patt ->
+  MLast.loc -> MLast.patt * MLast.expr option Ploc.vala * MLast.expr
+)
+type(
+  MLast.loc -> MLast.patt * MLast.expr option Ploc.vala * MLast.expr
+)
+type(
+  MLast.loc
+)
+ident(
+  def loc "pa_lettry.ml" 15 382 384 "pa_lettry.ml" 15 382 395
+)
+type(
+  '_e
+)
+type(
+  (MLast.expr ->
+   '_e ->
+   MLast.expr option ->
+   MLast.patt ->
+   MLast.loc -> MLast.patt * MLast.expr option Ploc.vala * MLast.expr) ->
+  Gramext.g_action
+)
+ident(
+  ext_ref Gramext.action
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  (Grammar.token Gramext.g_symbol list * Gramext.g_action) list
+)
+type(
+  Gramext.g_assoc option
+)
+type(
+  string option
+)
+type(
+  (string option * Gramext.g_assoc option *
+   (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+  list
+)
+type(
+  Gramext.position option
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) Grammar.Entry.e
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) Grammar.Entry.e
+)
+ident(
+  int_ref lettry_case "pa_lettry.ml" 15 382 384 "pa_lettry.ml" 15 382 395
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) Grammar.Entry.e
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) Grammar.Entry.e
+)
+type(
+  string
+)
+type(
+  string ->
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) Grammar.Entry.e
+)
+ident(
+  int_ref grammar_entry_create "pa_lettry.ml" 2 7 9 "pa_lettry.ml" 19 547 551
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) Grammar.Entry.e
+)
+"pa_lettry.ml" 16 400 410 "pa_lettry.ml" 16 400 420
+type(
+  Grammar.token Gramext.g_entry
+)
+type(
+  MLast.patt Grammar.Entry.e
+)
+type(
+  MLast.patt Grammar.Entry.e
+)
+ident(
+  ext_ref Pcaml.patt
+)
+type(
+  MLast.patt Grammar.Entry.e -> Grammar.token Gramext.g_entry
+)
+ident(
+  ext_ref Grammar.Entry.obj
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_lettry.ml" 16 400 406 "pa_lettry.ml" 16 400 420
+type(
+  MLast.patt
+)
+ident(
+  def p "pa_lettry.ml" 15 382 384 "pa_lettry.ml" 15 382 395
+)
+"pa_lettry.ml" 17 423 439 "pa_lettry.ml" 17 423 445
+type(
+  Plexing.pattern
+)
+type(
+  string
+)
+type(
+  string
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_lettry.ml" 17 423 451 "pa_lettry.ml" 17 423 461
+type(
+  Grammar.token Gramext.g_entry
+)
+type(
+  MLast.expr Grammar.Entry.e
+)
+type(
+  MLast.expr Grammar.Entry.e
+)
+ident(
+  ext_ref Pcaml.expr
+)
+type(
+  MLast.expr Grammar.Entry.e -> Grammar.token Gramext.g_entry
+)
+ident(
+  ext_ref Grammar.Entry.obj
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_lettry.ml" 17 423 447 "pa_lettry.ml" 17 423 461
+type(
+  MLast.expr
+)
+ident(
+  def e "pa_lettry.ml" 17 423 437 "pa_lettry.ml" 17 423 468
+)
+"pa_lettry.ml" 17 423 465 "pa_lettry.ml" 17 423 466
+type(
+  MLast.expr
+)
+type(
+  MLast.expr
+)
+ident(
+  int_ref e "pa_lettry.ml" 17 423 447 "pa_lettry.ml" 17 423 461
+)
+"pa_lettry.ml" 17 423 437 "pa_lettry.ml" 17 423 468
+call(
+  stack
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+type(
+  (Grammar.token Gramext.g_symbol list * Gramext.g_action) list
+)
+type(
+  Grammar.token Gramext.g_symbol list * Gramext.g_action
+)
+type(
+  Gramext.g_action
+)
+type(
+  MLast.expr -> '_f -> Ploc.t -> MLast.expr
+)
+type(
+  '_f -> Ploc.t -> MLast.expr
+)
+type(
+  Ploc.t -> MLast.expr
+)
+type(
+  Ploc.t
+)
+ident(
+  def loc "pa_lettry.ml" 17 423 437 "pa_lettry.ml" 17 423 468
+)
+type(
+  '_f
+)
+type(
+  (MLast.expr -> '_f -> Ploc.t -> MLast.expr) -> Gramext.g_action
+)
+ident(
+  ext_ref Gramext.action
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  Grammar.token Gramext.g_symbol list
+)
+type(
+  (Grammar.token Gramext.g_symbol list * Gramext.g_action) list
+)
+type(
+  (Grammar.token Gramext.g_symbol list * Gramext.g_action) list ->
+  Grammar.token Gramext.g_symbol
+)
+ident(
+  ext_ref Gramext.srules
+)
+"pa_lettry.ml" 17 423 433 "pa_lettry.ml" 17 423 468
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_lettry.ml" 17 423 429 "pa_lettry.ml" 17 423 468
+type(
+  MLast.expr option
+)
+ident(
+  def w "pa_lettry.ml" 15 382 384 "pa_lettry.ml" 15 382 395
+)
+"pa_lettry.ml" 17 423 470 "pa_lettry.ml" 17 423 474
+type(
+  Plexing.pattern
+)
+type(
+  string
+)
+type(
+  string
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_lettry.ml" 18 477 487 "pa_lettry.ml" 18 477 497
+type(
+  Grammar.token Gramext.g_entry
+)
+type(
+  MLast.expr Grammar.Entry.e
+)
+type(
+  MLast.expr Grammar.Entry.e
+)
+ident(
+  ext_ref Pcaml.expr
+)
+type(
+  MLast.expr Grammar.Entry.e -> Grammar.token Gramext.g_entry
+)
+ident(
+  ext_ref Grammar.Entry.obj
+)
+type(
+  Grammar.token Gramext.g_symbol
+)
+"pa_lettry.ml" 18 477 483 "pa_lettry.ml" 18 477 497
+type(
+  MLast.expr
+)
+ident(
+  def e "pa_lettry.ml" 15 382 384 "pa_lettry.ml" 15 382 395
+)
+"pa_lettry.ml" 18 477 502 "pa_lettry.ml" 18 477 503
+type(
+  MLast.patt
+)
+ident(
+  int_ref p "pa_lettry.ml" 16 400 406 "pa_lettry.ml" 16 400 420
+)
+"pa_lettry.ml" 18 477 516 "pa_lettry.ml" 18 477 517
+type(
+  MLast.expr option
+)
+ident(
+  int_ref w "pa_lettry.ml" 17 423 429 "pa_lettry.ml" 17 423 468
+)
+"pa_lettry.ml" 18 477 505 "pa_lettry.ml" 18 477 517
+type(
+  MLast.expr option Ploc.vala
+)
+"pa_lettry.ml" 18 477 538 "pa_lettry.ml" 18 477 539
+type(
+  MLast.expr
+)
+ident(
+  int_ref e "pa_lettry.ml" 18 477 483 "pa_lettry.ml" 18 477 497
+)
+"pa_lettry.ml" 18 477 519 "pa_lettry.ml" 18 477 543
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+type(
+  MLast.patt * MLast.expr option Ploc.vala * MLast.expr
+)
+type(
+  MLast.expr option
+)
+type(
+  MLast.expr option Ploc.vala
+)
+type(
+  string
+)
+type(
+  string Ploc.vala
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_lettry.ml" 15 382 384 "pa_lettry.ml" 15 382 395
+)
+type(
+  MLast.patt
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) list Ploc.vala
+)
+type(
+  MLast.loc
+)
+ident(
+  int_ref loc "pa_lettry.ml" 15 382 384 "pa_lettry.ml" 15 382 395
+)
+type(
+  MLast.expr
+)
+"pa_lettry.ml" 18 477 501 "pa_lettry.ml" 18 477 544
+type(
+  MLast.patt * MLast.expr option Ploc.vala * MLast.expr
+)
+type(
+  MLast.patt * MLast.expr option Ploc.vala * MLast.expr
+)
+"pa_lettry.ml" 2 7 9 "pa_lettry.ml" 19 547 551
+call(
+  stack
+)
+call(
+  tail
+)
+call(
+  stack
+)
+type(
+  unit
+)
+type(
+  (Grammar.token Gramext.g_entry * Gramext.position option *
+   (string option * Gramext.g_assoc option *
+    (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+   list)
+  list
+)
+type(
+  (Grammar.token Gramext.g_entry * Gramext.position option *
+   (string option * Gramext.g_assoc option *
+    (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+   list)
+  list
+)
+type(
+  (Grammar.token Gramext.g_entry * Gramext.position option *
+   (string option * Gramext.g_assoc option *
+    (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+   list)
+  list
+)
+type(
+  (Grammar.token Gramext.g_entry * Gramext.position option *
+   (string option * Gramext.g_assoc option *
+    (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+   list)
+  list
+)
+type(
+  Grammar.token Gramext.g_entry
+)
+type(
+  (MLast.patt * MLast.expr option Ploc.vala * MLast.expr) Grammar.Entry.e ->
+  Grammar.token Gramext.g_entry
+)
+ident(
+  ext_ref Grammar.Entry.obj
+)
+type(
+  (Grammar.token Gramext.g_entry * Gramext.position option *
+   (string option * Gramext.g_assoc option *
+    (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+   list)
+  list
+)
+type(
+  Grammar.token Gramext.g_entry
+)
+type(
+  MLast.expr Grammar.Entry.e -> Grammar.token Gramext.g_entry
+)
+ident(
+  ext_ref Grammar.Entry.obj
+)
+type(
+  (Grammar.token Gramext.g_entry * Gramext.position option *
+   (string option * Gramext.g_assoc option *
+    (Grammar.token Gramext.g_symbol list * Gramext.g_action) list)
+   list)
+  list
+)
+type(
+  string -> 'g Grammar.Entry.e
+)
+type(
+  'g Grammar.Entry.e
+)
+type(
+  string
+)
+ident(
+  int_ref s "pa_lettry.ml" 2 7 9 "pa_lettry.ml" 19 547 551
+)
+type(
+  Grammar.g
+)
+type(
+  MLast.expr Grammar.Entry.e -> Grammar.g
+)
+ident(
+  ext_ref Grammar.of_entry
+)
+type(
+  Grammar.g -> string -> 'g Grammar.Entry.e
+)
+ident(
+  ext_ref Grammar.create_local_entry
+)
+type(
+  string
+)
+ident(
+  def s "pa_lettry.ml" 2 7 9 "pa_lettry.ml" 19 547 551
+)
+type(
+  string -> 'g Grammar.Entry.e
+)

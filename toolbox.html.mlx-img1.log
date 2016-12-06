@@ -1,0 +1,60 @@
+This is TeX, Version 3.14159 (Web2C 7.3.7) (format=latex 2003.1.5)  26 JUN 2004 22:05
+**toolbox.html.mlx-img1.tex
+(./toolbox.html.mlx-img1.tex
+LaTeX2e <2001/06/01>
+Babel <v3.7h> and hyphenation patterns for american, french, german, ngerman, n
+ohyphenation, loaded.
+
+(/usr/share/texmf/tex/latex/base/article.cls
+Document Class: article 2001/04/21 v1.4e Standard LaTeX document class
+(/usr/share/texmf/tex/latex/base/size10.clo
+File: size10.clo 2001/04/21 v1.4e Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+) (./toolbox.html.mlx-img1.aux)
+\openout1 = `toolbox.html.mlx-img1.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <24.88> on input line 8.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <20.74> on input line 8.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <17.28> on input line 8.
+[1
+
+] (./toolbox.html.mlx-img1.aux) ) 
+Here is how much of TeX's memory you used:
+ 213 strings out of 10847
+ 2351 string characters out of 70947
+ 45419 words of memory out of 263001
+ 3228 multiletter control sequences out of 10000+0
+ 6382 words of font info for 23 fonts, out of 400000 for 1000
+ 14 hyphenation exceptions out of 1000
+ 23i,4n,17p,129b,151s stack positions out of 300i,100n,500p,50000b,4000s
+
+Output written on toolbox.html.mlx-img1.dvi (1 page, 768 bytes).
+This is dvips(k) 5.86e Copyright 2001 Radical Eye Software (www.radicaleye.com)
+' TeX output 2004.06.26:2205' -> toolbox.html.mlx-img1.ps
+(-> toolbox.html.mlx-img1.001) <texc.pro>[1] 

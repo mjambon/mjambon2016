@@ -1,0 +1,157 @@
+##
+#load "utils.cmo";;
+#use "topfind";;
+#require "caml2html";;
+#require "mikmatch_pcre";;
+#load "unmix.cmo";;
+#load "print_ocaml.cmo";;
+#use "camlmix_utils";;
+open Printf
+open Utils
+##
+## include_file "doctype" ##
+<html>
+<head>
+## title "ICFP Programming Contest 2004: My Ants" ##
+## include_file "charset" ##
+## include_file "stylesheet" ##
+## include_file "ocaml-stylesheet" ##
+## include_file "icon" ##
+## include_file "commonlinks" ##
+</head>
+<body>
+## include_file "hitcounter" ##
+## include_file "start_big_table" ##
+## top_menu ocaml ##
+
+<h1>My Participation in the<br>
+ICFP Programming Contest 2004</h1>
+
+<table>
+<tr><td valign=top>
+<a href="/icfpcontest2004/work.png" 
+title="Brain of an ant: click to enlarge"><img 
+src="/icfpcontest2004/icfp-contest-2004-ant-graph.png" 
+alt="A graph representing the brain of an ant"></a>
+</td>
+
+<td valign=top>
+<p>
+I participated in the 7th edition of the 
+<a href="http://www.cis.upenn.edu/proj/plclub/contest">ICFP 
+programming contest</a>, 
+in June 2004.
+
+<p>
+The name of my one-member team was ANTisocial.
+You can get my 
+<a href="icfpcontest2004/submission-ANTisocial.tar.gz">final submission</a>. 
+However,
+It has a last minute bug in the "wait" function, 
+that I fixed in 
+<a href="icfpcontest2004/submission-ANTisocial.fixed.tar.gz">this version</a>.
+
+
+<h2>The ant generator</h2>
+
+<p>
+I wrote OCaml functions that let me define what I called
+subtasks. I defined several higher order functions that manipulate
+subtasks: or, and, not, xor, while, until, if, ifnot, ifelse, 
+return, fail, choose, sequence, switch
+(<a href="icfpcontest2004/lib.ml">lib.ml</a>).
+Then the job was to use these instructions to make my colony work
+correctly.
+The source code for my ant is in the file 
+<a href="icfpcontest2004/work.ml">work.ml</a>.
+It it 2 times shorter than the output, has blank lines, and about 20
+lines of dead code (function <code>incr_mark</code>).
+
+
+<h2>Strategy</h2>
+
+<p>
+The strategy I chose is based on:
+<ul>
+<li> tracing 6 straight oriented lines that start from the corners 
+of the anthill, using 3 markers,
+<li> protecting the corners with 5 guards, so that no enemy can take 
+food from these places that have a high probability of containing food since
+<li> when an ant has found some food, it will follow 
+the line that brings it directly to (a corner of) 
+its anthill as soon as possible.
+</ul>
+<p>
+This is better illustrated by the position of the markers, as shown in
+this <a href="icfpcontest2004/world.mred">map</a>. 
+Note that an additional marker 4
+is located on each corner but is 
+not visible since there is already a marker 0.
+<p>
+The final (fixed) ant is <a href="icfpcontest2004/work.ant">here</a>.
+
+
+<h2>Various outputs</h2>
+
+
+<h3>Profiling</h3>
+
+<p>
+The <a href="icfpcontest2004/red.stats">number of accesses to each state</a>
+is output and sorted after each 
+simulation. I think that a healthy brain is one that has a balanced
+number of accesses to each node. Note that the ants use a collective
+brain. 100,000 simulation steps were performed with initially 91 red ants.
+The most accessed node corresponds to the 30 food guards, that simply
+do nothing once they decided to be guards (the "loop" state).
+
+<h3>Graphs</h3>
+
+<p>
+I displayed the transitions between the states of my ants with the dot
+tool from the Graphviz package. The graph for 
+<a href="icfpcontest2004/work.ant">my ant</a> is available
+as a <a href="icfpcontest2004/work.png">PNG image</a>, 
+or better as a 
+<a href="icfpcontest2004/work-larger.ps">PostScript file</a> (or its 
+<a href="icfpcontest2004/work.ps">compact version</a>).
+The gv tool is convenient for watching this kind of files.
+
+
+<h3>Ascii Ant</h3>
+
+<pre style="border:0px">
+## html_quote ##
+                                        _,  _gM#MMA                    
+           _;q                         (P]gMMMMMMMM                    
+        _m#  q                        gKgMMMMMHMMMW                    
+     _mF     q               _       _W#MMMMMMMMMM                     
+  _pP'       (k_g_g_        #^M_    qM M#MMMMMMMM                      
+#P           `MMMMMHM____ggF  3M,   #F MMMMMMMP                        
+           __MHMMTMMMMMMHMMM____A__gBMP"*###W'  __gM###9&                
+          gWWHMMMMMMM"__MMMM*MMMMMHMNF     (_g#*       M,              
+         / gMM###*8M__F  3FWMA 7WME^HMm___MPHE           M,             
+          ""       VMAm# _g#'   7M<   "     V__          V,            
+                  gK4   _P       "#m_         7MmA,,      %_           
+                _F_#   qF           NM                     \,          
+                M_M   _P             #                      %_         
+             __# #^   ML            #'                       ML        
+                M'   F7            qF                         M        
+               M"    1             #                           A       
+              `"   _#'            gL                            R_     
+                                  #                              ^NMMmm
+                                 qL                                    
+                                 #                                     
+                                 L                                     
+                                 R                                     
+## () ##
+</pre>
+
+</td></tr>
+</table>
+
+
+## camlmix_footer ~years:"2004" () ##
+## include_file "end_big_table" ##
+</body>
+</html>

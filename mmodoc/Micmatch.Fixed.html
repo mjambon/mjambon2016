@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Micmatch.Text.html">
+<link rel="next" href="Micmatch.Directory.html">
+<link rel="Up" href="Micmatch.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Micmatch" rel="Chapter" href="Micmatch.html"><title>Micmatch.Fixed</title>
+</head>
+<body>
+<div class="navbar"><a href="Micmatch.Text.html">Previous</a>
+&nbsp;<a href="Micmatch.html">Up</a>
+&nbsp;<a href="Micmatch.Directory.html">Next</a>
+</div>
+<center><h1>Module <a href="type_Micmatch.Fixed.html">Micmatch.Fixed</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> Fixed: <code class="code">sig</code> <a href="Micmatch.Fixed.html">..</a> <code class="code">end</code></pre><hr width="100%">
+<br>
+This module provides some functions which are useful 
+    for manipulating files with fields of fixed width.<br>
+<pre><span class="keyword">val</span> <a name="VALchop_spaces"></a>chop_spaces : <code class="type">string -> string</code></pre><div class="info">
+<code class="code">chop_spaces s</code> returns a string where the leading and trailing
+      spaces are removed.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALint"></a>int : <code class="type">string -> int</code></pre><div class="info">
+<code class="code">int s</code> reads an int from a string where leading and
+      trailing spaces are allowed. 
+      Equivalent to <code class="code">Pervasives.int_of_string (chop_spaces s)</code>.<br>
+</div>
+<pre><span class="keyword">val</span> <a name="VALfloat"></a>float : <code class="type">string -> float</code></pre><div class="info">
+<code class="code">float s</code> reads an float from a string where leading and
+      trailing spaces are allowed.
+      Equivalent to <code class="code">Pervasives.float_of_string (chop_spaces s)</code>.<br>
+</div>
+</body></html>
