@@ -19,7 +19,7 @@ open Utils
 
 <p>
 <ul>
-<li> <a href="/ocaml.html">Software</a>
+<li> <a href="/mjambon2016/ocaml.html">Software</a>
 <li> <a href="bedbug-advice.html">Peace, Love and Bedbugs:
 Surviving a Bedbug Infestation</a>
 </ul>
@@ -30,7 +30,7 @@ Surviving a Bedbug Infestation</a>
 <ul>
 <li> my scientific <a href="publications.html">publications</a>
 <li> documents about my research in 
-<a href="/bioinformatics.html">bioinformatics, including my PhD</a>
+<a href="/mjambon2016/bioinformatics.html">bioinformatics, including my PhD</a>
 </ul>
 
 

@@ -53,7 +53,7 @@ definitions except for field and variant names which are represented by
 is provided for routine visualization of biniou data files.
 
 <p>
-The program <a href="/atdgen"><code>atdgen</code></a>
+The program <a href="/mjambon2016/atdgen"><code>atdgen</code></a>
 can be used to derive OCaml-Biniou serializers and deserializers
 from type definitions.
 
@@ -78,7 +78,7 @@ library</a>
 This software was written by Martin Jambon. 
 It is distributed under a 
 <a href="biniou-license.txt">BSD license</a>.
-<a href="/releases/biniou">Download it here</a>.
+<a href="/mjambon2016/releases/biniou">Download it here</a>.
 </p>
 
 <p>

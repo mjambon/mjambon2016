@@ -30,9 +30,9 @@ open Camlmix
 
 <p>
 This is a collection of useful tips and code for writing documents using  
-<a href="/camlmix">Camlmix</a> or
-its derivatives such as <a href="/camlremix.html">Camlremix</a>.
-Read the <a href="/camlmix">Camlmix tutorial</a> first.
+<a href="/mjambon2016/camlmix">Camlmix</a> or
+its derivatives such as <a href="/mjambon2016/camlremix.html">Camlremix</a>.
+Read the <a href="/mjambon2016/camlmix">Camlmix tutorial</a> first.
 
 
 ##
@@ -95,7 +95,7 @@ download ## download "toolbox.ml" ## and use it by editing the sample
 You may also download ## download "toolbox.mli" ## for information.
 
 <p>
-The code samples are useful when using <a href="/camlmix">Camlmix</a>,
+The code samples are useful when using <a href="/mjambon2016/camlmix">Camlmix</a>,
 but also probably in many other situations where 
 <a href="http://caml.inria.fr">OCaml</a> is used as a scripting language.
 They may also be useful for the OCaml beginner looking for short real-life

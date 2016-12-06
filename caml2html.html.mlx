@@ -122,7 +122,7 @@ let f x = 2 * x + 1
 Caml2html was written by S&eacute;bastien Ailleret and is now maintained
 by Martin Jambon (me). It is distributed under a 
 <a href="http://www.gnu.org/licenses/gpl.txt">GPL license</a>.
-<a href="/releases/caml2html">Download it here</a>.
+<a href="/mjambon2016/releases/caml2html">Download it here</a>.
 
 <p>
 The <a href="https://github.com/mjambon/caml2html">development version

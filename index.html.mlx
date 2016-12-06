@@ -66,7 +66,7 @@ Updated
 ## news "June 23, 2012" ##
 Prototype for unpurple,
 tool that 
-<a href="/purple-fringe/examples.html">removes purple fringing</a>
+<a href="/mjambon2016/purple-fringe/examples.html">removes purple fringing</a>
 from digital photos.
 
 ## news "December 13, 2011" ##
@@ -93,7 +93,7 @@ for OCaml. Now supporting calls to external programs for processing
 <code>#ext</code>...<code>#endext</code> sections of source files.
 
 ## news "July 2, 2011" ##
-Official release of <a href="/atdgen">Atdgen</a> 1.2.0
+Official release of <a href="/mjambon2016/atdgen">Atdgen</a> 1.2.0
 including a tutorial, a validator mode, plugins for OMake and GNU Make,
 and more modularity.
 
@@ -113,11 +113,11 @@ Cleaned up and updated Camlp5 tutorial
 of Objective Caml, using Camlp5"</a>.
 
 ## news "September 9, 2010" ##
-MyLife releases <a href="/atdgen">Atdgen</a>,
+MyLife releases <a href="/mjambon2016/atdgen">Atdgen</a>,
 a generator of optimized OCaml code for Biniou and JSON serialization.
 
 ## news "August 22, 2010" ##
-MyLife releases <a href="/atdgen">ATD</a>,
+MyLife releases <a href="/mjambon2016/atdgen">ATD</a>,
 a syntax for cross-language data type definitions.
 
 ## news "August 7, 2010" ##
@@ -223,12 +223,12 @@ New package <a href="micmatch.html">Micmatch</a>: a smooth integration of
 regular expressions in the classic pattern matching of OCaml.
 
 ## news "July 4, 2004" ##
-The English version of my <a href="/phd.html">doctoral
+The English version of my <a href="/mjambon2016/phd.html">doctoral
 thesis</a> is now available. 
 
 ## news "June 8, 2004" ##
 A page about 
-<a href="/icfpcontest2004.html">my participation</a>
+<a href="/mjambon2016/icfpcontest2004.html">my participation</a>
 in the ICFP programming contest is available.
 
 ## () ##
