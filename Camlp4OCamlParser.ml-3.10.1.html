@@ -1,0 +1,759 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>
+Camlp4OCamlParser.ml-3.10.1</title>
+  <meta name="GENERATOR" content="caml2html 1.4.2">
+<style type="text/css">
+code,pre { color:black;background-color:white }a.Cannot { color:black;text-decoration:none }.Cannot:hover { background-color: #b4eeb4; }
+.Cbar,
+.Cdo,
+.Cdone,
+.Cdownto,
+.Celse,
+.Cfor,
+.Cif,
+.Clazy,
+.Cmatch,
+.Cnew,
+.Cor,
+.Cthen,
+.Cto,
+.Ctry,
+.Cwhen,
+.Cwhile,
+.Cwith { color: #77aaaa; }
+.Cassert,
+.Cinclude,
+.Copen { color: #cc9900; }
+.Cstring { color: #aa4444; }
+.Cand,
+.Cas,
+.Cclass,
+.Cconstraint,
+.Cexception,
+.Cexternal,
+.Cfun,
+.Cfunction,
+.Cfunctor,
+.Cin,
+.Cinherit,
+.Cinitializer,
+.Clet,
+.Cmethod,
+.Cmodule,
+.Cmutable,
+.Cof,
+.Cprivate,
+.Crec,
+.Ctype,
+.Cval,
+.Cvirtual { color: green; }
+.Cbackground { background-color: white; }
+.Craise { color: red; }
+.Cconstructor { color: #0033cc; }
+.Ccomment { color: #990000; }
+.Calphakeyword,
+.Casr,
+.Cland,
+.Clor,
+.Clsl,
+.Clsr,
+.Clxor,
+.Cmod { color: #808080; }
+.Clinenum { color: black; background-color: silver; }
+.Cbegin,
+.Cend,
+.Cobject,
+.Csig,
+.Cstruct { color: #990099; }
+.Cfalse,
+.Cnonalphakeyword,
+.Cquotation,
+.Ctrue { }
+</style>
+</head>
+<body>
+
+<pre><a name="Camlp4OCamlParser.ml-3.10.1"></a><span class="Copen">open</span> <span class="Cconstructor">Camlp4</span><span class="Cnonalphakeyword">;</span>                                        <span class="Ccomment">(* -*- camlp4r -*- *)</span>
+<span class="Ccomment">(****************************************************************************)</span>
+<span class="Ccomment">(*                                                                          *)</span>
+<span class="Ccomment">(*                              Objective Caml                              *)</span>
+<span class="Ccomment">(*                                                                          *)</span>
+<span class="Ccomment">(*                            INRIA Rocquencourt                            *)</span>
+<span class="Ccomment">(*                                                                          *)</span>
+<span class="Ccomment">(*  Copyright 2002-2006 Institut National de Recherche en Informatique et   *)</span>
+<span class="Ccomment">(*  en Automatique.  All rights reserved.  This file is distributed under   *)</span>
+<span class="Ccomment">(*  the terms of the GNU Library General Public License, with the special   *)</span>
+<span class="Ccomment">(*  exception on linking described in LICENSE at the top of the Objective   *)</span>
+<span class="Ccomment">(*  Caml source tree.                                                       *)</span>
+<span class="Ccomment">(*                                                                          *)</span>
+<span class="Ccomment">(****************************************************************************)</span>
+
+<span class="Ccomment">(* Authors:</span>
+<span class="Ccomment"> * - Daniel de Rauglaudre: initial version</span>
+<span class="Ccomment"> * - Nicolas Pouillard: refactoring</span>
+<span class="Ccomment"> *)</span>
+
+
+<span class="Cmodule">module</span> <span class="Cconstructor">Id</span> : <span class="Cconstructor">Sig</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Id</span> <span class="Cnonalphakeyword">=</span> <span class="Cstruct">struct</span>
+  value name <span class="Cnonalphakeyword">=</span> <span class="Cstring">"Camlp4OCamlParser"</span><span class="Cnonalphakeyword">;</span>
+  value version <span class="Cnonalphakeyword">=</span> <span class="Cstring">"$Id: Camlp4OCamlParser.ml,v 1.3.2.19 2007/12/18 08:53:26 ertai Exp $"</span><span class="Cnonalphakeyword">;</span>
+<span class="Cend">end</span><span class="Cnonalphakeyword">;</span>
+
+<span class="Cmodule">module</span> <span class="Cconstructor">Make</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Syntax</span> : <span class="Cconstructor">Sig</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Camlp4Syntax</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">=</span> <span class="Cstruct">struct</span>
+  <span class="Copen">open</span> <span class="Cconstructor">Sig</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cinclude">include</span> <span class="Cconstructor">Syntax</span><span class="Cnonalphakeyword">;</span>
+
+  <span class="Cconstructor">Camlp4_config</span><span class="Cnonalphakeyword">.</span>constructors_arity<span class="Cnonalphakeyword">.</span><span class="Cval">val</span> <span class="Cnonalphakeyword">:=</span> <span class="Cconstructor">False</span><span class="Cnonalphakeyword">;</span>
+
+  <span class="Ccomment">(*FIXME remove this and use OCaml ones *)</span>
+  value bigarray_set _loc var newval <span class="Cnonalphakeyword">=</span>
+    <span class="Cmatch">match</span> var <span class="Cwith">with</span>
+    <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Bigarray.Array1.get $arr$ $c1$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>
+        <span class="Cconstructor">Some</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Bigarray.Array1.set $arr$ $c1$ $newval$ </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Bigarray.Array2.get $arr$ $c1$ $c2$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>
+        <span class="Cconstructor">Some</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Bigarray.Array2.set $arr$ $c1$ $c2$ $newval$ </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Bigarray.Array3.get $arr$ $c1$ $c2$ $c3$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>
+        <span class="Cconstructor">Some</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Bigarray.Array3.set $arr$ $c1$ $c2$ $c3$ $newval$ </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Bigarray.Genarray.get $arr$ [| $coords$ |] </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>
+        <span class="Cconstructor">Some</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Bigarray.Genarray.set $arr$ [| $coords$ |] $newval$ </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">None</span> <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+  value mk_anti <span class="Cnonalphakeyword">?</span><span class="Cnonalphakeyword">(</span>c <span class="Cnonalphakeyword">=</span> <span class="Cstring">""</span><span class="Cnonalphakeyword">)</span> n s <span class="Cnonalphakeyword">=</span> <span class="Cstring">"\\$"</span>^n^c^<span class="Cstring">":"</span>^s<span class="Cnonalphakeyword">;</span>
+  <span class="Ccomment">(*FIXME*)</span>
+
+  value conc_seq e1 e2 <span class="Cnonalphakeyword">=</span>
+    <span class="Cmatch">match</span> <span class="Cnonalphakeyword">(</span>e1<span class="Cnonalphakeyword">,</span> e2<span class="Cnonalphakeyword">)</span> <span class="Cwith">with</span>
+    <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">(</span>&lt;:expr@_loc<span class="Cnonalphakeyword">&lt;</span> <span class="Cdo">do</span> <span class="Cnonalphakeyword">{</span> $e1$ <span class="Cnonalphakeyword">}</span> &gt;&gt;<span class="Cnonalphakeyword">,</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> do { $e2$ } </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span>
+        <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> do { $e1$; $e2$ } </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cnonalphakeyword">(</span>&lt;:expr@_loc<span class="Cnonalphakeyword">&lt;</span> <span class="Cdo">do</span> <span class="Cnonalphakeyword">{</span> $e1$ <span class="Cnonalphakeyword">}</span> &gt;&gt;<span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span>
+        <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> do { $e1$; $e2$ } </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">,</span> &lt;:expr@_loc<span class="Cnonalphakeyword">&lt;</span> <span class="Cdo">do</span> <span class="Cnonalphakeyword">{</span> $e2$ <span class="Cnonalphakeyword">}</span> &gt;&gt;<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span>
+        <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> do { $e1$; $e2$ } </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span>
+        <span class="Clet">let</span> _loc <span class="Cnonalphakeyword">=</span>
+          <span class="Cconstructor">Loc</span><span class="Cnonalphakeyword">.</span>merge <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Ast</span><span class="Cnonalphakeyword">.</span>loc_of_expr e1<span class="Cnonalphakeyword">)</span>
+                    <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Ast</span><span class="Cnonalphakeyword">.</span>loc_of_expr e2<span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+        <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> do { $e1$; $e2$ } </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+
+  value test_constr_decl <span class="Cnonalphakeyword">=</span>
+    <span class="Cconstructor">Gram</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Entry</span><span class="Cnonalphakeyword">.</span>of_parser <span class="Cstring">"test_constr_decl"</span>
+      <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> strm <span class="Cnonalphakeyword">-&gt;</span>
+        <span class="Cmatch">match</span> <span class="Cconstructor">Stream</span><span class="Cnonalphakeyword">.</span>npeek 1 strm <span class="Cwith">with</span>
+        <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">(</span><span class="Cconstructor">UIDENT</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cmatch">match</span> <span class="Cconstructor">Stream</span><span class="Cnonalphakeyword">.</span>npeek 2 strm <span class="Cwith">with</span>
+            <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">;</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">KEYWORD</span> <span class="Cstring">"."</span><span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span> raise <span class="Cconstructor">Stream</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Failure</span>
+            <span class="Cbar">|</span> <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">;</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">KEYWORD</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span> raise <span class="Cconstructor">Stream</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Failure</span>
+            <span class="Cbar">|</span> <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">::</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+            <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> raise <span class="Cconstructor">Stream</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Failure</span> <span class="Cnonalphakeyword">]</span>
+        <span class="Cbar">|</span> <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">(</span><span class="Cconstructor">KEYWORD</span> <span class="Cstring">"|"</span><span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+        <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> raise <span class="Cconstructor">Stream</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Failure</span> <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">)</span>
+  <span class="Cnonalphakeyword">;</span>
+
+  value stream_peek_nth n strm <span class="Cnonalphakeyword">=</span>
+    loop n <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Stream</span><span class="Cnonalphakeyword">.</span>npeek n strm<span class="Cnonalphakeyword">)</span> where <span class="Crec">rec</span> loop n <span class="Cnonalphakeyword">=</span>
+      <span class="Cfun">fun</span>
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">None</span>
+      <span class="Cbar">|</span> <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">(</span>x<span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cif">if</span> n == 1 <span class="Cthen">then</span> <span class="Cconstructor">Some</span> x <span class="Celse">else</span> <span class="Cconstructor">None</span>
+      <span class="Cbar">|</span> <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">::</span> l<span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span> loop <span class="Cnonalphakeyword">(</span>n <span class="Cnonalphakeyword">-</span> 1<span class="Cnonalphakeyword">)</span> l <span class="Cnonalphakeyword">]</span>
+  <span class="Cnonalphakeyword">;</span>
+
+  <span class="Ccomment">(* horrible hacks to be able to parse class_types *)</span>
+
+  value test_ctyp_minusgreater <span class="Cnonalphakeyword">=</span>
+    <span class="Cconstructor">Gram</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Entry</span><span class="Cnonalphakeyword">.</span>of_parser <span class="Cstring">"test_ctyp_minusgreater"</span>
+      <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> strm <span class="Cnonalphakeyword">-&gt;</span>
+        <span class="Clet">let</span> <span class="Crec">rec</span> skip_simple_ctyp n <span class="Cnonalphakeyword">=</span>
+          <span class="Cmatch">match</span> stream_peek_nth n strm <span class="Cwith">with</span>
+          <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">Some</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">KEYWORD</span> <span class="Cstring">"-&gt;"</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> n
+          <span class="Cbar">|</span> <span class="Cconstructor">Some</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">KEYWORD</span> <span class="Cnonalphakeyword">(</span><span class="Cstring">"["</span> <span class="Cbar">|</span> <span class="Cstring">"[&lt;"</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span>
+              skip_simple_ctyp <span class="Cnonalphakeyword">(</span>ignore_upto <span class="Cstring">"]"</span> <span class="Cnonalphakeyword">(</span>n <span class="Cnonalphakeyword">+</span> 1<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">+</span> 1<span class="Cnonalphakeyword">)</span>
+          <span class="Cbar">|</span> <span class="Cconstructor">Some</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">KEYWORD</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> skip_simple_ctyp <span class="Cnonalphakeyword">(</span>ignore_upto <span class="Cstring">")"</span> <span class="Cnonalphakeyword">(</span>n <span class="Cnonalphakeyword">+</span> 1<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">+</span> 1<span class="Cnonalphakeyword">)</span>
+          <span class="Cbar">|</span> <span class="Cconstructor">Some</span>
+              <span class="Cnonalphakeyword">(</span><span class="Cconstructor">KEYWORD</span>
+                <span class="Cnonalphakeyword">(</span><span class="Cstring">"as"</span> <span class="Cbar">|</span> <span class="Cstring">"'"</span> <span class="Cbar">|</span> <span class="Cstring">":"</span> <span class="Cbar">|</span> <span class="Cstring">"*"</span> <span class="Cbar">|</span> <span class="Cstring">"."</span> <span class="Cbar">|</span> <span class="Cstring">"#"</span> <span class="Cbar">|</span> <span class="Cstring">"&lt;"</span> <span class="Cbar">|</span> <span class="Cstring">"&gt;"</span> <span class="Cbar">|</span> <span class="Cstring">".."</span> <span class="Cbar">|</span> <span class="Cstring">";"</span> <span class="Cbar">|</span>
+                <span class="Cstring">"_"</span> <span class="Cbar">|</span> <span class="Cstring">"?"</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span>
+              skip_simple_ctyp <span class="Cnonalphakeyword">(</span>n <span class="Cnonalphakeyword">+</span> 1<span class="Cnonalphakeyword">)</span>
+          <span class="Cbar">|</span> <span class="Cconstructor">Some</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">LIDENT</span> <span class="Cnonalphakeyword">_</span> <span class="Cbar">|</span> <span class="Cconstructor">UIDENT</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span>
+              skip_simple_ctyp <span class="Cnonalphakeyword">(</span>n <span class="Cnonalphakeyword">+</span> 1<span class="Cnonalphakeyword">)</span>
+          <span class="Cbar">|</span> <span class="Cconstructor">Some</span> <span class="Cnonalphakeyword">_</span> <span class="Cbar">|</span> <span class="Cconstructor">None</span> <span class="Cnonalphakeyword">-&gt;</span> raise <span class="Cconstructor">Stream</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Failure</span> <span class="Cnonalphakeyword">]</span>
+        <span class="Cand">and</span> ignore_upto end_kwd n <span class="Cnonalphakeyword">=</span>
+          <span class="Cmatch">match</span> stream_peek_nth n strm <span class="Cwith">with</span>
+          <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">Some</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">KEYWORD</span> prm<span class="Cnonalphakeyword">)</span> <span class="Cwhen">when</span> prm <span class="Cnonalphakeyword">=</span> end_kwd <span class="Cnonalphakeyword">-&gt;</span> n
+          <span class="Cbar">|</span> <span class="Cconstructor">Some</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">KEYWORD</span> <span class="Cnonalphakeyword">(</span><span class="Cstring">"["</span> <span class="Cbar">|</span> <span class="Cstring">"[&lt;"</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span>
+              ignore_upto end_kwd <span class="Cnonalphakeyword">(</span>ignore_upto <span class="Cstring">"]"</span> <span class="Cnonalphakeyword">(</span>n <span class="Cnonalphakeyword">+</span> 1<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">+</span> 1<span class="Cnonalphakeyword">)</span>
+          <span class="Cbar">|</span> <span class="Cconstructor">Some</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">KEYWORD</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> ignore_upto end_kwd <span class="Cnonalphakeyword">(</span>ignore_upto <span class="Cstring">")"</span> <span class="Cnonalphakeyword">(</span>n <span class="Cnonalphakeyword">+</span> 1<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">+</span> 1<span class="Cnonalphakeyword">)</span>
+          <span class="Cbar">|</span> <span class="Cconstructor">Some</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> ignore_upto end_kwd <span class="Cnonalphakeyword">(</span>n <span class="Cnonalphakeyword">+</span> 1<span class="Cnonalphakeyword">)</span>
+          <span class="Cbar">|</span> <span class="Cconstructor">None</span> <span class="Cnonalphakeyword">-&gt;</span> raise <span class="Cconstructor">Stream</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Failure</span> <span class="Cnonalphakeyword">]</span>
+        <span class="Cin">in</span>
+        <span class="Cmatch">match</span> <span class="Cconstructor">Stream</span><span class="Cnonalphakeyword">.</span>peek strm <span class="Cwith">with</span>
+        <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">Some</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">(</span><span class="Cconstructor">KEYWORD</span> <span class="Cstring">"["</span> <span class="Cbar">|</span> <span class="Cconstructor">LIDENT</span> <span class="Cnonalphakeyword">_</span> <span class="Cbar">|</span> <span class="Cconstructor">UIDENT</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> skip_simple_ctyp 1
+        <span class="Cbar">|</span> <span class="Cconstructor">Some</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">KEYWORD</span> <span class="Cstring">"object"</span><span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> raise <span class="Cconstructor">Stream</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Failure</span>
+        <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> 1 <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">)</span>
+  <span class="Cnonalphakeyword">;</span>
+
+  value test_label_eq <span class="Cnonalphakeyword">=</span>
+    <span class="Cconstructor">Gram</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Entry</span><span class="Cnonalphakeyword">.</span>of_parser <span class="Cstring">"test_label_eq"</span>
+      <span class="Cnonalphakeyword">(</span>test 1 where <span class="Crec">rec</span> test lev strm <span class="Cnonalphakeyword">=</span>
+        <span class="Cmatch">match</span> stream_peek_nth lev strm <span class="Cwith">with</span>
+        <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">Some</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">UIDENT</span> <span class="Cnonalphakeyword">_</span> <span class="Cbar">|</span> <span class="Cconstructor">LIDENT</span> <span class="Cnonalphakeyword">_</span> <span class="Cbar">|</span> <span class="Cconstructor">KEYWORD</span> <span class="Cstring">"."</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span>
+            test <span class="Cnonalphakeyword">(</span>lev <span class="Cnonalphakeyword">+</span> 1<span class="Cnonalphakeyword">)</span> strm
+        <span class="Cbar">|</span> <span class="Cconstructor">Some</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">KEYWORD</span> <span class="Cstring">"="</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+        <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> raise <span class="Cconstructor">Stream</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Failure</span> <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">)</span>
+  <span class="Cnonalphakeyword">;</span>
+
+  value test_typevar_list_dot <span class="Cnonalphakeyword">=</span>
+    <span class="Cconstructor">Gram</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Entry</span><span class="Cnonalphakeyword">.</span>of_parser <span class="Cstring">"test_typevar_list_dot"</span>
+      <span class="Cnonalphakeyword">(</span><span class="Clet">let</span> <span class="Crec">rec</span> test lev strm <span class="Cnonalphakeyword">=</span>
+        <span class="Cmatch">match</span> stream_peek_nth lev strm <span class="Cwith">with</span>
+        <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">Some</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">KEYWORD</span> <span class="Cstring">"'"</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> test2 <span class="Cnonalphakeyword">(</span>lev <span class="Cnonalphakeyword">+</span> 1<span class="Cnonalphakeyword">)</span> strm
+        <span class="Cbar">|</span> <span class="Cconstructor">Some</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">KEYWORD</span> <span class="Cstring">"."</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+        <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> raise <span class="Cconstructor">Stream</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Failure</span> <span class="Cnonalphakeyword">]</span>
+      <span class="Cand">and</span> test2 lev strm <span class="Cnonalphakeyword">=</span>
+        <span class="Cmatch">match</span> stream_peek_nth lev strm <span class="Cwith">with</span>
+        <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">Some</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">UIDENT</span> <span class="Cnonalphakeyword">_</span> <span class="Cbar">|</span> <span class="Cconstructor">LIDENT</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> test <span class="Cnonalphakeyword">(</span>lev <span class="Cnonalphakeyword">+</span> 1<span class="Cnonalphakeyword">)</span> strm
+        <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> raise <span class="Cconstructor">Stream</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Failure</span> <span class="Cnonalphakeyword">]</span>
+      <span class="Cin">in</span>
+      test 1<span class="Cnonalphakeyword">)</span>
+  <span class="Cnonalphakeyword">;</span>
+
+  value lident_colon <span class="Cnonalphakeyword">=</span>
+    <span class="Cconstructor">Gram</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Entry</span><span class="Cnonalphakeyword">.</span>of_parser <span class="Cstring">"lident_colon"</span>
+      <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> strm <span class="Cnonalphakeyword">-&gt;</span>
+        <span class="Cmatch">match</span> <span class="Cconstructor">Stream</span><span class="Cnonalphakeyword">.</span>npeek 2 strm <span class="Cwith">with</span>
+        <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">(</span><span class="Cconstructor">LIDENT</span> i<span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">KEYWORD</span> <span class="Cstring">":"</span><span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cdo">do</span> <span class="Cnonalphakeyword">{</span> <span class="Cconstructor">Stream</span><span class="Cnonalphakeyword">.</span>junk strm<span class="Cnonalphakeyword">;</span> <span class="Cconstructor">Stream</span><span class="Cnonalphakeyword">.</span>junk strm<span class="Cnonalphakeyword">;</span> i <span class="Cnonalphakeyword">}</span>
+        <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> raise <span class="Cconstructor">Stream</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Failure</span> <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">)</span>
+  <span class="Cnonalphakeyword">;</span>
+
+  value <span class="Crec">rec</span> is_ident_constr_call <span class="Cnonalphakeyword">=</span>
+    <span class="Cfun">fun</span>
+    <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">&lt;:ident&lt;</span><span class="Cquotation"> $uid:_$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">True</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:ident&lt;</span><span class="Cquotation"> $_$.$i$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> is_ident_constr_call i
+    <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">False</span> <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+
+  value <span class="Crec">rec</span> is_expr_constr_call <span class="Cnonalphakeyword">=</span>
+    <span class="Cfun">fun</span>
+    <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $id:i$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> is_ident_constr_call i
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> `$_$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">True</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $_$.$e$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> is_expr_constr_call e
+    <span class="Cbar">|</span> &lt;:expr@_loc<span class="Cnonalphakeyword">&lt;</span> $e$ $<span class="Cnonalphakeyword">_</span>$ &gt;&gt; <span class="Cnonalphakeyword">-&gt;</span>
+        <span class="Clet">let</span> res <span class="Cnonalphakeyword">=</span> is_expr_constr_call e <span class="Cin">in</span>
+        <span class="Cif">if</span> <span class="Cnonalphakeyword">(</span>not <span class="Cconstructor">Camlp4_config</span><span class="Cnonalphakeyword">.</span>constructors_arity<span class="Cnonalphakeyword">.</span><span class="Cval">val</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">&amp;&amp;</span> res <span class="Cthen">then</span>
+          <span class="Cconstructor">Loc</span><span class="Cnonalphakeyword">.</span>raise _loc <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Stream</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Error</span> <span class="Cstring">"currified constructor"</span><span class="Cnonalphakeyword">)</span>
+        <span class="Celse">else</span> res
+    <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">False</span> <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> expr: <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"where"</span><span class="Cnonalphakeyword">;</span> opt_rec<span class="Cnonalphakeyword">;</span> let_binding <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> value_let: <span class="Cstring">"value"</span> <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> value_val: <span class="Cstring">"value"</span> <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> str_item: value_let<span class="Cnonalphakeyword">;</span> opt_rec<span class="Cnonalphakeyword">;</span> binding <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> module_type: <span class="Cstring">"'"</span><span class="Cnonalphakeyword">;</span> a_ident <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> module_type: <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> dummy <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> module_type: <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"."</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">SELF</span> <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> label_expr: label_longident<span class="Cnonalphakeyword">;</span> fun_binding <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> expr: <span class="Cstring">"let"</span><span class="Cnonalphakeyword">;</span> opt_rec<span class="Cnonalphakeyword">;</span> binding<span class="Cnonalphakeyword">;</span> <span class="Cstring">"in"</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">SELF</span> <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> expr: <span class="Cstring">"let"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"module"</span><span class="Cnonalphakeyword">;</span> a_UIDENT<span class="Cnonalphakeyword">;</span> module_binding0<span class="Cnonalphakeyword">;</span> <span class="Cstring">"in"</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">SELF</span> <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> expr: <span class="Cstring">"fun"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"["</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">LIST0</span> match_case0 <span class="Cconstructor">SEP</span> <span class="Cstring">"|"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"]"</span> <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> expr: <span class="Cstring">"if"</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"then"</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"else"</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">SELF</span> <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> expr: <span class="Cstring">"do"</span><span class="Cnonalphakeyword">;</span> do_sequence <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> expr: <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">SELF</span> <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> expr: <span class="Cstring">"new"</span><span class="Cnonalphakeyword">;</span> class_longident <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> expr: <span class="Cstring">"["</span><span class="Cnonalphakeyword">;</span> sem_expr_for_list<span class="Cnonalphakeyword">;</span> <span class="Cstring">"::"</span><span class="Cnonalphakeyword">;</span> expr<span class="Cnonalphakeyword">;</span> <span class="Cstring">"]"</span> <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> expr: <span class="Cstring">"{"</span><span class="Cnonalphakeyword">;</span> label_expr<span class="Cnonalphakeyword">;</span> <span class="Cstring">"}"</span> <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> expr: <span class="Cstring">"{"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"with"</span><span class="Cnonalphakeyword">;</span> label_expr<span class="Cnonalphakeyword">;</span> <span class="Cstring">"}"</span> <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> expr: <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">","</span><span class="Cnonalphakeyword">;</span> comma_expr<span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span> <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> expr: <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">":="</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> dummy <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> expr: <span class="Cstring">"~"</span><span class="Cnonalphakeyword">;</span> a_LIDENT<span class="Cnonalphakeyword">;</span> <span class="Cstring">":"</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">SELF</span> <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> expr: <span class="Cstring">"?"</span><span class="Cnonalphakeyword">;</span> a_LIDENT<span class="Cnonalphakeyword">;</span> <span class="Cstring">":"</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">SELF</span> <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Ccomment">(* Some other DELETE_RULE are after the grammar *)</span>
+
+  value clear <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Gram</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Entry</span><span class="Cnonalphakeyword">.</span>clear<span class="Cnonalphakeyword">;</span>
+  clear ctyp<span class="Cnonalphakeyword">;</span>
+  clear patt<span class="Cnonalphakeyword">;</span>
+  clear a_UIDENT<span class="Cnonalphakeyword">;</span>
+  clear type_longident_and_parameters<span class="Cnonalphakeyword">;</span>
+  clear type_parameters<span class="Cnonalphakeyword">;</span>
+  clear ipatt<span class="Cnonalphakeyword">;</span>
+  clear labeled_ipatt<span class="Cnonalphakeyword">;</span>
+  clear semi<span class="Cnonalphakeyword">;</span>
+  clear do_sequence<span class="Cnonalphakeyword">;</span>
+  clear type_kind<span class="Cnonalphakeyword">;</span>
+  clear constructor_arg_list<span class="Cnonalphakeyword">;</span>
+  clear poly_type<span class="Cnonalphakeyword">;</span>
+  clear class_name_and_param<span class="Cnonalphakeyword">;</span>
+  clear class_longident_and_param<span class="Cnonalphakeyword">;</span>
+  clear class_type_longident_and_param<span class="Cnonalphakeyword">;</span>
+  clear class_type_plus<span class="Cnonalphakeyword">;</span>
+  clear type_constraint<span class="Cnonalphakeyword">;</span>
+  clear comma_patt<span class="Cnonalphakeyword">;</span>
+  clear sequence<span class="Cnonalphakeyword">;</span>
+  clear sem_expr_for_list<span class="Cnonalphakeyword">;</span>
+  clear sem_expr<span class="Cnonalphakeyword">;</span>
+  clear label_declaration<span class="Cnonalphakeyword">;</span>
+  clear star_ctyp<span class="Cnonalphakeyword">;</span>
+  clear match_case<span class="Cnonalphakeyword">;</span>
+  clear with_constr<span class="Cnonalphakeyword">;</span>
+  clear top_phrase<span class="Cnonalphakeyword">;</span>
+
+  <span class="Cconstructor">EXTEND</span> <span class="Cconstructor">Gram</span>
+    <span class="Cconstructor">GLOBAL</span>:
+      a_CHAR a_FLOAT a_INT a_INT32 a_INT64 a_LABEL a_LIDENT
+      a_NATIVEINT a_OPTLABEL a_STRING a_UIDENT a_ident
+      amp_ctyp and_ctyp match_case match_case0 match_case_quot binding binding_quot
+      class_declaration class_description class_expr class_expr_quot
+      class_fun_binding class_fun_def class_info_for_class_expr
+      class_info_for_class_type class_longident class_longident_and_param
+      class_name_and_param class_sig_item class_sig_item_quot class_signature
+      class_str_item class_str_item_quot class_structure class_type
+      class_type_declaration class_type_longident
+      class_type_longident_and_param class_type_plus class_type_quot
+      comma_ctyp comma_expr comma_ipatt comma_patt comma_type_parameter
+      constrain constructor_arg_list constructor_declaration
+      constructor_declarations ctyp ctyp_quot cvalue_binding direction_flag
+      dummy eq_expr expr expr_eoi expr_quot field_expr fun_binding
+      fun_def ident ident_quot implem interf ipatt ipatt_tcon label
+      label_declaration label_expr label_ipatt label_longident label_patt
+      labeled_ipatt let_binding meth_list module_binding module_binding0
+      module_binding_quot module_declaration module_expr module_expr_quot
+      module_longident module_longident_with_app module_rec_declaration
+      module_type module_type_quot more_ctyp name_tags opt_as_lident
+      opt_class_self_patt opt_class_self_type
+      opt_comma_ctyp opt_dot_dot opt_eq_ctyp opt_expr
+      opt_meth_list opt_mutable opt_polyt opt_private opt_rec
+      opt_virtual opt_when_expr patt patt_as_patt_opt patt_eoi
+      patt_quot patt_tcon phrase poly_type row_field
+      sem_expr sem_expr_for_list sem_patt sem_patt_for_list semi sequence
+      sig_item sig_item_quot sig_items star_ctyp str_item str_item_quot
+      str_items top_phrase type_constraint type_declaration
+      type_ident_and_parameters type_kind type_longident
+      type_longident_and_parameters type_parameter type_parameters typevars
+      use_file val_longident value_let value_val with_constr with_constr_quot
+      infixop0 infixop1 infixop2 infixop3 infixop4 do_sequence
+    <span class="Cnonalphakeyword">;</span>
+    sem_expr:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> e1 <span class="Cnonalphakeyword">=</span> expr <span class="Cconstructor">LEVEL</span> <span class="Cstring">"top"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">";"</span><span class="Cnonalphakeyword">;</span> e2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $e1$; $e2$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> e <span class="Cnonalphakeyword">=</span> expr <span class="Cconstructor">LEVEL</span> <span class="Cstring">"top"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">";"</span> <span class="Cnonalphakeyword">-&gt;</span> e
+        <span class="Cbar">|</span> e <span class="Cnonalphakeyword">=</span> expr <span class="Cconstructor">LEVEL</span> <span class="Cstring">"top"</span> <span class="Cnonalphakeyword">-&gt;</span> e <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    sequence:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> e <span class="Cnonalphakeyword">=</span> sem_expr <span class="Cnonalphakeyword">-&gt;</span> e <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    do_sequence:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> seq <span class="Cnonalphakeyword">=</span> sequence<span class="Cnonalphakeyword">;</span> <span class="Cstring">"done"</span> <span class="Cnonalphakeyword">-&gt;</span> seq
+      <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    sem_expr_for_list:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> e <span class="Cnonalphakeyword">=</span> expr <span class="Cconstructor">LEVEL</span> <span class="Cstring">"top"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">";"</span><span class="Cnonalphakeyword">;</span> el <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cfun">fun</span> acc <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> [ $e$ :: $el acc$ ] </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> e <span class="Cnonalphakeyword">=</span> expr <span class="Cconstructor">LEVEL</span> <span class="Cstring">"top"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">";"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cfun">fun</span> acc <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> [ $e$ :: $acc$ ] </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> e <span class="Cnonalphakeyword">=</span> expr <span class="Cconstructor">LEVEL</span> <span class="Cstring">"top"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cfun">fun</span> acc <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> [ $e$ :: $acc$ ] </span><span class="Cconstructor">&gt;&gt;</span>
+      <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    str_item:
+      <span class="Cnonalphakeyword">[</span> <span class="Cstring">"top"</span>
+          <span class="Cnonalphakeyword">[</span> <span class="Cstring">"let"</span><span class="Cnonalphakeyword">;</span> r <span class="Cnonalphakeyword">=</span> opt_rec<span class="Cnonalphakeyword">;</span> bi <span class="Cnonalphakeyword">=</span> binding<span class="Cnonalphakeyword">;</span> <span class="Cstring">"in"</span><span class="Cnonalphakeyword">;</span> x <span class="Cnonalphakeyword">=</span> expr <span class="Cnonalphakeyword">-&gt;</span>
+              <span class="Cconstructor">&lt;:str_item&lt;</span><span class="Cquotation"> let $rec:r$ $bi$ in $x$ </span><span class="Cconstructor">&gt;&gt;</span>
+          <span class="Cbar">|</span> <span class="Cstring">"let"</span><span class="Cnonalphakeyword">;</span> r <span class="Cnonalphakeyword">=</span> opt_rec<span class="Cnonalphakeyword">;</span> bi <span class="Cnonalphakeyword">=</span> binding <span class="Cnonalphakeyword">-&gt;</span>
+              <span class="Cmatch">match</span> bi <span class="Cwith">with</span>
+              <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">&lt;:binding&lt;</span><span class="Cquotation"> _ = $e$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:str_item&lt;</span><span class="Cquotation"> $exp:e$ </span><span class="Cconstructor">&gt;&gt;</span>
+              <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:str_item&lt;</span><span class="Cquotation"> value $rec:r$ $bi$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span>
+          <span class="Cbar">|</span> <span class="Cstring">"let"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"module"</span><span class="Cnonalphakeyword">;</span> m <span class="Cnonalphakeyword">=</span> a_UIDENT<span class="Cnonalphakeyword">;</span> mb <span class="Cnonalphakeyword">=</span> module_binding0<span class="Cnonalphakeyword">;</span> <span class="Cstring">"in"</span><span class="Cnonalphakeyword">;</span> e <span class="Cnonalphakeyword">=</span> expr <span class="Cnonalphakeyword">-&gt;</span>
+              <span class="Cconstructor">&lt;:str_item&lt;</span><span class="Cquotation"> let module $m$ = $mb$ in $e$ </span><span class="Cconstructor">&gt;&gt;</span>
+      <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    expr: <span class="Cconstructor">BEFORE</span> <span class="Cstring">"top"</span>
+      <span class="Cnonalphakeyword">[</span> <span class="Cstring">";"</span> <span class="Cconstructor">RIGHTA</span>
+        <span class="Cnonalphakeyword">[</span> e1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">";"</span><span class="Cnonalphakeyword">;</span> e2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span>
+            conc_seq e1 e2
+        <span class="Cbar">|</span> e1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">";"</span> <span class="Cnonalphakeyword">-&gt;</span> e1 <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+    expr: <span class="Cconstructor">LEVEL</span> <span class="Cstring">"top"</span>
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> <span class="Cstring">"let"</span><span class="Cnonalphakeyword">;</span> r <span class="Cnonalphakeyword">=</span> opt_rec<span class="Cnonalphakeyword">;</span> bi <span class="Cnonalphakeyword">=</span> binding<span class="Cnonalphakeyword">;</span> <span class="Cstring">"in"</span><span class="Cnonalphakeyword">;</span>
+          x <span class="Cnonalphakeyword">=</span> expr <span class="Cconstructor">LEVEL</span> <span class="Cstring">";"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> let $rec:r$ $bi$ in $x$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"let"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"module"</span><span class="Cnonalphakeyword">;</span> m <span class="Cnonalphakeyword">=</span> a_UIDENT<span class="Cnonalphakeyword">;</span> mb <span class="Cnonalphakeyword">=</span> module_binding0<span class="Cnonalphakeyword">;</span> <span class="Cstring">"in"</span><span class="Cnonalphakeyword">;</span>
+          e <span class="Cnonalphakeyword">=</span> expr <span class="Cconstructor">LEVEL</span> <span class="Cstring">";"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> let module $m$ = $mb$ in $e$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"function"</span><span class="Cnonalphakeyword">;</span> a <span class="Cnonalphakeyword">=</span> match_case <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> fun [ $a$ ] </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"if"</span><span class="Cnonalphakeyword">;</span> e1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"then"</span><span class="Cnonalphakeyword">;</span> e2 <span class="Cnonalphakeyword">=</span> expr <span class="Cconstructor">LEVEL</span> <span class="Cstring">"top"</span><span class="Cnonalphakeyword">;</span>
+          <span class="Cstring">"else"</span><span class="Cnonalphakeyword">;</span> e3 <span class="Cnonalphakeyword">=</span> expr <span class="Cconstructor">LEVEL</span> <span class="Cstring">"top"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> if $e1$ then $e2$ else $e3$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"if"</span><span class="Cnonalphakeyword">;</span> e1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"then"</span><span class="Cnonalphakeyword">;</span> e2 <span class="Cnonalphakeyword">=</span> expr <span class="Cconstructor">LEVEL</span> <span class="Cstring">"top"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> if $e1$ then $e2$ else () </span><span class="Cconstructor">&gt;&gt;</span>
+      <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+    expr: <span class="Cconstructor">BEFORE</span> <span class="Cstring">"||"</span>
+      <span class="Cnonalphakeyword">[</span> <span class="Cstring">","</span>
+        <span class="Cnonalphakeyword">[</span> e <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">","</span><span class="Cnonalphakeyword">;</span> el <span class="Cnonalphakeyword">=</span> <span class="Ccomment">(*FIXME comma_expr*)</span><span class="Cconstructor">LIST1</span> <span class="Cconstructor">NEXT</span> <span class="Cconstructor">SEP</span> <span class="Cstring">","</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> ( $e$, $Ast.exCom_of_list el$ ) </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span>
+      <span class="Cbar">|</span> <span class="Cstring">":="</span> <span class="Cconstructor">NONA</span>
+        <span class="Cnonalphakeyword">[</span> e1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">":="</span><span class="Cnonalphakeyword">;</span> e2 <span class="Cnonalphakeyword">=</span> expr <span class="Cconstructor">LEVEL</span> <span class="Cstring">"top"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $e1$.val := $e2$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> e1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"&lt;-"</span><span class="Cnonalphakeyword">;</span> e2 <span class="Cnonalphakeyword">=</span> expr <span class="Cconstructor">LEVEL</span> <span class="Cstring">"top"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cmatch">match</span> bigarray_set _loc e1 e2 <span class="Cwith">with</span>
+            <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">Some</span> e <span class="Cnonalphakeyword">-&gt;</span> e
+            <span class="Cbar">|</span> <span class="Cconstructor">None</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $e1$ := $e2$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span>
+      <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+    expr: <span class="Cconstructor">AFTER</span> <span class="Cstring">"^"</span>
+      <span class="Cnonalphakeyword">[</span> <span class="Cstring">"::"</span> <span class="Cconstructor">RIGHTA</span>
+        <span class="Cnonalphakeyword">[</span> e1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"::"</span><span class="Cnonalphakeyword">;</span> e2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> [$e1$ :: $e2$] </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span>
+      <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+    expr: <span class="Cconstructor">LEVEL</span> <span class="Cstring">"apply"</span> <span class="Ccomment">(* LEFTA *)</span>
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> e1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> e2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cmatch">match</span> <span class="Cnonalphakeyword">(</span>is_expr_constr_call e1<span class="Cnonalphakeyword">,</span> e2<span class="Cnonalphakeyword">)</span> <span class="Cwith">with</span>
+            <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">True</span><span class="Cnonalphakeyword">,</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> ( $tup:e$ ) </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span>
+                <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>fold_left <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> e1 e2 <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $e1$ $e2$ </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">)</span> e1
+                                <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Ast</span><span class="Cnonalphakeyword">.</span>list_of_expr e <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">)</span>
+            <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $e1$ $e2$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span>
+      <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+    expr: <span class="Cconstructor">LEVEL</span> <span class="Cstring">"simple"</span> <span class="Ccomment">(* LEFTA *)</span>
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> <span class="Cstring">"false"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> False </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"true"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> True </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"{"</span><span class="Cnonalphakeyword">;</span> test_label_eq<span class="Cnonalphakeyword">;</span> lel <span class="Cnonalphakeyword">=</span> label_expr<span class="Cnonalphakeyword">;</span> <span class="Cstring">"}"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> { $lel$ } </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"{"</span><span class="Cnonalphakeyword">;</span> e <span class="Cnonalphakeyword">=</span> expr <span class="Cconstructor">LEVEL</span> <span class="Cstring">"."</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"with"</span><span class="Cnonalphakeyword">;</span> lel <span class="Cnonalphakeyword">=</span> label_expr<span class="Cnonalphakeyword">;</span> <span class="Cstring">"}"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> { ($e$) with $lel$ } </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"new"</span><span class="Cnonalphakeyword">;</span> i <span class="Cnonalphakeyword">=</span> class_longident <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> new $i$ </span><span class="Cconstructor">&gt;&gt;</span>
+      <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    val_longident:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">`</span><span class="Cconstructor">ANTIQUOT</span> <span class="Cnonalphakeyword">(</span><span class="Cstring">""</span><span class="Cbar">|</span><span class="Cstring">"id"</span><span class="Cbar">|</span><span class="Cstring">"anti"</span><span class="Cbar">|</span><span class="Cstring">"list"</span> <span class="Cas">as</span> n<span class="Cnonalphakeyword">)</span> s <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ident&lt;</span><span class="Cquotation"> $anti:mk_anti ~c:"ident" n s$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> i <span class="Cnonalphakeyword">=</span> a_UIDENT <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:ident&lt;</span><span class="Cquotation"> $uid:i$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> i <span class="Cnonalphakeyword">=</span> a_LIDENT <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:ident&lt;</span><span class="Cquotation"> $lid:i$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">ANTIQUOT</span> <span class="Cnonalphakeyword">(</span><span class="Cstring">""</span><span class="Cbar">|</span><span class="Cstring">"id"</span><span class="Cbar">|</span><span class="Cstring">"anti"</span><span class="Cbar">|</span><span class="Cstring">"list"</span> <span class="Cas">as</span> n<span class="Cnonalphakeyword">)</span> s<span class="Cnonalphakeyword">;</span> <span class="Cstring">"."</span><span class="Cnonalphakeyword">;</span> i <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ident&lt;</span><span class="Cquotation"> $anti:mk_anti ~c:"ident" n s$.$i$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> i <span class="Cnonalphakeyword">=</span> a_UIDENT<span class="Cnonalphakeyword">;</span> <span class="Cstring">"."</span><span class="Cnonalphakeyword">;</span> j <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:ident&lt;</span><span class="Cquotation"> $uid:i$.$j$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    match_case:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">OPT</span> <span class="Cstring">"|"</span><span class="Cnonalphakeyword">;</span> l <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">LIST1</span> match_case0 <span class="Cconstructor">SEP</span> <span class="Cstring">"|"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">Ast</span><span class="Cnonalphakeyword">.</span>mcOr_of_list l <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    patt_constr:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> i <span class="Cnonalphakeyword">=</span> module_longident <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $id:i$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"`"</span><span class="Cnonalphakeyword">;</span> s <span class="Cnonalphakeyword">=</span> a_ident <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> `$s$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    <span class="Ccomment">(* Patterns *)</span>
+    patt:
+      <span class="Cnonalphakeyword">[</span> <span class="Cstring">"as"</span> <span class="Cconstructor">LEFTA</span>
+        <span class="Cnonalphakeyword">[</span> p1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"as"</span><span class="Cnonalphakeyword">;</span> i <span class="Cnonalphakeyword">=</span> a_LIDENT <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> ($p1$ as $lid:i$) </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span>
+      <span class="Cbar">|</span> <span class="Cstring">"|"</span> <span class="Cconstructor">LEFTA</span>
+        <span class="Cnonalphakeyword">[</span> p1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"|"</span><span class="Cnonalphakeyword">;</span> p2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $p1$ | $p2$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span>
+      <span class="Cbar">|</span> <span class="Cstring">","</span>
+        <span class="Cnonalphakeyword">[</span> p <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">","</span><span class="Cnonalphakeyword">;</span> pl <span class="Cnonalphakeyword">=</span> <span class="Ccomment">(*FIXME comma_patt*)</span> <span class="Cconstructor">LIST1</span> <span class="Cconstructor">NEXT</span> <span class="Cconstructor">SEP</span> <span class="Cstring">","</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> ( $p$, $Ast.paCom_of_list pl$ ) </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span>
+      <span class="Cbar">|</span> <span class="Cstring">"::"</span> <span class="Cconstructor">RIGHTA</span>
+        <span class="Cnonalphakeyword">[</span> p1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"::"</span><span class="Cnonalphakeyword">;</span> p2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> [$p1$ :: $p2$] </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span>
+      <span class="Cbar">|</span> <span class="Cstring">"apply"</span> <span class="Cconstructor">RIGHTA</span>
+        <span class="Cnonalphakeyword">[</span> p1 <span class="Cnonalphakeyword">=</span> patt_constr<span class="Cnonalphakeyword">;</span> p2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cmatch">match</span> p2 <span class="Cwith">with</span>
+            <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> ( $tup:p$ ) </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>
+                <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>fold_left <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> p1 p2 <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $p1$ $p2$ </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">)</span> p1
+                                <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Ast</span><span class="Cnonalphakeyword">.</span>list_of_patt p <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">)</span>
+            <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $p1$ $p2$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span>
+        <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">ANTIQUOT</span> <span class="Cnonalphakeyword">(</span><span class="Cstring">""</span><span class="Cbar">|</span><span class="Cstring">"pat"</span><span class="Cbar">|</span><span class="Cstring">"anti"</span> <span class="Cas">as</span> n<span class="Cnonalphakeyword">)</span> s <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $anti:mk_anti ~c:"patt" n s$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> p <span class="Cnonalphakeyword">=</span> patt_constr <span class="Cnonalphakeyword">-&gt;</span> p <span class="Cnonalphakeyword">]</span>
+      <span class="Cbar">|</span> <span class="Cstring">"simple"</span>
+        <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">`</span><span class="Cconstructor">ANTIQUOT</span> <span class="Cnonalphakeyword">(</span><span class="Cstring">""</span><span class="Cbar">|</span><span class="Cstring">"pat"</span><span class="Cbar">|</span><span class="Cstring">"anti"</span> <span class="Cas">as</span> n<span class="Cnonalphakeyword">)</span> s <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $anti:mk_anti ~c:"patt" n s$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">ANTIQUOT</span> <span class="Cnonalphakeyword">(</span><span class="Cstring">"tup"</span> <span class="Cas">as</span> n<span class="Cnonalphakeyword">)</span> s <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> ($tup:&lt;:patt&lt; $anti:mk_anti ~c:"patt" n s$ </span><span class="Cconstructor">&gt;&gt;</span>$<span class="Cnonalphakeyword">)</span> &gt;&gt;
+        <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">ANTIQUOT</span> <span class="Cnonalphakeyword">(</span><span class="Cstring">"`bool"</span> <span class="Cas">as</span> n<span class="Cnonalphakeyword">)</span> s <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $anti:mk_anti n s$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">QUOTATION</span> x <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">Quotation</span><span class="Cnonalphakeyword">.</span>expand _loc x <span class="Cconstructor">Quotation</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">DynAst</span><span class="Cnonalphakeyword">.</span>patt_tag
+        <span class="Cbar">|</span> i <span class="Cnonalphakeyword">=</span> ident <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $id:i$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> s <span class="Cnonalphakeyword">=</span> a_INT <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $int:s$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> s <span class="Cnonalphakeyword">=</span> a_INT32 <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $int32:s$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> s <span class="Cnonalphakeyword">=</span> a_INT64 <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $int64:s$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> s <span class="Cnonalphakeyword">=</span> a_NATIVEINT <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $nativeint:s$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"-"</span><span class="Cnonalphakeyword">;</span> s <span class="Cnonalphakeyword">=</span> a_INT <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $int:"-" ^ s$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"-"</span><span class="Cnonalphakeyword">;</span> s <span class="Cnonalphakeyword">=</span> a_INT32 <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $int32:"-" ^ s$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"-"</span><span class="Cnonalphakeyword">;</span> s <span class="Cnonalphakeyword">=</span> a_INT64 <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $int64:"-" ^ s$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"-"</span><span class="Cnonalphakeyword">;</span> s <span class="Cnonalphakeyword">=</span> a_NATIVEINT <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $nativeint:"-" ^ s$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"-"</span><span class="Cnonalphakeyword">;</span> s <span class="Cnonalphakeyword">=</span> a_FLOAT <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $flo:"-" ^ s$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> s <span class="Cnonalphakeyword">=</span> a_FLOAT <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $flo:s$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> s <span class="Cnonalphakeyword">=</span> a_STRING <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $str:s$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> s1 <span class="Cnonalphakeyword">=</span> a_CHAR<span class="Cnonalphakeyword">;</span> <span class="Cstring">".."</span><span class="Cnonalphakeyword">;</span> s2 <span class="Cnonalphakeyword">=</span> a_CHAR <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $chr:s1$ .. $chr:s2$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> s <span class="Cnonalphakeyword">=</span> a_CHAR <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $chr:s$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"false"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> False </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"true"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> True </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"["</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"]"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> [] </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"["</span><span class="Cnonalphakeyword">;</span> mk_list <span class="Cnonalphakeyword">=</span> sem_patt_for_list<span class="Cnonalphakeyword">;</span> <span class="Cstring">"::"</span><span class="Cnonalphakeyword">;</span> last <span class="Cnonalphakeyword">=</span> patt<span class="Cnonalphakeyword">;</span> <span class="Cstring">"]"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            mk_list last
+        <span class="Cbar">|</span> <span class="Cstring">"["</span><span class="Cnonalphakeyword">;</span> mk_list <span class="Cnonalphakeyword">=</span> sem_patt_for_list<span class="Cnonalphakeyword">;</span> <span class="Cstring">"]"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            mk_list <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> [] </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"[|"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"|]"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> [||] </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"[|"</span><span class="Cnonalphakeyword">;</span> pl <span class="Cnonalphakeyword">=</span> sem_patt<span class="Cnonalphakeyword">;</span> <span class="Cstring">"|]"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> [| $pl$ |] </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"{"</span><span class="Cnonalphakeyword">;</span> pl <span class="Cnonalphakeyword">=</span> label_patt<span class="Cnonalphakeyword">;</span> <span class="Cstring">"}"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> { $pl$ } </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> () </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> p <span class="Cnonalphakeyword">=</span> patt<span class="Cnonalphakeyword">;</span> <span class="Cstring">":"</span><span class="Cnonalphakeyword">;</span> t <span class="Cnonalphakeyword">=</span> ctyp<span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> ($p$ : $t$) </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> p <span class="Cnonalphakeyword">=</span> patt<span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $p$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"_"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> _ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"`"</span><span class="Cnonalphakeyword">;</span> s <span class="Cnonalphakeyword">=</span> a_ident <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> ` $s$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"#"</span><span class="Cnonalphakeyword">;</span> i <span class="Cnonalphakeyword">=</span> type_longident <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> # $i$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    <span class="Ccomment">(* comma_expr:</span>
+<span class="Ccomment">      [ [ e1 = SELF; ","; e2 = SELF -&gt; &lt;:expr&lt; $e1$, $e2$ &gt;&gt;</span>
+<span class="Ccomment">        | e = expr LEVEL ":=" -&gt; e ] ]</span>
+<span class="Ccomment">    ;                                                           *)</span>
+    <span class="Ccomment">(* comma_patt:</span>
+<span class="Ccomment">      [ [ p1 = SELF; ","; p2 = SELF -&gt; &lt;:patt&lt; $p1$, $p2$ &gt;&gt;</span>
+<span class="Ccomment">        | p = patt LEVEL ".." -&gt; p ] ]</span>
+<span class="Ccomment">    ;                                                           *)</span>
+    type_constraint:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> <span class="Cstring">"constraint"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    with_constr:
+      <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">LEFTA</span>
+        <span class="Cnonalphakeyword">[</span> wc1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"and"</span><span class="Cnonalphakeyword">;</span> wc2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:with_constr&lt;</span><span class="Cquotation"> $wc1$ and $wc2$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">ANTIQUOT</span> <span class="Cnonalphakeyword">(</span><span class="Cstring">""</span><span class="Cbar">|</span><span class="Cstring">"with_constr"</span><span class="Cbar">|</span><span class="Cstring">"anti"</span><span class="Cbar">|</span><span class="Cstring">"list"</span> <span class="Cas">as</span> n<span class="Cnonalphakeyword">)</span> s <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:with_constr&lt;</span><span class="Cquotation"> $anti:mk_anti ~c:"with_constr" n s$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">QUOTATION</span> x <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">Quotation</span><span class="Cnonalphakeyword">.</span>expand _loc x <span class="Cconstructor">Quotation</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">DynAst</span><span class="Cnonalphakeyword">.</span>with_constr_tag
+        <span class="Cbar">|</span> <span class="Cstring">"type"</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">`</span><span class="Cconstructor">ANTIQUOT</span> <span class="Cnonalphakeyword">(</span><span class="Cstring">""</span><span class="Cbar">|</span><span class="Cstring">"typ"</span><span class="Cbar">|</span><span class="Cstring">"anti"</span> <span class="Cas">as</span> n<span class="Cnonalphakeyword">)</span> s<span class="Cnonalphakeyword">;</span> <span class="Cstring">"="</span><span class="Cnonalphakeyword">;</span> t <span class="Cnonalphakeyword">=</span> opt_private_ctyp <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:with_constr&lt;</span><span class="Cquotation"> type $anti:mk_anti ~c:"ctyp" n s$ = $t$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"type"</span><span class="Cnonalphakeyword">;</span> t1 <span class="Cnonalphakeyword">=</span> type_longident_and_parameters<span class="Cnonalphakeyword">;</span> <span class="Cstring">"="</span><span class="Cnonalphakeyword">;</span> t2 <span class="Cnonalphakeyword">=</span> opt_private_ctyp <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:with_constr&lt;</span><span class="Cquotation"> type $t1$ = $t2$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"module"</span><span class="Cnonalphakeyword">;</span> i1 <span class="Cnonalphakeyword">=</span> module_longident<span class="Cnonalphakeyword">;</span> <span class="Cstring">"="</span><span class="Cnonalphakeyword">;</span> i2 <span class="Cnonalphakeyword">=</span> module_longident_with_app <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:with_constr&lt;</span><span class="Cquotation"> module $i1$ = $i2$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    opt_private_ctyp:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> <span class="Cstring">"private"</span><span class="Cnonalphakeyword">;</span> t <span class="Cnonalphakeyword">=</span> ctyp <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> private $t$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> t <span class="Cnonalphakeyword">=</span> ctyp <span class="Cnonalphakeyword">-&gt;</span> t <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    class_type_plus:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> i <span class="Cnonalphakeyword">=</span> lident_colon<span class="Cnonalphakeyword">;</span> t <span class="Cnonalphakeyword">=</span> ctyp <span class="Cconstructor">LEVEL</span> <span class="Cstring">"star"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"-&gt;"</span><span class="Cnonalphakeyword">;</span> ct <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:class_type&lt;</span><span class="Cquotation"> [ ~ $i$ : $t$ ] -&gt; $ct$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"?"</span><span class="Cnonalphakeyword">;</span> i <span class="Cnonalphakeyword">=</span> a_LIDENT<span class="Cnonalphakeyword">;</span> <span class="Cstring">":"</span><span class="Cnonalphakeyword">;</span> t <span class="Cnonalphakeyword">=</span> ctyp <span class="Cconstructor">LEVEL</span> <span class="Cstring">"star"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"-&gt;"</span><span class="Cnonalphakeyword">;</span> ct <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:class_type&lt;</span><span class="Cquotation"> [ ? $i$ : $t$ ] -&gt; $ct$ </span><span class="Cconstructor">&gt;&gt;</span> 
+        <span class="Cbar">|</span> i <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">OPTLABEL</span> <span class="Ccomment">(* FIXME inline a_OPTLABEL *)</span><span class="Cnonalphakeyword">;</span> t <span class="Cnonalphakeyword">=</span> ctyp <span class="Cconstructor">LEVEL</span> <span class="Cstring">"star"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"-&gt;"</span><span class="Cnonalphakeyword">;</span> ct <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:class_type&lt;</span><span class="Cquotation"> [ ? $i$ : $t$ ] -&gt; $ct$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> test_ctyp_minusgreater<span class="Cnonalphakeyword">;</span> t <span class="Cnonalphakeyword">=</span> ctyp <span class="Cconstructor">LEVEL</span> <span class="Cstring">"star"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"-&gt;"</span><span class="Cnonalphakeyword">;</span> ct <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:class_type&lt;</span><span class="Cquotation"> [ $t$ ] -&gt; $ct$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> ct <span class="Cnonalphakeyword">=</span> class_type <span class="Cnonalphakeyword">-&gt;</span> ct <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    class_type_longident_and_param:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> <span class="Cstring">"["</span><span class="Cnonalphakeyword">;</span> t <span class="Cnonalphakeyword">=</span> comma_ctyp<span class="Cnonalphakeyword">;</span> <span class="Cstring">"]"</span><span class="Cnonalphakeyword">;</span> i <span class="Cnonalphakeyword">=</span> class_type_longident <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:class_type&lt;</span><span class="Cquotation"> $id:i$ [ $t$ ] </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> i <span class="Cnonalphakeyword">=</span> class_type_longident <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:class_type&lt;</span><span class="Cquotation"> $id:i$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    class_longident_and_param:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> <span class="Cstring">"["</span><span class="Cnonalphakeyword">;</span> t <span class="Cnonalphakeyword">=</span> comma_ctyp<span class="Cnonalphakeyword">;</span> <span class="Cstring">"]"</span><span class="Cnonalphakeyword">;</span> ci <span class="Cnonalphakeyword">=</span> class_longident <span class="Cnonalphakeyword">-&gt;</span>
+          <span class="Cconstructor">&lt;:class_expr&lt;</span><span class="Cquotation"> $id:ci$ [ $t$ ] </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> ci <span class="Cnonalphakeyword">=</span> class_longident <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:class_expr&lt;</span><span class="Cquotation"> $id:ci$ </span><span class="Cconstructor">&gt;&gt;</span>
+      <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    class_name_and_param:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> <span class="Cstring">"["</span><span class="Cnonalphakeyword">;</span> x <span class="Cnonalphakeyword">=</span> comma_type_parameter<span class="Cnonalphakeyword">;</span> <span class="Cstring">"]"</span><span class="Cnonalphakeyword">;</span> i <span class="Cnonalphakeyword">=</span> a_LIDENT <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>i<span class="Cnonalphakeyword">,</span> x<span class="Cnonalphakeyword">)</span>
+        <span class="Cbar">|</span> i <span class="Cnonalphakeyword">=</span> a_LIDENT <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>i<span class="Cnonalphakeyword">,</span> <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"></span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">)</span>
+      <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    ctyp:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> t1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"as"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"'"</span><span class="Cnonalphakeyword">;</span> i <span class="Cnonalphakeyword">=</span> a_ident <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $t1$ as '$i$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span>
+      <span class="Cbar">|</span> <span class="Cstring">"arrow"</span> <span class="Cconstructor">RIGHTA</span>
+        <span class="Cnonalphakeyword">[</span> t1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"-&gt;"</span><span class="Cnonalphakeyword">;</span> t2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $t1$ -&gt; $t2$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> i <span class="Cnonalphakeyword">=</span> lident_colon<span class="Cnonalphakeyword">;</span> t1 <span class="Cnonalphakeyword">=</span> ctyp <span class="Cconstructor">LEVEL</span> <span class="Cstring">"star"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"-&gt;"</span><span class="Cnonalphakeyword">;</span> t2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> ( ~ $i$ : $t1$ ) -&gt; $t2$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> i <span class="Cnonalphakeyword">=</span> a_OPTLABEL<span class="Cnonalphakeyword">;</span> t1 <span class="Cnonalphakeyword">=</span> ctyp <span class="Cconstructor">LEVEL</span> <span class="Cstring">"star"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"-&gt;"</span><span class="Cnonalphakeyword">;</span> t2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> ( ? $i$ : $t1$ ) -&gt; $t2$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"?"</span><span class="Cnonalphakeyword">;</span> i <span class="Cnonalphakeyword">=</span> a_LIDENT<span class="Cnonalphakeyword">;</span> <span class="Cstring">":"</span><span class="Cnonalphakeyword">;</span> t1 <span class="Cnonalphakeyword">=</span> ctyp <span class="Cconstructor">LEVEL</span> <span class="Cstring">"star"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"-&gt;"</span><span class="Cnonalphakeyword">;</span> t2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> ( ? $i$ : $t1$ ) -&gt; $t2$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span>
+      <span class="Cbar">|</span> <span class="Cstring">"star"</span>
+        <span class="Cnonalphakeyword">[</span> t <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"*"</span><span class="Cnonalphakeyword">;</span> tl <span class="Cnonalphakeyword">=</span> star_ctyp <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> ( $t$ * $tl$ ) </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span>
+      <span class="Cbar">|</span> <span class="Cstring">"ctyp1"</span>
+        <span class="Cnonalphakeyword">[</span> t1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> t2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $t2$ $t1$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span>
+      <span class="Cbar">|</span> <span class="Cstring">"ctyp2"</span>
+        <span class="Cnonalphakeyword">[</span> t1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"."</span><span class="Cnonalphakeyword">;</span> t2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Ctry">try</span> <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $id:Ast.ident_of_ctyp t1$.$id:Ast.ident_of_ctyp t2$ </span><span class="Cconstructor">&gt;&gt;</span>
+            <span class="Cwith">with</span> <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">Invalid_argument</span> s <span class="Cnonalphakeyword">-&gt;</span> raise <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Stream</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Error</span> s<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">]</span>
+        <span class="Cbar">|</span> t1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> t2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Clet">let</span> t <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $t1$ $t2$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cin">in</span>
+            <span class="Ctry">try</span> <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $id:Ast.ident_of_ctyp t$ </span><span class="Cconstructor">&gt;&gt;</span>
+            <span class="Cwith">with</span> <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">Invalid_argument</span> s <span class="Cnonalphakeyword">-&gt;</span> raise <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Stream</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Error</span> s<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+      <span class="Cbar">|</span> <span class="Cstring">"simple"</span>
+        <span class="Cnonalphakeyword">[</span> <span class="Cstring">"'"</span><span class="Cnonalphakeyword">;</span> i <span class="Cnonalphakeyword">=</span> a_ident <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> '$i$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"_"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> _ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> i <span class="Cnonalphakeyword">=</span> a_LIDENT <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $lid:i$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> i <span class="Cnonalphakeyword">=</span> a_UIDENT <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $uid:i$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">ANTIQUOT</span> <span class="Cnonalphakeyword">(</span><span class="Cstring">""</span><span class="Cbar">|</span><span class="Cstring">"typ"</span><span class="Cbar">|</span><span class="Cstring">"anti"</span> <span class="Cas">as</span> n<span class="Cnonalphakeyword">)</span> s <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $anti:mk_anti ~c:"ctyp" n s$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">ANTIQUOT</span> <span class="Cnonalphakeyword">(</span><span class="Cstring">"tup"</span> <span class="Cas">as</span> n<span class="Cnonalphakeyword">)</span> s <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> ($tup:&lt;:ctyp&lt; $anti:mk_anti ~c:"ctyp" n s$ </span><span class="Cconstructor">&gt;&gt;</span>$<span class="Cnonalphakeyword">)</span> &gt;&gt;
+        <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">ANTIQUOT</span> <span class="Cnonalphakeyword">(</span><span class="Cstring">"id"</span> <span class="Cas">as</span> n<span class="Cnonalphakeyword">)</span> s <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $id:&lt;:ident&lt; $anti:mk_anti ~c:"ident" n s$ </span><span class="Cconstructor">&gt;&gt;</span>$ &gt;&gt;
+        <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">QUOTATION</span> x <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">Quotation</span><span class="Cnonalphakeyword">.</span>expand _loc x <span class="Cconstructor">Quotation</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">DynAst</span><span class="Cnonalphakeyword">.</span>ctyp_tag
+        <span class="Cbar">|</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> t <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">","</span><span class="Cnonalphakeyword">;</span> mk <span class="Cnonalphakeyword">=</span> comma_ctyp_app<span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span><span class="Cnonalphakeyword">;</span>
+          i <span class="Cnonalphakeyword">=</span> ctyp <span class="Cconstructor">LEVEL</span> <span class="Cstring">"ctyp2"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            mk <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $i$ $t$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> t <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $t$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"#"</span><span class="Cnonalphakeyword">;</span> i <span class="Cnonalphakeyword">=</span> class_longident <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> # $i$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"&lt;"</span><span class="Cnonalphakeyword">;</span> ml <span class="Cnonalphakeyword">=</span> opt_meth_list<span class="Cnonalphakeyword">;</span> v <span class="Cnonalphakeyword">=</span> opt_dot_dot<span class="Cnonalphakeyword">;</span> <span class="Cstring">"&gt;"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> &lt; $ml$ $..:v$ &gt; </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"["</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">OPT</span> <span class="Cstring">"|"</span><span class="Cnonalphakeyword">;</span> rfl <span class="Cnonalphakeyword">=</span> row_field<span class="Cnonalphakeyword">;</span> <span class="Cstring">"]"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> [ = $rfl$ ] </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"["</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"&gt;"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"]"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> [ &gt; $&lt;:ctyp&lt;</span><span class="Cconstructor">&gt;&gt;</span>$ <span class="Cnonalphakeyword">]</span> &gt;&gt;
+        <span class="Cbar">|</span> <span class="Cstring">"["</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"&gt;"</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">OPT</span> <span class="Cstring">"|"</span><span class="Cnonalphakeyword">;</span> rfl <span class="Cnonalphakeyword">=</span> row_field<span class="Cnonalphakeyword">;</span> <span class="Cstring">"]"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> [ &gt; $rfl$ ] </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"[&lt;"</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">OPT</span> <span class="Cstring">"|"</span><span class="Cnonalphakeyword">;</span> rfl <span class="Cnonalphakeyword">=</span> row_field<span class="Cnonalphakeyword">;</span> <span class="Cstring">"]"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> [ &lt; $rfl$ ] </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"[&lt;"</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">OPT</span> <span class="Cstring">"|"</span><span class="Cnonalphakeyword">;</span> rfl <span class="Cnonalphakeyword">=</span> row_field<span class="Cnonalphakeyword">;</span> <span class="Cstring">"&gt;"</span><span class="Cnonalphakeyword">;</span> ntl <span class="Cnonalphakeyword">=</span> name_tags<span class="Cnonalphakeyword">;</span> <span class="Cstring">"]"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> [ &lt; $rfl$ &gt; $ntl$ ] </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    comma_ctyp_app:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> t1 <span class="Cnonalphakeyword">=</span> ctyp<span class="Cnonalphakeyword">;</span> <span class="Cstring">","</span><span class="Cnonalphakeyword">;</span> t2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cfun">fun</span> acc <span class="Cnonalphakeyword">-&gt;</span> t2 <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $acc$ $t1$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> t <span class="Cnonalphakeyword">=</span> ctyp <span class="Cnonalphakeyword">-&gt;</span> <span class="Cfun">fun</span> acc <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $acc$ $t$ </span><span class="Cconstructor">&gt;&gt;</span>
+      <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    star_ctyp:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">`</span><span class="Cconstructor">ANTIQUOT</span> <span class="Cnonalphakeyword">(</span><span class="Cstring">""</span><span class="Cbar">|</span><span class="Cstring">"typ"</span> <span class="Cas">as</span> n<span class="Cnonalphakeyword">)</span> s <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $anti:mk_anti ~c:"ctyp" n s$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">ANTIQUOT</span> <span class="Cnonalphakeyword">(</span><span class="Cstring">"list"</span> <span class="Cas">as</span> n<span class="Cnonalphakeyword">)</span> s <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $anti:mk_anti ~c:"ctyp*" n s$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> t1 <span class="Cnonalphakeyword">=</span> ctyp <span class="Cconstructor">LEVEL</span> <span class="Cstring">"ctyp1"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"*"</span><span class="Cnonalphakeyword">;</span> t2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $t1$ * $t2$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> t <span class="Cnonalphakeyword">=</span> ctyp <span class="Cconstructor">LEVEL</span> <span class="Cstring">"ctyp1"</span> <span class="Cnonalphakeyword">-&gt;</span> t
+      <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    semi:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> <span class="Cstring">";;"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cbar">|</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    ipatt:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> p <span class="Cnonalphakeyword">=</span> patt <span class="Cnonalphakeyword">-&gt;</span> p <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    type_longident_and_parameters:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> tpl <span class="Cnonalphakeyword">=</span> type_parameters<span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span><span class="Cnonalphakeyword">;</span> i <span class="Cnonalphakeyword">=</span> type_longident <span class="Cnonalphakeyword">-&gt;</span>
+            tpl <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $id:i$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> tp <span class="Cnonalphakeyword">=</span> type_parameter<span class="Cnonalphakeyword">;</span> i <span class="Cnonalphakeyword">=</span> type_longident <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $id:i$ $tp$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> i <span class="Cnonalphakeyword">=</span> type_longident <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $id:i$ </span><span class="Cconstructor">&gt;&gt;</span>
+      <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    type_parameters:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> t1 <span class="Cnonalphakeyword">=</span> type_parameter<span class="Cnonalphakeyword">;</span> <span class="Cstring">","</span><span class="Cnonalphakeyword">;</span> t2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cfun">fun</span> acc <span class="Cnonalphakeyword">-&gt;</span> t2 <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $acc$ $t1$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> t <span class="Cnonalphakeyword">=</span> type_parameter <span class="Cnonalphakeyword">-&gt;</span> <span class="Cfun">fun</span> acc <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $acc$ $t$ </span><span class="Cconstructor">&gt;&gt;</span>
+      <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    type_ident_and_parameters:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> tpl <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">LIST1</span> type_parameter <span class="Cconstructor">SEP</span> <span class="Cstring">","</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span><span class="Cnonalphakeyword">;</span> i <span class="Cnonalphakeyword">=</span> a_LIDENT <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>i<span class="Cnonalphakeyword">,</span> tpl<span class="Cnonalphakeyword">)</span>
+        <span class="Cbar">|</span> t <span class="Cnonalphakeyword">=</span> type_parameter<span class="Cnonalphakeyword">;</span> i <span class="Cnonalphakeyword">=</span> a_LIDENT <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>i<span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">[</span>t<span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">)</span>
+        <span class="Cbar">|</span> i <span class="Cnonalphakeyword">=</span> a_LIDENT <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>i<span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">)</span>
+      <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    type_kind:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> <span class="Cstring">"private"</span><span class="Cnonalphakeyword">;</span> tk <span class="Cnonalphakeyword">=</span> type_kind <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> private $tk$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> test_constr_decl<span class="Cnonalphakeyword">;</span> <span class="Cconstructor">OPT</span> <span class="Cstring">"|"</span><span class="Cnonalphakeyword">;</span>
+          t <span class="Cnonalphakeyword">=</span> constructor_declarations <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> [ $t$ ] </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> t <span class="Cnonalphakeyword">=</span> ctyp <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $t$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> t <span class="Cnonalphakeyword">=</span> ctyp<span class="Cnonalphakeyword">;</span> <span class="Cstring">"="</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"private"</span><span class="Cnonalphakeyword">;</span> tk <span class="Cnonalphakeyword">=</span> type_kind <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $t$ == private $tk$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> t1 <span class="Cnonalphakeyword">=</span> ctyp<span class="Cnonalphakeyword">;</span> <span class="Cstring">"="</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"{"</span><span class="Cnonalphakeyword">;</span> t2 <span class="Cnonalphakeyword">=</span> label_declaration<span class="Cnonalphakeyword">;</span> <span class="Cstring">"}"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $t1$ == { $t2$ } </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> t1 <span class="Cnonalphakeyword">=</span> ctyp<span class="Cnonalphakeyword">;</span> <span class="Cstring">"="</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">OPT</span> <span class="Cstring">"|"</span><span class="Cnonalphakeyword">;</span> t2 <span class="Cnonalphakeyword">=</span> constructor_declarations <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $t1$ == [ $t2$ ] </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"{"</span><span class="Cnonalphakeyword">;</span> t <span class="Cnonalphakeyword">=</span> label_declaration<span class="Cnonalphakeyword">;</span> <span class="Cstring">"}"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> { $t$ } </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    module_expr: <span class="Cconstructor">LEVEL</span> <span class="Cstring">"apply"</span>
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> i <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> j <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:module_expr&lt;</span><span class="Cquotation"> $i$ $j$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    ident_quot: <span class="Cconstructor">LEVEL</span> <span class="Cstring">"apply"</span>
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> i <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> j <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:ident&lt;</span><span class="Cquotation"> $i$ $j$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    module_longident_with_app: <span class="Cconstructor">LEVEL</span> <span class="Cstring">"apply"</span>
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> i <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> j <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:ident&lt;</span><span class="Cquotation"> $i$ $j$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    type_longident: <span class="Cconstructor">LEVEL</span> <span class="Cstring">"apply"</span>
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> i <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> j <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:ident&lt;</span><span class="Cquotation"> $i$ $j$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    constructor_arg_list:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> t1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"*"</span><span class="Cnonalphakeyword">;</span> t2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $t1$ and $t2$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> t <span class="Cnonalphakeyword">=</span> ctyp <span class="Cconstructor">LEVEL</span> <span class="Cstring">"ctyp1"</span> <span class="Cnonalphakeyword">-&gt;</span> t
+      <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    value_let:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> <span class="Cstring">"let"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    value_val:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> <span class="Cstring">"val"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    label_declaration:
+      <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">LEFTA</span>
+        <span class="Cnonalphakeyword">[</span> t1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">";"</span><span class="Cnonalphakeyword">;</span> t2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $t1$; $t2$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">ANTIQUOT</span> <span class="Cnonalphakeyword">(</span><span class="Cstring">""</span><span class="Cbar">|</span><span class="Cstring">"typ"</span> <span class="Cas">as</span> n<span class="Cnonalphakeyword">)</span> s <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $anti:mk_anti ~c:"ctyp" n s$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">QUOTATION</span> x <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">Quotation</span><span class="Cnonalphakeyword">.</span>expand _loc x <span class="Cconstructor">Quotation</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">DynAst</span><span class="Cnonalphakeyword">.</span>ctyp_tag
+        <span class="Cbar">|</span> s <span class="Cnonalphakeyword">=</span> a_LIDENT<span class="Cnonalphakeyword">;</span> <span class="Cstring">":"</span><span class="Cnonalphakeyword">;</span> t <span class="Cnonalphakeyword">=</span> poly_type <span class="Cnonalphakeyword">-&gt;</span>  <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $lid:s$ : $t$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"mutable"</span><span class="Cnonalphakeyword">;</span> s <span class="Cnonalphakeyword">=</span> a_LIDENT<span class="Cnonalphakeyword">;</span> <span class="Cstring">":"</span><span class="Cnonalphakeyword">;</span> t <span class="Cnonalphakeyword">=</span> poly_type <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> $lid:s$ : mutable $t$ </span><span class="Cconstructor">&gt;&gt;</span>
+      <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    poly_type:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> test_typevar_list_dot<span class="Cnonalphakeyword">;</span> t1 <span class="Cnonalphakeyword">=</span> typevars<span class="Cnonalphakeyword">;</span> <span class="Cstring">"."</span><span class="Cnonalphakeyword">;</span> t2 <span class="Cnonalphakeyword">=</span> ctyp <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:ctyp&lt;</span><span class="Cquotation"> ! $t1$ . $t2$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> t <span class="Cnonalphakeyword">=</span> ctyp <span class="Cnonalphakeyword">-&gt;</span> t <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    labeled_ipatt:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> i <span class="Cnonalphakeyword">=</span> a_LABEL<span class="Cnonalphakeyword">;</span> p <span class="Cnonalphakeyword">=</span> patt <span class="Cconstructor">LEVEL</span> <span class="Cstring">"simple"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> ~ $i$ : $p$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"~"</span><span class="Cnonalphakeyword">;</span> i <span class="Cnonalphakeyword">=</span> a_LIDENT <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> ~ $i$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"~"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> i <span class="Cnonalphakeyword">=</span> a_LIDENT<span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> ~ $i$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"~"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> i <span class="Cnonalphakeyword">=</span> a_LIDENT<span class="Cnonalphakeyword">;</span> <span class="Cstring">":"</span><span class="Cnonalphakeyword">;</span> t <span class="Cnonalphakeyword">=</span> ctyp<span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> ~ $i$ : ($lid:i$ : $t$) </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> i <span class="Cnonalphakeyword">=</span> a_OPTLABEL<span class="Cnonalphakeyword">;</span> j <span class="Cnonalphakeyword">=</span> a_LIDENT <span class="Cnonalphakeyword">-&gt;</span> <span class="Ccomment">(* ?a:b &lt;&gt; ?a : b *)</span>
+            <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> ? $i$ : ($lid:j$) </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> i <span class="Cnonalphakeyword">=</span> a_OPTLABEL<span class="Cnonalphakeyword">;</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> p <span class="Cnonalphakeyword">=</span> patt<span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> ? $i$ : ($p$) </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> i <span class="Cnonalphakeyword">=</span> a_OPTLABEL<span class="Cnonalphakeyword">;</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> p <span class="Cnonalphakeyword">=</span> patt<span class="Cnonalphakeyword">;</span> <span class="Cstring">"="</span><span class="Cnonalphakeyword">;</span> e <span class="Cnonalphakeyword">=</span> expr<span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> ? $i$ : ( $p$ = $e$ ) </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> i <span class="Cnonalphakeyword">=</span> a_OPTLABEL<span class="Cnonalphakeyword">;</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> p <span class="Cnonalphakeyword">=</span> patt<span class="Cnonalphakeyword">;</span> <span class="Cstring">":"</span><span class="Cnonalphakeyword">;</span> t <span class="Cnonalphakeyword">=</span> ctyp<span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> ? $i$ : ( $p$ : $t$ ) </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> i <span class="Cnonalphakeyword">=</span> a_OPTLABEL<span class="Cnonalphakeyword">;</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> p <span class="Cnonalphakeyword">=</span> patt<span class="Cnonalphakeyword">;</span> <span class="Cstring">":"</span><span class="Cnonalphakeyword">;</span> t <span class="Cnonalphakeyword">=</span> ctyp<span class="Cnonalphakeyword">;</span> <span class="Cstring">"="</span><span class="Cnonalphakeyword">;</span>
+          e <span class="Cnonalphakeyword">=</span> expr<span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> ? $i$ : ( $p$ : $t$ = $e$ ) </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"?"</span><span class="Cnonalphakeyword">;</span> i <span class="Cnonalphakeyword">=</span> a_LIDENT <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> ? $i$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"?"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> i <span class="Cnonalphakeyword">=</span> a_LIDENT<span class="Cnonalphakeyword">;</span> <span class="Cstring">"="</span><span class="Cnonalphakeyword">;</span> e <span class="Cnonalphakeyword">=</span> expr<span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> ? ( $lid:i$ = $e$ ) </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"?"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> i <span class="Cnonalphakeyword">=</span> a_LIDENT<span class="Cnonalphakeyword">;</span> <span class="Cstring">":"</span><span class="Cnonalphakeyword">;</span> t <span class="Cnonalphakeyword">=</span> ctyp<span class="Cnonalphakeyword">;</span> <span class="Cstring">"="</span><span class="Cnonalphakeyword">;</span> e <span class="Cnonalphakeyword">=</span> expr<span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> ? ( $lid:i$ : $t$ = $e$ ) </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"?"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> i <span class="Cnonalphakeyword">=</span> a_LIDENT<span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> ? $i$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> <span class="Cstring">"?"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> i <span class="Cnonalphakeyword">=</span> a_LIDENT<span class="Cnonalphakeyword">;</span> <span class="Cstring">":"</span><span class="Cnonalphakeyword">;</span> t <span class="Cnonalphakeyword">=</span> ctyp<span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> ? ( $lid:i$ : $t$ ) </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> p <span class="Cnonalphakeyword">=</span> patt <span class="Cconstructor">LEVEL</span> <span class="Cstring">"simple"</span> <span class="Cnonalphakeyword">-&gt;</span> p
+      <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    label_expr:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> i <span class="Cnonalphakeyword">=</span> label_longident<span class="Cnonalphakeyword">;</span> <span class="Cstring">"="</span><span class="Cnonalphakeyword">;</span> e <span class="Cnonalphakeyword">=</span> expr <span class="Cconstructor">LEVEL</span> <span class="Cstring">"top"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">&lt;:rec_binding&lt;</span><span class="Cquotation"> $i$ = $e$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    a_UIDENT:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">`</span><span class="Cconstructor">ANTIQUOT</span> <span class="Cnonalphakeyword">(</span><span class="Cstring">""</span><span class="Cbar">|</span><span class="Cstring">"uid"</span> <span class="Cas">as</span> n<span class="Cnonalphakeyword">)</span> s <span class="Cnonalphakeyword">-&gt;</span> mk_anti n s
+        <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">UIDENT</span> <span class="Cstring">"True"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cstring">" True"</span>
+        <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">UIDENT</span> <span class="Cstring">"False"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cstring">" False"</span>
+        <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">UIDENT</span> s <span class="Cnonalphakeyword">-&gt;</span> s
+      <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+    top_phrase:
+      <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> <span class="Cstring">"#"</span><span class="Cnonalphakeyword">;</span> n <span class="Cnonalphakeyword">=</span> a_LIDENT<span class="Cnonalphakeyword">;</span> dp <span class="Cnonalphakeyword">=</span> opt_expr<span class="Cnonalphakeyword">;</span> <span class="Cstring">";;"</span> <span class="Cnonalphakeyword">-&gt;</span>
+            <span class="Cconstructor">Some</span> <span class="Cconstructor">&lt;:str_item&lt;</span><span class="Cquotation"> # $n$ $dp$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Cbar">|</span> l <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">LIST1</span> str_item<span class="Cnonalphakeyword">;</span> <span class="Cstring">";;"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">Some</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Ast</span><span class="Cnonalphakeyword">.</span>stSem_of_list l<span class="Cnonalphakeyword">)</span>
+        <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">EOI</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">None</span>
+      <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+
+  <span class="Ccomment">(* Some other DELETE_RULE are before the grammar *)</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> module_longident_with_app: <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span> <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> type_longident: <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span> <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> ident_quot: <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span> <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> module_longident_with_app: <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">SELF</span> <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> type_longident: <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">SELF</span> <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> ident_quot: <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">SELF</span> <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Gram</span> module_expr: <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">SELF</span> <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+<span class="Cend">end</span><span class="Cnonalphakeyword">;</span>
+<span class="Clet">let</span> <span class="Cmodule">module</span> <span class="Cconstructor">M</span> <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Register</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">OCamlSyntaxExtension</span> <span class="Cconstructor">Id</span> <span class="Cconstructor">Make</span> <span class="Cin">in</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span>
+</pre>
+</body>
+</html>

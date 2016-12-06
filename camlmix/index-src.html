@@ -1,0 +1,322 @@
+
+<html>
+<head>
+<title>/camlmix/index.html.mlx</title>
+<meta http-equiv="content-Type" content="text/html; charset=utf-8">
+
+<link rel="stylesheet" href="/base.css" type="text/css">
+
+<link rel="stylesheet" href="/ocaml.css" type="text/css">
+
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+<link rel="home" href="/">
+<link rel="author" href="/people.html#martin">
+
+</head>
+<body>
+
+
+<pre style="border:0px">
+<span style="color:990000">##</span>
+<span class="Copen">open</span> <span class="Cconstructor">Printf</span>
+<span class="Copen">open</span> <span class="Cconstructor">Camlmix</span>
+<span class="Cnonalphakeyword">#</span>use <span class="Cstring">"version.ml"</span><span class="Cnonalphakeyword">;;</span>
+<span class="Cnonalphakeyword">#</span>load <span class="Cstring">"../utils.cmo"</span><span class="Cnonalphakeyword">;;</span>
+<span class="Cnonalphakeyword">#</span>use <span class="Cstring">"topfind"</span><span class="Cnonalphakeyword">;;</span>
+<span class="Cnonalphakeyword">#</span>require <span class="Cstring">"caml2html"</span><span class="Cnonalphakeyword">;;</span>
+<span class="Cnonalphakeyword">#</span>require <span class="Cstring">"mikmatch_pcre"</span><span class="Cnonalphakeyword">;;</span>
+<span class="Cnonalphakeyword">#</span>load <span class="Cstring">"../unmix.cmo"</span><span class="Cnonalphakeyword">;;</span>
+<span class="Cnonalphakeyword">#</span>load <span class="Cstring">"../print_ocaml.cmo"</span><span class="Cnonalphakeyword">;;</span>
+<span class="Cnonalphakeyword">#</span>directory <span class="Cstring">".."</span><span class="Cnonalphakeyword">;;</span>
+<span class="Copen">open</span> <span class="Cconstructor">Utils</span>
+<span class="Copen">open</span> <span class="Cconstructor">Print_ocaml</span>
+<span style="color:990000">##</span>
+<span style="color:990000">##</span> include_file <span class="Cstring">"../doctype"</span> <span style="color:990000">##</span>
+<span class=tag>&lt;html&gt;</span>
+<span class=tag>&lt;head&gt;</span>
+<span style="color:990000">##</span> title <span class="Cstring">"Camlmix"</span> <span style="color:990000">##</span>
+<span style="color:990000">##</span> include_file <span class="Cstring">"../charset"</span> <span style="color:990000">##</span>
+<span style="color:990000">##</span> include_file <span class="Cstring">"../stylesheet"</span> <span style="color:990000">##</span>
+<span style="color:990000">##</span> include_file <span class="Cstring">"../ocaml-stylesheet"</span> <span style="color:990000">##</span>
+<span style="color:990000">##</span> include_file <span class="Cstring">"../icon"</span> <span style="color:990000">##</span>
+<span style="color:990000">##</span> include_file <span class="Cstring">"../commonlinks"</span> <span style="color:990000">##</span>
+<span class=tag>&lt;/head&gt;</span>
+<span class=tag>&lt;body&gt;</span>
+<span style="color:990000">##</span> include_file <span class="Cstring">"../hitcounter"</span> <span style="color:990000">##</span>
+<span style="color:990000">##</span> include_file <span class="Cstring">"../start_big_table"</span> <span style="color:990000">##</span>
+<span style="color:990000">##</span> top_menu camlmix <span style="color:990000">##</span>
+<span class=tag>&lt;h1&gt;</span>Camlmix <span style="color:990000">##</span> include_file <span class="Cstring">"../1camel"</span> <span style="color:990000">##</span><span class=tag>&lt;br&gt;</span>
+<span class=tag>&lt;span class=title2&gt;</span>OCaml-stuffed templates<span class=tag>&lt;/span&gt;</span><span class=tag>&lt;/h1&gt;</span>
+
+<span class=tag>&lt;p&gt;</span>[<span class=tag>&lt;a href="#intro"&gt;</span>intro<span class=tag>&lt;/a&gt;</span>] 
+[<span class=tag>&lt;a href="#example"&gt;</span>example<span class=tag>&lt;/a&gt;</span>] 
+[<span class=tag>&lt;a href="#advanced"&gt;</span>advanced<span class=tag>&lt;/a&gt;</span>] 
+[<span class=tag>&lt;a href="#download"&gt;</span>download<span class=tag>&lt;/a&gt;</span>]
+
+<span class=tag>&lt;h2 id=intro&gt;</span>Introduction<span class=tag>&lt;/h2&gt;</span>
+<span class=tag>&lt;p&gt;</span>
+Camlmix is a generic preprocessor which converts text with embedded 
+<span class=tag>&lt;a href="http://caml.inria.fr"&gt;</span>OCaml<span class=tag>&lt;/a&gt;</span> into an 
+<span class=tag>&lt;a href="http://caml.inria.fr"&gt;</span>OCaml<span class=tag>&lt;/a&gt;</span> program with embedded text.
+It produces text documents from one or several templates.
+Camlmix is <span class=tag>&lt;span style="text-decoration: underline"&gt;</span><span class=tag>&lt;b&gt;</span>not<span class=tag>&lt;/b&gt;</span> a 
+<span class=tag>&lt;a href="/extend-ocaml-syntax.html"&gt;</span>Camlp4 syntax extension<span class=tag>&lt;/a&gt;</span><span class=tag>&lt;/span&gt;</span>.
+
+<span class=tag>&lt;br&gt;</span>
+The basic syntaxic rules are:
+<span class=tag>&lt;ul&gt;</span>
+<span class=tag>&lt;li&gt;</span> <span style="color:990000">##</span> camlmixcode 
+<span class="Cstring">"Some text ### (* Some OCaml statements *) ... ### More text ..."</span> <span style="color:990000">##</span>
+<span class=tag>&lt;li&gt;</span> <span style="color:990000">##</span> camlmixcode 
+<span class="Cstring">"Some text ###= (* Some OCaml string expression *) ... ### More text ..."</span> <span style="color:990000">##</span>
+<span class=tag>&lt;li&gt;</span> <span style="color:990000">##</span> camlmixcode 
+<span class="Cstring">"This prints actually 2 # symbols: ####"</span> <span style="color:990000">##</span>
+<span class=tag>&lt;/ul&gt;</span>
+
+<span class=tag>&lt;p&gt;</span>
+Camlmix does not provide a library for text-processing, but 
+all existing libraries and syntax extensions can be used, such
+as 
+<span class=tag>&lt;a href="http://www.eleves.ens.fr/home/frisch/soft.html#HereDoc"&gt;</span>HereDoc<span class=tag>&lt;/a&gt;</span>, 
+<span class=tag>&lt;a href="/micmatch.html"&gt;</span>Micmatch<span class=tag>&lt;/a&gt;</span> or 
+<span class=tag>&lt;a href="http://www.ocaml-programming.de/packages/documentation/xstrp4/"&gt;</span>xstrp4<span class=tag>&lt;/a&gt;</span>. 
+You can also find some examples of code in the 
+<span class=tag>&lt;a href="/toolbox.html"&gt;</span>Camlmix Toolbox<span class=tag>&lt;/a&gt;</span> if you are not familiar with
+I/O in OCaml.
+
+
+<span class=tag>&lt;h2 id=example&gt;</span>Example<span class=tag>&lt;/h2&gt;</span>
+<span class=tag>&lt;p&gt;</span>
+The file <span class=tag>&lt;code&gt;</span>example.mlx<span class=tag>&lt;/code&gt;</span> contains the following:
+
+<span style="color:990000">##</span> print_with camlmixpre <span style="color:990000">##</span>
+###
+open Printf
+let color col s =
+  sprintf "<span class=tag>&lt;span style=\"color:%s\"&gt;</span>%s<span class=tag>&lt;/span&gt;</span>" col s
+###
+This is ###= color "red" "red text" ###,
+but that is a ###= color "blue" "blue one" ###.
+<span style="color:990000">##</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span style="color:990000">##</span>
+
+<span class=tag>&lt;p&gt;</span>
+The command
+<span class=tag>&lt;pre&gt;</span>
+camlmix example.mlx -o example.html
+<span class=tag>&lt;/pre&gt;</span>
+<span class=tag>&lt;p&gt;</span>
+will produce the following <span class=tag>&lt;code&gt;</span>example.html<span class=tag>&lt;/code&gt;</span> file:
+<span style="color:990000">##</span> print_with htmlpre <span style="color:990000">##</span>
+This is <span class=tag>&lt;span style="color:red"&gt;</span>red text<span class=tag>&lt;/span&gt;</span>,
+but that is a <span class=tag>&lt;span style="color:blue"&gt;</span>blue one<span class=tag>&lt;/span&gt;</span>.
+<span style="color:990000">##</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span style="color:990000">##</span>
+<span class=tag>&lt;p&gt;</span>
+This piece of HTML will be displayed as:
+This is <span class=tag>&lt;span style="color:red"&gt;</span>red text<span class=tag>&lt;/span&gt;</span>,
+but that is a <span class=tag>&lt;span style="color:blue"&gt;</span>blue one<span class=tag>&lt;/span&gt;</span>.
+
+<span class=tag>&lt;p&gt;</span>
+You may now have a look at the 
+<span class=tag>&lt;a href="index-src.html"&gt;</span>Camlmix/HTML colorized source of this web page<span class=tag>&lt;/a&gt;</span>,
+which was itself made using a Camlmix template.
+
+<span class=tag>&lt;p&gt;</span>
+Camlmix also allows you to convert a template into a regular OCaml source file
+which is equipped with a single function named <span class=tag>&lt;code&gt;</span>render<span class=tag>&lt;/code&gt;</span>:
+<span class=tag>&lt;pre&gt;</span>
+camlmix example.mlx -c -fun -co example.ml 
+<span class=tag>&lt;/pre&gt;</span>
+<span class=tag>&lt;p&gt;</span>
+The signature of the <span class=tag>&lt;code&gt;</span>render<span class=tag>&lt;/code&gt;</span> function would be:
+<span style="color:990000">##</span> print_with ocamlpre <span style="color:990000">##</span>
+val render : ?print:(string -&gt;</span> unit) -&gt;</span> 'a -&gt;</span> unit
+<span style="color:990000">##</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span style="color:990000">##</span>
+<span class=tag>&lt;p&gt;</span>
+where the <span class=tag>&lt;code&gt;</span>'a<span class=tag>&lt;/code&gt;</span> parameter stands for the type of the argument which
+is passed to the rendering function. It is available in the template
+under the name <span class=tag>&lt;code&gt;</span>param<span class=tag>&lt;/code&gt;</span>, and its usage determines its
+actual type. The <span class=tag>&lt;code&gt;</span>print<span class=tag>&lt;/code&gt;</span> function is the one which is used
+to handle text. By default, it prints the text onto stdout, but
+it can be replaced by any other function, as long as the user-defined
+code of the template uses it.
+<span class=tag>&lt;p&gt;</span>
+The result <span class=tag>&lt;code&gt;</span>example.ml<span class=tag>&lt;/code&gt;</span> is a regular OCaml file which would
+be integrated into a regular OCaml program.
+
+<span class=tag>&lt;p&gt;</span>
+The full set of features and options is described in 
+<span class=tag>&lt;a href="camlmix-help.txt"&gt;</span>the output of <span class=tag>&lt;code&gt;</span>camlmix -help<span class=tag>&lt;/code&gt;</span><span class=tag>&lt;/a&gt;</span>
+
+
+<span class=tag>&lt;h2 id=advanced&gt;</span>Advanced features<span class=tag>&lt;/h2&gt;</span>
+
+<span class=tag>&lt;h3&gt;</span>Directives<span class=tag>&lt;/h3&gt;</span>
+<span class=tag>&lt;p&gt;</span>
+A block of code that starts with an <span class=tag>&lt;code&gt;</span>@<span class=tag>&lt;/code&gt;</span> character will not
+be handled as OCaml code but as a sequence of directives for
+Camlmix.
+<span class=tag>&lt;p&gt;</span>
+There is one useful directive: <span class=tag>&lt;code&gt;</span>include<span class=tag>&lt;/code&gt;</span>.
+This mechanism allows the insertion of templates and subtemplates that
+inherit the whole OCaml environment, and possibly modify it. 
+These templates are not only
+parametrized by string variables but also by any type of OCaml data,
+including functions, and even by types and modules!
+<span class=tag>&lt;p&gt;</span>
+The <span class=tag>&lt;code&gt;</span>include<span class=tag>&lt;/code&gt;</span> directive reads a file
+(e.g. <span class=tag>&lt;code&gt;</span>included.mlx<span class=tag>&lt;/code&gt;</span>)
+in the Camlmix syntax exactly as if its
+contents was inserted in the current file (e.g. <span class=tag>&lt;code&gt;</span>main.mlx<span class=tag>&lt;/code&gt;</span>):
+<span class=tag>&lt;p&gt;</span>
+<span class=tag>&lt;code&gt;</span>main.mlx:<span class=tag>&lt;/code&gt;</span>
+<span style="color:990000">##</span> print_with camlmixpre <span style="color:990000">##</span>
+###
+let print_counter = (* increments the counter and displays its new value *)
+  let n = ref 0 in
+  fun () -&gt;</span> incr n; print_int !n
+###
+Should be 1: ### print_counter () ###
+Should be 2: ### @include "included.mlx" ###
+Should be 3: ### print_counter () ###
+<span style="color:990000">##</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span style="color:990000">##</span>
+<span class=tag>&lt;p&gt;</span>
+<span class=tag>&lt;code&gt;</span>included.mlx:<span class=tag>&lt;/code&gt;</span>
+<span style="color:990000">##</span> print_with camlmixpre <span style="color:990000">##</span>
+### print_counter () ###
+<span style="color:990000">##</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span style="color:990000">##</span> 
+<span class=tag>&lt;p&gt;</span>
+<span class=tag>&lt;code&gt;</span>camlmix main.mlx<span class=tag>&lt;/code&gt;</span> returns the following:
+<span class=tag>&lt;pre&gt;</span>
+
+Should be 1: 1
+Should be 2: 2
+
+Should be 3: 3
+<span class=tag>&lt;/pre&gt;</span>
+
+<span class=tag>&lt;p&gt;</span>
+This is not totally satisfying because two undesired empty lines were inserted.
+In Camlmix 1.2, you can skip whitespace until the end of the line and the
+newline character by using
+<span class=tag>&lt;code&gt;</span>.###<span class=tag>&lt;/code&gt;</span> instead of <span class=tag>&lt;code&gt;</span>###<span class=tag>&lt;/code&gt;</span> as the closing delimiter.
+This results in the following program:
+<span style="color:990000">##</span> print_with camlmixpre <span style="color:990000">##</span>
+###
+let print_counter = (* increments the counter and displays its new value *)
+  let n = ref 0 in
+  fun () -&gt;</span> incr n; print_int !n
+.###
+Should be 1: ### print_counter () ###
+Should be 2: ### @include "included.mlx" .###
+Should be 3: ### print_counter () ###
+<span style="color:990000">##</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span style="color:990000">##</span>
+<span class=tag>&lt;p&gt;</span>
+which now produces:
+<span class=tag>&lt;pre&gt;</span>
+Should be 1: 1
+Should be 2: 2
+Should be 3: 3
+<span class=tag>&lt;/pre&gt;</span>
+
+
+<span class=tag>&lt;p&gt;</span>
+A <span class=tag>&lt;code&gt;</span>skip<span class=tag>&lt;/code&gt;</span> directive also exists: it ignores the next block of text.
+It is not much useful since the <span class=tag>&lt;code&gt;</span>.###<span class=tag>&lt;/code&gt;</span> delimiter was introduced in
+Camlmix 1.2.
+It was useful when a block of OCaml had to follow a block of directives,
+without printing anything between them:
+<span style="color:990000">##</span> print_with camlmixpre <span style="color:990000">##</span>
+### @include "somefile.mlx"; skip (* skips the newline character(s) -&gt;</span> *) ###
+### print_something () ###
+<span style="color:990000">##</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span style="color:990000">##</span>
+
+
+<span class=tag>&lt;h3&gt;</span>Runtime hooks<span class=tag>&lt;/h3&gt;</span>
+<span class=tag>&lt;p&gt;</span>
+The OCaml program that is generated from the Camlmix files first defines
+a module called Camlmix. This module contains several variables that are 
+updated automatically and possibly explicitely by the user.
+Its signature is:
+
+<span style="color:990000">##</span>
+<span class="Clet">let</span> comment s <span class="Cnonalphakeyword">=</span> printf <span class="Cstring">"&lt;p class=comment&gt;\n%s"</span> s
+<span style="color:990000">##</span>
+
+<span style="color:990000">##</span> print_with ocamlpre <span style="color:990000">##</span>
+module Camlmix :
+  sig
+    val source : string ref
+    val line : int ref
+    val char : int ref  
+<span style="color:990000">##</span> print_with comment <span style="color:990000">##</span>
+<span class=tag>&lt;code&gt;</span>source<span class=tag>&lt;/code&gt;</span>, <span class=tag>&lt;code&gt;</span>line<span class=tag>&lt;/code&gt;</span> and <span class=tag>&lt;code&gt;</span>char<span class=tag>&lt;/code&gt;</span> 
+refer to the location of the first 
+character of the current block in its source file
+(source file, line number starting from 1, position in the line
+starting from 1). They are updated automatically at the beginning
+of each code block or text block.
+
+<span style="color:990000">##</span> print_with ocamlpre <span style="color:990000">##</span>
+    val printer : (string -&gt;</span> unit) ref 
+<span style="color:990000">##</span> print_with comment <span style="color:990000">##</span>
+the function that prints the text blocks
+
+<span style="color:990000">##</span> print_with ocamlpre <span style="color:990000">##</span>
+    val print_with : (string -&gt;</span> unit) -&gt;</span> unit
+<span style="color:990000">##</span> print_with comment <span style="color:990000">##</span>
+<span class=tag>&lt;code&gt;</span>print_with f<span class=tag>&lt;/code&gt;</span> prints the next block of text using 
+<span class=tag>&lt;code&gt;</span>f<span class=tag>&lt;/code&gt;</span> instead
+of the current printer.
+Its behavior is undefined if it is called several 
+times in the same OCaml block.
+
+<span style="color:990000">##</span> print_with ocamlpre <span style="color:990000">##</span>
+    val print_if : bool -&gt;</span> unit
+<span style="color:990000">##</span> print_with comment <span style="color:990000">##</span>
+<span class=tag>&lt;code&gt;</span>print_if cond<span class=tag>&lt;/code&gt;</span> prints the next block of text only 
+if <span class=tag>&lt;code&gt;</span>cond<span class=tag>&lt;/code&gt;</span> is true.
+It uses <span class=tag>&lt;code&gt;</span>print_with<span class=tag>&lt;/code&gt;</span>.
+
+<span style="color:990000">##</span> print_with ocamlpre <span style="color:990000">##</span>
+  end
+<span style="color:990000">##</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span style="color:990000">##</span>
+
+<span class=tag>&lt;h3&gt;</span>Command line options<span class=tag>&lt;/h3&gt;</span>
+
+<span style="color:990000">##</span> <span class="Cconstructor">Sys</span><span class="Cnonalphakeyword">.</span>command <span class="Cstring">"camlmix -help &gt; camlmix-help.txt 2&gt;&amp;1"</span> <span style="color:990000">##</span>
+<span class=tag>&lt;p&gt;</span>
+The command line options are returned by 
+<span class=tag>&lt;a href="camlmix-help.txt"&gt;</span><span class=tag>&lt;code&gt;</span>camlmix -help<span class=tag>&lt;/code&gt;</span><span class=tag>&lt;/a&gt;</span>.
+
+
+
+<span class=tag>&lt;h2 id=download&gt;</span>Download<span class=tag>&lt;/h2&gt;</span>
+
+<span class=tag>&lt;p&gt;</span>
+Camlmix can be installed automatically from 
+<span class=tag>&lt;a href="http://www.ocaml-programming.de/godi/"&gt;</span>GODI<span class=tag>&lt;/a&gt;</span>.
+<span class=tag>&lt;p&gt;</span>
+You can also use the traditional way. 
+Just download the source code:
+<span style="color:990000">##</span> download <span class="Cnonalphakeyword">(</span>sprintf <span class="Cstring">"camlmix-%s.tar.bz2"</span> version<span class="Cnonalphakeyword">)</span> <span style="color:990000">##</span>
+or <span style="color:990000">##</span> download <span class="Cnonalphakeyword">(</span>sprintf <span class="Cstring">"camlmix-%s.tar.gz"</span> version<span class="Cnonalphakeyword">)</span> <span style="color:990000">##</span>. 
+It should work on any platform where
+OCaml is available.
+
+<span class=tag>&lt;p&gt;</span>
+I would be happy if you send me any positive or negative feedback.
+
+<span class=tag>&lt;p&gt;</span>
+Thanks to Nadji Gauthier, Jean-Baptiste Rouquier, Arthur E., Janne Hellsten
+and those that I forget, for their contributions.
+
+<span style="color:990000">##</span> camlmix_footer <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span style="color:990000">##</span>
+<span style="color:990000">##</span> include_file <span class="Cstring">"../end_big_table"</span> <span style="color:990000">##</span>
+<span class=tag>&lt;/body&gt;</span>
+<span class=tag>&lt;/html&gt;</span>
+
+</pre>
+
+</body>
+</html>

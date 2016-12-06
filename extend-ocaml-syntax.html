@@ -1,0 +1,2200 @@
+
+<!doctype html>
+
+<html>
+<head>
+<title>Tutorial: How to customize the syntax of OCaml, using Camlp5</title>
+<meta http-equiv="content-Type" content="text/html; charset=utf-8">
+
+<link rel="stylesheet" href="/base.css" type="text/css">
+
+<link rel="stylesheet" href="/ocaml.css" type="text/css">
+
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+<link rel="home" href="/">
+<link rel="author" href="/people.html#martin">
+
+</head>
+<body>
+
+<div id="page">
+
+
+<div>
+<table id=top_menu cellspacing=0>
+<tr>
+  <td><a href="/">Main</a></td>
+  <td class="current_topic"><a href="/ocaml.html">Software</a></td>
+  <td><a href="/releases">Downloads</a></td>
+  <td><a href="/other.html">Other</a></td>
+</tr>
+</table>
+</div>
+
+
+
+
+<h1>How to customize the syntax of OCaml, using Camlp5
+<img src="/3camels.png" 
+     title="difficulty = 3 camels (requires a good knowledge of OCaml)"
+     alt="[difficulty = 3 camels]">
+<br>
+<span class=title2>Everything you always wanted to know, 
+but were afraid to ask</span></h1>
+
+<p style="padding-left:3cm;padding-right:3cm">
+<i>
+Copyright &copy; 2005, 2010 Martin Jambon.
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.2
+or any later version published by the Free Software Foundation;
+with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+Texts.  A copy of the license is included in the file
+<a href="fdl.txt">fdl.txt</a>. The source code of this document is the file
+<a href="extend-ocaml-syntax.html.mlx" 
+   rel="nofollow">extend-ocaml-syntax.html.mlx</a>.
+</i>
+
+<p>
+This tutorial is an individual initiative to provide
+additional documentation for
+<a href="http://pauillac.inria.fr/~ddr/camlp5/">Camlp5</a>, 
+a sophisticated tool for
+<a href="http://caml.inria.fr/">Objective Caml</a>
+programmers.
+
+<p>
+<b>2010 revision</b>: This document was updated to reflect the name
+change of the legacy Camlp4, now called Camlp5.
+The following table clarifies name issues:
+<table class="real-table">
+<tr>
+  <th>Period</th><th>Name of "legacy Camlp4"</th><th>Name of "new Camlp4"</th>
+</tr>
+<tr>
+  <td>before 2007</td>
+  <td>Camlp4</td>
+  <td>-</td>
+</tr>
+<tr>
+  <td>from 2007 (OCaml 3.10)</td>
+  <td>Camlp5</td>
+  <td>Camlp4</td>
+</tr>
+</table>
+<p>
+The examples of this tutorial will not work with the new Camlp4 starting 
+with OCaml 3.10.
+
+
+
+<div class=toc>
+<b>Contents</b><br>
+<a href="#what" class=toc0>1. What is it about?</a><br>
+<a href="#when" class=toc0>2. Is Camlp5 what I need?</a><br>
+<a href="#who" class=toc0>3. Intended audience</a><br>
+<a href="#getting-started" class=toc0>4. Getting started</a><br>
+<a href="#languages" class=toc0>5. Which language does Camlp5 speak?</a><br>
+<a href="#machinery" class=toc0>6. What goes in and what comes out</a><br>
+<a href="#dissection" class=toc0>7. Dissection of a syntax expander</a><br>
+
+<a href="#variations" class=toc0>8. Variations around the same example</a><br>
+<a href="#quotations" class=toc1>8.1 Using only one quotation</a><br>
+<a href="#reordering" class=toc1>8.2 Removing the hidden reserved identifier</a><br>
+<a href="#more-rules" class=toc1>8.3 Adding more constructs</a><br>
+
+
+<a href="#replacing" class=toc0>9. Local syntax extensions, transformations of the AST</a><br>
+<a href="#inserting-bof" class=toc0>10. Inserting some code at the beginning of the file</a><br>
+<a href="#inserting-str_items" class=toc0>11. Inserting toplevel expressions</a><br>
+<a href="#inserting-just-before" class=toc0>12. Inserting hidden expressions which are evaluated once</a><br>
+
+<a href="#priorities" class=toc0>13. Mastering priorities</a><br>
+
+<a href="#custom_parsers" class=toc0>14. Local use of external parsers</a><br>
+<a href="#parse_string" class=toc1>14.1 Parsing raw blocks of text</a><br>
+<a href="#parse_token_stream" class=toc1>14.2 Parsing the stream of tokens</a><br>
+
+<a href="#error_location" class=toc0>15. Producing useful error messages</a><br>
+
+<a href="#packaging" class=toc0>16. Suggestions for a better interaction between multiple syntax extensions</a><br>
+
+<a href="#cohabitation" class=toc1>16.1 Avoiding strong incompatibilities</a><br>
+<a href="#names" class=toc1>16.2 Avoiding name clashes</a><br>
+
+
+
+<a href="#youcan" class=toc0>17. Things you can do</a><br>
+<a href="#lettry" class=toc1>17.1 Catching exceptions only where needed: <code>let try <i>name</i> = <i>expr1</i> in <i>expr2</i> with <i>exception-handler</i></code></a><br>
+<a href="#onlyfloats" class=toc1>17.2 Read <code>1/2</code> as <code>1. /. 2.</code>, but only locally</a><br>
+<a href="#types" class=toc1>17.3 Default values for record fields</a><br>
+<a href="#rec-expr" class=toc1>17.4 Anonymous recursive functions</a><br>
+
+<a href="#youcant" class=toc0>18. Things you cannot do and workarounds</a><br>
+<a href="#inserting-anywhere" class=toc1>18.1 Inserting anything, anywhere</a><br>
+<a href="#comments" class=toc1>18.2 Adding end of line comments</a><br>
+<a href="#strings" class=toc1>18.3 Adding a notation for raw strings</a><br>
+<a href="#infix" class=toc1>18.4 Adding Haskell's "infixing" backquotes
+such as <code>f `map` list</code></a><br>
+<a href="#selectors" class=toc1>18.5 Adding SML's #<i>n</i> notation 
+to extract field number <i>n</i> of any tuple</a><br>
+
+
+<a href="#troubleshooting" class=toc0>19. Common problems</a><br>
+<a href="#lists" class=toc1>19.1 I can't build a list with something like <code>&lt;:expr&lt; [ $list:my_list$ ] &gt;&gt;</code></a><br>
+<a href="#functions" class=toc1>19.2 I can't build a function declaration with something like <code>&lt;:expr&lt; let f $list:args$ = $e$ &gt;&gt;</code></a><br>
+<a href="#badloc" class=toc1>19.3 Incorrect locations in error reports</a><br>
+<a href="#loc" class=toc1>19.4 Unbound value <code>_loc</code> (or <code>loc</code>)</a><br>
+<a href="#labels" class=toc1>19.5 What's wrong with labels: <code>&lt;:expr&lt; f ~$lid:labelname$ &gt;&gt;</code> doesn't work</a><br>
+<a href="#Not_found" class=toc1>19.6 <code>Not_found</code> is raised during the preprocessing</a><br>
+</div>
+
+
+<h2 id=what>1. What is it about?</h2>
+
+<p>
+We are talking about truly modifying the syntax of OCaml.
+Yes, in theory anyone could modify the syntax of this programming
+language, without rewriting a whole dedicated parser. 
+Camlp5 is the tool that lets you do this. And many syntax enhancements
+can be performed in relatively few lines of code.
+
+<p>
+However, there are quite a few things to know before starting to write
+your own syntax extension which will implement exactly what you want.
+This tutorial is meant to address the common difficulties that people
+encounter when they start using Camlp5 for this purpose. 
+It is essentially based on my 
+<a href="micmatch.html">recent experience</a> 
+in integrating a dedicated syntax for regular
+expressions in OCaml and mix this form of pattern matching with the
+traditional pattern matching of OCaml.
+
+
+<h2 id=when>2. Is Camlp5 what I need?</h2>
+
+<p>
+Camlp5 lets you do amazing things that have no equivalent in most other
+programming languages.
+You might want to define a domain-specific language (DSL) without
+wasting your time in developing one more interpreter of poor quality which is
+not reusable at all. With Camlp5, you may create syntaxic shortcuts 
+for the most common operations that your DSL requires and at the same
+time benefit from all the qualities of OCaml: automatic type
+inference, static typing, early detection of errors, precise location
+of mistakes in your code, most of the advantages of text-editor
+modes for OCaml, interface with other languages, an interactive interpreter
+and of course the generation of high performance native code.
+
+<p>
+Camlp5 is an excellent solution if you want to add a syntax which is a
+shortcut for something that is obviously, mechanically expandable into
+standard OCaml without having resort to the type information. Camlp5
+lets you work on the abstract syntax tree (AST), which does not
+contain information on the actual type of the object being manipulated.
+
+<p>
+If the syntax extension you want to provide requires the knowledge of
+the type of each object, you can still design a dedicated embedded
+language that will be compiled into OCaml. 
+Camlp5 provides a convenient mechanism for producing OCaml
+code, therefore compiling any given language to OCaml is an excellent
+choice in many cases even if the parsing facilities of Camlp5 are not used.
+
+<p>
+This tutorial is about learning how to develop your own syntax extensions
+but you might want to have a look at existing syntax extensions that
+are available on the web. The main sources for finding 
+Camlp5 extensions are: 
+<a
+href="http://caml.inria.fr/cgi-bin/hump.en.cgi?sort=0&amp;browse=92">the
+Caml hump</a> on the <a href="http://caml.inria.fr">official Caml site</a>, 
+<a 
+href="http://www.npc.de/ocaml/linkdb/list.cgi?type=classification&amp;frames=false">the
+OCaml Link Database</a> 
+(under "OCaml syntax extension") and <a href="p4ck.html">P4ck</a>.
+
+
+<h2 id=who>3. Intended audience</h2>
+
+<p>
+If you are interested in modifying the syntax of OCaml and you are a
+bit confused by the official tutorial and <a href="http://pauillac.inria.fr/~ddr/camlp5/doc/htmlc/">manual</a> for Camlp5, then I
+hope this document will help you get started.
+
+<p>
+In order to start discovering Camlp5, you need to be fluent in OCaml
+since it will be our main language (with variants) for doing everything.
+You need to be familiar with the higher order functions (HOF) of OCaml
+such as <code>List.map</code>, <code>List.fold_right</code> and 
+<code>List.fold_left</code> since we will use them a lot for manipulating
+syntax trees.
+So if you are not familiar with
+these and functional programming in general, practice a little first.
+
+
+<h2 id=getting-started>4. Getting started</h2>
+
+<p>
+You will need a standard installation of OCaml, which should include
+the OCaml compilers (<code>ocaml</code>, <code>ocamlc</code>, 
+<code>ocamlopt</code>) and the Camlp5 system (<code>camlp5</code>,
+<code>camlp5o</code>)
+
+<p>
+As usual for editing and testing OCaml code, you will need a good
+editing mode for OCaml in your favorite text editor,
+but we assume you know all about this.
+
+<p>
+You also need some way to compile automatically your code. 
+I use <code>make</code> with <code>OCamlMakefile</code>.
+The good thing about <code>make</code> is that if you don't want to be
+too subtle, you can just write one target and the hardcoded sequence
+of commands that recompiles everything. This might still be the best
+choice in many cases. Anyway, don't waste your time with such things.
+
+<p>
+All the files that are given as examples along this document can be
+browsed from
+<a href="http://martin.jambon.free.fr/camlp5">http://martin.jambon.free.fr/camlp5</a>
+or downloaded as a 
+<a href="http://martin.jambon.free.fr/camlp5.tar.gz">compressed archive</a>.
+
+<h2 id=languages>5. Which language does Camlp5 speak?</h2>
+
+<p>
+One of the main source of confusion for beginners is the presence of 
+multiple languages that are used for different things but which all
+look more or less like OCaml. We will see later the details about all
+of this, but just keep in mind that we will use the following
+languages:
+<ul>
+<li> regular OCaml
+<li> modified OCaml using <code>EXTEND ... END</code> constructs for
+defining syntax extensions (we use a predefined syntax extension in
+order to define our own syntax extensions)
+<li> quotations: these look like <code>&lt;:ident&lt; ... &gt;&gt;</code> or
+just <code>&lt;&lt; ... &gt;&gt;</code>. Quotations are a generic syntax extension
+which are supported in any OCaml code which is preprocessed by Camlp5.
+The contents of the quotation will be expanded in place according to
+<code>ident</code> which has to be known by the preprocessor.
+<li> revised OCaml syntax. This syntax is different from the standard
+OCaml syntax. We will use it inside of quotations for building OCaml
+syntax trees, in combination with
+<li> antiquotations which look like <code>$this$</code> and are
+arbitrary OCaml code written in the regular syntax which lets you
+insert automatically generated nodes into the syntax tree being
+defined by the current quotation.
+</ul>
+
+<p>
+Now that you are completely confused, you understand why some Camlp5
+syntax extensions that may seem natural, simple and readable may be
+very discouraging when you are a beginner who is trying to use
+existing code as a template.
+
+
+<h2 id=machinery>6. What goes in and what comes out</h2>
+
+<p>
+We have two kinds of files: those which define a syntax or  
+modify an existing syntax, and the files that are written in this syntax.
+<p>
+<span style="color:red"><b>Warning</b>: the syntax of a file is never defined within the file itself, 
+but in a separate file</span>
+
+<p>
+An OCaml file written in the standard syntax does not need to be
+preprocessed. It is directly compiled into bytecode or native code by
+one of the OCaml compilers (<code>ocamlc</code>,
+<code>ocamlopt</code> or <code>ocaml</code>).
+<p>
+Extending the syntax of OCaml simply means that we will use a modified
+syntax for writing our programs and this non-standard syntax is not
+understood by the OCaml compilers.
+Therefore our programs need to be <b>preprocessed</b> by a converter
+from our exotic syntax into plain old OCaml.
+Camlp5 provides us with tools for writing <b>our specific preprocessor</b>.
+
+<p>
+The command-line tool which will serve as a base for building our
+specific preprocessor is <code>camlp5</code>. <code>camlp5</code>
+alone does nothing very interesting for us: we need to feed it with
+our definition of how to convert our syntax into regular OCaml.
+This is done by passing object files (<code>.cmo</code>) 
+to <code>camlp5</code>.
+As a convention, we will name these files according to their role:
+<ul>
+<li> <code>pa_</code> (as in <b>pa</b>rsing) 
+is used as a prefix for the files that define or modify a grammar,
+i.e. how the input file should be converted into an <b>abstract syntax
+tree (AST)</b>
+<li> <code>q_</code> (as in <b>q</b>uotation) 
+is used as a prefix for the files that define how to expand the
+contents of quotations. Quotations are single, predefined tokens in the OCaml
+syntax but are meant to be expanded into some normal OCaml expression
+or pattern using arbitrary lexing and parsing rules. 
+These files are not named with the <code>pa_</code>
+prefix since technically they do not add rules in the general grammar
+that we may extend.
+<li> <code>pr_</code> (as in <b>pr</b>inting) 
+is used as a prefix for the files that define how to export the
+AST.
+</ul>
+
+<p>
+Camlp5 provides a file named <code>pa_o.cmo</code> which parses the
+standard syntax of OCaml (with only one addition, the quotations: see
+later). It provides a file named <code>pr_o.cmo</code> which converts
+an OCaml AST into the concrete syntax of OCaml, i.e. a valid source file
+for the OCaml compilers.
+Thus the command <code>camlp5 pa_o.cmo pr_o.cmo</code> should read a
+standard OCaml source file and reprint an equivalent program
+from the point of view of the compilers:
+
+<pre>
+$ cat hello.ml
+print_endline "Hello World!";;
+$ camlp5 pa_o.cmo pr_o.cmo hello.ml
+let _ = print_endline "Hello World!"
+</pre>
+
+
+<p>
+Another useful printing file is <code>pr_dump.cmo</code>. If you try
+it instead of <code>pr_o.cmo</code>, you will get an unreadable
+output. This is a binary representation of the AST which can be read
+back efficiently by the OCaml compilers and more importantly without
+losing trace of the location of the original tokens in the source
+file. We will therefore reserve the usage of <code>pr_o.cmo</code>
+for reviewing the generated OCaml code but not compile it further.
+<code>camlp5o</code> is a predefined shortcut for 
+<code>camlp5 pa_o.cmo pa_op.cmo pr_dump.cmo</code>: it parses the
+regular syntax of OCaml and outputs a compiler-friendly representation 
+of the AST. The additional file <code>pa_op.cmo</code> is a predefined
+<b>syntax extension</b> of OCaml. It actually implements an
+experimental syntax for streams and parsers which was used in earlier
+versions of OCaml.
+The interesting thing to notice here is that we load two files
+starting with <code>pa_</code>: <code>pa_o.cmo</code> defines the
+grammar of OCaml from scratch while <code>pa_op.cmo</code> only adds
+syntax rules to this grammar. This is really a syntax extension: we
+load different files which will successively create and modify the
+concrete syntax that is understood by the preprocessor.
+
+<p>
+Since we are interesting in parsing a syntax which is a modified OCaml
+and converting it into an OCaml AST, we will always use
+<code>camlp5o</code>, and tell it to load our <code>pa_*.cmo</code> files.
+
+<p>
+<span style="color:red"><b>Warning</b>: 
+don't get confused: 
+the files that define syntax extensions use themselves a
+modified syntax of OCaml and therefore have to be preprocessed with
+<code>camlp5o</code> loaded with the adequate files 
+(usually <code>pa_extend.cmo</code> and <code>q_MLast.cmo</code>)
+</span>
+
+<p>
+The most important point to remember for now is that the center of
+everything is the abstract syntax tree. The type of the nodes of this tree
+is fixed and is the only one which can be understood by the OCaml
+compilers.
+
+<p>
+The next step is to see how to add new syntaxic constructs to the
+grammar of OCaml and how to expand them into the intended AST.
+
+
+<h2 id=dissection>7. Dissection of a syntax expander</h2>
+
+<p>
+For testing our example, we are going to use a
+Makefile which is merely a
+sequence of commands. We are going to write two programs: 
+<code>pa_tryfinally.ml</code> defines our syntax extension
+and <code>prog.ml</code> is a simple test program.
+Here is the <a href="camlp5/tryfinally/Makefile">Makefile</a>:
+<pre>
+NAME = tryfinally
+all:
+	camlp5o pa_extend.cmo q_MLast.cmo pr_o.cmo pa_$(NAME).ml \
+		-o pa_$(NAME).ppo -loc loc
+	camlp5o pa_extend.cmo q_MLast.cmo pa_$(NAME).ml \
+		-o pa_$(NAME).ast -loc loc
+	ocamlc -c -I +camlp5 -pp 'camlp5o pa_extend.cmo q_MLast.cmo -loc loc' \
+		-dtypes pa_$(NAME).ml
+	camlp5o -I . pr_o.cmo pa_$(NAME).cmo prog.ml -o prog.ppo
+	camlp5o -I . pr_r.cmo pa_$(NAME).cmo prog.ml -o prog.ppr
+	ocamlopt -dtypes -o prog -pp 'camlp5o -I . pa_$(NAME).cmo' prog.ml
+	caml2html -t -ln pa_$(NAME).ml
+	caml2html -t -ln prog.ml
+
+clean:
+	rm -f prog *.ppo *.ppr *.cmo *.cmi *.o *.cmx *.ast *~ *.ml.html
+</pre>
+
+<p>
+We want to add a <code>try ... finally</code> construct which behavior is 
+illustrated by this example:
+<p>File <a href="camlp5/tryfinally/prog.ml">prog.ml</a> [<a href="camlp5/tryfinally/prog.ml.html">html</a>]:
+<pre><span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span>
+  <span style="background:yellow"><span class="Ctry">try</span></span>
+    <span style="background:silver">failwith <span class="Cstring">"this is not an error"</span></span>
+  <span style="background:yellow">finally</span>
+    <span style="background:silver">print_endline <span class="Cstring">"OK"</span></span>
+</pre>
+<p>
+should be converted into the following program written in the 
+standard syntax of OCaml:
+<p>File <a href="camlp5/tryfinally/expected.ml">expected.ml</a>:
+<pre><span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> <span style="background:pink">__finally1</span> <span class="Cnonalphakeyword">=</span>
+    <span class="Ctry">try</span>
+      <span style="background:silver">failwith <span class="Cstring">"this is not an error"</span></span><span class="Cnonalphakeyword">;</span>
+      <span class="Cconstructor">None</span>
+    <span class="Cwith">with</span> <span style="background:pink">exn</span> <span class="Cnonalphakeyword">-&gt;</span>
+      <span class="Cconstructor">Some</span> exn <span class="Cin">in</span>
+  <span style="background:silver">print_endline <span class="Cstring">"OK"</span></span><span class="Cnonalphakeyword">;</span>
+  <span class="Cmatch">match</span> __finally1 <span class="Cwith">with</span>
+      <span class="Cconstructor">None</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">Some</span> <span style="background:pink">exn</span> <span class="Cnonalphakeyword">-&gt;</span> raise exn
+</pre>
+<p>
+This new syntaxic construct is formed by two <b>keywords</b> (yellow regions)
+and two <b>expressions</b> (grey regions): 
+<code>try</code> is already a keyword in OCaml
+and <code>finally</code> is a new keyword. 
+The two expressions are conserved during the conversion to standard OCaml and 
+some auxilliary code is added around in order to achieve the desired
+effect. The desired effect consists in evaluating an expression e1 first,
+and then evaluate an expression e2 later, even if the evaluation
+of e1 raised an exception in which case this exception is re-raised after
+the evaluation of e2.
+
+<p>
+In real programs it is often useful for closing
+an open file at the end of its manipulation even if an error occured. Please
+note that a <a href="ocaml.html">more useful version of 
+this syntax extension</a> exists, but it's not the point here.
+
+<p>
+During the transformation of our program, 
+we introduced new identifiers at three different
+places (pink). One of them, <code>__finally1</code> must have a name
+that is unlikely to interfere with existing names. We had to decide that 
+identifiers starting with <code>__finally</code> are reserved for the syntax
+expander and should not be used directly. The two other identifiers
+are named <code>exn</code> at two different places and are not visible
+in the user-defined code (grey). Therefore it is perfectly safe to use
+canonical names such as <code>exn</code>, <code>x</code>, <code>s</code> or
+whatever we like.
+
+<p>
+Now we will see how to implement this transformation.
+Here is a solution:
+<p>File <a href="camlp5/tryfinally/pa_tryfinally.ml">pa_tryfinally.ml</a> [<a href="camlp5/tryfinally/pa_tryfinally.ml.html">html</a>]:
+<pre><span class="Ccomment">(* The function that returns unique identifiers *)</span>
+<span class="Clet">let</span> new_id <span class="Cnonalphakeyword">=</span> 
+  <span class="Clet">let</span> counter <span class="Cnonalphakeyword">=</span> ref 0 <span class="Cin">in</span>
+  <span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span>
+    incr counter<span class="Cnonalphakeyword">;</span>
+    <span class="Cstring">"__finally"</span> ^ string_of_int !counter
+
+<span class="Ccomment">(* The function that converts our syntax into a single OCaml expression,</span>
+<span class="Ccomment">   i.e. an "expr" node of the syntax tree *)</span>
+<span class="Clet">let</span> expand loc e1 e2 <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> id <span class="Cnonalphakeyword">=</span> new_id <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> id_patt <span class="Cnonalphakeyword">=</span> <span style="background:silver"><span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $lid:id$ </span><span class="Cconstructor">&gt;&gt;</span></span> <span class="Cin">in</span>
+  <span class="Clet">let</span> id_expr <span class="Cnonalphakeyword">=</span> <span style="background:silver"><span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $lid:id$ </span><span class="Cconstructor">&gt;&gt;</span></span> <span class="Cin">in</span>
+  <span style="background:silver"><span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"></span>
+<span class="Cquotation">  let $id_patt$ =</span>
+<span class="Cquotation">    try do { $e1$; None } </span>
+<span class="Cquotation">    with [ exn -&gt; Some exn ] in</span>
+<span class="Cquotation">  do { $e2$;</span>
+<span class="Cquotation">       match $id_expr$ with</span>
+<span class="Cquotation"></span>        <span class="Cquotation">   [ None -&gt; ()</span>
+<span class="Cquotation"></span>        <span class="Cquotation">   | Some exn -&gt; raise exn ] }</span>
+<span class="Cquotation">  </span><span class="Cconstructor">&gt;&gt;</span></span>
+
+<span class="Ccomment">(* The statement that extends the default grammar, </span>
+<span class="Ccomment">   i.e. the regular syntax of OCaml if we use camlp5o </span>
+<span class="Ccomment">   or the revised syntax if we use camlp5r *)</span>
+<span style="background:pink"><span class="Cconstructor">EXTEND</span>
+  <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr: <span class="Cconstructor">LEVEL</span> <span class="Cstring">"expr1"</span> <span class="Cnonalphakeyword">[</span>
+    <span class="Cnonalphakeyword">[</span> <span class="Cstring">"try"</span><span class="Cnonalphakeyword">;</span> e1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr<span class="Cnonalphakeyword">;</span> <span class="Cstring">"finally"</span><span class="Cnonalphakeyword">;</span> e2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr <span class="Cnonalphakeyword">-&gt;</span> expand loc e1 e2 <span class="Cnonalphakeyword">]</span>
+  <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+<span class="Cconstructor">END</span></span><span class="Cnonalphakeyword">;;</span>
+</pre>
+
+
+<p>
+This program is written with a strange syntax: it uses
+three <b>quotations</b> (grey areas) which start with something of the form
+<code>&lt;:name&lt;</code> where <code>name</code>
+is the name of a predefined <b>quotation expander</b>
+and are terminated by <code>&gt;&gt;</code>.
+Here we use two different quotation expanders: <code>expr</code> 
+and <code>patt</code>. These quotation expanders are loaded from the file
+<code>q_MLast.cmo</code> (<code>q_</code> means quotations, 
+and the rest means ML AST = OCaml abstract syntax tree).
+The contents of these quotations looks very much like OCaml code but not
+exactly: 
+it is actually expanded into a representation of the AST using
+concrete types. Have a look at the program 
+after preprocessing, <a href="camlp5/tryfinally/pa_tryfinally.ppo">pa_tryfinally.ppo</a>,
+in order to see the effect of the quotation expanders.
+
+<p>
+<span style="color:red"><b>Warning</b>: The quotations which serve as shortcuts for building
+nodes of the OCaml AST do not use the usual syntax
+of OCaml, but must be written in the <b>revised syntax</b>. Unfortunately 
+you will have to learn this new syntax. One way is
+to read the reference manual of Camlp5. Another way is to convert
+your own programs to this syntax with <code>camlp5o pr_r.cmo</code>
+and compare the output with the input.</span> 
+
+<p>
+<span style="color:red"><b>Warning</b>: The contents of these quotations are written in 
+the revised syntax of OCaml, at the exception of 
+the pieces which appear between
+dollars (<code>$...$</code>). They are called <b>antiquotations</b>
+and are way to insert nodes of the syntax tree which have been 
+defined previously.</span>
+
+<p>
+In the example, <code>id_patt</code> and <code>id_expr</code> are 
+two simple nodes of the AST which are respectively of the types
+<code>MLast.patt</code> and <code>MLast.expr</code>. They both stand
+for a lowercase identifier, but once in a <b>pattern</b> and once in 
+a <b>expression</b>. We just said that antiquotations are a pair of dollars
+containing an OCaml expression which stands for a predefined node of the
+AST. Actually, in addition we can use labels such as <code>lid:</code> in this
+portion of our example:
+<pre><span class="Clet">let</span> id_patt <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $lid:id$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cin">in</span>
+<span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span>
+</pre>
+<p>
+It means that the actual contents of the antiquotation (yellow) 
+is a string which represents a lowercase identifier (lid).
+Here <code>id</code> has to represent a valid lowercase identifier, which 
+is the case (<code>id = "__finally1"</code>).
+Using labels in antiquotation is required to convert one basic type
+to a node of the syntax tree. It is also important for disambiguation
+since a string can represent a lowercase identifier, but also an
+an uppercase identifier, an escaped string literal or an escaped
+character literal. They all have a corresponding label (see the reference 
+<a href="http://pauillac.inria.fr/~ddr/camlp5/doc/htmlc/">manual</a> for details).
+
+<p>
+An important feature is to keep track in the AST of the location of
+the original source code. Therefore, a <b>location</b> is associated
+to each node of the AST. When manipulating the AST with quotations,
+the quotation expander use a predefined name for the locations.
+This name is by default <code>loc</code> in the versions of Camlp5 up to
+3.08.2 and <code>_loc</code> in the following versions. The best way
+to avoid trouble is to pass the <code>-loc loc</code> option
+to <code>camlp5o</code> and use <code>loc</code>. So a location
+must be available under the name <code>loc</code> when building
+the AST with quotations. In return, when destructuring the AST
+with pattern-matching using quotations, a variable named <code>loc</code>
+is automatically defined. The same thing happens in grammar rules
+of <code>EXTEND</code> statements, which explains the availability 
+of a <code>loc</code> object which seems
+to come from nowhere in our <code>EXTEND</code> statement.
+
+<p>
+Now you should really take the time to understand completely the system
+of quotations. You must realize that they are used for building
+nodes of the AST which types are defined in the <code>MLast</code>
+module of the Camlp5 library. 
+These quotations can also be used in pattern matching if you need
+to extract some information for an existing AST or if you want
+to substitute it.
+
+<p>
+Let's now have a look at the <code>EXTEND</code> statement.
+What we extend is the default grammar.
+The default grammar has been set by <code>pa_o.cmo</code> which
+is implicitely loaded by <code>camlp5o</code>. This is the
+grammar of the regular syntax of OCaml.
+We will not extend the set of possible <b>tokens</b> or how they
+are recognized, but only their meaning according to their sequential 
+arrangement.
+An <code>EXTEND</code> statement 
+contains a list of <b>grammar entries</b> that will be extended.
+Each grammar entry consists in a collection of <b>rules</b>.
+The entries can be predefined or newly defined.
+They can be made visible and therefore extensible by other syntax extensions
+or not. Here we just extend the <code>Pcaml.expr</code> entry
+which defines the syntax of an OCaml expression as its name indicates.
+A rule within a given entry
+is made of a <b>pattern</b> (yellow block) which is 
+associated with an OCaml expression which defines a syntax node (grey block):
+<pre><span class="Cconstructor">EXTEND</span>
+  <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr: <span style="background:pink"><span class="Cconstructor">LEVEL</span> <span class="Cstring">"expr1"</span></span> <span class="Cnonalphakeyword">[</span>
+    <span class="Cnonalphakeyword">[</span> <span style="background:yellow"><span class="Cstring">"try"</span><span class="Cnonalphakeyword">;</span> e1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr<span class="Cnonalphakeyword">;</span> <span class="Cstring">"finally"</span><span class="Cnonalphakeyword">;</span> e2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr</span> <span class="Cnonalphakeyword">-&gt;</span> <span style="background:silver">expand loc e1 e2</span> <span class="Cnonalphakeyword">]</span>
+  <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+<span class="Cconstructor">END</span><span class="Cnonalphakeyword">;;</span>
+</pre>
+<p>
+The patterns are matched according to <b>precedence levels</b>.
+Here we know that a level named <code>expr1</code> exists, and we
+know its meaning and relative priority with respect to existing
+syntaxic constructs. 
+We know this from the file
+pa_o.ml of the Camlp5 library.
+So we insert a rule exactly in this level, no new level is created which would
+be the case if we wouldn't have used a <code>LEVEL</code> annotation.
+
+
+<p>
+The rest is self explanatory: 
+<code>try</code> and <code>finally</code> are implicitely made
+reserved keywords of the language if not already, and
+we extract <code>e1</code> and <code>e2</code>
+which are two expression nodes (<code>Pcaml.expr</code> is a grammar entry
+which returns objects of type <code>MLast.expr</code>).
+Our new rule itself must return a node of type <code>MLast.expr</code>.
+This is the role of our <code>expand</code> function.
+
+<p>
+After compilation of the syntax extension, we use it to rewrite
+our program in the regular OCaml syntax:
+<p>File <a href="camlp5/tryfinally/prog.ppo">prog.ppo</a>:
+<pre><span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> __finally1 <span class="Cnonalphakeyword">=</span>
+    <span class="Ctry">try</span> failwith <span class="Cstring">"this is not an error"</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">None</span> <span class="Cwith">with</span> exn <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">Some</span> exn
+  <span class="Cin">in</span>
+  print_endline <span class="Cstring">"OK"</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cmatch">match</span> __finally1 <span class="Cwith">with</span>
+    <span class="Cconstructor">None</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+  <span class="Cbar">|</span> <span class="Cconstructor">Some</span> exn <span class="Cnonalphakeyword">-&gt;</span> raise exn</pre>
+and in the revised syntax, which is closer to what we wrote
+in the quotations of our file <code>pa_tryfinally.ml</code>:
+<p>File <a href="camlp5/tryfinally/prog.ppr">prog.ppr</a>:
+<pre><span class="Cdo">do</span> <span class="Cnonalphakeyword">{</span>
+  <span class="Clet">let</span> __finally1 <span class="Cnonalphakeyword">=</span>
+    <span class="Ctry">try</span> <span class="Cdo">do</span> <span class="Cnonalphakeyword">{</span> failwith <span class="Cstring">"this is not an error"</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">None</span> <span class="Cnonalphakeyword">}</span> <span class="Cwith">with</span> exn → <span class="Cconstructor">Some</span> exn
+  <span class="Cin">in</span>
+  print_endline <span class="Cstring">"OK"</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cmatch">match</span> __finally1 <span class="Cwith">with</span>
+  <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">None</span> → <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+  <span class="Cbar">|</span> <span class="Cconstructor">Some</span> exn → raise exn <span class="Cnonalphakeyword">]</span>
+<span class="Cnonalphakeyword">}</span><span class="Cnonalphakeyword">;</span></pre>
+
+<p>
+And the program <code>prog</code> runs as expected:
+<pre>
+$ ./prog
+OK
+Fatal error: exception Failure("this is not an error")
+</pre>
+
+
+<h2 id=variations>8. Variations around the same example</h2>
+
+<p>
+We will rearrange the source code of our <code>try ... finally</code> syntax
+extension in order to see better which element is responsible for which
+effect and learn more about Camlp5.
+
+<h3 id=quotations>8.1 Using only one quotation</h3>
+
+<p>
+First, we might use only one quotation to represent the node of the
+AST which is returned by the <code>try ... finally</code> rule.
+We are talking of the <code>expand</code> function, which was defined like 
+this:
+<pre><span class="Clet">let</span> expand loc e1 e2 <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> id <span class="Cnonalphakeyword">=</span> new_id <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> id_patt <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $lid:id$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> id_expr <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $lid:id$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cin">in</span>
+  <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"></span>
+<span class="Cquotation">  let $id_patt$ =</span>
+<span class="Cquotation">    try do { $e1$; None } </span>
+<span class="Cquotation">    with [ exn -&gt; Some exn ] in</span>
+<span class="Cquotation">  do { $e2$;</span>
+<span class="Cquotation">       match $id_expr$ with</span>
+<span class="Cquotation"></span>        <span class="Cquotation">   [ None -&gt; ()</span>
+<span class="Cquotation"></span>        <span class="Cquotation">   | Some exn -&gt; raise exn ] }</span>
+<span class="Cquotation">  </span><span class="Cconstructor">&gt;&gt;</span>
+</pre>
+
+<p>
+So, we can inline the definitions of <code>id_patt</code>
+and <code>id_expr</code>, which here simplifies our source code:
+<pre><span class="Clet">let</span> expand loc e1 e2 <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> id <span class="Cnonalphakeyword">=</span> new_id <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+  <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"></span>
+<span class="Cquotation">  let $lid:id$ =</span>
+<span class="Cquotation">    try do { $e1$; None } </span>
+<span class="Cquotation">    with [ exn -&gt; Some exn ] in</span>
+<span class="Cquotation">  do { $e2$;</span>
+<span class="Cquotation">       match $lid:id$ with</span>
+<span class="Cquotation"></span>        <span class="Cquotation">   [ None -&gt; ()</span>
+<span class="Cquotation"></span>        <span class="Cquotation">   | Some exn -&gt; raise exn ] }</span>
+<span class="Cquotation">  </span><span class="Cconstructor">&gt;&gt;</span>
+</pre>
+<p>
+The first occurrence in the quotation
+of our newly created identifier <code>id</code>
+is a pattern according to the Camlp5 terminology, 
+and the second occurrence is an expression. This is inferred
+simply by the context: <code>let <i>patt</i> =</code> in the first case
+and <code>match <i>expr</i> with</code> in the second case.
+
+<p>
+Here is some dummy OCaml code where some patterns and expressions
+have been highlighted in yellow (patterns) and pink (expressions):
+<pre><span class="Clet">let</span> <span style="background:yellow">x</span> <span class="Cnonalphakeyword">=</span> <span class="Cstring">"abc"</span>
+<span class="Clet">let</span> <span style="background:yellow"><span class="Cnonalphakeyword">_</span></span> <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> <span style="background:yellow">z2</span> <span class="Cnonalphakeyword">=</span>
+    <span style="background:pink"><span class="Clet">let</span> z <span class="Cnonalphakeyword">=</span> 5 <span class="Cnonalphakeyword">*</span> 3 <span class="Cin">in</span> z <span class="Cnonalphakeyword">*</span> z</span> <span class="Cin">in</span>
+  <span style="background:pink">print_float</span> <span style="background:pink">z2</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cmatch">match</span> x<span class="Cnonalphakeyword">,</span> z2<span class="Cnonalphakeyword">,</span> <span style="background:pink"><span class="Cconstructor">Some</span> <span class="Ctrue">true</span></span> <span class="Cwith">with</span>
+      <span style="background:yellow"><span class="Cstring">"a"</span><span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">,</span> <span class="Cconstructor">None</span></span> <span class="Cnonalphakeyword">-&gt;</span> <span style="background:pink"><span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span></span>
+    <span class="Cbar">|</span> <span style="background:yellow"><span class="Cnonalphakeyword">(</span><span class="Cstring">"abc"</span> <span class="Cbar">|</span> <span class="Cstring">"ab"</span><span class="Cnonalphakeyword">)</span></span><span class="Cnonalphakeyword">,</span> 0<span class="Cnonalphakeyword">,</span> <span class="Cconstructor">Some</span> <span style="background:yellow"><span class="Cfalse">false</span></span> <span class="Cnonalphakeyword">-&gt;</span> <span style="background:pink">print_endline <span class="Cstring">"something"</span></span>
+    <span class="Cbar">|</span> <span style="background:yellow"><span class="Cnonalphakeyword">_</span></span> <span class="Cwhen">when</span> <span style="background:pink">z <span class="Cnonalphakeyword">&lt;</span> 10</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+    <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+</pre>
+
+<p>
+"Toplevel expressions" such as <code><span class="Clet">let</span>&nbsp;x&nbsp;<span class="Cnonalphakeyword">=</span>&nbsp;2</code>
+or <code><span class="Ctype">type</span>&nbsp;t&nbsp;<span class="Cnonalphakeyword">=</span>&nbsp;<span class="Cconstructor">A</span>&nbsp;<span class="Cbar">|</span>&nbsp;<span class="Cconstructor">B</span>&nbsp;<span class="Cof">of</span>&nbsp;string</code>
+are actually not expressions, but declarations
+which are elements of the implementation of the current module.
+In Camlp5, these are called <code>str_item</code> (<code>str</code> reminds of
+the <code>struct</code> keyword
+which introduces submodule implementations).
+There is a quotation expander for str_items, as well as for other families
+of syntaxic elements that we did not encounter yet.
+
+
+<h3 id=reordering>8.2 Removing the hidden reserved identifier</h3>
+
+<p>
+Let's now remove the uncessary identifier which has a reserved prefix.
+It avoids the user of our syntax extension
+to remember that <code>__finally</code> is
+a forbidden prefix. And there is unfortunately no way of generating
+identifiers in a reserved Camlp5 namespace.
+<p>
+We completely rewrite the quotation so that
+all the identifiers we introduce are not accessible by 
+user-defined expressions.
+Here is one solution:
+<pre><span class="Clet">let</span> expand loc e1 e2 <span class="Cnonalphakeyword">=</span>
+  <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"></span>
+<span class="Cquotation">  let f1 () = $e1$</span>
+<span class="Cquotation">  and f2 () = $e2$ in</span>
+<span class="Cquotation">  do { (try f1 ()</span>
+<span class="Cquotation">        with exn -&gt; do { f2 (); raise exn });</span>
+<span class="Cquotation">       f2 () }</span>
+<span class="Cquotation">  </span><span class="Cconstructor">&gt;&gt;</span>
+</pre>
+<p>
+There are several reasons why we have to write such twisted code:
+<ul>
+<li> the closures <code>f1</code> and <code>f2</code> play their role well
+since they both record the environment before any new binding is added
+(and they don't see each other);
+<li> we want to avoid exponential growth in size of the generated code,
+which could happen if we duplicate 
+the whole contents of the expression <code>e2</code>
+(<code>e2</code> itself might contain <code>try ... finally</code>
+statements).
+</ul>
+<p>
+And we hope that the compiler handles the closures efficiently.
+
+<p>
+In general, a good approach would be to implement the initial solution
+which is more natural,
+and choose our automatically-generated identifiers so that
+there is no clash with the user-defined identifiers.
+There is no simple generic solution for doing this (yet) since it 
+requires a lexical analysis of whole subtrees with a lot of different 
+kind of nodes.
+We will see an example in which we actually do something like this
+<a href="#replacing">later</a>.
+
+
+
+
+<h3 id=more-rules>8.3 Adding more constructs</h3>
+
+<p>
+We want to add another syntax for expressing the same as with
+<code>try ... finally</code>. We want that the following:
+<pre><span class="Ctry">try</span> e1 finally e2
+</pre>
+<p>
+could as well be written as:
+<pre>before e2 <span class="Ctry">try</span> e1
+</pre>
+
+<p>
+We will insert a rule for this syntax in the same priority <b>level</b>
+as we did previously for <code>try ... finally</code>.
+For now, just notice that we place a vertical bar directly between
+the rules within in the innermost pair of square brackets which represent
+the extension of the same level:
+<pre><span class="Cconstructor">EXTEND</span>
+  <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr: <span class="Cconstructor">LEVEL</span> <span class="Cstring">"expr1"</span> <span class="Cnonalphakeyword">[</span>
+    <span style="background:pink"><span class="Cnonalphakeyword">[</span></span> <span class="Cstring">"try"</span><span class="Cnonalphakeyword">;</span> e1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr<span class="Cnonalphakeyword">;</span> <span class="Cstring">"finally"</span><span class="Cnonalphakeyword">;</span> e2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr <span class="Cnonalphakeyword">-&gt;</span> expand loc e1 e2
+    <span style="background:pink"><span class="Cbar">|</span></span> <span class="Cstring">"before"</span><span class="Cnonalphakeyword">;</span> e2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr<span class="Cnonalphakeyword">;</span> <span class="Cstring">"try"</span><span class="Cnonalphakeyword">;</span> e1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr <span class="Cnonalphakeyword">-&gt;</span> expand loc e1 e2 <span style="background:pink"><span class="Cnonalphakeyword">]</span></span>
+  <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+<span class="Cconstructor">END</span><span class="Cnonalphakeyword">;;</span>
+</pre>
+
+<p>
+Understanding the system of levels is the object of
+<a href="#priorities">a dedicated section</a> of this tutorial.
+
+
+<h2 id=replacing>9. Local syntax extensions, transformations of the AST</h2>
+
+<p>
+Using the <code>EXTEND</code> statement, we are able to add or replace 
+grammar rules. We have seen that a rule consists in building a syntax
+node for the OCaml AST.
+Earlier we defined a rule like this:
+<pre>   <span class="Cstring">"try"</span><span class="Cnonalphakeyword">;</span> e1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr<span class="Cnonalphakeyword">;</span> <span class="Cstring">"finally"</span><span class="Cnonalphakeyword">;</span> e2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr <span class="Cnonalphakeyword">-&gt;</span> expand loc e1 e2</pre>
+<p>
+<code>e1</code> and <code>e2</code> are two expressions, i.e. two nodes
+of type <code>MLast.expr</code>. From these expressions, 
+we build a syntax node
+which is itself an expression. This is the role of our <code>expand</code>
+function.
+<p>
+In that case, we don't have to transform <code>e1</code> or <code>e2</code>.
+However, things are not always so simple. Let's consider the following problem:
+we want to create a syntax which has the following properties:
+<ul>
+<li> locally we can switch to a special syntax,
+<li> this special syntax is a slight modification of the OCaml syntax.
+</ul>
+<p>
+Consider the following problem: in order to make the code for numeric
+computations easier to read, we want to read ints as floats
+and their operators (<code>+ - * /</code>) 
+as the equivalent operators over floats
+(<code>+. -. *. /.</code>). However we don't want this to be applied 
+everywhere in the file, but only in expressions that are introduced
+by a new <code>FLOAT</code> keyword since it makes quasi impossible to use
+ints within the new syntax:
+<pre><span class="Clet">let</span> x <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">FLOAT</span> 3/2 <span class="Cnonalphakeyword">-</span> sqrt <span class="Cnonalphakeyword">(</span>1/3<span class="Cnonalphakeyword">)</span>
+<span class="Clet">let</span> i <span class="Cnonalphakeyword">=</span> 1 <span class="Cnonalphakeyword">+</span> 2 <span class="Cnonalphakeyword">+</span> 3</pre>
+<p>
+would be converted into:
+<pre><span class="Clet">let</span> x <span class="Cnonalphakeyword">=</span> 3. /. 2. <span class="Cnonalphakeyword">-</span> sqrt <span class="Cnonalphakeyword">(</span>1. /. 3.<span class="Cnonalphakeyword">)</span>
+<span class="Clet">let</span> i <span class="Cnonalphakeyword">=</span> 1 <span class="Cnonalphakeyword">+</span> 2 <span class="Cnonalphakeyword">+</span> 3</pre>
+<p>
+which is less pleasant for the eye.
+<p>
+Using an <code>EXTEND</code> statement, we could relatively
+easily add rules that interpret int constants as their float equivalent, 
+interpret <code>+</code> as <code>+.</code> and so on
+(if this is not obvious to you, implement it as an exercise using
+the knowledge introduced in the previous sections and 
+the file <code>pa_o.ml</code> of the distribution).
+This would however interpret any occurrence of <code>2</code>
+as the float <code>2.0</code> for instance, which is not satisfactory.
+<p>
+On the other hand, we want to benefit from the full OCaml syntax
+within our "<code>FLOAT</code>" expressions (which by the way 
+do not have to be of type <code>float</code>).
+<p>
+One solution to this problem is to define a 
+quotation expander which uses a globally-modified OCaml syntax.
+In other words, our example would look like this:
+<pre><span class="Clet">let</span> x <span class="Cnonalphakeyword">=</span> <span style="background:pink"><span class="Cconstructor">&lt;:float&lt;</span><span class="Cquotation"> 3/2 - sqrt (1/3) </span><span class="Cconstructor">&gt;&gt;</span></span>
+<span class="Clet">let</span> i <span class="Cnonalphakeyword">=</span> 1 <span class="Cnonalphakeyword">+</span> 2 <span class="Cnonalphakeyword">+</span> 3
+</pre>
+<p>
+But this is not exactly what we want and I don't know how to do this.
+Moreover it might be not so simple since we would have to manipulate two 
+variants of OCaml grammars at the same time, not only the default one
+(maybe a look at the implementation of
+<a href="http://www.eleves.ens.fr/home/frisch/soft.html#HereDoc">HereDoc</a>
+could help).
+
+<p>
+The solution we will adopt is extremely inelegant, but works after all
+and does not require as many efforts as it seems at first sight.
+<p>
+For testing our syntax extension, we are going to use this
+<a href="camlp5/float/Makefile">Makefile</a>.
+We will perform the tests over the following program:
+<p>File <a href="camlp5/float/prog.ml">prog.ml</a> [<a href="camlp5/float/prog.ml.html">html</a>]:
+<pre><span class="Clet">let</span> f x <span class="Cnonalphakeyword">=</span>
+  <span class="Cconstructor">FLOAT</span> 
+   <span class="Clet">let</span> pi <span class="Cnonalphakeyword">=</span> acos <span class="Cnonalphakeyword">(</span>-1<span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+   x/<span class="Cnonalphakeyword">(</span>2<span class="Cnonalphakeyword">*</span>pi<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-</span> x**<span class="Cnonalphakeyword">(</span>2/3<span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span> 
+  <span class="Clet">let</span> x <span class="Cnonalphakeyword">=</span> 2.5 <span class="Cin">in</span>
+  <span class="Cconstructor">Printf</span><span class="Cnonalphakeyword">.</span>printf <span class="Cstring">"%g -&gt; %g\n"</span> x <span class="Cnonalphakeyword">(</span>f x<span class="Cnonalphakeyword">)</span>
+</pre>
+<p>
+And it should be transformed into this:
+<p>File <a href="camlp5/float/expected.ml">expected.ml</a>:
+<pre><span class="Clet">let</span> f x <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> pi <span class="Cnonalphakeyword">=</span> acos <span class="Cnonalphakeyword">(</span>-1.<span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+  x /. <span class="Cnonalphakeyword">(</span>2. *. pi<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-.</span> x ** <span class="Cnonalphakeyword">(</span>2. /. 3.<span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span> 
+  <span class="Clet">let</span> x <span class="Cnonalphakeyword">=</span> 2.5 <span class="Cin">in</span>
+  <span class="Cconstructor">Printf</span><span class="Cnonalphakeyword">.</span>printf <span class="Cstring">"%g -&gt; %g\n"</span> x <span class="Cnonalphakeyword">(</span>f x<span class="Cnonalphakeyword">)</span>
+</pre>
+
+<p>
+Here comes our syntax extension. We use predefined quotations for 
+recursively destructuring the syntax tree, as well as for reconstructing
+it. Only the yellow regions are actually specific, the rest is very repetitive
+and can be reused in other programs that need to rewrite <code>expr</code>
+nodes.
+
+<p>File <a href="camlp5/float/pa_float.ml">pa_float.ml</a> [<a href="camlp5/float/pa_float.ml.html">html</a>]:
+<pre><span class="Ccomment">(* The following function takes an expr syntax node and replaces </span>
+<span class="Ccomment">   all occurrences of int constants and operators by their float equivalent.</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">   The code is directly derived from the section on the quotations </span>
+<span class="Ccomment">   for manipulating OCaml syntax trees in the reference manual.</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">   This code can be easily reused by copy-pasting.</span>
+<span class="Ccomment">*)</span>
+<span class="Clet">let</span> <span class="Crec">rec</span> subst_float expr <span class="Cnonalphakeyword">=</span>
+  <span style="background:cyan"><span class="Clet">let</span> loc <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">MLast</span><span class="Cnonalphakeyword">.</span>loc_of_expr expr <span class="Cin">in</span></span>
+<span style="background:silver">  <span class="Clet">let</span> se <span class="Cnonalphakeyword">=</span> subst_float <span class="Cin">in</span>
+  <span class="Clet">let</span> sel <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>map subst_float <span class="Cin">in</span>
+  <span class="Clet">let</span> spwel <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>map <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span>p<span class="Cnonalphakeyword">,</span> w<span class="Cnonalphakeyword">,</span> e<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>p<span class="Cnonalphakeyword">,</span> w<span class="Cnonalphakeyword">,</span> se e<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span></span>
+  <span class="Cmatch">match</span> expr <span class="Cwith">with</span>
+      <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $e1$ . $e2$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>          <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $se e1$ . $se e2$ </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $anti:e$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>             <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $anti:se e$ </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $e1$ $e2$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>            <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $se e1$ $se e2$ </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $e1$ .( $e2$ ) </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>       <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $se e1$ .( $se e2$ ) </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> [| $list:el$ |] </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>      <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> [| $list:sel el$ |] </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $e1$ := $e2$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>         <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $se e1$ := $se e2$ </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $chr:c$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>              expr
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> ($e$ :&gt; $t$) </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>         <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> ($se e$ :&gt; $t$) </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> ($e$ : $t1$ :&gt; $t2$) </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> ($se e$ : $t1$ :&gt; $t2$) </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $flo:s$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>              expr
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> for $s$ = $e1$ $to:b$ $e2$ do { $list:el$ } </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> 
+          <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> for $s$ = $se e1$ $to:b$ $se e2$ do { $list:sel el$ } </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> fun [ $list:pwel$ ] </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>  <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> fun [ $list:spwel pwel$ ] </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> if $e1$ then $e2$ else $e3$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> 
+        <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> if $se e1$ then $se e2$ else $se e3$ </span><span class="Cconstructor">&gt;&gt;</span>
+
+<span style="background:yellow">    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $int:s$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Ccomment">(* we change the int constants into floats *)</span>
+        <span class="Clet">let</span> x <span class="Cnonalphakeyword">=</span> string_of_float <span class="Cnonalphakeyword">(</span>float <span class="Cnonalphakeyword">(</span>int_of_string s<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+        <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $flo:x$ </span><span class="Cconstructor">&gt;&gt;</span>
+</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> ~ $i$ : $e$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>          <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> ~ $i$ : $se e$ </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> lazy $e$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>             <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> lazy $se e$ </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> let $opt:b$ $list:pel$ in $e$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> 
+        <span class="Clet">let</span> pel' <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>map <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span>p<span class="Cnonalphakeyword">,</span> e<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>p<span class="Cnonalphakeyword">,</span> se e<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> pel <span class="Cin">in</span>
+        <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> let $opt:b$ $list:pel'$ in $se e$ </span><span class="Cconstructor">&gt;&gt;</span>
+
+<span style="background:yellow">    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $lid:s$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Ccomment">(* we override the basic operators + - * / *)</span>
+        <span class="Cnonalphakeyword">(</span><span class="Cmatch">match</span> s <span class="Cwith">with</span>
+             <span class="Cstring">"+"</span> <span class="Cbar">|</span> <span class="Cstring">"-"</span> <span class="Cbar">|</span> <span class="Cstring">"*"</span> <span class="Cbar">|</span> <span class="Cstring">"/"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $lid: s ^ "."$ </span><span class="Cconstructor">&gt;&gt;</span>
+           <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> expr<span class="Cnonalphakeyword">)</span>
+</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> match $e$ with [ $list:pwel$ ] </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>
+        <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> match $se e$ with [ $list:spwel pwel$ ] </span><span class="Cconstructor">&gt;&gt;</span> 
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> { $list:pel$ } </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> 
+        <span class="Clet">let</span> pel' <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>map <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span>p<span class="Cnonalphakeyword">,</span> e<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>p<span class="Cnonalphakeyword">,</span> se e<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> pel <span class="Cin">in</span>
+        <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> { $list:pel'$ } </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> do { $list:el$ } </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>     <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> do { $list:sel el$ } </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $e1$ .[ $e2$ ] </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>       <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $se e1$ .[ $se e2$ ] </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $str:s$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> expr
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> try $e$ with [ $list:pwel$ ] </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> 
+        <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> try $e$ with [ $list:spwel pwel$ ] </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> ( $list:el$ ) </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>        <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> ( $list:sel el$ ) </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> ( $e$ : $t$ ) </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>        <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> ( $se e$ : $t$ ) </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $uid:s$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>              expr
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> while $e$ do { $list:el$ } </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> 
+        <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> while $se e$ do { $list:sel el$ } </span><span class="Cconstructor">&gt;&gt;</span>
+
+<span style="background:pink">    <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> 
+        <span class="Cconstructor">Stdpp</span><span class="Cnonalphakeyword">.</span>raise_with_loc loc 
+          <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Failure</span> 
+             <span class="Cstring">"syntax not supported due to the \</span>
+<span class="Cstring">              lack of Camlp5 documentation"</span><span class="Cnonalphakeyword">)</span></span>
+
+<span class="Cconstructor">EXTEND</span>
+  <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr: <span class="Cconstructor">LEVEL</span> <span class="Cstring">"expr1"</span> <span class="Cnonalphakeyword">[</span>
+    <span class="Cnonalphakeyword">[</span> <span class="Cstring">"FLOAT"</span><span class="Cnonalphakeyword">;</span> e <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr <span class="Cnonalphakeyword">-&gt;</span> subst_float e <span class="Cnonalphakeyword">]</span>
+  <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+<span class="Cconstructor">END</span><span class="Cnonalphakeyword">;;</span>
+</pre>
+
+
+
+<p>
+And the program <code>prog</code> runs nicely:
+<pre>
+$ ./prog
+2.5 -> -1.44413
+</pre>
+
+
+
+<p>
+You can check the result of the preprocessing
+of our test program 
+in the standard syntax (<a href="camlp5/float/prog.ppo">prog.ppo</a>)
+or in the revised syntax (<a href="camlp5/float/prog.ppr">prog.ppr</a>).
+
+<p>
+Nicer solutions to this kind of problems exist in theory, such
+as generic tree-traversal functions that could be defined automatically
+from type definitions. But it has to be written.
+
+
+
+<h2 id=inserting-bof>10. Inserting some code at the beginning of the file</h2>
+
+<p>
+It may useful to insert some <code>open</code> directives or 
+a few definitions that are used by our runtime system.
+One solution consists in changing the global function which parses
+the stream of characters and returns the list of str_items 
+(<code>.ml</code> files) or sig_items (<code>.mli</code> files).
+This parsing function can be interrupted and reloaded because of directives
+that might modify the syntax. This is why we must check that the insertions
+of initial code is made only once.
+
+<p>File <a href="camlp5/bof/prog.ml">prog.ml</a> [<a href="camlp5/bof/prog.ml.html">html</a>]:
+<pre><span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span>
+  <span class="Cconstructor">Printf</span><span class="Cnonalphakeyword">.</span>printf <span class="Cstring">"Version: %s\n"</span> version
+</pre>
+
+<p>File <a href="camlp5/bof/pa_bof.ml">pa_bof.ml</a> [<a href="camlp5/bof/pa_bof.ml.html">html</a>]:
+<pre><span class="Clet">let</span> insert_this <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> loc <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Token</span><span class="Cnonalphakeyword">.</span>dummy_loc <span class="Cin">in</span>
+  <span class="Cnonalphakeyword">(</span><span class="Cconstructor">&lt;:str_item&lt;</span><span class="Cquotation"> value version = "1.2.3" </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">,</span> loc<span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> first <span class="Cnonalphakeyword">=</span> ref <span class="Ctrue">true</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> parse strm <span class="Cnonalphakeyword">=</span>
+    <span class="Clet">let</span> <span class="Cnonalphakeyword">(</span>l<span class="Cnonalphakeyword">,</span> stopped<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Grammar</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Entry</span><span class="Cnonalphakeyword">.</span>parse <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>implem strm <span class="Cin">in</span>
+    <span class="Clet">let</span> l' <span class="Cnonalphakeyword">=</span> 
+      <span class="Cif">if</span> !first <span class="Cthen">then</span>
+        insert_this <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">::</span> l
+      <span class="Celse">else</span> l <span class="Cin">in</span>
+    <span class="Cnonalphakeyword">(</span>l'<span class="Cnonalphakeyword">,</span> stopped<span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+  <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>parse_implem <span class="Cnonalphakeyword">:=</span> parse
+</pre>
+
+
+
+
+<p>
+It seems that the pretty-printer is confused by this hack,
+and the output looks strange:
+<p>File <a href="camlp5/bof/prog.ppo">prog.ppo</a>:
+<pre><span class="Clet">let</span> version <span class="Cnonalphakeyword">=</span> <span class="Cstring">"1.2.3"</span><span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Printf</span><span class="Cnonalphakeyword">.</span>printf <span class="Cstring">"Version: %s\n"</span> version</pre>
+
+<p>
+Nevertheless, the AST in binary format is correct since the program 
+is correctly compiled and executed when <code>pr_dump.cmo</code> 
+is used (always loaded implicitely by <code>camlp5o</code>) 
+instead of <code>pr_o.cmo</code>:
+<pre>
+$ ./prog
+Version: 1.2.3
+</pre>
+
+
+<p>
+You can also get the <a href="camlp5/bof/Makefile">Makefile</a> for this example.
+
+
+
+<h2 id=inserting-str_items>11. Inserting toplevel expressions</h2>
+
+<p>
+In the case of expanding the <code>str_item</code> grammar entry with 
+a new rule, often we want to insert several <code>str_item</code> nodes
+of the OCaml abstract syntax tree, or sometimes not at all.
+However, we have to return exactly one node.
+
+<p>
+In this case, we use the <code>declare</code> ... <code>end</code>
+construct of the revised syntax to group an arbitrary number of
+str_items:
+<pre><span class="Cconstructor">&lt;:str_item&lt;</span><span class="Cquotation"> </span>
+<span class="Cquotation">  declare </span>
+<span class="Cquotation">    $x$;</span>
+<span class="Cquotation">    $y$;</span>
+<span class="Cquotation">  end</span>
+<span class="Cquotation"></span><span class="Cconstructor">&gt;&gt;</span>
+</pre>
+<p>
+Or:
+<pre><span class="Cconstructor">&lt;:str_item&lt;</span><span class="Cquotation"> </span>
+<span class="Cquotation">  declare </span>
+<span class="Cquotation">    $list: list_of_str_items$</span>
+<span class="Cquotation">  end</span>
+<span class="Cquotation"></span><span class="Cconstructor">&gt;&gt;</span>
+</pre>
+
+<p>
+See the <a href="#types">section on customized record types</a> 
+for a meaningful example.
+
+
+<h2 id=inserting-just-before>12. Inserting hidden expressions which are evaluated once</h2>
+
+<p>
+The problem is the following: a syntax extension
+needs to use some data, such as a cache, that has to be used repeatedly
+but is initialized only once. Moreover we don't want to expose
+this definition in the module interface since it will be used
+transparently and locally.
+
+<p>
+For instance we can create a <code>count</code> keyword which counts
+how many times the execution of the program goes through
+this point, and displays the result when the program terminates:
+<pre><span class="Clet">let</span> f l <span class="Cnonalphakeyword">=</span> 
+  print_string <span class="Cstring">"That's a nice list of items:\n"</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>iter <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> x <span class="Cnonalphakeyword">-&gt;</span> count<span class="Cnonalphakeyword">;</span> print_endline x<span class="Cnonalphakeyword">)</span> l
+</pre>
+<p>
+That could expanded into something like this:
+<pre><span class="Clet">let</span> f <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> __count1 <span class="Cnonalphakeyword">=</span> ref 0 <span class="Cin">in</span>
+  at_exit 
+    <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> 
+       <span class="Cconstructor">Printf</span><span class="Cnonalphakeyword">.</span>printf 
+         <span class="Cstring">"File \"test_count.ml\", line 3, characters 22-26:\n\</span>
+<span class="Cstring">          count = %i\n"</span> 
+         !__count1<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cfun">fun</span> l <span class="Cnonalphakeyword">-&gt;</span>
+    print_string <span class="Cstring">"That's a nice list of items:\n"</span><span class="Cnonalphakeyword">;</span>
+    <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>iter
+      <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> x <span class="Cnonalphakeyword">-&gt;</span>
+         incr __count1<span class="Cnonalphakeyword">;</span>
+         print_endline x<span class="Cnonalphakeyword">)</span>
+      l
+</pre>
+
+<p>
+Although there is no built-in functionality for doing this,
+you can use Yutaka Oiwa's Declare_once library which is included
+in the distribution of his
+<a href="http://www.oiwa.jp/~yutaka/caml/index-en.html">regexp-pp
+package</a>. Once compiled, the 
+<code>Declare_once</code> module can be used as follows:
+<pre><span class="Clet">let</span> create_some_ast_node some_param <span class="Cnonalphakeyword">=</span>
+  <span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span>
+  <span class="Clet">let</span> expr <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> name_for_my_expr <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span> <span class="Cin">in</span>
+  <span class="Cconstructor">Declare_once</span><span class="Cnonalphakeyword">.</span>declare 
+    <span class="Cnonalphakeyword">~</span>package:<span class="Cstring">"my_package"</span> 
+    name_for_my_expr
+    <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Declare_once</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Expr</span> expr<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span>
+</pre>
+<p>
+It works by adding a pair (name, expr) to a list of pending declarations.
+When the value of the current str_item is computed, this list
+of declarations is inserted in a way which is similar to our example,
+so that these declarations are not visible in the module
+interface but are computed only once.
+
+
+<h2 id=priorities>13. Mastering priorities</h2>
+
+<p>
+This section is best illustrated with the <code>pa_o.ml</code> file
+of the Camlp5 distribution. It is time for you to retrieve it 
+and keep a copy somewhere, if you haven't already done so.
+<p>
+First, look at the <code>expr</code> entry of the grammar.
+The first occurence of <code>expr:</code> in the file defines
+what is commented as the "core expressions". It defines
+many rules, and these rules are grouped into different precedence 
+<b>levels</b>,
+and many of them are named explicitely: 
+<code><span class="Cstring">"top"</span></code>,
+<code><span class="Cstring">"expr1"</span></code>,
+<code><span class="Cstring">":="</span></code>,
+<code><span class="Cstring">"||"</span></code>,
+<code><span class="Cstring">"&amp;&amp;"</span></code>,
+<code><span class="Cstring">"apply"</span></code>,
+<code><span class="Cstring">"simple"</span></code>, etc.
+Later in the <code>EXTEND</code> statement, the <code>expr</code> entry
+is extended further with other rules.
+Some of these additional rules can be inserted in already existing
+levels. This extends the <code><span class="Cstring">"expr1"</span></code> level 
+of the <code>expr</code> entry with
+an additional rule:
+<pre>  expr: <span class="Cconstructor">LEVEL</span> <span class="Cstring">"expr1"</span>
+    <span class="Cnonalphakeyword">[</span> <span style="background:silver"><span class="Cnonalphakeyword">[</span> <span class="Cstring">"fun"</span><span class="Cnonalphakeyword">;</span> p <span class="Cnonalphakeyword">=</span> labeled_patt<span class="Cnonalphakeyword">;</span> e <span class="Cnonalphakeyword">=</span> fun_def <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> fun $p$ -&gt; $e$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span></span> <span class="Cnonalphakeyword">]</span>
+  <span class="Cnonalphakeyword">;</span>
+</pre>
+<p>
+The innermost brackets define a level or like here, an extension of 
+an existing level (grey area).
+A level may contain several rules, separated by vertical bars.
+Lists of levels also use the vertical bar as a separator, but
+do not confuse them.
+Please do not do this:
+<pre><span class="Ccomment">(* 2 levels, 2 rules, 1 level to extend: </span>
+<span class="Ccomment">   Which level is extended?</span>
+<span class="Ccomment">   Which level is inserted? Where? *)</span>
+  <span style="font-style:italic">entry</span>: <span class="Cconstructor">LEVEL</span> <span style="font-style:italic"><span class="Cstring">"some level"</span></span>
+    <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> <span style="font-style:italic">some rule</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cbar">|</span> <span class="Cnonalphakeyword">[</span> <span style="font-style:italic">some other rule</span> <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+</pre>
+<p>
+which is different from:
+<pre><span class="Ccomment">(* extending 1 level with 2 rules: this is clear *)</span>
+  <span style="font-style:italic">entry</span>: <span class="Cconstructor">LEVEL</span> <span style="font-style:italic"><span class="Cstring">"some level"</span></span>
+    <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">[</span> <span style="font-style:italic">some rule</span>
+      <span class="Cbar">|</span> <span style="font-style:italic">some other rule</span> <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+</pre>
+
+
+<p>
+Levels have this property: when the parser is looking for 
+a given syntax entry, it starts at a given level (by default the first one)
+and looks for rules that can be satisfied. If no rule can be satisfied
+in the current level,
+it goes to the next level, and repeats the same process.
+The pratical consequences are that:
+<ul>
+<li> different levels can be used to define different levels of associativity
+such as the addition vs. the multiplication: the level of the
+addition comes first, and the multiplication comes in the next level 
+(see file <code>pa_o.ml</code>).
+Viewed like this, addition has a higher priority than multiplication.
+<li> Within rules, the level where the parser must start to match a given
+entry may be specified, so that the rules contained in the preceding
+levels of the entry are not available
+(for an example, see the <a href="#types">definition of record types with default values</a> in this tutorial).
+</ul>
+
+<p>
+As stated in the reference <a href="http://pauillac.inria.fr/~ddr/camlp5/doc/htmlc/">manual</a>, only the <code>LEVEL</code> instruction
+can be used to extend an existing level. Other instructions
+that specify where a given level must be inserted are available:
+<code>FIRST</code>, <code>LAST</code>, <code>AFTER</code> some level,
+<code>BEFORE</code> some level. These positions refer to the order
+in which they are written, which is the order in which the parser tries to
+match the rules.
+
+<p>
+Suggested exercise: implement and test a syntax extension which supports
+a <code>where</code> construct. 
+For instance, <pre>a <span class="Cnonalphakeyword">+</span> b where a <span class="Cnonalphakeyword">=</span> 1 <span class="Cand">and</span> b <span class="Cnonalphakeyword">=</span> 2</pre> 
+<p>means
+<pre><span class="Clet">let</span> a <span class="Cnonalphakeyword">=</span> 1 <span class="Cand">and</span> b <span class="Cnonalphakeyword">=</span> 2 <span class="Cin">in</span> a <span class="Cnonalphakeyword">+</span> b</pre>
+<p>
+We decide that
+<pre><span class="Clet">let</span> a <span class="Cnonalphakeyword">=</span> 1 <span class="Cin">in</span> a where a <span class="Cnonalphakeyword">=</span> 2</pre> 
+<p>
+should be read as
+<pre><span class="Clet">let</span> a <span class="Cnonalphakeyword">=</span> 1 <span class="Cin">in</span> <span class="Cnonalphakeyword">(</span>a where a <span class="Cnonalphakeyword">=</span> 2<span class="Cnonalphakeyword">)</span> <span class="Ccomment">(* returns 2 *)</span></pre>
+<p>
+and not
+<pre><span class="Cnonalphakeyword">(</span><span class="Clet">let</span> a <span class="Cnonalphakeyword">=</span> 1 <span class="Cin">in</span> a<span class="Cnonalphakeyword">)</span> where a <span class="Cnonalphakeyword">=</span> 2 <span class="Ccomment">(* returns 1 *)</span></pre>
+<p>
+Also, the <code>where</code> construct is right-associative:
+<pre>x <span class="Cnonalphakeyword">+</span> y where x <span class="Cnonalphakeyword">=</span> y where y <span class="Cnonalphakeyword">=</span> 1</pre> 
+<p>
+means
+<pre>x <span class="Cnonalphakeyword">+</span> y where x <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span>y where y <span class="Cnonalphakeyword">=</span> 1<span class="Cnonalphakeyword">)</span> <span class="Ccomment">(* depends on an external y *)</span></pre>
+<p>
+and not 
+<pre><span class="Cnonalphakeyword">(</span>x <span class="Cnonalphakeyword">+</span> y where x <span class="Cnonalphakeyword">=</span> y<span class="Cnonalphakeyword">)</span> where y <span class="Cnonalphakeyword">=</span> 1 <span class="Ccomment">(* returns 2 *)</span></pre>
+You are encouraged to reuse the <code>let_binding</code> grammar entry
+(<code><span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>let_binding</code>). Right-associativity
+must be specified with <code><span class="Cconstructor">RIGHTA</span></code> since the default is
+left-associativity (<code><span class="Cconstructor">LEFTA</span></code>); you can find examples
+of these specifications in the <code>pa_o.ml</code> file.
+After completion of this exercise, you should be able to:
+<ul>
+<li> extend a grammar entry with new syntax rules;
+<li> give these rules the correct associativity, before even testing.
+</ul>
+
+
+<h2 id=custom_parsers>14. Local use of external parsers</h2>
+
+<p>
+This section gives hints on how to parse some blocks using a custom parser.
+We will not give too much detail here, since the recommended way of
+doing this is by using <a href="#inserting-anywhere">quotations</a>.
+Make sure you understand the rest of this document before reading this.
+
+<h3 id=parse_string>14.1 Parsing raw blocks of text</h3>
+
+
+<p>
+When the language extension that must be parsed locally cannot be
+parsed using the Camlp5 grammar system, we would normally use 
+<a href="#inserting-anywhere">quotations</a>.
+Consider the following example where a graph is represented using ASCII art:
+
+<pre>
+"Node 1"---B---D
+   |        \ /
+   +---------C
+</pre>
+
+<p>
+The graph should be expanded into the following type definitions:
+<pre><span class="Ctype">type</span> node_1 <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">`</span><span class="Cconstructor">B</span> <span class="Cof">of</span> b <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">C</span> <span class="Cof">of</span> c <span class="Cnonalphakeyword">]</span>
+<span class="Cand">and</span> b <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">`</span><span class="Cconstructor">Node_1</span> <span class="Cof">of</span> node_1 <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">C</span> <span class="Cof">of</span> c <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">D</span> <span class="Cof">of</span> d <span class="Cnonalphakeyword">]</span>
+<span class="Cand">and</span> c <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">`</span><span class="Cconstructor">Node_1</span> <span class="Cof">of</span> node_1 <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">B</span> <span class="Cof">of</span> b <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">D</span> <span class="Cof">of</span> d <span class="Cnonalphakeyword">]</span>
+<span class="Cand">and</span> d <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">`</span><span class="Cconstructor">B</span> <span class="Cof">of</span> b <span class="Cbar">|</span> <span class="Cconstructor">`</span><span class="Cconstructor">C</span> <span class="Cof">of</span> c <span class="Cnonalphakeyword">]</span>
+</pre>
+<p>
+Actually, this graph should be included in an OCaml program, so we would 
+create a quotation expander named <code>graph</code>, and our piece of program
+should be written like this:
+
+<pre>
+&lt;:graph&lt;
+"Node 1"---B---D
+   |        \ /
+   +---------C
+&gt;&gt;
+</pre>
+
+<p>
+However, one limitation of quotations is that they must be expanded into either
+an <code>expr</code> or a <code>patt</code>, but not into a type definition,
+which is a <code>str_item</code>. So this will not be accepted as-is
+by the parser.
+<p>
+Solution 1: instead of using of quotation, just create a 
+<code><span class="Cconstructor">GRAPH</span></code> keyword which
+will be followed by a string literal. This can be expanded into a 
+<code>str_item</code> without specific difficulties, given a function
+which will parse the string. The problem here is that double-quotes 
+must be protected by backslashes, which may be inconvenient.
+The program would look like this, which is now totally unreadable
+unless we don't use double-quoted labels:
+<pre><span class="Cconstructor">GRAPH</span> <span class="Cstring">"</span>
+<span class="Cstring">\"Node 1\"---B---D</span>
+<span class="Cstring">   |        \ /</span>
+<span class="Cstring">   +---------C</span>
+<span class="Cstring">"</span>
+</pre>
+<p>
+Solution 2: same as solution 1, but in addition we define a quotation
+expander named <code>string</code> which just lets us write a string
+literal using the quotation syntax. In this case, 
+only the <code>&gt;&gt;</code> sequences
+would have to be protected by backslashes.
+The example becomes:
+<pre><span class="Cconstructor">GRAPH</span> <span class="Cconstructor">&lt;:string&lt;</span><span class="Cquotation"></span>
+<span class="Cquotation">"Node 1"---B---D</span>
+<span class="Cquotation">   |        \ /</span>
+<span class="Cquotation">   +---------C</span>
+<span class="Cquotation"></span><span class="Cconstructor">&gt;&gt;</span>
+</pre>
+
+
+
+<h3 id=parse_token_stream>14.2 Parsing the stream of tokens</h3>
+
+<p>
+Now, if the token stream returned by the lexer is satisfying, but your grammar
+requires to first scan the stream without consuming it, you can do it.
+You can actually hook any external parser at this point. It will operate
+on the token stream, with its limitations (whitespace is discarded, tokens
+may not be recognized the way you want in your sublanguage, ...).
+
+
+
+<h2 id=error_location>15. Producing useful error messages</h2>
+
+<p>
+The easiest way of generating error messages that indicate a location
+in the source file is the following:
+<pre><span class="Cconstructor">Stdpp</span><span class="Cnonalphakeyword">.</span>raise_with_loc _loc <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Failure</span> <span class="Cstring">"this is an error message"</span><span class="Cnonalphakeyword">)</span>
+</pre>
+It displays the location by indicating file, line number and character 
+offsets, 
+as usual in OCaml. Under Emacs with tuareg-mode it allows to go directly to
+this location in the source file. However, this raise an exception, which 
+is not always wanted.
+
+<p>
+A similar error message can be produced using the following function:
+<pre><span class="Copen">open</span> <span class="Cconstructor">Printf</span>
+<span class="Copen">open</span> <span class="Cconstructor">Lexing</span>
+
+<span class="Ccomment">(* works only if done immediately, since the file name can change when a</span>
+<span class="Ccomment">   #line or #use directive is encountered *)</span>
+
+<span class="Clet">let</span> string_of_loc _loc <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> start<span class="Cnonalphakeyword">,</span> stop <span class="Cnonalphakeyword">=</span> _loc <span class="Cin">in</span>
+  <span class="Clet">let</span> char1 <span class="Cnonalphakeyword">=</span> start<span class="Cnonalphakeyword">.</span>pos_cnum <span class="Cnonalphakeyword">-</span> start<span class="Cnonalphakeyword">.</span>pos_bol <span class="Cin">in</span>
+  <span class="Clet">let</span> char2 <span class="Cnonalphakeyword">=</span> char1 <span class="Cnonalphakeyword">+</span> stop<span class="Cnonalphakeyword">.</span>pos_cnum <span class="Cnonalphakeyword">-</span> start<span class="Cnonalphakeyword">.</span>pos_cnum <span class="Cnonalphakeyword">-</span> 1 <span class="Cin">in</span>
+  sprintf <span class="Cstring">"File %S, line %i, characters %i-%i:\n"</span>
+    !<span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>input_file <span class="Ccomment">(* should be: start.pos_fname*)</span> 
+    start<span class="Cnonalphakeyword">.</span>pos_lnum
+    char1 char2
+</pre>
+<p>
+Beware that there has been bug which caused the <code>pos_fname</code>
+record field to not be set correctly 
+(<a href="http://caml.inria.fr/mantis/view.php?id=3886">bug report 3886</a>).
+This is why we don't use it, although it should be a better solution
+since it does not depend on any external state.
+
+<p>
+Of course, the user of the syntax extension must <b>not load 
+<code>pr_o.cmo</code></b> (conversion to OCaml source file in standard syntax)
+when preprocessing a source file with <code>camlp5o</code>, 
+since it does not preserve the original location indicators.
+The default output format should be used. It is provided by the 
+<code>pr_dump.cmo</code> file which is preloaded in 
+<code>camlp5o</code> or <code>camlp5r</code>. This format is a
+binary representation of the abstract syntax tree, 
+with locations that match the source code.
+
+<p>
+See also <a href="#loc">loc vs. _loc</a> and why you should
+always use the <code>-loc</code> option when preprocessing 
+a syntax extension.
+
+
+<h2 id=packaging>16. Suggestions for a better interaction between multiple syntax extensions</h2>
+
+<p>
+These are guidelines which should make it easier for programmers
+to actually use the syntax extensions that you may have written.
+
+<h3 id=cohabitation>16.1 Avoiding strong incompatibilities</h3>
+<p>
+If possible, do not override existing rules: this might be fine if only
+your extension is being used, but if another extension does the same, only
+one of these extensions can be used at a time. Sometimes, deleting a rule
+and rewriting an extended version of it is the only way to "extend" existing
+syntax constructs, but using other keywords instead is always possible.
+
+<p>
+EXTEND statements are expressions and they can be parametrized by some runtime
+parameters. It is a good idea to provide an option which allows to specify
+a given keyword instead of the default one.
+For instance, instead of this:
+<pre><span class="Ccomment">(* file pa_eval.ml *)</span>
+<span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span>
+
+<span class="Cconstructor">EXTEND</span>
+  <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr: <span class="Cnonalphakeyword">[</span>
+    <span class="Cnonalphakeyword">[</span> <span class="Cstring">"eval"</span><span class="Cnonalphakeyword">;</span> e <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span> <span class="Cnonalphakeyword">]</span>
+  <span class="Cnonalphakeyword">]</span>
+<span class="Cconstructor">END</span>
+</pre>
+<p>we would write the following:
+<pre><span class="Ccomment">(* file pa_eval.ml *)</span>
+<span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span>
+
+<span class="Clet">let</span> extend opt <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> kw <span class="Cnonalphakeyword">=</span> !opt <span class="Cin">in</span>
+  <span class="Cconstructor">EXTEND</span>
+    <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr: <span class="Cnonalphakeyword">[</span>
+      <span class="Cnonalphakeyword">[</span> $kw$<span class="Cnonalphakeyword">;</span> e <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span> <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">]</span>
+  <span class="Cconstructor">END</span>
+
+<span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> eval <span class="Cnonalphakeyword">=</span> ref <span class="Cstring">"eval"</span> <span class="Cin">in</span>
+  <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>add_option <span class="Cstring">"-eval-kw"</span> 
+    <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Arg</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">SetString</span> eval<span class="Cnonalphakeyword">)</span>
+    <span class="Cstring">"&lt;kw&gt;  use another keyword than \"eval\""</span><span class="Cnonalphakeyword">;</span>  
+</pre>
+<p>
+Now the users of the syntax extension can load it
+with <code>camlp5o pa_eval.cmo -eval-kw EVAL</code> if they want the new keyword
+to be <code>EVAL</code> instead of <code>eval</code>.
+
+
+
+<h3 id=names>16.2 Avoiding name clashes</h3>
+
+In order to minimize conflicts between existing syntax extensions that could
+be used simultaneously, the following rules are suggested:
+<ul>
+<li> the name of 
+a library which extends the syntax should start with "pa_"
+(e.g. <code>pa_eval.cmo</code>) 
+<li> the name of 
+a library which defines a pretty-printer should start with "pr_"
+(e.g. <code>pr_eval.cmo</code>) 
+<li> the name of 
+a library which defines quotation expanders should start with "q_"
+(e.g. <code>q_eval.cmo</code>) 
+<li> check that the name of the library that you intend to publish is not
+already taken, with or without the "pa_", "pr_" or "q_" prefix, unless
+you are specifically writing syntactic sugar for this library.
+<li> if your syntax extension accepts options, beware that other 
+syntax extensions might use the same option names, which won't work
+when used simultaneously. You can assume the exclusivity of option names
+that start with the same name as your syntax extension
+(e.g. <code>-eval-kw</code>).
+<li> hidden identifiers that are introduced into the OCaml AST should
+start two underscores followed by the name of the extension file, including
+the "pa_" or "pr_" prefix (e.g. <code>__pa_eval1234</code>).
+</ul>
+
+<p>
+Please note that many existing extensions do not respect all of these (new,
+unofficial)
+guidelines, but if you follow them it means less trouble 
+for you in the future.
+
+
+<h2 id=youcan>17. Things you can do</h2>
+
+
+<h3 id=lettry>17.1 Catching exceptions only where needed: <code>let try <i>name</i> = <i>expr1</i> in <i>expr2</i> with <i>exception-handler</i></code></h3>
+
+<p>
+Sometimes, it is useful to restrict the scope of an exception handler.
+The regular <code><span class="Ctry">try</span></code> ... <code><span class="Cwith">with</span></code> 
+lets us do this:
+<pre><span class="Clet">let</span> <span class="Crec">rec</span> cat <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">=</span>
+  <span class="Ctry">try</span> 
+    <span class="Clet">let</span> c <span class="Cnonalphakeyword">=</span> input_char stdin <span class="Cin">in</span>
+    print_char c<span class="Cnonalphakeyword">;</span>
+    cat <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+  <span class="Cwith">with</span> <span class="Cconstructor">End_of_file</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span> cat <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+</pre>
+<p>
+but it catches exceptions that might be raised not only during the call to
+<code>input_char</code> but also <code>print_char</code>
+and <code>cat</code> itself.
+That is problematic for several reasons that we don't want to discuss here.
+<p>
+In order to catch the exceptions that are raised during the call to
+<code>input_char</code>, it can be quite difficult to keep the code
+simple and readable. Here is one solution which is relatively natural:
+<pre><span class="Clet">let</span> <span class="Crec">rec</span> cat <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">=</span>
+  <span class="Cmatch">match</span>
+    <span class="Ctry">try</span> <span class="Cconstructor">Some</span> <span class="Cnonalphakeyword">(</span>input_char stdin<span class="Cnonalphakeyword">)</span>
+    <span class="Cwith">with</span> <span class="Cconstructor">End_of_file</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">None</span>
+  <span class="Cwith">with</span>
+      <span class="Cconstructor">Some</span> c <span class="Cnonalphakeyword">-&gt;</span> 
+        print_char c<span class="Cnonalphakeyword">;</span>
+        cat <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">None</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span> cat <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+</pre>
+<p>
+Another solution, which is hard to read but simple to implement mechanically
+is the following:
+<pre><span class="Clet">let</span> <span class="Crec">rec</span> cat <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">=</span>
+  <span class="Cnonalphakeyword">(</span><span class="Ctry">try</span> 
+     <span class="Clet">let</span> c <span class="Cnonalphakeyword">=</span> input_char stdin <span class="Cin">in</span>
+     <span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span>
+       print_char c<span class="Cnonalphakeyword">;</span>
+       cat <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+   <span class="Cwith">with</span> <span class="Cconstructor">End_of_file</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span> cat <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+</pre>
+<p>
+This is the solution we choose here to implement a new 
+let-try-in-with construct which was suggested by 
+Don Syme in 
+<a href="http://caml.inria.fr/pub/ml-archives/caml-list/2004/12/b5b79fcd4ea695b8e1e0aff740b07cf3.en.html">a message to caml-list</a>. 
+It looks like this:
+<p>File <a href="camlp5/lettry/prog.ml">prog.ml</a> [<a href="camlp5/lettry/prog.ml.html">html</a>]:
+<pre><span class="Clet">let</span> <span class="Crec">rec</span> cat <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> <span class="Ctry">try</span> c <span class="Cnonalphakeyword">=</span> input_char stdin <span class="Cin">in</span>
+  print_char c<span class="Cnonalphakeyword">;</span>
+  cat <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+  <span class="Cwith">with</span> <span class="Cconstructor">End_of_file</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span> cat <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+</pre>
+<p>
+Note that we just inverted the <code><span class="Clet">let</span></code> and
+<code><span class="Ctry">try</span></code> keywords with respect to the original program.
+<p>
+The syntax extension is pretty straightforward and reuses
+some entries of the grammar of OCaml: <code><span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>let_binding</code>,
+<code><span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr</code> and <code><span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>patt</code>.
+You can notice that these entries are defined in the <code><span class="Cconstructor">Pcaml</span></code>
+module, not in <code><span class="Cconstructor">Pa_o</span></code> (file <code>pa_o.ml</code>). 
+The reason is that
+the grammar for the revised syntax of OCaml (file <code>pa_r.ml</code>)
+shares the same public entries.
+This leaves the possibility of writing syntax extensions of the
+regular syntax (as we do in this tutorial)
+which also work to extend the revised syntax.
+<p>
+Unfortunately, many entries found in <code>pa_o.ml</code> 
+that we would like to modify are not visible from outside.
+<p>
+In this example, we create a new entry <code>lettry_case</code>
+which is very similar to the <code>match_case</code> entry found
+in <code>pa_o.ml</code>:
+<p>File <a href="camlp5/lettry/pa_lettry.ml">pa_lettry.ml</a> [<a href="camlp5/lettry/pa_lettry.ml.html">html</a>]:
+<pre><span class="Cconstructor">EXTEND</span>
+  <span class="Cconstructor">GLOBAL</span>: <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr<span class="Cnonalphakeyword">;</span>
+
+  <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr: <span class="Cconstructor">LEVEL</span> <span class="Cstring">"expr1"</span> <span class="Cnonalphakeyword">[</span>
+    <span class="Cnonalphakeyword">[</span> <span class="Cstring">"let"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"try"</span><span class="Cnonalphakeyword">;</span> o <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">OPT</span> <span class="Cstring">"rec"</span><span class="Cnonalphakeyword">;</span> l <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">LIST1</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>let_binding <span class="Cconstructor">SEP</span> <span class="Cstring">"and"</span><span class="Cnonalphakeyword">;</span> 
+      <span class="Cstring">"in"</span><span class="Cnonalphakeyword">;</span> e <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr<span class="Cnonalphakeyword">;</span>
+      <span class="Cstring">"with"</span><span class="Cnonalphakeyword">;</span> pwel <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">LIST1</span> lettry_case <span class="Cconstructor">SEP</span> <span class="Cstring">"|"</span> <span class="Cnonalphakeyword">-&gt;</span>
+        <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> (try </span>
+<span class="Cquotation">                   let $opt: o &lt;&gt; None$ $list:l$ in </span>
+<span class="Cquotation">                   fun () -&gt; $e$ </span>
+<span class="Cquotation"></span>        <span class="Cquotation"></span>        <span class="Cquotation"> with </span>
+<span class="Cquotation">                   [ $list:pwel$ ]) () </span><span class="Cconstructor">&gt;&gt;</span>  <span class="Cnonalphakeyword">]</span>
+  <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+
+  lettry_case: <span class="Cnonalphakeyword">[</span> 
+    <span class="Cnonalphakeyword">[</span> p <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>patt<span class="Cnonalphakeyword">;</span> 
+      w <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">OPT</span> <span class="Cnonalphakeyword">[</span> <span class="Cstring">"when"</span><span class="Cnonalphakeyword">;</span> e <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr <span class="Cnonalphakeyword">-&gt;</span> e <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"-&gt;"</span><span class="Cnonalphakeyword">;</span> 
+      e <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>p<span class="Cnonalphakeyword">,</span> <span class="Cconstructor">Ploc</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">VaVal</span> w<span class="Cnonalphakeyword">,</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> fun () -&gt; $e$ </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">]</span>
+  <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+<span class="Cconstructor">END</span><span class="Cnonalphakeyword">;;</span>
+</pre>
+<p>
+When a <code>GLOBAL</code> statement is present, it means that
+any new entry will be created automatically and will not be
+visible outside of the <code>EXTEND</code> block.
+To make the lettry_case visible, we would proceed as follows:
+<pre><span class="Clet">let</span> lettry_case <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Grammar</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Entry</span><span class="Cnonalphakeyword">.</span>create <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>gram <span class="Cstring">"lettry_case"</span><span class="Cnonalphakeyword">;;</span>
+
+<span class="Cconstructor">EXTEND</span>
+  <span class="Ccomment">(* no GLOBAL statement *)</span>
+  <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr: <span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span> <span class="Cnonalphakeyword">;</span>
+  lettry_case: <span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span> <span class="Cnonalphakeyword">;</span>
+<span class="Cconstructor">END</span><span class="Cnonalphakeyword">;;</span>
+</pre>
+
+
+
+<p>
+Our program in the new syntax is successfully transformed into this
+one:
+<p>File <a href="camlp5/lettry/prog.ppo">prog.ppo</a>:
+<pre><span class="Clet">let</span> <span class="Crec">rec</span> cat <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">=</span>
+  <span class="Cnonalphakeyword">(</span><span class="Ctry">try</span> <span class="Clet">let</span> c <span class="Cnonalphakeyword">=</span> input_char stdin <span class="Cin">in</span> <span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> print_char c<span class="Cnonalphakeyword">;</span> cat <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cwith">with</span>
+     <span class="Cconstructor">End_of_file</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span>
+    <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span> cat <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span></pre>
+
+<p>
+The program prints on stdout the characters read from stdin:
+<pre>
+$ echo Hello | ./prog
+Hello
+</pre>
+
+<p>
+<span style="color:red"><b>Warning</b>: we also should extend the <code>Pcaml.str_item</code> entry,
+using the same code as for <code>Pcaml.expr</code>, just
+like for the standard let-in construct found in <code>pa_o.ml</code>.</span>
+
+
+<p>
+<b>Alternate syntax:</b> 
+we might prefer a syntax where the <code><span class="Cwith">with</span></code> 
+is internal.
+It makes it easier to realize that the recursive call to our 
+<code>cat</code> function is a tail-call.
+This was suggested by 
+<a href="http://pauillac.inria.fr/~ddr/index-english.html">Daniel 
+de Rauglaudre</a>. It goes like this:
+<pre><span class="Clet">let</span> <span class="Crec">rec</span> cat <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> <span class="Ctry">try</span> c <span class="Cnonalphakeyword">=</span> input_char stdin 
+      <span class="Cwith">with</span> <span class="Cconstructor">End_of_file</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+  <span class="Cin">in</span>
+  print_char c<span class="Cnonalphakeyword">;</span>
+  cat <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span> cat <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+</pre>
+<p>
+Implementing this is left as an exercise for the reader.
+
+
+<h3 id=onlyfloats>17.2 Read <code>1/2</code> as <code>1. /. 2.</code>, but only locally</h3>
+
+<p>
+A full solution to this problem is given earlier, in 
+<a href="#replacing">that section</a>.
+
+
+
+<h3 id=types>17.3 Default values for record fields</h3>
+
+<p>
+Although it is not very easy to extend the existing syntax for type 
+definitions, we can easily add alternative syntaxes.
+<p>
+Here we will create a <code>record</code> keyword that we
+will use for the definition of records where some fields
+are defined with default values.
+A function with labeled arguments will be generated automatically
+and should be used by the user for creating these records.
+<p>
+This is our test program:
+<p>File <a href="camlp5/records/prog.ml">prog.ml</a> [<a href="camlp5/records/prog.ml.html">html</a>]:
+<pre>record bob <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">{</span> foo : string <span class="Cnonalphakeyword">=</span> <span class="Cstring">"Hello"</span><span class="Cnonalphakeyword">;</span>
+               bar : string<span class="Cnonalphakeyword">;</span>
+               <span class="Cmutable">mutable</span> n : int <span class="Cnonalphakeyword">=</span> 1 <span class="Cnonalphakeyword">}</span>
+
+record weird <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">{</span> x : weird option <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Some</span> <span class="Cnonalphakeyword">(</span>create_weird <span class="Cnonalphakeyword">~</span>x:<span class="Cconstructor">None</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">}</span>
+
+<span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> x <span class="Cnonalphakeyword">=</span> create_bob <span class="Cnonalphakeyword">~</span>bar:<span class="Cstring">"World"</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+  x<span class="Cnonalphakeyword">.</span>n <span class="Cnonalphakeyword">&lt;-</span> x<span class="Cnonalphakeyword">.</span>n <span class="Cnonalphakeyword">+</span> 1<span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">Printf</span><span class="Cnonalphakeyword">.</span>printf <span class="Cstring">"%s %s %i\n"</span> x<span class="Cnonalphakeyword">.</span>foo x<span class="Cnonalphakeyword">.</span>bar x<span class="Cnonalphakeyword">.</span>n
+</pre>
+
+<p>
+There is no big difficulty since we chose not to extend 
+the <code><span class="Ctype">type</span></code> syntax for type definitions but to create
+a new one, just for records.
+<p>
+Note (in pink) that the expressions that are given as default values
+for record fields are parsed from the <code><span class="Cstring">"simple"</span></code> 
+precedence level. It means that unless parentheses are placed
+around the expression, the semicolon will be interpreted as a 
+separator between two record fields, not between two expressions.
+<p>File <a href="camlp5/records/pa_records.ml">pa_records.ml</a> [<a href="camlp5/records/pa_records.ml.html">html</a>]:
+<pre><span class="Clet">let</span> make_record_expr loc l <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> fields <span class="Cnonalphakeyword">=</span>
+    <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>map <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">(</span>loc<span class="Cnonalphakeyword">,</span> name<span class="Cnonalphakeyword">,</span> mut<span class="Cnonalphakeyword">,</span> t<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">,</span> default<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> 
+                <span class="Cnonalphakeyword">(</span><span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $lid:name$ </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">,</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $lid:name$ </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> l <span class="Cin">in</span>
+  <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> { $list:fields$ } </span><span class="Cconstructor">&gt;&gt;</span>
+
+<span class="Clet">let</span> expand_record loc type_name l <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> type_def <span class="Cnonalphakeyword">=</span> 
+    <span class="Clet">let</span> fields <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>map fst l <span class="Cin">in</span>
+    <span class="Cconstructor">&lt;:str_item&lt;</span><span class="Cquotation"> type $lid:type_name$ = { $list:fields$ } </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> expr_def <span class="Cnonalphakeyword">=</span>
+    <span class="Clet">let</span> record_expr <span class="Cnonalphakeyword">=</span> make_record_expr loc l <span class="Cin">in</span>
+    <span class="Clet">let</span> f <span class="Cnonalphakeyword">=</span>
+      <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>fold_right
+        <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">(</span>loc<span class="Cnonalphakeyword">,</span> name<span class="Cnonalphakeyword">,</span> mut<span class="Cnonalphakeyword">,</span> t<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">,</span> default<span class="Cnonalphakeyword">)</span> e <span class="Cnonalphakeyword">-&gt;</span>
+           <span class="Cmatch">match</span> default <span class="Cwith">with</span>
+               <span class="Cconstructor">None</span> <span class="Cnonalphakeyword">-&gt;</span>
+                 <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> fun ~ $Ploc.VaVal name$ -&gt; $e$ </span><span class="Cconstructor">&gt;&gt;</span>
+             <span class="Cbar">|</span> <span class="Cconstructor">Some</span> x <span class="Cnonalphakeyword">-&gt;</span>
+                 <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> fun ? ($lid:name$ = $x$) -&gt; $e$ </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">)</span>
+        l
+        <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> fun () -&gt; $record_expr$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cin">in</span>
+    <span class="Cconstructor">&lt;:str_item&lt;</span><span class="Cquotation"> value rec $lid: "create_" ^ type_name$ = $f$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cin">in</span>
+  <span class="Cconstructor">&lt;:str_item&lt;</span><span class="Cquotation"> declare $type_def$; $expr_def$; end </span><span class="Cconstructor">&gt;&gt;</span>
+
+<span class="Cconstructor">EXTEND</span>
+  <span class="Cconstructor">GLOBAL</span>: <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>str_item<span class="Cnonalphakeyword">;</span>
+
+  <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>str_item: <span class="Cconstructor">LEVEL</span> <span class="Cstring">"top"</span> <span class="Cnonalphakeyword">[</span>
+    <span class="Cnonalphakeyword">[</span> <span class="Cstring">"record"</span><span class="Cnonalphakeyword">;</span> type_name <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">LIDENT</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"="</span><span class="Cnonalphakeyword">;</span> 
+      <span class="Cstring">"{"</span><span class="Cnonalphakeyword">;</span> l <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">LIST1</span> field_decl <span class="Cconstructor">SEP</span> <span class="Cstring">";"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"}"</span> <span class="Cnonalphakeyword">-&gt;</span> expand_record loc type_name l <span class="Cnonalphakeyword">]</span>
+  <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+
+  field_decl: <span class="Cnonalphakeyword">[</span>
+    <span class="Cnonalphakeyword">[</span> mut <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">OPT</span> <span class="Cstring">"mutable"</span><span class="Cnonalphakeyword">;</span>
+      name <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">LIDENT</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">":"</span><span class="Cnonalphakeyword">;</span> t <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>ctyp<span class="Cnonalphakeyword">;</span> 
+      default <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">OPT</span> <span class="Cnonalphakeyword">[</span> <span class="Cstring">"="</span><span class="Cnonalphakeyword">;</span> <span style="background:pink">e <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr <span class="Cconstructor">LEVEL</span> <span class="Cstring">"simple"</span></span> <span class="Cnonalphakeyword">-&gt;</span> e <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span> 
+        <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">(</span>loc<span class="Cnonalphakeyword">,</span> name<span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">(</span>mut &lt;&gt; <span class="Cconstructor">None</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">,</span> t<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">,</span> default<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">]</span>
+  <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+<span class="Cconstructor">END</span><span class="Cnonalphakeyword">;;</span>
+</pre>
+
+
+
+<p>
+Our program <a href="camlp5/records/prog.ml">prog.ml</a>
+has been converted into <a href="camlp5/records/prog.ppo">prog.ppo</a>
+and works as expected:
+<pre>
+$ ./prog
+Hello World 2
+</pre>
+
+<p>
+You can download the <a href="camlp5/records/Makefile">Makefile</a>.
+
+
+
+<h3 id=rec-expr>17.4 Anonymous recursive functions</h3>
+
+<p>
+This is left as an exercise for the reader:
+we decide that the <code>rec</code> keyword preceding a function makes this function available under
+the name <code>self</code> throughout its definition.
+For instance, the following:
+<pre><span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>map 
+  <span class="Cnonalphakeyword">(</span><span class="Crec">rec</span> <span class="Cfunction">function</span> 0 <span class="Cnonalphakeyword">-&gt;</span> 1 <span class="Cbar">|</span> n <span class="Cnonalphakeyword">-&gt;</span> n <span class="Cnonalphakeyword">*</span> self <span class="Cnonalphakeyword">(</span>n <span class="Cnonalphakeyword">-</span> 1<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span>
+  <span class="Cnonalphakeyword">[</span>1<span class="Cnonalphakeyword">;</span>2<span class="Cnonalphakeyword">;</span>3<span class="Cnonalphakeyword">;</span>4<span class="Cnonalphakeyword">;</span>5<span class="Cnonalphakeyword">]</span></pre>
+<p>
+would be transcribed into:
+<pre><span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>map 
+  <span class="Cnonalphakeyword">(</span><span class="Clet">let</span> <span class="Crec">rec</span> self <span class="Cnonalphakeyword">=</span> <span class="Cfunction">function</span> 0 <span class="Cnonalphakeyword">-&gt;</span> 1 <span class="Cbar">|</span> n <span class="Cnonalphakeyword">-&gt;</span> n <span class="Cnonalphakeyword">*</span> self <span class="Cnonalphakeyword">(</span>n <span class="Cnonalphakeyword">-</span> 1<span class="Cnonalphakeyword">)</span> <span class="Cin">in</span> self<span class="Cnonalphakeyword">)</span>
+  <span class="Cnonalphakeyword">[</span>1<span class="Cnonalphakeyword">;</span>2<span class="Cnonalphakeyword">;</span>3<span class="Cnonalphakeyword">;</span>4<span class="Cnonalphakeyword">;</span>5<span class="Cnonalphakeyword">]</span></pre>
+<p>
+Hint: some expressions other than functions can be defined recursively.
+How would you define the following list in our new syntax?
+<pre><span class="Ccomment">(* This is a circular list *)</span>
+<span class="Clet">let</span> <span class="Crec">rec</span> circ <span class="Cnonalphakeyword">=</span> 1 <span class="Cnonalphakeyword">::</span> 2 <span class="Cnonalphakeyword">::</span> circ</pre>
+
+
+
+<h2 id=youcant>18. Things you cannot do and workarounds</h2>
+
+<h3 id=inserting-anywhere>18.1 Inserting anything, anywhere</h3>
+
+<p>
+Extending the syntax of OCaml consists in adding or replacing rules 
+in the grammar.
+However the terminal rules, i.e. the tokens returned by the lexer such
+as <code>LIDENT</code>, <code>STRING</code> or <code>INT</code>, cannot be 
+extended.
+<p>
+Consider the following syntax extension where we create a <code>one</code>
+keyword which is simply replaced by <code>1</code> in expressions and in
+patterns:
+<pre><span class="Cconstructor">EXTEND</span>
+  <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr: <span class="Cconstructor">LEVEL</span> <span class="Cstring">"simple"</span> <span class="Cnonalphakeyword">[</span> 
+    <span class="Cnonalphakeyword">[</span> <span class="Cstring">"one"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> 1 </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span>
+  <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>patt: <span class="Cconstructor">LEVEL</span> <span class="Cstring">"simple"</span> <span class="Cnonalphakeyword">[</span> 
+    <span class="Cnonalphakeyword">[</span> <span class="Cstring">"one"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> 1 </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span>
+  <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+<span class="Cconstructor">END</span><span class="Cnonalphakeyword">;;</span></pre>
+<p>
+This will not replace every occurrence of <code>one</code> by <code>1</code>,
+but only where <code>one</code> appears as a lowercase identifier
+as defined by the lexer, as an expression or a pattern. 
+So <code>one_apple</code> and <code><span class="Cstring">"one&nbsp;+&nbsp;2"</span></code> will
+remain unchanged.
+<p>
+If you need for instance to parametrize the name of an identifier by adding
+a suffix such as a version number, you can't do it by defining grammar rules.
+In that case, one solution is to use a simple preprocessor which simply
+ignores the context, or to define your own quotation expander.
+<p>
+Quotations behave as one single token, which will be expanded into a node
+of the OCaml syntax tree which is either an expression (expr) or
+a pattern (patt). Quotations are a good way to introduce a syntax which
+is radically different from OCaml. All you have to do is
+define a syntax expander, i.e. a function which builds
+an expression or a pattern from a raw string. 
+For this you can use any technique you like such as Camlp5 (lexer + grammar),
+Ocamllex + Ocamlyacc, regular expressions, etc.
+See the Camlp5 <a href="http://pauillac.inria.fr/~ddr/camlp5/doc/htmlc/">manual</a> for the details on how to define a quotation expander.
+
+
+
+<h3 id=comments>18.2 Adding end of line comments</h3>
+
+<p>
+End of lines that separate tokens and comments are eliminated by
+the lexer. This is why nothing can be done to solve this problem
+with extensible grammars, although it should be relatively easy to adapt
+the lexer for this task.
+
+<h3 id=strings>18.3 Adding a notation for raw strings</h3>
+
+<p>
+Adding customized delimiters for string literals cannot be done by 
+extending the grammar.
+
+<p>
+One alternative is to define a quotation expander which job is to 
+transform the contents of the quotation into a valid OCaml string.
+In this case, instead of escaping
+the double-quotes (<code><span class="Cstring">"</span></code>), we would have
+to escape the end-of-quotation delimiters (<code>&gt;&gt;</code>).
+The code which would be compiled and loaded by the preprocessor should look
+like this (not tested):
+<pre><span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span>
+  <span class="Ccomment">(* we define a very simple quotation expander *)</span>
+  <span class="Clet">let</span> expander is_expr quotation_contents <span class="Cnonalphakeyword">=</span>
+
+    <span class="Ccomment">(* addition of double-quotes around the string </span>
+<span class="Ccomment">       and backslashes where necessary *)</span>
+    <span class="Clet">let</span> s <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Printf</span><span class="Cnonalphakeyword">.</span>sprintf <span class="Cstring">"%S"</span> quotation_contents <span class="Cin">in</span>
+
+    <span class="Ccomment">(* the result is plain-text OCaml code (concrete syntax) *)</span>
+    <span class="Cconstructor">Quotation</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">ExStr</span> s <span class="Cin">in</span>
+
+  <span class="Cconstructor">Quotation</span><span class="Cnonalphakeyword">.</span>add <span class="Cstring">"string"</span> expander<span class="Cnonalphakeyword">;</span>
+  <span class="Ccomment">(* we decide that `string' will be the default quotation expander *)</span>
+
+  <span class="Cconstructor">Quotation</span><span class="Cnonalphakeyword">.</span>default <span class="Cnonalphakeyword">:=</span> <span class="Cstring">"string"</span></pre>
+<p>
+Now, in a program which is preprocessed with this, the three following
+notations are equivalent:
+
+<pre>
+  &lt;:string&lt; I don't want to escape this: """""""""" &gt;&gt;
+  &lt;&lt; I don't want to escape this: """""""""" &gt;&gt;
+  " I don't want to escape this: \"\"\"\"\"\"\"\"\"\" "
+</pre>
+
+
+<p>
+The syntax expander can also return a node of the AST, but it is
+more complicated to implement and we lose the location 
+of the quotation, which can make debugging quite unpleasant
+(again, not tested):
+<pre><span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span>
+  <span class="Ccomment">(* we define a very simple quotation expander *)</span>
+  <span class="Clet">let</span> quote_string s <span class="Cnonalphakeyword">=</span> 
+    <span class="Ccomment">(* no double-quotes around the strings in AST nodes! *)</span>
+    <span class="Cconstructor">String</span><span class="Cnonalphakeyword">.</span>escaped s <span class="Cin">in</span>
+
+  <span class="Clet">let</span> loc <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Token</span><span class="Cnonalphakeyword">.</span>dummy_loc <span class="Ccomment">(* avoid doing this whenever you can *)</span> <span class="Cin">in</span>
+
+  <span class="Ccomment">(* here the result is a pair of functions that</span>
+<span class="Ccomment">     return the appropriate node of the syntax tree (abstract syntax) *)</span>
+  <span class="Clet">let</span> expand_expr quotation_contents <span class="Cnonalphakeyword">=</span>
+    <span class="Clet">let</span> s <span class="Cnonalphakeyword">=</span> quote_string quotation_contents <span class="Cin">in</span>
+    <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $str:s$ </span><span class="Cconstructor">&gt;&gt;</span> 
+
+  <span class="Cand">and</span> expand_patt quotation_contents <span class="Cnonalphakeyword">=</span>
+    <span class="Clet">let</span> s <span class="Cnonalphakeyword">=</span> quote_string quotation_contents <span class="Cin">in</span>
+    <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $str:s$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cin">in</span>
+    
+  <span class="Clet">let</span> expander <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Quotation</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">ExAst</span> <span class="Cnonalphakeyword">(</span>expand_expr<span class="Cnonalphakeyword">,</span> expand_patt<span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+  <span class="Cconstructor">Quotation</span><span class="Cnonalphakeyword">.</span>add <span class="Cstring">"string"</span> expander<span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">Quotation</span><span class="Cnonalphakeyword">.</span>default <span class="Cnonalphakeyword">:=</span> <span class="Cstring">"string"</span></pre>
+
+
+<h3 id=infix>18.4 Adding Haskell's "infixing" backquotes
+such as <code>f `map` list</code></h3>
+
+<p>
+The backquote symbol (<code><span class="Cconstructor">`</span></code>) is already in use
+as a prefix operator for constructors of polymorphic variants and in
+the Camlp5 extension for stream parsers.
+<p>
+Other notations could be used though.
+Maybe using <code><span class="Cnonalphakeyword">&amp;</span></code> is not possible due to priority issues,
+but we would have something like this:
+<pre><span class="Clet">let</span> add a b <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span>2 <span class="Cnonalphakeyword">*</span> a<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">+</span> b
+<span class="Clet">let</span> c <span class="Cnonalphakeyword">=</span> 1 <span class="Cnonalphakeyword">&amp;</span>add 2</pre>
+<p>
+which means:
+<pre><span class="Clet">let</span> c <span class="Cnonalphakeyword">=</span> add 1 2</pre>
+<p>
+and not:
+<pre><span class="Clet">let</span> c <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span>add 2<span class="Cnonalphakeyword">)</span> 1</pre>
+<p>
+That makes a good exercise for the reader! I don't know if there is
+an acceptable solution, so let me know if you find one.
+<p>
+Hint: we have to define an infix operator
+which is accepted by Camlp5 and available (or that can be overriden),
+and has a stronger precedence than function application 
+(<code><span class="Cstring">"apply"</span></code> level) just like <code><span class="Cnonalphakeyword">.</span></code> or
+<code><span class="Cnonalphakeyword">#</span></code>.
+
+
+<h3 id=selectors>18.5 Adding SML's #<i>n</i> notation 
+to extract field number <i>n</i> of any tuple</h3>
+
+<p>
+This problem is: how to define a function which returns the nth element 
+of a tuple of any size?
+
+<p>
+Unfortunately, Camlp5 cannot help much here since it doesn't know
+the type of the expressions it manipulates.
+<p>
+But if we accept to specify how many fields
+the records has, it becomes feasible.
+We would have to define a syntax which would be close to this:
+<pre><span class="Clet">let</span> x <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span>1<span class="Cnonalphakeyword">,</span> <span class="Cstring">"abc"</span><span class="Cnonalphakeyword">,</span> <span class="Cconstructor">None</span><span class="Cnonalphakeyword">)</span>
+<span class="Clet">let</span> third_field <span class="Cnonalphakeyword">=</span> x<span class="Cnonalphakeyword">.</span>3<span class="Cbar">|</span>3</pre>
+<p>
+which would mean:
+<pre><span class="Clet">let</span> x <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span>1<span class="Cnonalphakeyword">,</span> <span class="Cstring">"abc"</span><span class="Cnonalphakeyword">,</span> <span class="Cconstructor">None</span><span class="Cnonalphakeyword">)</span>
+<span class="Clet">let</span> third_field <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span><span class="Cmatch">match</span> x <span class="Cwith">with</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">,</span> field<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> field<span class="Cnonalphakeyword">)</span></pre>
+<p>
+As often, the difficulty is to find a nice syntax which
+does not create ambiguities and is accepted by Camlp5.
+
+<h2 id=troubleshooting>19. Common problems</h2>
+
+<h3 id=lists>19.1 I can't build a list with something like <code>&lt;:expr&lt; [ $list:my_list$ ] &gt;&gt;</code></h3>
+
+<p>
+In the syntax tree, there is a node for each node of a list, and
+there is no predefined function that will create all these 
+AST nodes automatically.
+<p>
+Let's say we want to create a notation for lists without semicolons between
+the elements. A program using this notation would look like this:
+<p>File <a href="camlp5/lists/prog.ml">prog.ml</a> [<a href="camlp5/lists/prog.ml.html">html</a>]:
+<pre><span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span> 
+  <span class="Clet">let</span> a <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">[|</span> 123<span class="Cnonalphakeyword">;</span> 456 <span class="Cnonalphakeyword">|]</span> <span class="Cin">in</span>
+  <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>iter 
+    <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> i <span class="Cnonalphakeyword">-&gt;</span> print_int i<span class="Cnonalphakeyword">;</span> 
+       print_newline <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> 
+    <span style="background:pink"><span class="Cnonalphakeyword">(</span><span class="Cconstructor">LIST</span> 1 2 3 a<span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">(</span>1<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span></span>
+</pre>
+
+<p>
+The syntax extension is rather short, and easy if you understand the system
+of <a href="#priorities">levels</a>:
+
+<p>File <a href="camlp5/lists/pa_lists.ml">pa_lists.ml</a> [<a href="camlp5/lists/pa_lists.ml.html">html</a>]:
+<pre><span style="background:silver"><span class="Clet">let</span> expr_list loc l <span class="Cnonalphakeyword">=</span>
+  <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>fold_right 
+    <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> head tail <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> [ $head$ :: $tail$ ] </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">)</span>
+    l
+    <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> [] </span><span class="Cconstructor">&gt;&gt;</span>
+</span>
+
+<span class="Cconstructor">EXTEND</span>
+  <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr: <span class="Cnonalphakeyword">[</span>
+    <span class="Cnonalphakeyword">[</span> <span class="Cstring">"LIST"</span><span class="Cnonalphakeyword">;</span> l <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">LIST0</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr <span class="Cconstructor">LEVEL</span> <span class="Cstring">"."</span> <span class="Cnonalphakeyword">-&gt;</span> <span style="background:silver">expr_list loc l</span> <span class="Cnonalphakeyword">]</span>
+  <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+<span class="Cconstructor">END</span><span class="Cnonalphakeyword">;;</span>
+</pre>
+
+<p>
+As announced, we need to build the nodes of the AST that represent the
+nodes of the list. This is the purpose of the <code>expr_list</code>
+function.
+
+
+
+<p>
+The output of the program is the following:
+<pre>
+$ ./prog
+1
+2
+3
+456
+</pre>
+
+<p>
+You can also download the following files for this example:
+the <a href="camlp5/lists/Makefile">Makefile</a> and the program
+after conversion to regular OCaml <a href="camlp5/lists/prog.ppo">prog.ppo</a>.
+
+
+<h3 id=functions>19.2 I can't build a function declaration with something like <code>&lt;:expr&lt; let f $list:args$ = $e$ &gt;&gt;</code></h3>
+
+<p>
+Functions as represented in the AST only take one argument.
+So this:
+<pre><span class="Clet">let</span> f x y z <span class="Cnonalphakeyword">=</span> x <span class="Cnonalphakeyword">+</span> y <span class="Cnonalphakeyword">+</span> z</pre>
+<p>
+is represented in the AST as:
+<pre><span class="Clet">let</span> f <span class="Cnonalphakeyword">=</span>
+  <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> x <span class="Cnonalphakeyword">-&gt;</span>
+     <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> y <span class="Cnonalphakeyword">-&gt;</span>
+        <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> z <span class="Cnonalphakeyword">-&gt;</span> x <span class="Cnonalphakeyword">+</span> y <span class="Cnonalphakeyword">+</span> z<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span></pre>
+
+<p>
+Such definitions have to be built using higher-order functions
+such as <code><span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>fold_right</code> or <code><span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>fold_left</code>
+(see <a href="#lists">previous section</a>).
+
+
+<h3 id=badloc>19.3 Incorrect locations in error reports</h3>
+
+<p>
+It happens that Camlp5 returns incorrect locations in errors messages under
+some circumstances.
+Camlp5 3.08.1 was particularly difficult to use for this reason, so if
+you are using OCaml 3.08.1, you should upgrade your OCaml system.
+
+<h3 id=loc>19.4 Unbound value <code>_loc</code> (or <code>loc</code>)</h3>
+
+<p>
+Between the release of OCaml 3.08.2 and 3.08.3, the default identifier
+for locations used in syntax extensions silently
+changed from <code>loc</code> to <code>_loc</code>.
+<p>
+For compatibility reasons, pass the <code>-loc _loc</code> option
+(or <code>-loc loc</code>) to <code>camlp5o</code> as we did in the Makefiles
+of this tutorial.
+
+<h3 id=labels>19.5 What's wrong with labels: <code>&lt;:expr&lt; f ~$lid:labelname$ &gt;&gt;</code> doesn't work</h3>
+
+<p>
+Labels of function arguments are a special kind of node of the syntax tree
+which is simply represented using the <code>string</code> type
+and only include lowercase identifiers.
+Instead of writing this:
+<pre><span class="Clet">let</span> label <span class="Cnonalphakeyword">=</span> <span class="Cstring">"x"</span> <span class="Cin">in</span>
+<span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> f ~$lid:label$ </span><span class="Cconstructor">&gt;&gt;</span>
+</pre>
+<p>
+one should simply write that:
+<pre><span class="Clet">let</span> label <span class="Cnonalphakeyword">=</span> <span class="Cstring">"x"</span> <span class="Cin">in</span>
+<span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> f ~$label$ </span><span class="Cconstructor">&gt;&gt;</span>
+</pre>
+
+<h3 id=Not_found>19.6 <code>Not_found</code> is raised during the preprocessing</h3>
+
+<p>
+If the <code>Not_found</code> exception is raised during the preprocessing
+phase (typically while running <code>camlp5o</code> 
+or starting a custom toplevel), the reason may be that
+a <code>DELETE_RULE</code> statement tries to delete a rule which 
+does not exist. Some rules may be slightly changed from one version of Camlp5
+to another or they might move to other grammar entries. 
+<p>
+For the sake of compatibility, it seems to be a good practice to catch
+and ignore any <code>Not_found</code> exception that might be raised
+by a <code>DELETE_RULE</code> statement, which is simply an expression.
+<p>
+For instance, this will fail with some older versions of Camlp5:
+<pre><span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>patt: <span class="Cconstructor">LIDENT</span> <span class="Cconstructor">END</span>
+</pre>
+<p>
+But that should be a much better compromise:
+<pre><span class="Cnonalphakeyword">(</span><span class="Ctry">try</span> <span class="Cconstructor">DELETE_RULE</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>patt: <span class="Cconstructor">LIDENT</span> <span class="Cconstructor">END</span>
+ <span class="Cwith">with</span> <span class="Cconstructor">Not_found</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span>
+</pre>
+
+
+<div id=footer>
+&copy;&nbsp;2007&nbsp;Martin&nbsp;Jambon &lt;<a href="mailto:martin@mjambon.com">martin@mjambon.com</a>&gt;
+</div>
+
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-640255-1";
+urchinTracker();
+</script>
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+<!-- 
+var sc_project=370325; 
+var sc_partition=1; 
+//-->
+</script>
+
+<script type="text/javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><p><a href="http://www.statcounter.com/"><img src="http://c2.statcounter.com/counter.php?sc_project=370325&amp;java=0" alt="counter"></a></p></noscript>
+<!-- End of StatCounter Code -->
+
+</body>
+</html>

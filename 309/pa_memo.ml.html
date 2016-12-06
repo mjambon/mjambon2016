@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>
+309/pa_memo.ml</title>
+  <meta name="GENERATOR" content="caml2html 1.4.2">
+<style type="text/css">
+code,pre { color:black;background-color:white }a.Cannot { color:black;text-decoration:none }.Cannot:hover { background-color: #b4eeb4; }
+.Cbar,
+.Cdo,
+.Cdone,
+.Cdownto,
+.Celse,
+.Cfor,
+.Cif,
+.Clazy,
+.Cmatch,
+.Cnew,
+.Cor,
+.Cthen,
+.Cto,
+.Ctry,
+.Cwhen,
+.Cwhile,
+.Cwith { color: #77aaaa; }
+.Cassert,
+.Cinclude,
+.Copen { color: #cc9900; }
+.Cstring { color: #aa4444; }
+.Cand,
+.Cas,
+.Cclass,
+.Cconstraint,
+.Cexception,
+.Cexternal,
+.Cfun,
+.Cfunction,
+.Cfunctor,
+.Cin,
+.Cinherit,
+.Cinitializer,
+.Clet,
+.Cmethod,
+.Cmodule,
+.Cmutable,
+.Cof,
+.Cprivate,
+.Crec,
+.Ctype,
+.Cval,
+.Cvirtual { color: green; }
+.Cbackground { background-color: white; }
+.Craise { color: red; }
+.Cconstructor { color: #0033cc; }
+.Ccomment { color: #990000; }
+.Calphakeyword,
+.Casr,
+.Cland,
+.Clor,
+.Clsl,
+.Clsr,
+.Clxor,
+.Cmod { color: #808080; }
+.Clinenum { color: black; background-color: silver; }
+.Cbegin,
+.Cend,
+.Cobject,
+.Csig,
+.Cstruct { color: #990099; }
+.Cfalse,
+.Cnonalphakeyword,
+.Cquotation,
+.Ctrue { }
+</style>
+</head>
+<body>
+
+<pre><span class="Ccomment">(*</span>
+<span class="Ccomment">  Public Domain. Use at your own risk!</span>
+<span class="Ccomment">  Author: Martin Jambon &lt;martin_jambon@emailuser.net&gt;</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">  Compilation of this syntax extension:</span>
+<span class="Ccomment">    ocamlc -c \</span>
+<span class="Ccomment">      -pp 'camlp4o pa_extend.cmo q_MLast.cmo -loc _loc' \</span>
+<span class="Ccomment">      -I +camlp4 pa_memo.ml</span>
+<span class="Ccomment">  </span>
+<span class="Ccomment">  Compilation of a program using this syntax extension:</span>
+<span class="Ccomment">    ocamlopt -o prog \</span>
+<span class="Ccomment">      -pp 'camlp4o -I . pa_memo.cmo' \</span>
+<span class="Ccomment">      prog.ml</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">  Description:</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">  Implements functions with memoization by providing a keyword "memo"</span>
+<span class="Ccomment">  which can be used as a replacement for "function".</span>
+<span class="Ccomment">  Results of such functions are stored permanently in a hidden hash table.</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">  Example:</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">  The following function returns the sum of integers from 0 to n,</span>
+<span class="Ccomment">  and prints a + each time an addition is actually performed:</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">  let rec sum = memo </span>
+<span class="Ccomment">      0 -&gt; 0</span>
+<span class="Ccomment">    | n when n &gt; 0 -&gt;</span>
+<span class="Ccomment">        (print_char '+';</span>
+<span class="Ccomment">         n + sum (n - 1))</span>
+<span class="Ccomment">    | _ -&gt; invalid_arg "sum"</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">*)</span>
+
+<span class="Clet">let</span> unique <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> n <span class="Cnonalphakeyword">=</span> ref 0 <span class="Cin">in</span>
+  <span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> incr n<span class="Cnonalphakeyword">;</span> <span class="Cstring">"__pa_memo"</span> ^ string_of_int !n
+
+<span class="Cconstructor">EXTEND</span>
+  <span class="Cconstructor">GLOBAL</span>: <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr<span class="Cnonalphakeyword">;</span>
+
+  <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr: <span class="Cconstructor">LEVEL</span> <span class="Cstring">"expr1"</span> <span class="Cnonalphakeyword">[</span>
+    <span class="Cnonalphakeyword">[</span> <span class="Cstring">"memo"</span><span class="Cnonalphakeyword">;</span> <span class="Cconstructor">OPT</span> <span class="Cstring">"|"</span><span class="Cnonalphakeyword">;</span> pel <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">LIST1</span> match_case <span class="Cconstructor">SEP</span> <span class="Cstring">"|"</span> <span class="Cnonalphakeyword">-&gt;</span>
+        <span class="Clet">let</span> tbl <span class="Cnonalphakeyword">=</span> unique <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+        <span class="Clet">let</span> x <span class="Cnonalphakeyword">=</span> unique <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+        <span class="Clet">let</span> result <span class="Cnonalphakeyword">=</span> unique <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+        <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> </span>
+<span class="Cquotation"></span>        <span class="Cquotation">let $lid:tbl$ = Hashtbl.create 100 in</span>
+<span class="Cquotation"></span>        <span class="Cquotation">fun $lid:x$ -&gt;</span>
+<span class="Cquotation"></span>        <span class="Cquotation">  try Hashtbl.find $lid:tbl$ $lid:x$ </span>
+<span class="Cquotation"></span>        <span class="Cquotation">  with [ Not_found -&gt; </span>
+<span class="Cquotation"></span>        <span class="Cquotation"></span>        <span class="Cquotation">   let $lid:result$ = match $lid:x$ with [ $list:pel$ ] in</span>
+<span class="Cquotation"></span>        <span class="Cquotation"></span>        <span class="Cquotation">   do { Hashtbl.replace $lid:tbl$ $lid:x$ $lid:result$; </span>
+<span class="Cquotation"></span>        <span class="Cquotation"></span>        <span class="Cquotation"></span>        <span class="Cquotation">$lid:result$ } ]</span>
+<span class="Cquotation">    </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span>
+  <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+
+  match_case: <span class="Cnonalphakeyword">[</span>
+    <span class="Cnonalphakeyword">[</span> p <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>patt<span class="Cnonalphakeyword">;</span> w <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">OPT</span> <span class="Cnonalphakeyword">[</span> <span class="Cstring">"when"</span><span class="Cnonalphakeyword">;</span> e <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr <span class="Cnonalphakeyword">-&gt;</span> e <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span> 
+      <span class="Cstring">"-&gt;"</span><span class="Cnonalphakeyword">;</span> e <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr <span class="Cnonalphakeyword">-&gt;</span> 
+        <span class="Cnonalphakeyword">(</span>p<span class="Cnonalphakeyword">,</span> w<span class="Cnonalphakeyword">,</span> e<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">]</span>
+  <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+<span class="Cconstructor">END</span>
+</pre>
+</body>
+</html>

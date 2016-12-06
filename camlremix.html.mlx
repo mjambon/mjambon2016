@@ -25,7 +25,7 @@ open Utils
 
 <p>
 Camlremix is a general-purpose preprocessor like 
-<a href="/mjambon2016/camlmix">Camlmix</a>, but provides
+<a href="/mjambon2016/mjambon2016/camlmix">Camlmix</a>, but provides
 a slightly different syntax that allows switching to the document mode
 inside of an OCaml block.
 Camlremix is written and maintained by 

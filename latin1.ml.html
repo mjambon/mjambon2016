@@ -1,0 +1,173 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>
+latin1.ml</title>
+  <meta name="GENERATOR" content="caml2html 1.4.2">
+<style type="text/css">
+code,pre { color:black;background-color:white }a.Cannot { color:black;text-decoration:none }.Cannot:hover { background-color: #b4eeb4; }
+.Cbar,
+.Cdo,
+.Cdone,
+.Cdownto,
+.Celse,
+.Cfor,
+.Cif,
+.Clazy,
+.Cmatch,
+.Cnew,
+.Cor,
+.Cthen,
+.Cto,
+.Ctry,
+.Cwhen,
+.Cwhile,
+.Cwith { color: #77aaaa; }
+.Cassert,
+.Cinclude,
+.Copen { color: #cc9900; }
+.Cstring { color: #aa4444; }
+.Cand,
+.Cas,
+.Cclass,
+.Cconstraint,
+.Cexception,
+.Cexternal,
+.Cfun,
+.Cfunction,
+.Cfunctor,
+.Cin,
+.Cinherit,
+.Cinitializer,
+.Clet,
+.Cmethod,
+.Cmodule,
+.Cmutable,
+.Cof,
+.Cprivate,
+.Crec,
+.Ctype,
+.Cval,
+.Cvirtual { color: green; }
+.Cbackground { background-color: white; }
+.Craise { color: red; }
+.Cconstructor { color: #0033cc; }
+.Ccomment { color: #990000; }
+.Calphakeyword,
+.Casr,
+.Cland,
+.Clor,
+.Clsl,
+.Clsr,
+.Clxor,
+.Cmod { color: #808080; }
+.Clinenum { color: black; background-color: silver; }
+.Cbegin,
+.Cend,
+.Cobject,
+.Csig,
+.Cstruct { color: #990099; }
+.Cfalse,
+.Cnonalphakeyword,
+.Cquotation,
+.Ctrue { }
+</style>
+</head>
+<body>
+
+<pre><a name="latin1.ml"></a><span class="Ccomment">(* </span>
+<span class="Ccomment">   Alphabetical ordering of ASCII or Latin1 (iso-8859-1) characters</span>
+<span class="Ccomment">   and strings of characters.</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">   Function "compare" compares characters.</span>
+<span class="Ccomment">   Function "compare_strings" compares strings.</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">   Uppercase/lowercase conversions are already implemented in the standard</span>
+<span class="Ccomment">   Char module.</span>
+<span class="Ccomment">*)</span>
+
+<span class="Ccomment">(* </span>
+<span class="Ccomment">   Author(s): Martin Jambon</span>
+<span class="Ccomment">   Requirements: Objective Caml (OCaml)</span>
+<span class="Ccomment">   This file is in the public domain. </span>
+<span class="Ccomment">*)</span>
+
+<span class="Clet">let</span> characters <span class="Cnonalphakeyword">=</span> 
+  <span class="Cnonalphakeyword">[|</span> <span class="Ccomment">(* non-alphanumeric characters in original order *)</span>
+    <span class="Cstring">'\000'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\001'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\002'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\003'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\004'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\005'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\006'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\007'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\008'</span><span class="Cnonalphakeyword">;</span>
+    <span class="Cstring">'\t'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\n'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\011'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\012'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\013'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\014'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\015'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\016'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\017'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\018'</span><span class="Cnonalphakeyword">;</span>
+    <span class="Cstring">'\019'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\020'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\021'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\022'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\023'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\024'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\025'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\026'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\027'</span><span class="Cnonalphakeyword">;</span>
+    <span class="Cstring">'\028'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\029'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\030'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\031'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">' '</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'!'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'"'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'#'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'$'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'%'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'&amp;'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\''</span><span class="Cnonalphakeyword">;</span>
+    <span class="Cstring">'('</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">')'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'*'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'+'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">','</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'-'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'.'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'/'</span><span class="Cnonalphakeyword">;</span> 
+    <span class="Cstring">':'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">';'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'&lt;'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'='</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'&gt;'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'?'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'@'</span><span class="Cnonalphakeyword">;</span> 
+    <span class="Cstring">'['</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\\'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">']'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'^'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'_'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'`'</span><span class="Cnonalphakeyword">;</span>
+    <span class="Cstring">'{'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'|'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'}'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'~'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\127'</span><span class="Cnonalphakeyword">;</span> 
+
+    <span class="Cstring">'\128'</span><span class="Cnonalphakeyword">;</span>
+    <span class="Cstring">'\129'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\130'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\131'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\132'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\133'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\134'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\135'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\136'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\137'</span><span class="Cnonalphakeyword">;</span>
+    <span class="Cstring">'\138'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\139'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\140'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\141'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\142'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\143'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\144'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\145'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\146'</span><span class="Cnonalphakeyword">;</span>
+    <span class="Cstring">'\147'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\148'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\149'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\150'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\151'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\152'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\153'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\154'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\155'</span><span class="Cnonalphakeyword">;</span>
+    <span class="Cstring">'\156'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\157'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\158'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'\159'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">' '</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'¡'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'¢'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'£'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'¤'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'¥'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'¦'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'§'</span><span class="Cnonalphakeyword">;</span>
+    <span class="Cstring">'¨'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'©'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'ª'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'«'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'¬'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'­'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'®'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'¯'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'°'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'±'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'´'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'µ'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'¶'</span><span class="Cnonalphakeyword">;</span>
+    <span class="Cstring">'·'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'¸'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'º'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'»'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'¿'</span><span class="Cnonalphakeyword">;</span>
+    <span class="Cstring">'×'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'÷'</span><span class="Cnonalphakeyword">;</span>
+    
+    <span class="Ccomment">(* digits and numbers *)</span>
+    <span class="Cstring">'0'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'¼'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'½'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'¾'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'1'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'¹'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'2'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'²'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'3'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'³'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'4'</span><span class="Cnonalphakeyword">;</span> 
+    <span class="Cstring">'5'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'6'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'7'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'8'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'9'</span><span class="Cnonalphakeyword">;</span> 
+    
+    <span class="Ccomment">(* letters *)</span>
+    <span class="Cstring">'A'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'À'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Á'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Â'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Ã'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Ä'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Å'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Æ'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'a'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'à'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'á'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'â'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'ã'</span><span class="Cnonalphakeyword">;</span> 
+    <span class="Cstring">'ä'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'å'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'æ'</span><span class="Cnonalphakeyword">;</span> 
+    <span class="Cstring">'B'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'b'</span><span class="Cnonalphakeyword">;</span> 
+    <span class="Cstring">'C'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Ç'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'c'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'ç'</span><span class="Cnonalphakeyword">;</span> 
+    <span class="Cstring">'D'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'d'</span><span class="Cnonalphakeyword">;</span> 
+    <span class="Cstring">'E'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'È'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'É'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Ê'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Ë'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'e'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'è'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'é'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'ê'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'ë'</span><span class="Cnonalphakeyword">;</span> 
+    
+    <span class="Cstring">'F'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'f'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'G'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'g'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'H'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'h'</span><span class="Cnonalphakeyword">;</span> 
+    <span class="Cstring">'I'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'i'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Ì'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Í'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Î'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Ï'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'ì'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'í'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'î'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'ï'</span><span class="Cnonalphakeyword">;</span> 
+    <span class="Cstring">'J'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'j'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'K'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'k'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'L'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'l'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'M'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'m'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'N'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Ñ'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'n'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'ñ'</span><span class="Cnonalphakeyword">;</span> 
+    
+    <span class="Cstring">'O'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Ò'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Ó'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Ô'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Õ'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Ö'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Ø'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'o'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'ò'</span><span class="Cnonalphakeyword">;</span>
+    <span class="Cstring">'ó'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'ô'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'õ'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'ö'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'ø'</span><span class="Cnonalphakeyword">;</span> 
+    
+    <span class="Cstring">'P'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'p'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Q'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'q'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'R'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'r'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'S'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'ß'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'s'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'T'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'t'</span><span class="Cnonalphakeyword">;</span> 
+    <span class="Cstring">'U'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Ù'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Ú'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Û'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Ü'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'u'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'ù'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'ú'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'û'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'ü'</span><span class="Cnonalphakeyword">;</span> 
+    
+    <span class="Cstring">'V'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'v'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'W'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'w'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'X'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'x'</span><span class="Cnonalphakeyword">;</span> 
+
+    <span class="Cstring">'Y'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Ý'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'y'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'ÿ'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'ý'</span><span class="Cnonalphakeyword">;</span> 
+
+    <span class="Cstring">'Z'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'z'</span><span class="Cnonalphakeyword">;</span> 
+   
+    <span class="Ccomment">(* old English letters *)</span>
+    <span class="Cstring">'Ð'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'ð'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'Þ'</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">'þ'</span> <span class="Cnonalphakeyword">|]</span>
+
+<span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span> <span class="Cassert">assert</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Array</span><span class="Cnonalphakeyword">.</span>length characters <span class="Cnonalphakeyword">=</span> 256<span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> tbl <span class="Cnonalphakeyword">=</span> 
+  <span class="Clet">let</span> a <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Array</span><span class="Cnonalphakeyword">.</span>make 256 0 <span class="Cin">in</span>
+  <span class="Cfor">for</span> i <span class="Cnonalphakeyword">=</span> 0 <span class="Cto">to</span> 255 <span class="Cdo">do</span>
+    a<span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">(</span><span class="Cconstructor">Char</span><span class="Cnonalphakeyword">.</span>code characters<span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">(</span>i<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">&lt;-</span> i
+  <span class="Cdone">done</span><span class="Cnonalphakeyword">;</span>
+  a
+
+<span class="Clet">let</span> compare c1 c2 <span class="Cnonalphakeyword">=</span>
+  <span class="Cconstructor">Pervasives</span><span class="Cnonalphakeyword">.</span>compare tbl<span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">(</span><span class="Cconstructor">Char</span><span class="Cnonalphakeyword">.</span>code c1<span class="Cnonalphakeyword">)</span> tbl<span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">(</span><span class="Cconstructor">Char</span><span class="Cnonalphakeyword">.</span>code c2<span class="Cnonalphakeyword">)</span>
+
+<span class="Cexception">exception</span> <span class="Cconstructor">Int</span> <span class="Cof">of</span> int
+
+<span class="Clet">let</span> compare_strings s1 s2 <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> len1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">String</span><span class="Cnonalphakeyword">.</span>length s1 
+  <span class="Cand">and</span> len2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">String</span><span class="Cnonalphakeyword">.</span>length s2 <span class="Cin">in</span>
+  <span class="Ctry">try</span>
+    <span class="Cfor">for</span> i <span class="Cnonalphakeyword">=</span> 0 <span class="Cto">to</span> min len1 len2 <span class="Cnonalphakeyword">-</span> 1 <span class="Cdo">do</span>
+      <span class="Clet">let</span> x <span class="Cnonalphakeyword">=</span> compare s1<span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">[</span>i<span class="Cnonalphakeyword">]</span> s2<span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">[</span>i<span class="Cnonalphakeyword">]</span> <span class="Cin">in</span>
+      <span class="Cif">if</span> x &lt;&gt; 0 <span class="Cthen">then</span> raise <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Int</span> x<span class="Cnonalphakeyword">)</span>
+    <span class="Cdone">done</span><span class="Cnonalphakeyword">;</span>
+    <span class="Cconstructor">Pervasives</span><span class="Cnonalphakeyword">.</span>compare len1 len2
+  <span class="Cwith">with</span> <span class="Cconstructor">Int</span> x <span class="Cnonalphakeyword">-&gt;</span> x
+</pre>
+</body>
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>
+hashtbl2.mli</title>
+  <meta name="GENERATOR" content="caml2html 1.4.2">
+<style type="text/css">
+code,pre { color:black;background-color:white }a.Cannot { color:black;text-decoration:none }.Cannot:hover { background-color: #b4eeb4; }
+.Cbar,
+.Cdo,
+.Cdone,
+.Cdownto,
+.Celse,
+.Cfor,
+.Cif,
+.Clazy,
+.Cmatch,
+.Cnew,
+.Cor,
+.Cthen,
+.Cto,
+.Ctry,
+.Cwhen,
+.Cwhile,
+.Cwith { color: #77aaaa; }
+.Cassert,
+.Cinclude,
+.Copen { color: #cc9900; }
+.Cstring { color: #aa4444; }
+.Cand,
+.Cas,
+.Cclass,
+.Cconstraint,
+.Cexception,
+.Cexternal,
+.Cfun,
+.Cfunction,
+.Cfunctor,
+.Cin,
+.Cinherit,
+.Cinitializer,
+.Clet,
+.Cmethod,
+.Cmodule,
+.Cmutable,
+.Cof,
+.Cprivate,
+.Crec,
+.Ctype,
+.Cval,
+.Cvirtual { color: green; }
+.Cbackground { background-color: white; }
+.Craise { color: red; }
+.Cconstructor { color: #0033cc; }
+.Ccomment { color: #990000; }
+.Calphakeyword,
+.Casr,
+.Cland,
+.Clor,
+.Clsl,
+.Clsr,
+.Clxor,
+.Cmod { color: #808080; }
+.Clinenum { color: black; background-color: silver; }
+.Cbegin,
+.Cend,
+.Cobject,
+.Csig,
+.Cstruct { color: #990099; }
+.Cfalse,
+.Cnonalphakeyword,
+.Cquotation,
+.Ctrue { }
+</style>
+</head>
+<body>
+
+<pre><a name="hashtbl2.mli"></a><span class="Ccomment">(** This module provides a kind of hash tables where each key is </span>
+<span class="Ccomment">present only once in the table, as opposed to the naive usage of </span>
+<span class="Ccomment">the standard [Hashtbl] module.</span>
+<span class="Ccomment">Its main purpose is to provide efficient implementation</span>
+<span class="Ccomment">of functions such as [list_keys] with enhanced safety</span>
+<span class="Ccomment">over the direct use of an [('a, 'b list ref) Hashtbl.t] type.</span>
+<span class="Ccomment">Many functions have two variants:</span>
+<span class="Ccomment">- the first one is applied only on the current bindings, like</span>
+<span class="Ccomment">[iter].</span>
+<span class="Ccomment">- the second one has the [_all] suffix like [iter_all]</span>
+<span class="Ccomment">and is applied to the list of </span>
+<span class="Ccomment">all the values that are bound to the given key </span>
+<span class="Ccomment">instead of only to the topmost value.</span>
+<span class="Ccomment">This list of values</span>
+<span class="Ccomment">is prebuilt, so there is no cost for building the list when</span>
+<span class="Ccomment">such a function is applied.</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">Example - clustering elements:</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">[Hashtbl2.list_all (Hashtbl2.of_list 10 [ (1, "a"); (2, "b"); (1, "c") ])]</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">returns [[(2, ["b"]); (1, ["c"; "a"])]].</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">[Hashtbl2] is an additional layer over the standard [Hashtbl] module.</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">@author Martin Jambon *)</span>
+
+<span class="Ctype">type</span> <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t
+<span class="Ccomment">(** The type of hash tables from type ['a] to type ['b].</span>
+<span class="Ccomment">   This representation is suitable for clustering elements </span>
+<span class="Ccomment">   according to the given keys. *)</span>
+
+<span class="Cval">val</span> create : int <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t
+<span class="Ccomment">(** [Hashtbl2.create n] creates a new, empty hash table, with</span>
+<span class="Ccomment">   initial size [n].  For best results, [n] should be on the</span>
+<span class="Ccomment">   order of the expected number of elements that will be in</span>
+<span class="Ccomment">   the table.  The table grows as needed, so [n] is just an</span>
+<span class="Ccomment">   initial guess. *)</span>
+
+<span class="Cval">val</span> clear : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> unit
+<span class="Ccomment">(** Empty a hash table. *)</span>
+
+<span class="Cval">val</span> add : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'a <span class="Cnonalphakeyword">-&gt;</span> 'b <span class="Cnonalphakeyword">-&gt;</span> unit
+<span class="Ccomment">(** [Hashtbl2.add tbl x y] adds a binding of [x] to [y] in table [tbl].</span>
+<span class="Ccomment">   Previous bindings for [x] are not removed, but simply</span>
+<span class="Ccomment">   hidden. That is, after performing {!Hashtbl2.remove}[ tbl x],</span>
+<span class="Ccomment">   the previous binding for [x], if any, is restored.</span>
+<span class="Ccomment">   (Same behavior as with association lists.) *)</span>
+
+<span class="Cval">val</span> copy : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t
+<span class="Ccomment">(** Return a copy of the given hashtable. *)</span>
+
+<span class="Cval">val</span> find : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'a <span class="Cnonalphakeyword">-&gt;</span> 'b
+<span class="Ccomment">(** [Hashtbl2.find tbl x] returns the current binding of [x] in [tbl],</span>
+<span class="Ccomment">   or raises [Not_found] if no such binding exists. *)</span>
+
+<span class="Cval">val</span> find_all : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'a <span class="Cnonalphakeyword">-&gt;</span> 'b list
+<span class="Ccomment">(** [Hashtbl2.find_all tbl x] returns the list of all data</span>
+<span class="Ccomment">   associated with [x] in [tbl].</span>
+<span class="Ccomment">   The current binding is returned first, then the previous</span>
+<span class="Ccomment">   bindings, in reverse order of introduction in the table. *)</span>
+
+<span class="Cval">val</span> mem : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'a <span class="Cnonalphakeyword">-&gt;</span> bool
+<span class="Ccomment">(** [Hashtbl2.mem tbl x] checks if [x] is bound in [tbl]. *)</span>
+
+<span class="Cval">val</span> remove : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'a <span class="Cnonalphakeyword">-&gt;</span> unit
+<span class="Ccomment">(** [Hashtbl2.remove tbl x] removes the current binding of [x] in [tbl],</span>
+<span class="Ccomment">   restoring the previous binding if it exists.</span>
+<span class="Ccomment">   It does nothing if [x] is not bound in [tbl]. *)</span>
+
+<span class="Cval">val</span> remove_all : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'a <span class="Cnonalphakeyword">-&gt;</span> unit
+<span class="Ccomment">(** [Hashtbl2.remove_all tbl x] removes all bindings of [x] in [tbl].</span>
+<span class="Ccomment">    It does nothing if [x] is not bound in [tbl]. *)</span>
+
+<span class="Cval">val</span> replace : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'a <span class="Cnonalphakeyword">-&gt;</span> 'b <span class="Cnonalphakeyword">-&gt;</span> unit
+<span class="Ccomment">(** [Hashtbl2.replace tbl x y] replaces the current binding of [x]</span>
+<span class="Ccomment">   in [tbl] by a binding of [x] to [y].  If [x] is unbound in [tbl],</span>
+<span class="Ccomment">   a binding of [x] to [y] is added to [tbl].</span>
+<span class="Ccomment">   This is functionally equivalent to {!Hashtbl2.remove}[ tbl x]</span>
+<span class="Ccomment">   followed by {!Hashtbl2.add}[ tbl x y]. *)</span>
+
+<span class="Cval">val</span> replace_all : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'a <span class="Cnonalphakeyword">-&gt;</span> 'b list <span class="Cnonalphakeyword">-&gt;</span> unit
+<span class="Ccomment">(** [Hashtbl2.replace_all tbl x y] replaces all bindings of [x]</span>
+<span class="Ccomment">    in [tbl] by bindings of [x] to the elements of [y].</span>
+<span class="Ccomment">    The first element of [y] defines the current binding,</span>
+<span class="Ccomment">    the second element is the defined the previous binding, and so on. *)</span>
+
+<span class="Cval">val</span> iter : <span class="Cnonalphakeyword">(</span>'a <span class="Cnonalphakeyword">-&gt;</span> 'b <span class="Cnonalphakeyword">-&gt;</span> unit<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> unit
+<span class="Ccomment">(** [Hashtbl2.iter f tbl] applies [f] to current bindings in table [tbl].</span>
+<span class="Ccomment">   [f] receives the key as first argument, and the associated value</span>
+<span class="Ccomment">   as second argument. Each current binding is presented exactly once to [f].</span>
+<span class="Ccomment">   Hidden bindings are ignored.</span>
+<span class="Ccomment">   The order in which the bindings are passed to [f] is unspecified. *)</span>
+
+<span class="Cval">val</span> iter_all : <span class="Cnonalphakeyword">(</span>'a <span class="Cnonalphakeyword">-&gt;</span> 'b list <span class="Cnonalphakeyword">-&gt;</span> unit<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> unit
+<span class="Ccomment">(** [Hashtbl2.iter_all f tbl] applies [f] to all bindings in table [tbl].</span>
+<span class="Ccomment">   [f] receives the key as first argument, and all the associated values</span>
+<span class="Ccomment">   as second argument in reverse order of introduction in the table.</span>
+<span class="Ccomment">   The order in which the bindings are passed to [f] is unspecified. *)</span>
+
+<span class="Cval">val</span> fold : <span class="Cnonalphakeyword">(</span>'a <span class="Cnonalphakeyword">-&gt;</span> 'b <span class="Cnonalphakeyword">-&gt;</span> 'c <span class="Cnonalphakeyword">-&gt;</span> 'c<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'c <span class="Cnonalphakeyword">-&gt;</span> 'c
+<span class="Ccomment">(** [Hashtbl2.fold f tbl init] computes</span>
+<span class="Ccomment">   [(f kN dN ... (f k1 d1 init)...)],</span>
+<span class="Ccomment">   where [k1 ... kN] are the keys of current bindings in [tbl],</span>
+<span class="Ccomment">   and [d1 ... dN] are the associated values.</span>
+<span class="Ccomment">   Each current binding is presented exactly once to [f].</span>
+<span class="Ccomment">   Hidden bindings are ignored. *)</span>
+
+<span class="Cval">val</span> fold_all : <span class="Cnonalphakeyword">(</span>'a <span class="Cnonalphakeyword">-&gt;</span> 'b list <span class="Cnonalphakeyword">-&gt;</span> 'c <span class="Cnonalphakeyword">-&gt;</span> 'c<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'c <span class="Cnonalphakeyword">-&gt;</span> 'c
+<span class="Ccomment">(** [Hashtbl2.fold_all f tbl init] computes</span>
+<span class="Ccomment">   [(f kN lN ... (f k1 l1 init)...)],</span>
+<span class="Ccomment">   where [k1 ... kN] are the keys of all bindings in [tbl],</span>
+<span class="Ccomment">   and [l1 ... lN] are the lists of associated values, in reverse order</span>
+<span class="Ccomment">   of introduction in the table. *)</span>
+
+
+<span class="Cval">val</span> list_keys : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'a list
+<span class="Ccomment">(** [Hashtbl2.list_keys tbl] returns a list of all the keys</span>
+<span class="Ccomment">   from the current bindings. Therefore no key is duplicated.</span>
+<span class="Ccomment">   Order is unspecified. *)</span>
+
+<span class="Cval">val</span> list_values : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'b list
+<span class="Ccomment">(** [Hashtbl2.list_values tbl] returns a list of all the values</span>
+<span class="Ccomment">   from the current bindings. Hidden bindings are ignored.</span>
+<span class="Ccomment">   Order is unspecified. *)</span>
+
+<span class="Cval">val</span> list_all_values : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> 'b list list
+<span class="Ccomment">(** [Hashtbl2.list_all_values tbl] returns a list of all the values</span>
+<span class="Ccomment">   from all bindings. Order is unspecified. *)</span>
+
+<span class="Cval">val</span> list : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>'a <span class="Cnonalphakeyword">*</span> 'b<span class="Cnonalphakeyword">)</span> list
+<span class="Ccomment">(** [Hashtbl2.list tbl] returns a list of the current bindings.</span>
+<span class="Ccomment">   Order is unspecified. *)</span>
+
+<span class="Cval">val</span> list_all : <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>'a <span class="Cnonalphakeyword">*</span> 'b list<span class="Cnonalphakeyword">)</span> list
+<span class="Ccomment">(** [Hashtbl2.list_all tbl] returns a list of all the bindings clustered</span>
+<span class="Ccomment">   according to their key. Order is unspecified. *)</span>
+
+<span class="Cval">val</span> of_list : int <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>'a <span class="Cnonalphakeyword">*</span> 'b<span class="Cnonalphakeyword">)</span> list <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t
+<span class="Ccomment">(** [Hashtbl2.of_list n l] converts a list of bindings into </span>
+<span class="Ccomment">   a hash table of initial size [n]. The ordering of the list is the order</span>
+<span class="Ccomment">   of introduction of the bindings in the table. *)</span>
+
+<span class="Cval">val</span> of_keys : int <span class="Cnonalphakeyword">-&gt;</span> 'a list <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> unit<span class="Cnonalphakeyword">)</span> t
+<span class="Ccomment">(** [Hashtbl2.of_keys n l] converts a list of elements into</span>
+<span class="Ccomment">   a hash table of initial size [n] containing unique copies of these</span>
+<span class="Ccomment">   elements bound at most one time to [()]. *)</span>
+</pre>
+</body>
+</html>

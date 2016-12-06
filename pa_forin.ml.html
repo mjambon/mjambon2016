@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>
+pa_forin.ml</title>
+  <meta name="GENERATOR" content="caml2html 1.4.2">
+<style type="text/css">
+code,pre { color:black;background-color:white }a.Cannot { color:black;text-decoration:none }.Cannot:hover { background-color: #b4eeb4; }
+.Cbar,
+.Cdo,
+.Cdone,
+.Cdownto,
+.Celse,
+.Cfor,
+.Cif,
+.Clazy,
+.Cmatch,
+.Cnew,
+.Cor,
+.Cthen,
+.Cto,
+.Ctry,
+.Cwhen,
+.Cwhile,
+.Cwith { color: #77aaaa; }
+.Cassert,
+.Cinclude,
+.Copen { color: #cc9900; }
+.Cstring { color: #aa4444; }
+.Cand,
+.Cas,
+.Cclass,
+.Cconstraint,
+.Cexception,
+.Cexternal,
+.Cfun,
+.Cfunction,
+.Cfunctor,
+.Cin,
+.Cinherit,
+.Cinitializer,
+.Clet,
+.Cmethod,
+.Cmodule,
+.Cmutable,
+.Cof,
+.Cprivate,
+.Crec,
+.Ctype,
+.Cval,
+.Cvirtual { color: green; }
+.Cbackground { background-color: white; }
+.Craise { color: red; }
+.Cconstructor { color: #0033cc; }
+.Ccomment { color: #990000; }
+.Calphakeyword,
+.Casr,
+.Cland,
+.Clor,
+.Clsl,
+.Clsr,
+.Clxor,
+.Cmod { color: #808080; }
+.Clinenum { color: black; background-color: silver; }
+.Cbegin,
+.Cend,
+.Cobject,
+.Csig,
+.Cstruct { color: #990099; }
+.Cfalse,
+.Cnonalphakeyword,
+.Cquotation,
+.Ctrue { }
+</style>
+</head>
+<body>
+
+<pre><a name="pa_forin.ml"></a><span class="Ccomment">(*</span>
+<span class="Ccomment">  Public Domain. Use at your own risk!</span>
+<span class="Ccomment">  Author: Martin Jambon &lt;martin_jambon@emailuser.net&gt;</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">  This syntax extension provides an efficient "for in" construct,</span>
+<span class="Ccomment">  which can replace List.iter for better readability.</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">  The general syntax is:</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">  for pattern in list do</span>
+<span class="Ccomment">    expr</span>
+<span class="Ccomment">  done</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">  Example 1:</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">    for s in ["Hello"; "World"] do </span>
+<span class="Ccomment">      fprintf oc "&gt;&gt;&gt;%s&lt;&lt;&lt; " s</span>
+<span class="Ccomment">    done</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">  is a replacement for:</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">    List.iter </span>
+<span class="Ccomment">      (fun s -&gt; fprintf oc "&gt;&gt;&gt;%s&lt;&lt;&lt; " s) </span>
+<span class="Ccomment">      ["Hello"; "World"]</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">  with these important differences:</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">  1) the implementation uses a while loop and doesn't build a closure.</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">  2) the list constructor is inlined, i.e. the ["Hello"; "World"] list</span>
+<span class="Ccomment">  is not built at all. Tuples in lists of tuples are not built either.</span>
+<span class="Ccomment">  Because of point (1), the loop body will be replicated, which can</span>
+<span class="Ccomment">  result in pretty big preprocessed programs if not used wisely.</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">  3) side effect of list inlining: the list items do not have to have </span>
+<span class="Ccomment">  the same type. The following works:</span>
+<span class="Ccomment">    for l in [ []; [1]; ["a";"b"] ] do</span>
+<span class="Ccomment">      Printf.printf "%i " (List.length l)</span>
+<span class="Ccomment">    done</span>
+<span class="Ccomment"></span>
+<span class="Ccomment"></span>
+<span class="Ccomment">  Example 2:</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">  let pairs = [ (1, "OCaml"); (3, "Python"); (2, "C") ] in</span>
+<span class="Ccomment">  for (id, lang) in pairs do</span>
+<span class="Ccomment">    Printf.printf "(%i, %s) " id lang</span>
+<span class="Ccomment">  done</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">  Here, the list definition is part of regular OCaml code so it is</span>
+<span class="Ccomment">  not inlined. We want to illustrate that the loop variable can be </span>
+<span class="Ccomment">  destructured directly just as if we were using "fun" or "let".</span>
+<span class="Ccomment">*)</span>
+
+<span class="Clet">let</span> unique <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> n <span class="Cnonalphakeyword">=</span> ref 0 <span class="Cin">in</span>
+  <span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> incr n<span class="Cnonalphakeyword">;</span> <span class="Cstring">"__pa_forin"</span> ^ string_of_int !n
+
+<span class="Clet">let</span> iter _loc p l e <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> id <span class="Cnonalphakeyword">=</span> unique <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> id2 <span class="Cnonalphakeyword">=</span> unique <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+  <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> </span>
+<span class="Cquotation">  let $lid:id$ = ref $l$ in </span>
+<span class="Cquotation">  while $lid:id$.val != [] do { </span>
+<span class="Cquotation">    let $lid:id2$ = $lid:id$.val in</span>
+<span class="Cquotation">    let $p$ = List.hd $lid:id2$ in do { </span>
+<span class="Cquotation">      $e$; </span>
+<span class="Cquotation">      $lid:id$.val := List.tl $lid:id2$ </span>
+<span class="Cquotation">    } </span>
+<span class="Cquotation">  } </span><span class="Cconstructor">&gt;&gt;</span>
+
+<span class="Clet">let</span> <span class="Crec">rec</span> expand <span class="Cnonalphakeyword">?</span><span class="Cnonalphakeyword">(</span>use_list_iter <span class="Cnonalphakeyword">=</span> <span class="Cfalse">false</span><span class="Cnonalphakeyword">)</span> _loc p l e <span class="Cnonalphakeyword">=</span>
+  <span class="Cmatch">match</span> l <span class="Cwith">with</span>
+      <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> [ $head$ :: $tail$ ] </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> 
+            <span class="Clet">let</span> pel <span class="Cnonalphakeyword">=</span>
+              <span class="Cmatch">match</span> p<span class="Cnonalphakeyword">,</span> head <span class="Cwith">with</span>
+                  <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> ( $list:pl$ ) </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">,</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> ( $list:el$ ) </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> 
+                        <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>combine pl el
+                <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">(</span>p<span class="Cnonalphakeyword">,</span> head<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">]</span> <span class="Cin">in</span>
+            <span class="Clet">let</span> e1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> let $list:pel$ in $e$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cin">in</span>
+            <span class="Cnonalphakeyword">(</span><span class="Cmatch">match</span> tail <span class="Cwith">with</span>
+                 <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> [ ] </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> e1
+               <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span>
+                 <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> do { $e1$; $expand _loc p tail e$ } </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">)</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> [ ] </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> () </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> 
+        <span class="Cif">if</span> use_list_iter <span class="Cthen">then</span>
+          <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> List.iter (fun [ $p$ -&gt; $e$ ]) $l$ </span><span class="Cconstructor">&gt;&gt;</span>
+        <span class="Celse">else</span> 
+          iter _loc p l e
+
+<span class="Cconstructor">EXTEND</span>
+  <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr: <span class="Cconstructor">LEVEL</span> <span class="Cstring">"expr1"</span> <span class="Cnonalphakeyword">[</span>
+    <span class="Cnonalphakeyword">[</span> <span class="Cstring">"for"</span><span class="Cnonalphakeyword">;</span> p <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>patt<span class="Cnonalphakeyword">;</span> <span class="Cstring">"in"</span><span class="Cnonalphakeyword">;</span> l <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr<span class="Cnonalphakeyword">;</span> 
+      <span class="Cstring">"do"</span><span class="Cnonalphakeyword">;</span> e <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr<span class="Cnonalphakeyword">;</span> <span class="Cstring">"done"</span> <span class="Cnonalphakeyword">-&gt;</span> expand _loc p l e <span class="Cnonalphakeyword">]</span>
+  <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+<span class="Cconstructor">END</span>
+</pre>
+</body>
+</html>

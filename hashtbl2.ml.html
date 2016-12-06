@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>
+hashtbl2.ml</title>
+  <meta name="GENERATOR" content="caml2html 1.4.2">
+<style type="text/css">
+code,pre { color:black;background-color:white }a.Cannot { color:black;text-decoration:none }.Cannot:hover { background-color: #b4eeb4; }
+.Cbar,
+.Cdo,
+.Cdone,
+.Cdownto,
+.Celse,
+.Cfor,
+.Cif,
+.Clazy,
+.Cmatch,
+.Cnew,
+.Cor,
+.Cthen,
+.Cto,
+.Ctry,
+.Cwhen,
+.Cwhile,
+.Cwith { color: #77aaaa; }
+.Cassert,
+.Cinclude,
+.Copen { color: #cc9900; }
+.Cstring { color: #aa4444; }
+.Cand,
+.Cas,
+.Cclass,
+.Cconstraint,
+.Cexception,
+.Cexternal,
+.Cfun,
+.Cfunction,
+.Cfunctor,
+.Cin,
+.Cinherit,
+.Cinitializer,
+.Clet,
+.Cmethod,
+.Cmodule,
+.Cmutable,
+.Cof,
+.Cprivate,
+.Crec,
+.Ctype,
+.Cval,
+.Cvirtual { color: green; }
+.Cbackground { background-color: white; }
+.Craise { color: red; }
+.Cconstructor { color: #0033cc; }
+.Ccomment { color: #990000; }
+.Calphakeyword,
+.Casr,
+.Cland,
+.Clor,
+.Clsl,
+.Clsr,
+.Clxor,
+.Cmod { color: #808080; }
+.Clinenum { color: black; background-color: silver; }
+.Cbegin,
+.Cend,
+.Cobject,
+.Csig,
+.Cstruct { color: #990099; }
+.Cfalse,
+.Cnonalphakeyword,
+.Cquotation,
+.Ctrue { }
+</style>
+</head>
+<body>
+
+<pre><a name="hashtbl2.ml"></a><span class="Ctype">type</span> <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b<span class="Cnonalphakeyword">)</span> t <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span>'a<span class="Cnonalphakeyword">,</span> 'b list ref<span class="Cnonalphakeyword">)</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>t
+
+<span class="Clet">let</span> create <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>create
+<span class="Clet">let</span> clear <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>clear
+
+<span class="Clet">let</span> add tbl key data <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> r <span class="Cnonalphakeyword">=</span>
+    <span class="Ctry">try</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>find tbl key
+    <span class="Cwith">with</span> <span class="Cconstructor">Not_found</span> <span class="Cnonalphakeyword">-&gt;</span>
+      <span class="Clet">let</span> r <span class="Cnonalphakeyword">=</span> ref <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span> <span class="Cin">in</span>
+      <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>add tbl key r<span class="Cnonalphakeyword">;</span>
+      r <span class="Cin">in</span>
+  r <span class="Cnonalphakeyword">:=</span> data <span class="Cnonalphakeyword">::</span> !r
+
+<span class="Clet">let</span> copy tbl <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> tbl2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>copy tbl <span class="Cin">in</span>
+  <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>iter <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> key r <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>replace tbl2 key <span class="Cnonalphakeyword">(</span>ref !r<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> tbl<span class="Cnonalphakeyword">;</span>
+  tbl2
+
+<span class="Clet">let</span> find tbl key <span class="Cnonalphakeyword">=</span>
+  <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>hd !<span class="Cnonalphakeyword">(</span><span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>find tbl key<span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> find_all tbl key <span class="Cnonalphakeyword">=</span>
+  !<span class="Cnonalphakeyword">(</span><span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>find tbl key<span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> mem <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>mem
+
+<span class="Clet">let</span> remove tbl key <span class="Cnonalphakeyword">=</span>
+  <span class="Ctry">try</span>
+    <span class="Clet">let</span> r <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>find tbl key <span class="Cin">in</span>
+    <span class="Cmatch">match</span> !r <span class="Cwith">with</span>
+        <span class="Cnonalphakeyword">[</span>data<span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>remove tbl key
+      <span class="Cbar">|</span> hd <span class="Cnonalphakeyword">::</span> tl <span class="Cnonalphakeyword">-&gt;</span> r <span class="Cnonalphakeyword">:=</span> tl
+      <span class="Cbar">|</span> <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span> invalid_arg <span class="Cstring">"remove"</span>
+  <span class="Cwith">with</span> <span class="Cconstructor">Not_found</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> remove_all <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>remove
+
+<span class="Clet">let</span> replace tbl key data <span class="Cnonalphakeyword">=</span>
+  <span class="Ctry">try</span>
+    <span class="Clet">let</span> r <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>find tbl key <span class="Cin">in</span>
+    r <span class="Cnonalphakeyword">:=</span> data <span class="Cnonalphakeyword">::</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>tl !r<span class="Cnonalphakeyword">)</span>
+  <span class="Cwith">with</span> 
+      <span class="Cconstructor">Not_found</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>add tbl key <span class="Cnonalphakeyword">(</span>ref <span class="Cnonalphakeyword">[</span>data<span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> replace_all tbl key l <span class="Cnonalphakeyword">=</span>
+  <span class="Ctry">try</span>
+    <span class="Clet">let</span> r <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>find tbl key <span class="Cin">in</span>
+    r <span class="Cnonalphakeyword">:=</span> l
+  <span class="Cwith">with</span> 
+      <span class="Cconstructor">Not_found</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>add tbl key <span class="Cnonalphakeyword">(</span>ref l<span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> iter f tbl <span class="Cnonalphakeyword">=</span>
+  <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>iter <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> key r <span class="Cnonalphakeyword">-&gt;</span> f key <span class="Cnonalphakeyword">(</span><span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>hd !r<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> tbl
+
+<span class="Clet">let</span> iter_all f tbl <span class="Cnonalphakeyword">=</span>
+  <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>iter <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> key r <span class="Cnonalphakeyword">-&gt;</span> f key !r<span class="Cnonalphakeyword">)</span> tbl
+
+<span class="Clet">let</span> fold f tbl init <span class="Cnonalphakeyword">=</span>
+  <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>fold <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> key r accu <span class="Cnonalphakeyword">-&gt;</span> f key <span class="Cnonalphakeyword">(</span><span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>hd !r<span class="Cnonalphakeyword">)</span> accu<span class="Cnonalphakeyword">)</span> tbl init
+
+<span class="Clet">let</span> fold_all f tbl init <span class="Cnonalphakeyword">=</span>
+  <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>fold 
+    <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> key r accu <span class="Cnonalphakeyword">-&gt;</span> f key !r accu<span class="Cnonalphakeyword">)</span>
+    tbl init
+
+<span class="Clet">let</span> list_keys tbl <span class="Cnonalphakeyword">=</span>
+  fold <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> key <span class="Cnonalphakeyword">_</span> accu <span class="Cnonalphakeyword">-&gt;</span> key <span class="Cnonalphakeyword">::</span> accu<span class="Cnonalphakeyword">)</span> tbl <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span>
+
+<span class="Clet">let</span> list_values tbl <span class="Cnonalphakeyword">=</span>
+  fold <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> <span class="Cnonalphakeyword">_</span> data accu <span class="Cnonalphakeyword">-&gt;</span> data <span class="Cnonalphakeyword">::</span> accu<span class="Cnonalphakeyword">)</span> tbl <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span>
+
+<span class="Clet">let</span> list_all_values tbl <span class="Cnonalphakeyword">=</span>
+  fold_all <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> <span class="Cnonalphakeyword">_</span> l accu <span class="Cnonalphakeyword">-&gt;</span> l <span class="Cnonalphakeyword">::</span> accu<span class="Cnonalphakeyword">)</span> tbl <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span>
+
+<span class="Clet">let</span> list tbl <span class="Cnonalphakeyword">=</span>
+  fold <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> key data accu <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>key<span class="Cnonalphakeyword">,</span> data<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">::</span> accu<span class="Cnonalphakeyword">)</span> tbl <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span>
+
+<span class="Clet">let</span> list_all tbl <span class="Cnonalphakeyword">=</span>
+  fold_all <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> key l accu <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>key<span class="Cnonalphakeyword">,</span> l<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">::</span> accu<span class="Cnonalphakeyword">)</span> tbl <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span>
+
+<span class="Clet">let</span> of_list n l <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> tbl <span class="Cnonalphakeyword">=</span> create n <span class="Cin">in</span>
+  <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>iter <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span>key<span class="Cnonalphakeyword">,</span> data<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> add tbl key data<span class="Cnonalphakeyword">)</span> l<span class="Cnonalphakeyword">;</span>
+  tbl
+
+<span class="Clet">let</span> of_keys n l <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> tbl <span class="Cnonalphakeyword">=</span> create n <span class="Cin">in</span>
+  <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>iter <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> key <span class="Cnonalphakeyword">-&gt;</span> replace tbl key <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> l<span class="Cnonalphakeyword">;</span>
+  tbl
+</pre>
+</body>
+</html>

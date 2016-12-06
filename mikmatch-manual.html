@@ -1,0 +1,677 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+            "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML>
+<HEAD>
+<TITLE>Mikmatch Version 1.0.5 
+Reference Manual
+</TITLE>
+
+<META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<META name="GENERATOR" content="hevea 1.10">
+<STYLE type="text/css">
+.li-itemize{margin:1ex 0ex;}
+.li-enumerate{margin:1ex 0ex;}
+.dd-description{margin:0ex 0ex 1ex 4ex;}
+.dt-description{margin:0ex;}
+.toc{list-style:none;}
+.thefootnotes{text-align:left;margin:0ex;}
+.dt-thefootnotes{margin:0em;}
+.dd-thefootnotes{margin:0em 0em 0em 2em;}
+.footnoterule{margin:1em auto 1em 0px;width:50%;}
+.caption{padding-left:2ex; padding-right:2ex; margin-left:auto; margin-right:auto}
+.title{margin:2ex auto;text-align:center}
+.center{text-align:center;margin-left:auto;margin-right:auto;}
+.flushleft{text-align:left;margin-left:0ex;margin-right:auto;}
+.flushright{text-align:right;margin-left:auto;margin-right:0ex;}
+DIV TABLE{margin-left:inherit;margin-right:inherit;}
+PRE{text-align:left;margin-left:0ex;margin-right:auto;}
+BLOCKQUOTE{margin-left:4ex;margin-right:4ex;text-align:left;}
+TD P{margin:0px;}
+.boxed{border:1px solid black}
+.textboxed{border:1px solid black}
+.vbar{border:none;width:2px;background-color:black;}
+.hbar{border:none;height:2px;width:100%;background-color:black;}
+.hfill{border:none;height:1px;width:200%;background-color:black;}
+.vdisplay{border-collapse:separate;border-spacing:2px;width:auto; empty-cells:show; border:2px solid red;}
+.vdcell{white-space:nowrap;padding:0px;width:auto; border:2px solid green;}
+.display{border-collapse:separate;border-spacing:2px;width:auto; border:none;}
+.dcell{white-space:nowrap;padding:0px;width:auto; border:none;}
+.dcenter{margin:0ex auto;}
+.vdcenter{border:solid #FF8000 2px; margin:0ex auto;}
+.minipage{text-align:left; margin-left:0em; margin-right:auto;}
+.marginpar{border:solid thin black; width:20%; text-align:left;}
+.marginparleft{float:left; margin-left:0ex; margin-right:1ex;}
+.marginparright{float:right; margin-left:1ex; margin-right:0ex;}
+.theorem{text-align:left;margin:1ex auto 1ex 0ex;}
+.part{margin:2ex auto;text-align:center}
+</STYLE>
+
+<style>
+<!--
+body {
+  font-family: arial,sans-serif;
+  margin: 1em;
+  padding: 1em;
+  border: solid blue 2px;
+  color: black;
+  background-color: white;
+}
+pre, code {
+  font-size: 100%;
+}
+-->
+</style>
+</HEAD>
+<BODY >
+<!--HEVEA command line is: hevea -fix macros.hva mikmatch-manual -->
+<!--CUT DEF section 1 --><TABLE CLASS="title"><TR><TD><H1 CLASS="titlemain">Mikmatch Version 1.0.5<BR>
+Reference Manual</H1><H3 CLASS="titlerest">Martin Jambon</H3><H3 CLASS="titlerest">October 21, 2011</H3></TD></TR>
+</TABLE><P>This manual is available online as a single HTML file at<BR>
+<A HREF="http://mjambon.com/mikmatch-manual.html"><TT>http://mjambon.com/mikmatch-manual.html</TT></A><BR>
+and as a PDF document at<BR>
+<A HREF="http://mjambon.com/mikmatch-manual.pdf"><TT>http://mjambon.com/mikmatch-manual.pdf</TT></A>.<BR>
+The home page of Mikmatch is:<BR>
+<A HREF="http://mjambon.com/micmatch.html"><TT>http://mjambon.com/micmatch.html</TT></A></P><!--TOC section Contents-->
+<H2 CLASS="section"><!--SEC ANCHOR -->Contents</H2><!--SEC END --><UL CLASS="toc"><LI CLASS="li-toc">
+<A HREF="#htoc1">1  Introduction</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc2">2  Language</A>
+<UL CLASS="toc"><LI CLASS="li-toc">
+<A HREF="#htoc3">2.1  Regular expressions</A>
+<UL CLASS="toc"><LI CLASS="li-toc">
+<A HREF="#htoc4">2.1.1  Grammar of the regular expressions</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc5">2.1.2  Named regular expressions</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc6">2.1.3  Predefined sets of characters</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc7">2.1.4  More predefined patterns</A>
+</LI></UL>
+</LI><LI CLASS="li-toc"><A HREF="#htoc8">2.2  General pattern matching</A>
+<UL CLASS="toc"><LI CLASS="li-toc">
+<A HREF="#htoc9">2.2.1  Regexps and match/function/try constructs</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc10">2.2.2  Views (experimental feature)</A>
+<UL CLASS="toc"><LI CLASS="li-toc">
+<A HREF="#htoc11">2.2.2.1  View patterns</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc12">2.2.2.2  Definition of a view</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc13">2.2.2.3  Example</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc14">2.2.2.4  Limitations</A>
+</LI></UL>
+</LI></UL>
+</LI><LI CLASS="li-toc"><A HREF="#htoc15">2.3  Shortcut for one-case regexp matching</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc16">2.4  The let-try-in-with construct</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc17">2.5  Implementation-dependent features</A>
+<UL CLASS="toc"><LI CLASS="li-toc">
+<A HREF="#htoc18">2.5.1  Backreferences</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc19">2.5.2  Specificities of Mikmatch_str</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc20">2.5.3  Specificities of Mikmatch_pcre</A>
+<UL CLASS="toc"><LI CLASS="li-toc">
+<A HREF="#htoc21">2.5.3.1  Matching order</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc22">2.5.3.2  Greediness and laziness</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc23">2.5.3.3  Possessiveness or atomic grouping</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc24">2.5.3.4  Backreferences</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc25">2.5.3.5  Predefined patterns</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc26">2.5.3.6  Lookaround assertions</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc27">2.5.3.7  Macros</A>
+</LI></UL>
+</LI></UL>
+</LI></UL>
+</LI><LI CLASS="li-toc"><A HREF="#htoc28">3  Tools</A>
+<UL CLASS="toc"><LI CLASS="li-toc">
+<A HREF="#htoc29">3.1  Micmatch, Mikmatch, old Camlp4, new Camlp4, Camlp5</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc30">3.2  The toplevel</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc31">3.3  The libraries for the preprocessor</A>
+<UL CLASS="toc"><LI CLASS="li-toc">
+<A HREF="#htoc32">3.3.1  Mikmatch_str</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc33">3.3.2  Mikmatch_pcre</A>
+</LI></UL>
+</LI><LI CLASS="li-toc"><A HREF="#htoc34">3.4  The runtime libraries</A>
+<UL CLASS="toc"><LI CLASS="li-toc">
+<A HREF="#htoc35">3.4.1  Mikmatch_str</A>
+</LI><LI CLASS="li-toc"><A HREF="#htoc36">3.4.2  Mikmatch_pcre</A>
+</LI></UL>
+</LI></UL>
+</LI><LI CLASS="li-toc"><A HREF="#htoc37">4  A small text-oriented library</A>
+</LI></UL><!--TOC section Introduction-->
+<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc1">1</A>  Introduction</H2><!--SEC END --><P>Mikmatch is an extension of the syntax of the Objective Caml
+programming language (OCaml).
+Its purpose it to make the use of regular expressions easier and more
+generally to provide a set of tools for using OCaml as a
+powerful scripting language.
+Mikmatch believes that regular expressions are just like any other
+program and deserve better than a cryptic sequence of symbols placed
+in a string of a master program.</P><P>Mikmatch currently supports two different libraries that implement
+regular expressions: Str which comes with the original distribution of
+OCaml and PCRE-OCaml which is an interface to PCRE (Perl Compatible
+Regular Expressions) for OCaml.
+These two flavors will be referred as Mikmatch_str and
+Mikmatch_pcre.
+They share a large number of syntaxic features, 
+but Mikmatch_pcre provides several macros that cannot be implemented
+safely in Mikmatch_str. Therefore, it is recommended to use
+Mikmatch_pcre.</P><!--TOC section Language-->
+<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc2">2</A>  Language</H2><!--SEC END --><!--TOC subsection Regular expressions-->
+<H3 CLASS="subsection"><!--SEC ANCHOR --><A NAME="htoc3">2.1</A>  Regular expressions</H3><!--SEC END --><!--TOC subsubsection Grammar of the regular expressions-->
+<H4 CLASS="subsubsection"><!--SEC ANCHOR --><A NAME="htoc4">2.1.1</A>  Grammar of the regular expressions</H4><!--SEC END --><P>Regular expressions support the syntax of Ocamllex regular
+expressions as of version 3.08.1 of the Objective Caml system
+(<A HREF="http://caml.inria.fr/pub/docs/manual-ocaml/"><TT>http://caml.inria.fr/pub/docs/manual-ocaml/</TT></A>), and 
+several additional features.
+A regular expression (<I>regexp</I>) is defined by the grammar that
+follows. The associativity rules are given by priority levels. 0 is the
+strongest priority.
+</P><UL CLASS="itemize"><LI CLASS="li-itemize">
+<U><I>char-literal</I></U> 
+Match the given character (priority 0).</LI><LI CLASS="li-itemize"><U><B>_</B></U> (underscore) 
+Match any character (priority 0).</LI><LI CLASS="li-itemize"><U><I>string-literal</I></U> 
+Match the given sequence of characters (priority 0).</LI><LI CLASS="li-itemize"><U><B>[</B></U><U><I>set-of-characters</I></U><U><B>]</B></U>
+Match one of the characters given by <I>set-of-characters</I>
+(priority 0).
+The grammar for <I>set-of-characters</I> is the following:
+<UL CLASS="itemize"><LI CLASS="li-itemize">
+<U><I>char-literal</I></U><U><B>&#X2212;</B></U><U><I>char-literal</I></U>
+defines a range of characters according to the iso-8859-1 encoding
+(includes ASCII).
+</LI><LI CLASS="li-itemize"><U><I>char-literal</I></U>
+defines a singleton (a set containing just this character).
+</LI><LI CLASS="li-itemize"><U><I>string-literal</I></U>
+defines a set that contains all the characters present in the given string.
+</LI><LI CLASS="li-itemize"><U><I>lowercase-identifier</I></U>
+is replaced by the corresponding predefined regular expression; this
+regular expression must be exactly of length 1 and therefore
+represents a set of characters.
+</LI><LI CLASS="li-itemize"><U><I>set-of-characters</I></U><U> </U><U><I>set-of-characters</I></U>
+defines the union of two sets of characters.
+</LI></UL></LI><LI CLASS="li-itemize"><U><I>regexp</I></U><U> </U><U><B>#</B></U><U> </U><U><I>regexp</I></U>
+Match any of the characters given by the first regular expression
+except those which are given by the second one. Both regular
+expressions must be of length 1 and thus stand for a set of characters
+(priority 0).</LI><LI CLASS="li-itemize"><U><B>[</B></U><U><B>^</B></U><U><I>set-of-characters</I></U><U><B>]</B></U>
+Same as <B>_ #</B>
+<B>[</B><I>set-of-characters</I><B>]</B>
+(priority 0).</LI><LI CLASS="li-itemize"><U><I>regexp</I></U><U> </U><U><B>*</B></U>
+Match the pattern given by <I>regexp</I> 0 time or more (priority 0).</LI><LI CLASS="li-itemize"><U><I>regexp</I></U><U> </U><U><B>+</B></U>
+Match the pattern given by <I>regexp</I> 1 time or more (priority 0).</LI><LI CLASS="li-itemize"><U><I>regexp</I></U><U> </U><U><B>?</B></U>
+Match the pattern given by <I>regexp</I> at most once (priority 0).</LI><LI CLASS="li-itemize"><U><I>regexp</I></U><U><B>{</B></U><U><I>m</I></U><U><I><B>&#X2212;</B></I></U><U><I>n</I></U><U><B>}</B></U>
+Match <I>regexp</I> at least <I>m</I> times and up to
+<I>n</I> times. <I>m</I> and <I>n</I> must be integer
+literals (priority 0).</LI><LI CLASS="li-itemize"><U><I>regexp</I></U><U><B>{</B></U><U><I>n</I></U><U><B>}</B></U>
+Same as <I>regexp</I><B>{</B><I>n</I><I><B>&#X2212;</B></I><I>n</I><B>}</B>
+(priority 0).</LI><LI CLASS="li-itemize"><U><I>regexp</I></U><U><B>{</B></U><U><I>n</I></U><U><B>+</B></U><U><B>}</B></U>
+Same as 
+<I>regexp</I><B>{</B><I>n</I><B>}</B><I>regexp</I><B>*</B>
+(priority 0).</LI><LI CLASS="li-itemize"><U><I>regexp</I></U><U><B>{</B></U><U><I>n</I></U><U><B>&#X2212;</B></U><U><B>}</B></U>
+Deprecated. Same as <I>regexp</I><B>{</B><I>n</I><B>+</B><B>}</B>
+(priority 0).</LI><LI CLASS="li-itemize"><U><B>(</B></U><U> </U><U><I>regexp</I></U><U> </U><U><B>)</B></U>
+Match <I>regexp</I> (priority 0).</LI><LI CLASS="li-itemize"><U><I>regexp</I></U><U> </U><U><B>~</B></U>
+Case insensitive match of the given
+regular expression <I>regexp</I> according to the conventions of
+Objective Caml, i.e. according to the representation of characters
+in the iso-8859-1 standard (latin1) (priority 0).</LI><LI CLASS="li-itemize"><U><I>regexp</I></U><U> </U><U><I>regexp</I></U>
+Match the first regular expressions and then the second one (priority 1).</LI><LI CLASS="li-itemize"><U><I>regexp</I></U><U> </U><U><B>|</B></U><U> </U><U><I>regexp</I></U>
+Match one of these two regular expressions (priority 2).</LI><LI CLASS="li-itemize"><U><I>regexp</I></U><U> </U><U><B>as</B></U><U> </U><U><I>lowercase-identifier</I></U>
+Give a name to the substring that will be matched by the given pattern.
+This string becomes available under this name (priority 3).
+In-place conversions of the matched substring can be performed using
+one these three mechanisms:
+<UL CLASS="itemize"><LI CLASS="li-itemize">
+<U><I>regexp</I></U><U> </U><U><B>as</B></U><U>
+</U><U><I>lowercase-identifier</I></U><U> </U><U><B>:</B></U><U> </U><U><I>built-in-converter</I></U>
+where <I>built-in-converter</I> is one of <TT>int</TT>,
+<TT>float</TT> or <TT>option</TT>. <TT>int</TT> behaves as 
+<TT>int_of_string</TT>, <TT>float</TT> behaves as 
+<TT>float_of_string</TT>, and <TT>option</TT> encapsulate the
+substring in an object of type <TT>string option</TT> using
+an equivalent of <TT>function "" -&gt; None | s -&gt; Some s</TT></LI><LI CLASS="li-itemize"><U><I>regexp</I></U><U> </U><U><B>as</B></U><U>
+</U><U><I>lowercase-identifier</I></U><U> </U><U><B>:=</B></U><U> </U><U><I>converter</I></U>
+where <I>converter</I> is any function which converts a string
+into something else.</LI><LI CLASS="li-itemize"><U><I>regexp</I></U><U> </U><U><B>as</B></U><U>
+</U><U><I>lowercase-identifier</I></U><U> </U><U><B>=</B></U><U> </U><U><I>expr</I></U>
+where <I>expr</I> is any OCaml expression, usually a constant, which
+assigns a value to <I>lowercase-identifier</I> without knowing
+which substring it matches.
+</LI></UL></LI><LI CLASS="li-itemize"><U><B>%</B></U><U> </U><U><I>lowercase-identifier</I></U>
+Give a name to the position in the string 
+that is being matched.
+This position becomes available as an int under this name.</LI><LI CLASS="li-itemize"><U><B>@</B></U><U> </U><U><I>expr</I></U>
+Match the string given by <I>expr</I>. <I>expr</I> can be any
+OCaml expression of type string. Parentheses will be needed around 
+<I>expr</I> if it is a function application, or any construct of
+equivalent or lower precedence (see the Objective Caml manual, chapter
+&#X201C;The Objective Caml language&#X201D;, section &#X201C;Expressions&#X201D;).
+Matching such patterns is not thread-safe in any of the current 
+implementations. 
+Expressions that contain 
+@ patterns should be protected against concurrent accesses.</LI></UL><!--TOC subsubsection Named regular expressions-->
+<H4 CLASS="subsubsection"><!--SEC ANCHOR --><A NAME="htoc5">2.1.2</A>  Named regular expressions</H4><!--SEC END --><P>Naming regular expressions is possible using the following toplevel
+construct:<BR>
+<U><B>RE</B></U><U> </U><U><I>ident</I></U><U> </U><U><B>=</B></U><U> </U><U><I>regexp</I></U><BR>
+where <I>ident</I> is a lowercase identifier.
+Regular expressions share their own namespace.</P><P>For instance, we can define a phone number as a sequence of 3 digits
+followed by a dash and followed by 4 digits:
+</P><PRE CLASS="verbatim">RE digit = ['0'-'9']
+RE phone = digit{3} '-' digit{4}
+</PRE><!--TOC subsubsection Predefined sets of characters-->
+<H4 CLASS="subsubsection"><!--SEC ANCHOR --><A NAME="htoc6">2.1.3</A>  Predefined sets of characters</H4><!--SEC END --><P>The POSIX character classes (sets of characters) are available as
+predefined regular expressions of length 1.
+Their definition is given in table <A HREF="#posix-classes">1</A>.
+</P><BLOCKQUOTE CLASS="table"><DIV CLASS="center"><HR WIDTH="80%" SIZE=2></DIV>
+<DIV CLASS="caption"><TABLE CELLSPACING=6 CELLPADDING=0><TR><TD VALIGN=top ALIGN=left>Table 1: <A NAME="posix-classes"></A>
+POSIX character classes and their
+definition in the Mikmatch syntax</TD></TR>
+</TABLE></DIV>
+<TABLE CELLSPACING=6 CELLPADDING=0><TR><TD ALIGN=left NOWRAP><TT>RE lower = </TT><CODE><TT>['a'-'z']</TT></CODE></TD></TR>
+<TR><TD ALIGN=left NOWRAP><TT>RE upper = </TT><CODE><TT>['A'-'Z']</TT></CODE></TD></TR>
+<TR><TD ALIGN=left NOWRAP><TT>RE alpha = lower | upper</TT></TD></TR>
+<TR><TD ALIGN=left NOWRAP><TT>RE digit = </TT><CODE><TT>['0'-'9']</TT></CODE></TD></TR>
+<TR><TD ALIGN=left NOWRAP><TT>RE alnum = alpha | digit</TT></TD></TR>
+<TR><TD ALIGN=left NOWRAP><TT>RE punct = </TT><CODE><TT>["!\"#$%&amp;'()*+,-./:;&lt;</TT></CODE><CODE><TT>=&gt;?@[\\]^_`{|}~"]</TT></CODE><TT></TT></TD></TR>
+<TR><TD ALIGN=left NOWRAP><TT>RE graph = alnum | punct</TT></TD></TR>
+<TR><TD ALIGN=left NOWRAP><TT>RE print = graph | &#X2019; &#X2019;</TT></TD></TR>
+<TR><TD ALIGN=left NOWRAP><TT>RE blank = </TT><CODE><TT>' ' | '\t'</TT></CODE></TD></TR>
+<TR><TD ALIGN=left NOWRAP><TT>RE cntrl = </TT><CODE><TT>['\x00'-'\x1F' '\x7F']</TT></CODE></TD></TR>
+<TR><TD ALIGN=left NOWRAP><TT>RE xdigit = </TT><CODE><TT>[digit 'a'-'f' 'A'-'F']</TT></CODE></TD></TR>
+<TR><TD ALIGN=left NOWRAP><TT>RE space = </TT><CODE><TT>[blank "\n\x0B\x0C\r"]</TT></CODE></TD></TR>
+</TABLE><TT>
+</TT><DIV CLASS="center"><HR WIDTH="80%" SIZE=2></DIV></BLOCKQUOTE><!--TOC subsubsection More predefined patterns-->
+<H4 CLASS="subsubsection"><!--SEC ANCHOR --><A NAME="htoc7">2.1.4</A>  More predefined patterns</H4><!--SEC END --><P>Some named regexps are predefined and available in
+every implementation of Mikmatch. These are the following:
+</P><UL CLASS="itemize"><LI CLASS="li-itemize">
+<TT>int</TT>: matches an integer (see
+table <A HREF="#predefined-regexps">2</A>).
+It accepts a superset of the integer literals that are
+produced with the OCaml standard function <TT>string_of_int</TT>.
+</LI><LI CLASS="li-itemize"><TT>float</TT>: matches a floating-point number 
+(see table <A HREF="#predefined-regexps">2</A>).
+It accepts a superset of the float literals that are
+produced with the OCaml standard function <TT>string_of_float</TT>.
+</LI></UL><BLOCKQUOTE CLASS="table"><DIV CLASS="center"><HR WIDTH="80%" SIZE=2></DIV>
+<DIV CLASS="caption"><TABLE CELLSPACING=6 CELLPADDING=0><TR><TD VALIGN=top ALIGN=left>Table 2: <A NAME="predefined-regexps"></A>
+Predefined regexps in Mikmatch</TD></TR>
+</TABLE></DIV>
+<PRE CLASS="verbatim"><TT>RE int = ["-+"]? ( "0" ( ["xX"] xdigit+
+                       | ["oO"] ['0'-'7']+
+                       | ["bB"] ["01"]+ )
+                 | digit+ )
+
+RE float = 
+  ["-+"]? 
+     ( ( digit+ ("." digit* )? | "." digit+ ) (["eE"] ["+-"]? digit+ )?
+       | "nan"~ 
+       | "inf"~ )
+</TT></PRE><DIV CLASS="center"><HR WIDTH="80%" SIZE=2></DIV></BLOCKQUOTE><!--TOC subsection General pattern matching-->
+<H3 CLASS="subsection"><!--SEC ANCHOR --><A NAME="htoc8">2.2</A>  General pattern matching</H3><!--SEC END --><!--TOC subsubsection Regexps and match/function/try constructs-->
+<H4 CLASS="subsubsection"><!--SEC ANCHOR --><A NAME="htoc9">2.2.1</A>  Regexps and match/function/try constructs</H4><!--SEC END --><P>In Mikmatch, regular expressions can be used to match strings instead
+of the regular patterns. In this case, the regular expression must
+be preceded by the <B>RE</B> keyword, or placed between slashes
+(<B>/</B>&#X2026;<B>/</B>). Both notations are equivalent.</P><P>Only the following constructs support patterns that contain regular
+expressions:
+</P><UL CLASS="itemize"><LI CLASS="li-itemize">
+<B>match</B> &#X2026; <B>with</B> <I>pattern</I> <B>-&gt;</B> &#X2026;</LI><LI CLASS="li-itemize"><B>function</B> <I>pattern</I> <B>-&gt;</B> &#X2026;</LI><LI CLASS="li-itemize"><B>try</B> &#X2026; <B>with</B> <I>pattern</I> <B>-&gt;</B> &#X2026;</LI></UL><P>Examples:
+</P><PRE CLASS="verbatim">let is_num = function RE ['0'-'9']+ -&gt; true | _ -&gt; false
+
+let get_option () =
+  match Sys.argv with
+      [| _ |] -&gt; None 
+    | [| _; RE (['a'-'z']+ as key) "=" (_* as data) |] -&gt; Some (key, data)
+    | _ -&gt; failwith "Usage: myprog [key=value]"
+
+let option =
+  try get_option ()
+  with Failure RE "usage"~ -&gt; None
+</PRE><P>If alternatives are used in a pattern, then both alternatives must
+define the same set of identifiers.
+In the following example, the string <TT>code</TT> can either come
+from the normal pattern matching or be a fresh substring which was
+extracted using the regular expression:
+</P><PRE CLASS="verbatim">match option, s with
+    Some code, _
+  | None, RE _* "=" (['A'-'Z']['0'-'9'] as code) -&gt; print_endline code
+
+  | _ -&gt; ()
+</PRE><P>In the general case, it is not possible to check in advance if the
+pattern-matching cases are complete if at least one of the patterns
+is a regular expression. In this case, no warnings against missing
+cases are displayed, thus it is safer to either add a catch-all case
+like in the previous examples or to catch the <TT>Match_failure</TT>
+exception that can be raised unexpectedly.</P><!--TOC subsubsection Views (experimental feature)-->
+<H4 CLASS="subsubsection"><!--SEC ANCHOR --><A NAME="htoc10">2.2.2</A>  Views (experimental feature)</H4><!--SEC END --><P>Views are a general form of symbolic patterns other than those
+authorized by the concrete structure of data. For example, <TT>Positive</TT>
+could be a view for positive ints. View patterns can also bind
+variables and a useful example in OCaml is pattern-matching over lazy
+values.</P><P>Here we propose simple views, as suggested by Simon Peyton Jones 
+for Haskell:<BR>
+<A HREF="http://hackage.haskell.org/trac/ghc/wiki/ViewPatterns"><TT>http://hackage.haskell.org/trac/ghc/wiki/ViewPatterns</TT></A>.
+We propose a different syntax, but note that the syntax that we 
+have chosen here is
+experimental and may change slightly in future releases.</P><!--TOC paragraph View patterns-->
+<H5 CLASS="paragraph"><!--SEC ANCHOR --><A NAME="htoc11">2.2.2.1</A>  View patterns</H5><!--SEC END --><P>A view pattern has one of these two forms:
+</P><OL CLASS="enumerate" type=1><LI CLASS="li-enumerate">
+<U><B>%</B></U><U> </U><U><I>view-name</I></U>: a view without an
+argument. It is a simple check over the subject data.
+</LI><LI CLASS="li-enumerate"><U><B>%</B></U><U> </U><U><I>view-name</I></U><U>
+</U><U><I>pattern</I></U>: a view with an argument, the pattern. 
+If the view function matches successfully, its
+result is matched against the given pattern.
+</LI></OL><P>
+where a <I>view-name</I> is a capitalized alphanumeric identifier,
+possibly preceded by a module path specification, 
+e.g. <TT>Name</TT> or <TT>Module.Name</TT>.</P><!--TOC paragraph Definition of a view-->
+<H5 CLASS="paragraph"><!--SEC ANCHOR --><A NAME="htoc12">2.2.2.2</A>  Definition of a view</H5><!--SEC END --><P>Views without arguments are defined as functions of type 
+<TT>&#X2019;a -&gt; bool</TT>, while views with arguments are defined as
+functions of type <TT>&#X2019;a -&gt; &#X2019;b option</TT>.</P><P>The syntax for defining a view is:
+</P><UL CLASS="itemize"><LI CLASS="li-itemize">
+<U><B>let</B></U><U> </U><U><B>view</B></U><U> </U><U><I>uppercase-identifier</I></U><U>
+</U><U><B>=</B></U><U> </U><U><I>expression</I></U>
+</LI><LI CLASS="li-itemize"><U><B>let</B></U><U> </U><U><B>view</B></U><U> </U><U><I>uppercase-identifier</I></U><U>
+</U><U><B>=</B></U><U> </U><U><I>expression</I></U><U> </U><U><B>in</B></U><U> </U><U><I>expression</I></U>
+</LI></UL><P>Using the syntax above is however not strictly needed, since it just
+defines a function named after the name of the view, and prefixed by 
+<TT>view_</TT>. For instance <TT>let view X = f</TT> can be written
+as <TT>let view_X = f</TT> in regular OCaml. Therefore, some library
+modules can export view definitions without using any syntax
+extension themselves.</P><!--TOC paragraph Example-->
+<H5 CLASS="paragraph"><!--SEC ANCHOR --><A NAME="htoc13">2.2.2.3</A>  Example</H5><!--SEC END --><PRE CLASS="verbatim">(* The type of lazy lists *)
+type 'a lazy_list = Nil | Cons of ('a * 'a lazy_list lazy_t)
+
+(* Definition of a view without argument for the empty list *)
+let view Nil = 
+    fun l -&gt;
+      try Lazy.force l = Nil
+      with _ -&gt; false
+
+(* Independent definition of a view with an argument, 
+   the head and tail of the list *)
+let view Cons = 
+    fun l -&gt; 
+      try
+        match Lazy.force l with 
+            Cons x -&gt; Some x 
+          | Nil -&gt; None
+      with _ -&gt; None
+
+
+(* Test *)
+let _ =
+  let l = lazy (Cons (1, lazy (Cons (2, lazy Nil)))) in
+  match l with
+      %Nil
+    | %Cons (_, %Nil) -&gt; assert false
+    | %Cons (x1, %Cons (x2, %Nil)) -&gt;
+        assert (x1 = 1);
+        assert (x2 = 2);
+        Printf.printf "Passed view test\n%!"
+    | _ -&gt; assert false
+</PRE><!--TOC paragraph Limitations-->
+<H5 CLASS="paragraph"><!--SEC ANCHOR --><A NAME="htoc14">2.2.2.4</A>  Limitations</H5><!--SEC END --><P>Each time a value is tested against a view pattern, the corresponding
+function is called. There is no optimization that would avoid calling
+the view function twice on the same argument.</P><P>Redundant or missing cases cannot be checked, just like when there is
+a regexp in a pattern. This is due both to our definition of views and
+to the implementation that we get using Camlp4.</P><!--TOC subsection Shortcut for one-case regexp matching-->
+<H3 CLASS="subsection"><!--SEC ANCHOR --><A NAME="htoc15">2.3</A>  Shortcut for one-case regexp matching</H3><!--SEC END --><P>A shortcut notation can be used to extract substrings from a string
+that match a pattern which is known in advance:<BR>
+<B>let /</B><I>regexp</I><B>/</B> <B>=</B> <I>expr</I>
+<B>in</B> <I>expr</I></P><P>Global declarations also support this shortcut:<BR>
+<B>let /</B><I>regexp</I><B>/</B> <B>=</B> <I>expr</I><BR>
+Example <FONT SIZE=2>[toplevel support not available in Camlp4 3.10]</FONT>:
+</P><PRE CLASS="verbatim"># Sys.ocaml_version;;
+- : string = "3.08.3"
+# RE int = digit+;;
+# let /(int as major : int) "." (int as minor : int) 
+       ("." (int as patchlevel) | ("" as patchlevel))
+       ("+" (_* as additional_info) | ("" as additional_info))/ = 
+    Sys.ocaml_version
+;;
+val additional_info : string = ""
+val major : int = 3
+val minor : int = 8
+val patchlevel : string = "3"
+</PRE><P>The notation does not allow simultaneous definitions using the
+<B>and</B> keyword nor recursive definitions using <B>rec</B>.</P><P>As usual, the <TT>Match_failure</TT> exception is raised if the
+string fails to match the pattern.
+The let-try-in-with construct described in the next section also
+supports regexp patterns, with the same restrictions.</P><!--TOC subsection The let-try-in-with construct-->
+<H3 CLASS="subsection"><!--SEC ANCHOR --><A NAME="htoc16">2.4</A>  The let-try-in-with construct</H3><!--SEC END --><P>A general notation for catching exceptions that are raised during
+the definition of bindings is provided:<BR>
+<B>let</B> <B>try</B> [<B>rec</B>] <I>let-binding</I> 
+{<B>and</B> <I>let-binding</I>} <B>in</B><BR>
+<CODE>  </CODE><I>expr</I><BR>
+<B>with</B> <I>pattern-matching</I></P><P>It has the same meaning as:<BR>
+<B>try</B> <B>let</B> [<B>rec</B>] <I>let-binding</I> 
+{<B>and</B> <I>let-binding</I>} <B>in</B><BR>
+<CODE>  </CODE><I>expr</I><BR>
+<B>with</B> <I>pattern-matching</I><BR>
+except that in the former case only the exceptions raised by the
+<I>let-binding</I>s are handled by the exception handler introduced
+by <B>with</B>.</P><!--TOC subsection Implementation-dependent features-->
+<H3 CLASS="subsection"><!--SEC ANCHOR --><A NAME="htoc17">2.5</A>  Implementation-dependent features</H3><!--SEC END --><P>These features depend on which library is actually used internally for
+manipulating regular expressions.
+Currently two libraries are supported: the Str library from the
+official OCaml distribution and the PCRE-OCaml library.
+Support for other libraries might be added in the future.</P><!--TOC subsubsection Backreferences-->
+<H4 CLASS="subsubsection"><!--SEC ANCHOR --><A NAME="htoc18">2.5.1</A>  Backreferences</H4><!--SEC END --><P>
+<A NAME="backref"></A>
+Previously matched substrings can be matched again using
+backreferences.
+<U><B>!</B></U><U><I>ident</I></U>
+is a backreference to the named group <I>ident</I> that is defined 
+previously in the sequence.
+During the matching process, it is not possible that a backreference
+refers to a named group which is not matched.
+In the following example, we 
+extract the repeated pattern <TT>abc</TT> from <TT>abcabc</TT>
+<FONT SIZE=2>[toplevel support not available in Camlp4 3.10]</FONT>:
+</P><PRE CLASS="verbatim"># match "abcabc" with RE _* as x !x -&gt; x;;
+- : string = "abc"
+</PRE><!--TOC subsubsection Specificities of Mikmatch_str-->
+<H4 CLASS="subsubsection"><!--SEC ANCHOR --><A NAME="htoc19">2.5.2</A>  Specificities of Mikmatch_str</H4><!--SEC END --><P>Backreferences as described previously (section <A HREF="#backref">2.5.1</A>) are
+supported.</P><P>In addition to the POSIX character classes, 
+a set of predefined patterns is available:
+</P><UL CLASS="itemize"><LI CLASS="li-itemize">
+<U>bol</U> matches at beginning of line (either at the
+beginning of the matched string, or just after a newline character).
+</LI><LI CLASS="li-itemize"><U>eol</U> matches at end of line (either at the end of the matched
+string, or just before a newline character).
+</LI><LI CLASS="li-itemize"><U>any</U> matches any character except newline.
+</LI><LI CLASS="li-itemize"><U>bnd</U> matches word boundaries.
+</LI></UL><!--TOC subsubsection Specificities of Mikmatch_pcre-->
+<H4 CLASS="subsubsection"><!--SEC ANCHOR --><A NAME="htoc20">2.5.3</A>  Specificities of Mikmatch_pcre</H4><!--SEC END --><P>This is currently the version which is used by the 
+<CODE>mikmatch</CODE> command.</P><!--TOC paragraph Matching order-->
+<H5 CLASS="paragraph"><!--SEC ANCHOR --><A NAME="htoc21">2.5.3.1</A>  Matching order</H5><!--SEC END --><P>Alternatives (<I>regexp1</I>|<I>regexp2</I>)
+are tried from left to right.</P><P>The quantifiers (<CODE>*</CODE>, <CODE>+</CODE>, <CODE>?</CODE> and
+<CODE>{</CODE>&#X2026;<CODE>}</CODE>)
+are greedy except if specified otherwise (see next paragraph).
+The regular expressions are matched from left to right, and the
+repeated patterns are matched as many times as possible before trying
+to match the rest of the regular expression and either succeed or give
+up one repetition before retrying (backtracking).</P><!--TOC paragraph Greediness and laziness-->
+<H5 CLASS="paragraph"><!--SEC ANCHOR --><A NAME="htoc22">2.5.3.2</A>  Greediness and laziness</H5><!--SEC END --><P>
+Normally, quantifiers (<CODE>*</CODE>, <CODE>+</CODE>, <CODE>?</CODE> and
+<CODE>{</CODE>&#X2026;<CODE>}</CODE>) are greedy, i.e. they perform the longest match
+in terms of number of repetitions
+before matching the rest of the regular expression or
+backtracking. The opposite behavior is laziness: in that case,
+the number of repetitions is made minimal before trying to match the
+rest of the regular expression and either succeed or continue with one
+more repetition.</P><P>The lazy behavior is turned on by placing the keyword <CODE>Lazy</CODE> 
+after the quantifier. This is the equivalent of Perl&#X2019;s quantifiers
+<CODE>*?</CODE>, <CODE>+?</CODE>, <CODE>??</CODE> and <CODE>{</CODE>&#X2026;<CODE>}?</CODE>.
+For instance, compare the following behaviors <FONT SIZE=2>[toplevel support not available in Camlp4 3.10]</FONT>:
+</P><PRE CLASS="verbatim"># match "&lt;hello&gt;&lt;world&gt;" with RE "&lt;" (_* as contents) "&gt;" -&gt; contents;;
+- : string = "hello&gt;&lt;world"
+# match "&lt;hello&gt;&lt;world&gt;" with RE "&lt;" (_* Lazy as contents) "&gt;" -&gt; contents;;
+- : string = "hello"
+</PRE><!--TOC paragraph Possessiveness or atomic grouping-->
+<H5 CLASS="paragraph"><!--SEC ANCHOR --><A NAME="htoc23">2.5.3.3</A>  Possessiveness or atomic grouping</H5><!--SEC END --><P>
+Sometimes it can be useful to prevent backtracking.
+This is achieved by placing the <CODE>Possessive</CODE> keyword after a given group.
+For instance, compare the following <FONT SIZE=2>[toplevel support not available in Camlp4 3.10]</FONT>:
+</P><PRE CLASS="verbatim"># match "abc" with RE _* _ -&gt; true | _ -&gt; false;;  
+- : bool = true
+# match "abc" with RE _* Possessive _ -&gt; true | _ -&gt; false;;
+- : bool = false
+</PRE><P>This operator has the strongest associativity priority (0), just like
+the quantifiers.</P><!--TOC paragraph Backreferences-->
+<H5 CLASS="paragraph"><!--SEC ANCHOR --><A NAME="htoc24">2.5.3.4</A>  Backreferences</H5><!--SEC END --><P>
+Backreferences are supported as described in section <A HREF="#backref">2.5.1</A>.</P><!--TOC paragraph Predefined patterns-->
+<H5 CLASS="paragraph"><!--SEC ANCHOR --><A NAME="htoc25">2.5.3.5</A>  Predefined patterns</H5><!--SEC END --><P>
+The following predefined patterns are available in addition to the
+POSIX character classes:
+</P><UL CLASS="itemize"><LI CLASS="li-itemize">
+<U>bos</U> matches at beginning of the matched string.
+</LI><LI CLASS="li-itemize"><U>eos</U> matches at the end of the matched string.
+</LI><LI CLASS="li-itemize"><U>bol</U> matches at beginning of line (either at the
+beginning of the matched string, or just after a newline character).
+</LI><LI CLASS="li-itemize"><U>eol</U> matches at end of line (either at the end of the matched
+string, or just before a newline character).
+</LI><LI CLASS="li-itemize"><U>any</U> matches any character except newline.
+</LI></UL><!--TOC paragraph Lookaround assertions-->
+<H5 CLASS="paragraph"><!--SEC ANCHOR --><A NAME="htoc26">2.5.3.6</A>  Lookaround assertions</H5><!--SEC END --><P>A lookaround assertion is a pattern that
+has to be matched but doesn&#X2019;t consume characters in the string being
+matched.</P><P>Lookahead assertions are checked after the current position in the
+string, and lookbehind assertions are matched before the current
+point. The general syntax for an assertion is the following:<BR>
+<SPAN CLASS="textboxed"><TT>&lt;</TT></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><I>lookbehind</I></SPAN><SPAN CLASS="textboxed"> 
+</SPAN><SPAN CLASS="textboxed"><TT>.</TT></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><I>lookahead</I></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><TT>&gt;</TT></SPAN><BR>
+<SPAN CLASS="textboxed"><TT>&lt;</TT></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><I>lookahead</I></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><TT>&gt;</TT></SPAN><BR>
+The central dot symbolizes the current position. The
+<I>lookbehind</I> assertion is a test over the characters at the
+left of the current point, while the <I>lookahead</I> is a test over
+the characters at the right of the current point in the string.</P><P><I>lookbehind</I> or <I>lookahead</I> are either empty or a
+regular expression, optionally preceded by <TT>Not</TT>.
+An assertion starting with <TT>Not</TT> is called negative and means
+that the given regular expression can not match here.</P><P>There are no restrictions on the contents of lookahead regular
+expressions. Lookbehind regular expressions are restricted
+to those that match substrings of length that can be predetermined.
+Besides this, backreferences are not supported in lookbehind expressions.</P><!--TOC paragraph Macros-->
+<H5 CLASS="paragraph"><!--SEC ANCHOR --><A NAME="htoc27">2.5.3.7</A>  Macros</H5><!--SEC END --><P>
+This implementation provides a set of macros that follow this
+syntax:<BR>
+<SPAN CLASS="textboxed"><I>MACRO-NAME</I></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><I>regexp</I></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><TT>-&gt;</TT></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><I>expr</I></SPAN><BR>
+where <I>expr</I> is the expression that will be computed every time
+the pattern given by <I>regexp</I> is matched.</P><P>Only the <CODE>SPLIT</CODE> and <CODE>FILTER</CODE> macros follows a simplified syntax:<BR>
+<SPAN CLASS="textboxed"><I>MACRO-NAME</I></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><I>regexp</I></SPAN></P><P>These constructs build a function which accepts some optional
+arguments and the string to match.
+For instance,<BR>
+<CODE>(REPLACE "," -&gt; ";") "a,b,c"</CODE><BR>
+returns <CODE>"a;b;c"</CODE>
+whereas<BR>
+<CODE>(REPLACE "," -&gt; ";") ~pos:2 "a,b,c"</CODE><BR>
+returns <CODE>"a,b;c"</CODE></P><P>The possible options are the following:
+</P><UL CLASS="itemize"><LI CLASS="li-itemize">
+<CODE>pos</CODE> has type <CODE>int</CODE> and indicates that matching or
+searching must start from this position in the string.
+Its default value is always 0 (beginning of the string).
+</LI><LI CLASS="li-itemize"><CODE>full</CODE> is a boolean that defines whether split operations
+must ignore empty fragments before the first matched pattern or the
+last matched pattern in the string. The default value is <CODE>true</CODE>
+for <CODE>MAP</CODE> and <CODE>false</CODE> for <CODE>SPLIT</CODE>.
+</LI><LI CLASS="li-itemize"><CODE>share</CODE> is a potentially unsafe option which allows the
+reuse of some mutable data which are associated to a given regular
+expression. This may make the program slightly faster, but should 
+generally not be used in multi-threaded programs or in libraries.
+</LI></UL><P><SPAN CLASS="textboxed"><TT>MATCH</TT></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><I>regexp</I></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><TT>-&gt;</TT></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><I>expr</I></SPAN><BR>
+tries to match the pattern <I>regexp</I> at the beginning of the
+string or at the given position <CODE>pos</CODE> and returns <I>expr</I>
+or raise <CODE>Not_found</CODE>. Options: <CODE>pos</CODE> (0), <CODE>share</CODE> (false).
+When <CODE>pos</CODE> and <CODE>share</CODE> are not specified, it is equivalent to:
+</P><PRE>
+function 
+    RE <I>regexp</I> -&gt; <I>expr</I>
+  | _ -&gt; raise Not_found
+</PRE><P><SPAN CLASS="textboxed"><TT>REPLACE</TT></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><I>regexp</I></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><TT>-&gt;</TT></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><I>expr</I></SPAN><BR>
+returns a string in which every occurrence of the pattern is
+replaced by <I>expr</I>. Options: <CODE>pos</CODE> (0).</P><P><SPAN CLASS="textboxed"><TT>REPLACE_FIRST</TT></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><I>regexp</I></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><TT>-&gt;</TT></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><I>expr</I></SPAN><BR>
+returns a string in which the first occurrence of the pattern is
+replaced by <I>expr</I>. A copy of the input string is returned if
+the pattern is not found.
+Options: <CODE>pos</CODE> (0).</P><P><SPAN CLASS="textboxed"><TT>SEARCH</TT></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><I>regexp</I></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><TT>-&gt;</TT></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><I>expr</I></SPAN><BR>
+simply evaluates <I>expr</I> every time the pattern is
+matched. Options: <CODE>pos</CODE> (0).</P><P><SPAN CLASS="textboxed"><TT>SEARCH_FIRST</TT></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><I>regexp</I></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><TT>-&gt;</TT></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><I>expr</I></SPAN><BR>
+simply evaluates <I>expr</I> the first time the pattern is
+matched and returns the result. Exception <TT>Not_Found</TT> is
+raised if the pattern is not matched.
+Options: <CODE>pos</CODE> (0), <CODE>share</CODE> (false).</P><P><SPAN CLASS="textboxed"><TT>COLLECT</TT></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><I>regexp</I></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><TT>-&gt;</TT></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><I>expr</I></SPAN><BR>
+evaluates <I>expr</I> every time the pattern is
+matched and puts the result into a list. Options: <CODE>pos</CODE> (0).</P><P><SPAN CLASS="textboxed"><TT>COLLECTOBJ</TT></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><I>regexp</I></SPAN><BR>
+like <TT>COLLECT</TT>, but the elements of the returned list are automatically objects
+with methods that correspond to the subgroups captured with
+<TT>as</TT>.
+Options: <CODE>pos</CODE> (0).</P><P><SPAN CLASS="textboxed"><TT>SPLIT</TT></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><I>regexp</I></SPAN><BR>
+splits the given string using <I>regexp</I> as a delimiter.
+Options: <CODE>pos</CODE> (0), <CODE>full</CODE> (false).</P><P><SPAN CLASS="textboxed"><TT>FILTER</TT></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><I>regexp</I></SPAN><BR>
+creates a predicate that returns true is the given string matches 
+<I>regexp</I> or false otherwise.
+Options: <CODE>pos</CODE> (0), <CODE>share</CODE> (false).</P><P><SPAN CLASS="textboxed"><TT>CAPTURE</TT></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><I>regexp</I></SPAN><BR>
+returns <TT>Some o</TT> where <TT>o</TT> is an object with methods
+that correspond to the captured subgroups, or 
+<TT>None</TT> if the subject string doesn&#X2019;t match <I>regexp</I>.
+Options: <CODE>pos</CODE> (0), <CODE>share</CODE> (false).</P><P><SPAN CLASS="textboxed"><TT>MAP</TT></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><I>regexp</I></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><TT>-&gt;</TT></SPAN><SPAN CLASS="textboxed"> </SPAN><SPAN CLASS="textboxed"><I>expr</I></SPAN><BR>
+splits the given string into fragments: the fragments that do not match the
+pattern are returned as <TT>&#X2018;Text s</TT> where s is a
+string. Fragments that match the pattern are replaced by
+the result of <I>expr</I>, which has to be a polymorphic variant.
+Options: <CODE>pos</CODE> (0), <CODE>full</CODE> (true).
+For instance,<BR>
+<CODE>(MAP ',' -&gt; `Sep) "a,b,c,"</CODE><BR>
+ returns the list<BR>
+<CODE>[`Text "a"; `Sep; `Text "b"; `Sep; `Text "c"; `Sep; `Text ""]</CODE><BR>
+whereas<BR>
+<CODE>(MAP ',' -&gt; `Sep) ~full:false "a,b,c,"</CODE><BR>
+returns only<BR>
+ <CODE>[`Text "a"; `Sep; `Text "b"; `Sep; `Text "c"; `Sep]</CODE></P><!--TOC section Tools-->
+<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc28">3</A>  Tools</H2><!--SEC END --><!--TOC subsection Micmatch, Mikmatch, old Camlp4, new Camlp4, Camlp5-->
+<H3 CLASS="subsection"><!--SEC ANCHOR --><A NAME="htoc29">3.1</A>  Micmatch, Mikmatch, old Camlp4, new Camlp4, Camlp5</H3><!--SEC END --><P>Camlp4/Camlp5 is the set of tools that allows to build and use
+syntax extensions of OCaml. We distinguish 3 major variants of Camlp4:
+</P><UL CLASS="itemize"><LI CLASS="li-itemize">
+The &#X201C;old Camlp4&#X201D; is Camlp4 as distributed with OCaml until 
+version 3.09.3.
+</LI><LI CLASS="li-itemize">Camlp5 is an independent branch of the old Camlp4, compatible 
+with at least the 3.09 and 3.10 release lines of OCaml. It is close
+to 100% compatible with the old Camlp4.
+</LI><LI CLASS="li-itemize">The new Camlp4 or just Camlp4 shares the same goals as the 
+old Camlp4 and Camlp5, but is largely incompatible with them.
+It is included in the core OCaml distribution starting from OCaml 3.10
+and replaces the old Camlp4.
+</LI></UL><P>Micmatch is the name of the original implementation of Mikmatch for the
+old Camlp4:
+</P><UL CLASS="itemize"><LI CLASS="li-itemize">
+Micmatch &lt; 1.0 requires the old Camlp4.
+</LI><LI CLASS="li-itemize">Micmatch &#X2265; 1.0 requires Camlp5.
+</LI><LI CLASS="li-itemize">Mikmatch requires the new Camlp4.
+</LI></UL><!--TOC subsection The toplevel-->
+<H3 CLASS="subsection"><!--SEC ANCHOR --><A NAME="htoc30">3.2</A>  The toplevel</H3><!--SEC END --><P><FONT SIZE=2>[toplevel support not available in Camlp4 3.10]</FONT></P><!--TOC subsection The libraries for the preprocessor-->
+<H3 CLASS="subsection"><!--SEC ANCHOR --><A NAME="htoc31">3.3</A>  The libraries for the preprocessor</H3><!--SEC END --><!--TOC subsubsection Mikmatch_str-->
+<H4 CLASS="subsubsection"><!--SEC ANCHOR --><A NAME="htoc32">3.3.1</A>  Mikmatch_str</H4><!--SEC END --><P>
+The preprocessing library <TT>pa_mikmatch_str.cma</TT> must be loaded by
+the preprocessor (<TT>camlp4o</TT> or <TT>camlp4r</TT>).</P><P>It is safe to use Mikmatch_str in
+multithreaded programs without locks only if the patterns do not contain
+the @ keyword because it uses a shared cache of compiled regexps.</P><!--TOC subsubsection Mikmatch_pcre-->
+<H4 CLASS="subsubsection"><!--SEC ANCHOR --><A NAME="htoc33">3.3.2</A>  Mikmatch_pcre</H4><!--SEC END --><P>
+The preprocessing library <TT>pa_mikmatch_pcre.cma</TT> must be loaded by
+the preprocessor (<TT>camlp4o</TT> or <TT>camlp4r</TT>).</P><P>It is safe to use Mikmatch_str in
+multithreaded programs without locks only if the patterns do not contain
+the @ keyword because it uses a shared cache of compiled regexps.</P><!--TOC subsection The runtime libraries-->
+<H3 CLASS="subsection"><!--SEC ANCHOR --><A NAME="htoc34">3.4</A>  The runtime libraries</H3><!--SEC END --><P>Both variants depend on portable features of the Unix library.
+The executables must therefore be linked against <TT>unix.cma</TT>
+(bytecode) or <TT>unix.cmxa</TT> (native code) in addition to
+the specific libraries mentioned below.</P><!--TOC subsubsection Mikmatch_str-->
+<H4 CLASS="subsubsection"><!--SEC ANCHOR --><A NAME="htoc35">3.4.1</A>  Mikmatch_str</H4><!--SEC END --><P>In addition to the backend for the regular expressions engine
+(<TT>str.cma</TT> for bytecode or <TT>str.cmxa</TT> for native code), 
+the OCaml code which is produced by the preprocessor needs to be
+linked against either <TT>run_mikmatch_str.cma</TT> (bytecode),
+<TT>run_mikmatch_str.cmxa</TT> (native code), 
+<TT>run_mikmatch_str_mt.cma</TT> (bytecode, threads)
+or <TT>run_mikmatch_str_mt.cmxa</TT> (native code, threads).</P><!--TOC subsubsection Mikmatch_pcre-->
+<H4 CLASS="subsubsection"><!--SEC ANCHOR --><A NAME="htoc36">3.4.2</A>  Mikmatch_pcre</H4><!--SEC END --><P>In addition to the backend for the regular expressions engine
+(<TT>pcre.cma</TT> for bytecode or <TT>pcre.cmxa</TT> for native code), 
+the OCaml code which is produced by the preprocessor needs to be
+linked against either <TT>run_mikmatch_pcre.cma</TT> (bytecode),
+<TT>run_mikmatch_pcre.cmxa</TT> (native code).
+Multithreaded programs are supported as well
+and do not require a specific library.</P><!--TOC section A small text-oriented library-->
+<H2 CLASS="section"><!--SEC ANCHOR --><A NAME="htoc37">4</A>  A small text-oriented library</H2><!--SEC END --><P>
+
+<a href="http://mjambon.com/mikmatch-ocamldoc/Mikmatch.html">Module Mikmatch</a>
+</P><!--CUT END -->
+<!--HTMLFOOT-->
+<!--ENDHTML-->
+<!--FOOTER-->
+<HR SIZE=2><BLOCKQUOTE CLASS="quote"><EM>This document was translated from L<sup>A</sup>T<sub>E</sub>X by
+</EM><A HREF="http://hevea.inria.fr/index.html"><EM>H</EM><EM><FONT SIZE=2><sup>E</sup></FONT></EM><EM>V</EM><EM><FONT SIZE=2><sup>E</sup></FONT></EM><EM>A</EM></A><EM>.</EM></BLOCKQUOTE></BODY>
+</HTML>

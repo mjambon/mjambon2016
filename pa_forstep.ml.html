@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>
+pa_forstep.ml</title>
+  <meta name="GENERATOR" content="caml2html 1.4.2">
+<style type="text/css">
+code,pre { color:black;background-color:white }a.Cannot { color:black;text-decoration:none }.Cannot:hover { background-color: #b4eeb4; }
+.Cbar,
+.Cdo,
+.Cdone,
+.Cdownto,
+.Celse,
+.Cfor,
+.Cif,
+.Clazy,
+.Cmatch,
+.Cnew,
+.Cor,
+.Cthen,
+.Cto,
+.Ctry,
+.Cwhen,
+.Cwhile,
+.Cwith { color: #77aaaa; }
+.Cassert,
+.Cinclude,
+.Copen { color: #cc9900; }
+.Cstring { color: #aa4444; }
+.Cand,
+.Cas,
+.Cclass,
+.Cconstraint,
+.Cexception,
+.Cexternal,
+.Cfun,
+.Cfunction,
+.Cfunctor,
+.Cin,
+.Cinherit,
+.Cinitializer,
+.Clet,
+.Cmethod,
+.Cmodule,
+.Cmutable,
+.Cof,
+.Cprivate,
+.Crec,
+.Ctype,
+.Cval,
+.Cvirtual { color: green; }
+.Cbackground { background-color: white; }
+.Craise { color: red; }
+.Cconstructor { color: #0033cc; }
+.Ccomment { color: #990000; }
+.Calphakeyword,
+.Casr,
+.Cland,
+.Clor,
+.Clsl,
+.Clsr,
+.Clxor,
+.Cmod { color: #808080; }
+.Clinenum { color: black; background-color: silver; }
+.Cbegin,
+.Cend,
+.Cobject,
+.Csig,
+.Cstruct { color: #990099; }
+.Cfalse,
+.Cnonalphakeyword,
+.Cquotation,
+.Ctrue { }
+</style>
+</head>
+<body>
+
+<pre><a name="pa_forstep.ml"></a><span class="Ccomment">(*</span>
+<span class="Ccomment">  Public Domain. Use at your own risk!</span>
+<span class="Ccomment">  Author: Martin Jambon &lt;martin_jambon@emailuser.net&gt;</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">  This is an extension of the "for" loop construct with an optional</span>
+<span class="Ccomment">  "step" specification:</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">  for i = n1 to n2 step n3 do</span>
+<span class="Ccomment">    expr</span>
+<span class="Ccomment">  done</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">  for i = n1 downto n2 step n3 do</span>
+<span class="Ccomment">    expr</span>
+<span class="Ccomment">  done</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">  The step specifier is an int which is evaluated once, before </span>
+<span class="Ccomment">  the first iteration. This value is added to the loop counter</span>
+<span class="Ccomment">  after each iteration, so it will usually be positive when used</span>
+<span class="Ccomment">  with "to" loops and negative when used with "downto" loops. </span>
+<span class="Ccomment"></span>
+<span class="Ccomment">  Example:</span>
+<span class="Ccomment">  The following program prints "9630":</span>
+<span class="Ccomment">  let a = [| 0; 1; 2; 3; 4; 5; 6; 7; 8; 9 |]</span>
+<span class="Ccomment">  let _ =</span>
+<span class="Ccomment">    for i = Array.length a - 1 downto 0 step -3 do</span>
+<span class="Ccomment">      print_int a.(i)</span>
+<span class="Ccomment">    done;</span>
+<span class="Ccomment">    print_newline ()</span>
+<span class="Ccomment">*)</span>
+
+<span class="Clet">let</span> unique <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> n <span class="Cnonalphakeyword">=</span> ref 0 <span class="Cin">in</span>
+  <span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> incr n<span class="Cnonalphakeyword">;</span> <span class="Cstring">"__pa_forstep"</span> ^ string_of_int !n
+
+<span class="Clet">let</span> forloop _loc var first df last e <span class="Cnonalphakeyword">=</span>
+  <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> for $var$ = $first$ $to:df$ $last$ do { $e$ } </span><span class="Cconstructor">&gt;&gt;</span>
+
+<span class="Clet">let</span> expand _loc var first df last step e <span class="Cnonalphakeyword">=</span>
+  <span class="Cmatch">match</span> step <span class="Cwith">with</span>
+      <span class="Cconstructor">None</span> <span class="Cnonalphakeyword">-&gt;</span> forloop _loc var first df last e
+    <span class="Cbar">|</span> <span class="Cconstructor">Some</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> 1 </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cwhen">when</span> df <span class="Cnonalphakeyword">-&gt;</span> forloop _loc var first <span class="Ctrue">true</span> last e
+    <span class="Cbar">|</span> <span class="Cconstructor">Some</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> -1 </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cwhen">when</span> not df <span class="Cnonalphakeyword">-&gt;</span> forloop _loc var first <span class="Cfalse">false</span> last e
+    <span class="Cbar">|</span> <span class="Cconstructor">Some</span> step <span class="Cnonalphakeyword">-&gt;</span>
+        <span class="Clet">let</span> counter <span class="Cnonalphakeyword">=</span> unique <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+        <span class="Clet">let</span> lastid <span class="Cnonalphakeyword">=</span> unique <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+        <span class="Clet">let</span> stepid <span class="Cnonalphakeyword">=</span> unique <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+        <span class="Clet">let</span> cmp <span class="Cnonalphakeyword">=</span> 
+          <span class="Cif">if</span> df <span class="Cthen">then</span> <span class="Cstring">"&lt;="</span>
+          <span class="Celse">else</span> <span class="Cstring">"&gt;="</span> <span class="Cin">in</span>
+        <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> </span>
+<span class="Cquotation"></span>        <span class="Cquotation">let $lid:counter$ = ref ($first$ : int) in</span>
+<span class="Cquotation"></span>        <span class="Cquotation">let $lid:lastid$ = $last$ in</span>
+<span class="Cquotation"></span>        <span class="Cquotation">let $lid:stepid$ = $step$ in</span>
+<span class="Cquotation"></span>        <span class="Cquotation">while $lid:cmp$ $lid:counter$.val $lid:lastid$ do</span>
+<span class="Cquotation"></span>        <span class="Cquotation">  { let $lid:var$ = $lid:counter$.val in $e$; </span>
+<span class="Cquotation"></span>        <span class="Cquotation">    $lid:counter$.val := $lid:counter$.val + $lid:stepid$ } </span><span class="Cconstructor">&gt;&gt;</span>
+
+<span class="Cconstructor">EXTEND</span>
+  <span class="Cconstructor">GLOBAL</span>: <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr<span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr: <span class="Cconstructor">LEVEL</span> <span class="Cstring">"expr1"</span> <span class="Cnonalphakeyword">[</span>
+    <span class="Cnonalphakeyword">[</span> <span class="Cstring">"for"</span><span class="Cnonalphakeyword">;</span> var <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">LIDENT</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"="</span><span class="Cnonalphakeyword">;</span> first <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> 
+      df <span class="Cnonalphakeyword">=</span> direction_flag<span class="Cnonalphakeyword">;</span> last <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> 
+      step <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">OPT</span> <span class="Cnonalphakeyword">[</span> <span class="Cstring">"step"</span><span class="Cnonalphakeyword">;</span> step <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>expr <span class="Cnonalphakeyword">-&gt;</span> step <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span> 
+      <span class="Cstring">"do"</span><span class="Cnonalphakeyword">;</span> e <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"done"</span> <span class="Cnonalphakeyword">-&gt;</span> 
+        expand _loc var first df last step e <span class="Cnonalphakeyword">]</span>
+  <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+  
+  direction_flag: <span class="Cnonalphakeyword">[</span> 
+    <span class="Cnonalphakeyword">[</span> <span class="Cstring">"to"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Ctrue">true</span>
+    <span class="Cbar">|</span> <span class="Cstring">"downto"</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cfalse">false</span> <span class="Cnonalphakeyword">]</span> 
+  <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+<span class="Cconstructor">END</span>
+
+</pre>
+</body>
+</html>

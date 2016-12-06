@@ -1,0 +1,316 @@
+
+<!doctype html>
+
+<html>
+<head>
+<title>Camlmix</title>
+<meta http-equiv="content-Type" content="text/html; charset=utf-8">
+
+<link rel="stylesheet" href="/base.css" type="text/css">
+
+<link rel="stylesheet" href="/ocaml.css" type="text/css">
+
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+<link rel="home" href="/">
+<link rel="author" href="/people.html#martin">
+
+</head>
+<body>
+
+<div id="page">
+
+
+<div>
+<table id=top_menu cellspacing=0>
+<tr>
+  <td><a href="/">Main</a></td>
+  <td class="current_topic"><a href="/ocaml.html">Software</a></td>
+  <td><a href="/releases">Downloads</a></td>
+  <td><a href="/other.html">Other</a></td>
+</tr>
+</table>
+</div>
+
+<h1>Camlmix <img src="/1camel.png" 
+     title="difficulty = 1 camel (suitable for OCaml beginners)"
+     alt="[difficulty = 1 camel]">
+<br>
+<span class=title2>OCaml-stuffed templates</span></h1>
+
+<p>[<a href="#intro">intro</a>] 
+[<a href="#example">example</a>] 
+[<a href="#advanced">advanced</a>] 
+[<a href="#download">download</a>]
+
+<h2 id=intro>Introduction</h2>
+<p>
+Camlmix is a generic preprocessor which converts text with embedded 
+<a href="http://caml.inria.fr">OCaml</a> into an 
+<a href="http://caml.inria.fr">OCaml</a> program with embedded text.
+It produces text documents from one or several templates.
+Camlmix is <span style="text-decoration: underline"><b>not</b> a 
+<a href="/extend-ocaml-syntax.html">Camlp4 syntax extension</a></span>.
+
+<br>
+The basic syntaxic rules are:
+<ul>
+<li> <code>Some text <span style="color:990000">##</span>&nbsp;<span class="Ccomment">(*&nbsp;Some&nbsp;OCaml&nbsp;statements&nbsp;*)</span>&nbsp;<span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span>&nbsp;<span style="color:990000">##</span> More text ...</code>
+<li> <code>Some text <span style="color:990000">##</span><span class="Cnonalphakeyword">=</span>&nbsp;<span class="Ccomment">(*&nbsp;Some&nbsp;OCaml&nbsp;string&nbsp;expression&nbsp;*)</span>&nbsp;<span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span>&nbsp;<span style="color:990000">##</span> More text ...</code>
+<li> <code>This prints actually 2 # symbols: ###</code>
+</ul>
+
+<p>
+Camlmix does not provide a library for text-processing, but 
+all existing libraries and syntax extensions can be used, such
+as 
+<a href="http://www.eleves.ens.fr/home/frisch/soft.html#HereDoc">HereDoc</a>, 
+<a href="/micmatch.html">Micmatch</a> or 
+<a href="http://www.ocaml-programming.de/packages/documentation/xstrp4/">xstrp4</a>. 
+You can also find some examples of code in the 
+<a href="/toolbox.html">Camlmix Toolbox</a> if you are not familiar with
+I/O in OCaml.
+
+
+<h2 id=example>Example</h2>
+<p>
+The file <code>example.mlx</code> contains the following:
+
+<pre>
+<span style="color:990000">##</span>
+<span class="Copen">open</span> <span class="Cconstructor">Printf</span>
+<span class="Clet">let</span> color col s <span class="Cnonalphakeyword">=</span>
+  sprintf <span class="Cstring">"&lt;span style=\"color:%s\"&gt;%s&lt;/span&gt;"</span> col s
+<span style="color:990000">##</span>
+This is <span style="color:990000">##</span><span class="Cnonalphakeyword">=</span> color <span class="Cstring">"red"</span> <span class="Cstring">"red text"</span> <span style="color:990000">##</span>,
+but that is a <span style="color:990000">##</span><span class="Cnonalphakeyword">=</span> color <span class="Cstring">"blue"</span> <span class="Cstring">"blue one"</span> <span style="color:990000">##</span>.
+</pre>
+
+<p>
+The command
+<pre>
+camlmix example.mlx -o example.html
+</pre>
+<p>
+will produce the following <code>example.html</code> file:
+
+<pre>
+This is <span class=tag>&lt;span style="color:red"&gt;</span>red text<span class=tag>&lt;/span&gt;</span>,
+but that is a <span class=tag>&lt;span style="color:blue"&gt;</span>blue one<span class=tag>&lt;/span&gt;</span>.
+</pre>
+
+<p>
+This piece of HTML will be displayed as:
+This is <span style="color:red">red text</span>,
+but that is a <span style="color:blue">blue one</span>.
+
+<p>
+You may now have a look at the 
+<a href="index-src.html">Camlmix/HTML colorized source of this web page</a>,
+which was itself made using a Camlmix template.
+
+<p>
+Camlmix also allows you to convert a template into a regular OCaml source file
+which is equipped with a single function named <code>render</code>:
+<pre>
+camlmix example.mlx -c -fun -co example.ml 
+</pre>
+<p>
+The signature of the <code>render</code> function would be:
+<pre><span class="Cval">val</span> render : <span class="Cnonalphakeyword">?</span>print:<span class="Cnonalphakeyword">(</span>string <span class="Cnonalphakeyword">-&gt;</span> unit<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> 'a <span class="Cnonalphakeyword">-&gt;</span> unit</pre>
+<p>
+where the <code>'a</code> parameter stands for the type of the argument which
+is passed to the rendering function. It is available in the template
+under the name <code>param</code>, and its usage determines its
+actual type. The <code>print</code> function is the one which is used
+to handle text. By default, it prints the text onto stdout, but
+it can be replaced by any other function, as long as the user-defined
+code of the template uses it.
+<p>
+The result <code>example.ml</code> is a regular OCaml file which would
+be integrated into a regular OCaml program.
+
+<p>
+The full set of features and options is described in 
+<a href="camlmix-help.txt">the output of <code>camlmix -help</code></a>
+
+
+<h2 id=advanced>Advanced features</h2>
+
+<h3>Directives</h3>
+<p>
+A block of code that starts with an <code>@</code> character will not
+be handled as OCaml code but as a sequence of directives for
+Camlmix.
+<p>
+There is one useful directive: <code>include</code>.
+This mechanism allows the insertion of templates and subtemplates that
+inherit the whole OCaml environment, and possibly modify it. 
+These templates are not only
+parametrized by string variables but also by any type of OCaml data,
+including functions, and even by types and modules!
+<p>
+The <code>include</code> directive reads a file
+(e.g. <code>included.mlx</code>)
+in the Camlmix syntax exactly as if its
+contents was inserted in the current file (e.g. <code>main.mlx</code>):
+<p>
+<code>main.mlx:</code>
+<pre>
+<span style="color:990000">##</span>
+<span class="Clet">let</span> print_counter <span class="Cnonalphakeyword">=</span> <span class="Ccomment">(* increments the counter and displays its new value *)</span>
+  <span class="Clet">let</span> n <span class="Cnonalphakeyword">=</span> ref 0 <span class="Cin">in</span>
+  <span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> incr n<span class="Cnonalphakeyword">;</span> print_int !n
+<span style="color:990000">##</span>
+Should be 1: <span style="color:990000">##</span> print_counter <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span style="color:990000">##</span>
+Should be 2: <span style="color:990000">##</span> @<span class="Cinclude">include</span> <span class="Cstring">"included.mlx"</span> <span style="color:990000">##</span>
+Should be 3: <span style="color:990000">##</span> print_counter <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span style="color:990000">##</span>
+</pre>
+<p>
+<code>included.mlx:</code>
+<pre>
+<span style="color:990000">##</span> print_counter <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span style="color:990000">##</span>
+</pre> 
+<p>
+<code>camlmix main.mlx</code> returns the following:
+<pre>
+
+Should be 1: 1
+Should be 2: 2
+
+Should be 3: 3
+</pre>
+
+<p>
+This is not totally satisfying because two undesired empty lines were inserted.
+In Camlmix 1.2, you can skip whitespace until the end of the line and the
+newline character by using
+<code>.##</code> instead of <code>##</code> as the closing delimiter.
+This results in the following program:
+<pre>
+<span style="color:990000">##</span>
+<span class="Clet">let</span> print_counter <span class="Cnonalphakeyword">=</span> <span class="Ccomment">(* increments the counter and displays its new value *)</span>
+  <span class="Clet">let</span> n <span class="Cnonalphakeyword">=</span> ref 0 <span class="Cin">in</span>
+  <span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> incr n<span class="Cnonalphakeyword">;</span> print_int !n
+<span style="color:990000">.##</span>
+Should be 1: <span style="color:990000">##</span> print_counter <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span style="color:990000">##</span>
+Should be 2: <span style="color:990000">##</span> @<span class="Cinclude">include</span> <span class="Cstring">"included.mlx"</span> <span style="color:990000">.##</span>
+Should be 3: <span style="color:990000">##</span> print_counter <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span style="color:990000">##</span>
+</pre>
+<p>
+which now produces:
+<pre>
+Should be 1: 1
+Should be 2: 2
+Should be 3: 3
+</pre>
+
+
+<p>
+A <code>skip</code> directive also exists: it ignores the next block of text.
+It is not much useful since the <code>.##</code> delimiter was introduced in
+Camlmix 1.2.
+It was useful when a block of OCaml had to follow a block of directives,
+without printing anything between them:
+<pre>
+<span style="color:990000">##</span> @<span class="Cinclude">include</span> <span class="Cstring">"somefile.mlx"</span><span class="Cnonalphakeyword">;</span> skip <span class="Ccomment">(* skips the newline character(s) -&gt; *)</span> <span style="color:990000">##</span>
+<span style="color:990000">##</span> print_something <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span style="color:990000">##</span>
+</pre>
+
+
+<h3>Runtime hooks</h3>
+<p>
+The OCaml program that is generated from the Camlmix files first defines
+a module called Camlmix. This module contains several variables that are 
+updated automatically and possibly explicitely by the user.
+Its signature is:
+
+
+
+<pre><span class="Cmodule">module</span> <span class="Cconstructor">Camlmix</span> :
+  <span class="Csig">sig</span>
+    <span class="Cval">val</span> source : string ref
+    <span class="Cval">val</span> line : int ref
+    <span class="Cval">val</span> char : int ref  </pre><p class=comment>
+
+<code>source</code>, <code>line</code> and <code>char</code> 
+refer to the location of the first 
+character of the current block in its source file
+(source file, line number starting from 1, position in the line
+starting from 1). They are updated automatically at the beginning
+of each code block or text block.
+
+<pre>    <span class="Cval">val</span> printer : <span class="Cnonalphakeyword">(</span>string <span class="Cnonalphakeyword">-&gt;</span> unit<span class="Cnonalphakeyword">)</span> ref </pre><p class=comment>
+
+the function that prints the text blocks
+
+<pre>    <span class="Cval">val</span> print_with : <span class="Cnonalphakeyword">(</span>string <span class="Cnonalphakeyword">-&gt;</span> unit<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> unit</pre><p class=comment>
+
+<code>print_with f</code> prints the next block of text using 
+<code>f</code> instead
+of the current printer.
+Its behavior is undefined if it is called several 
+times in the same OCaml block.
+
+<pre>    <span class="Cval">val</span> print_if : bool <span class="Cnonalphakeyword">-&gt;</span> unit</pre><p class=comment>
+
+<code>print_if cond</code> prints the next block of text only 
+if <code>cond</code> is true.
+It uses <code>print_with</code>.
+
+<pre>  <span class="Cend">end</span></pre>
+
+<h3>Command line options</h3>
+
+
+<p>
+The command line options are returned by 
+<a href="camlmix-help.txt"><code>camlmix -help</code></a>.
+
+
+
+<h2 id=download>Download</h2>
+
+<p>
+Camlmix can be installed automatically from 
+<a href="http://www.ocaml-programming.de/godi/">GODI</a>.
+<p>
+You can also use the traditional way. 
+Just download the source code:
+<a href="camlmix-1.3.0.tar.bz2">camlmix-1.3.0.tar.bz2</a>
+or <a href="camlmix-1.3.0.tar.gz">camlmix-1.3.0.tar.gz</a>. 
+It should work on any platform where
+OCaml is available.
+
+<p>
+I would be happy if you send me any positive or negative feedback.
+
+<p>
+Thanks to Nadji Gauthier, Jean-Baptiste Rouquier, Arthur E., Janne Hellsten
+and those that I forget, for their contributions.
+
+
+<div id=footer>
+&copy;&nbsp;2007&nbsp;Martin&nbsp;Jambon &lt;<a href="mailto:martin@mjambon.com">martin@mjambon.com</a>&gt;
+</div>
+
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-640255-1";
+urchinTracker();
+</script>
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+<!-- 
+var sc_project=370325; 
+var sc_partition=1; 
+//-->
+</script>
+
+<script type="text/javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><p><a href="http://www.statcounter.com/"><img src="http://c2.statcounter.com/counter.php?sc_project=370325&amp;java=0" alt="counter"></a></p></noscript>
+<!-- End of StatCounter Code -->
+
+</body>
+</html>

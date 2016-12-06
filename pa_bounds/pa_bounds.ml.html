@@ -1,0 +1,407 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>
+pa_bounds/pa_bounds.ml</title>
+  <meta name="GENERATOR" content="caml2html 1.4.2">
+<style type="text/css">
+code,pre { color:black;background-color:white }a.Cannot { color:black;text-decoration:none }.Cannot:hover { background-color: #b4eeb4; }
+.Cbar,
+.Cdo,
+.Cdone,
+.Cdownto,
+.Celse,
+.Cfor,
+.Cif,
+.Clazy,
+.Cmatch,
+.Cnew,
+.Cor,
+.Cthen,
+.Cto,
+.Ctry,
+.Cwhen,
+.Cwhile,
+.Cwith { color: #77aaaa; }
+.Cassert,
+.Cinclude,
+.Copen { color: #cc9900; }
+.Cstring { color: #aa4444; }
+.Cand,
+.Cas,
+.Cclass,
+.Cconstraint,
+.Cexception,
+.Cexternal,
+.Cfun,
+.Cfunction,
+.Cfunctor,
+.Cin,
+.Cinherit,
+.Cinitializer,
+.Clet,
+.Cmethod,
+.Cmodule,
+.Cmutable,
+.Cof,
+.Cprivate,
+.Crec,
+.Ctype,
+.Cval,
+.Cvirtual { color: green; }
+.Cbackground { background-color: white; }
+.Craise { color: red; }
+.Cconstructor { color: #0033cc; }
+.Ccomment { color: #990000; }
+.Calphakeyword,
+.Casr,
+.Cland,
+.Clor,
+.Clsl,
+.Clsr,
+.Clxor,
+.Cmod { color: #808080; }
+.Clinenum { color: black; background-color: silver; }
+.Cbegin,
+.Cend,
+.Cobject,
+.Csig,
+.Cstruct { color: #990099; }
+.Cfalse,
+.Cnonalphakeyword,
+.Cquotation,
+.Ctrue { }
+</style>
+</head>
+<body>
+
+<pre><span class="Ccomment">(*</span>
+<span class="Ccomment">Copyright (c) 2006 Martin Jambon &lt;martin_jambon@emailuser.net&gt;</span>
+<span class="Ccomment">All rights reserved.</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">Redistribution and use in source and binary forms, with or without</span>
+<span class="Ccomment">modification, are permitted provided that the following conditions</span>
+<span class="Ccomment">are met:</span>
+<span class="Ccomment">1. Redistributions of source code must retain the above copyright</span>
+<span class="Ccomment">   notice, this list of conditions and the following disclaimer.</span>
+<span class="Ccomment">2. Redistributions in binary form must reproduce the above copyright</span>
+<span class="Ccomment">   notice, this list of conditions and the following disclaimer in the</span>
+<span class="Ccomment">   documentation and/or other materials provided with the distribution.</span>
+<span class="Ccomment">3. The name of the author may not be used to endorse or promote products</span>
+<span class="Ccomment">   derived from this software without specific prior written permission.</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR</span>
+<span class="Ccomment">IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES</span>
+<span class="Ccomment">OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.</span>
+<span class="Ccomment">IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,</span>
+<span class="Ccomment">INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT</span>
+<span class="Ccomment">NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</span>
+<span class="Ccomment">DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</span>
+<span class="Ccomment">THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="Ccomment">(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF</span>
+<span class="Ccomment">THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="Ccomment">*)</span>
+
+<span class="Ccomment">(*</span>
+<span class="Ccomment">  This is a syntax extension of OCaml which allows out-of-bounds accesses </span>
+<span class="Ccomment">  of arrays and alike to be reported with the exact location </span>
+<span class="Ccomment">  in the source code.</span>
+<span class="Ccomment"></span>
+<span class="Ccomment">  See http://martin.jambon.free.fr/pa_bounds/README for details.</span>
+<span class="Ccomment">*)</span>
+
+
+<span class="Copen">open</span> <span class="Cconstructor">Printf</span>
+<span class="Copen">open</span> <span class="Cconstructor">Lexing</span>
+
+<span class="Clet">let</span> prefix <span class="Cnonalphakeyword">=</span> <span class="Cstring">"__pa_bounds"</span>
+<span class="Clet">let</span> unique <span class="Cnonalphakeyword">=</span> <span class="Clet">let</span> n <span class="Cnonalphakeyword">=</span> ref 0 <span class="Cin">in</span> <span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> incr n<span class="Cnonalphakeyword">;</span> prefix ^ <span class="Cnonalphakeyword">(</span>string_of_int !n<span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> locate kind _loc <span class="Cnonalphakeyword">(</span>dim<span class="Cnonalphakeyword">,</span> format<span class="Cnonalphakeyword">,</span> format_index<span class="Cnonalphakeyword">,</span> format_length<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> start<span class="Cnonalphakeyword">,</span> stop <span class="Cnonalphakeyword">=</span> _loc <span class="Cin">in</span>
+  <span class="Clet">let</span> index<span class="Cnonalphakeyword">,</span> length <span class="Cnonalphakeyword">=</span> 
+    <span class="Cmatch">match</span> dim <span class="Cwith">with</span>
+        1 <span class="Cnonalphakeyword">-&gt;</span> <span class="Cstring">"index"</span><span class="Cnonalphakeyword">,</span> <span class="Cstring">"length"</span>
+      <span class="Cbar">|</span> n <span class="Cnonalphakeyword">-&gt;</span> <span class="Cstring">"indices"</span><span class="Cnonalphakeyword">,</span> <span class="Cstring">"lengths"</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> msg <span class="Cnonalphakeyword">=</span> 
+    <span class="Clet">let</span> char1 <span class="Cnonalphakeyword">=</span> start<span class="Cnonalphakeyword">.</span>pos_cnum <span class="Cnonalphakeyword">-</span> start<span class="Cnonalphakeyword">.</span>pos_bol <span class="Cin">in</span>
+    <span class="Clet">let</span> char2 <span class="Cnonalphakeyword">=</span> char1 <span class="Cnonalphakeyword">+</span> stop<span class="Cnonalphakeyword">.</span>pos_cnum <span class="Cnonalphakeyword">-</span> start<span class="Cnonalphakeyword">.</span>pos_cnum <span class="Cin">in</span>
+    sprintf <span class="Cstring">"File %S, line %i, characters %i-%i:\n\</span>
+<span class="Cstring">             index out of %s bounds (%s = %%%s; %s = %%%s)"</span>
+      !<span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>input_file <span class="Ccomment">(*start.pos_fname*)</span> start<span class="Cnonalphakeyword">.</span>pos_lnum 
+      char1 char2 kind index format length format <span class="Cin">in</span>
+  <span class="Clet">let</span> s <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">String</span><span class="Cnonalphakeyword">.</span>escaped msg <span class="Cin">in</span>
+  <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> do { raise </span>
+<span class="Cquotation"></span>        <span class="Cquotation"></span>        <span class="Cquotation"> (Invalid_argument </span>
+<span class="Cquotation"></span>        <span class="Cquotation"></span>        <span class="Cquotation">    (Printf.sprintf $str:s$ $format_index$ $format_length$)) }</span>
+<span class="Cquotation">  </span><span class="Cconstructor">&gt;&gt;</span>
+
+<span class="Clet">let</span> vector_set name modul _loc e1 e2 e3 <span class="Cnonalphakeyword">=</span> 
+  <span class="Clet">let</span> v <span class="Cnonalphakeyword">=</span> prefix ^ <span class="Cstring">"v"</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> i <span class="Cnonalphakeyword">=</span> prefix ^ <span class="Cstring">"i"</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> x <span class="Cnonalphakeyword">=</span> prefix ^ <span class="Cstring">"x"</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> msg <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span>1<span class="Cnonalphakeyword">,</span> <span class="Cstring">"i"</span><span class="Cnonalphakeyword">,</span> 
+             <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $lid:i$ </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">,</span>
+             <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $uid:modul$.length $lid:v$ </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+  <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> </span>
+<span class="Cquotation">  let $lid:x$ = $e3$ in</span>
+<span class="Cquotation">  let $lid:v$ = $e1$ in</span>
+<span class="Cquotation">  let $lid:i$ = $e2$ in </span>
+<span class="Cquotation">  if $lid:i$ &lt; 0 || $lid:i$ &gt;= $uid:modul$.length $lid:v$ then</span>
+<span class="Cquotation">    $locate name _loc msg$</span>
+<span class="Cquotation">  else </span>
+<span class="Cquotation">    $uid:modul$.unsafe_set $lid:v$ $lid:i$ $lid:x$ </span>
+<span class="Cquotation">  </span><span class="Cconstructor">&gt;&gt;</span>
+
+<span class="Clet">let</span> array_set <span class="Cnonalphakeyword">=</span> vector_set <span class="Cstring">"array"</span> <span class="Cstring">"Array"</span>
+<span class="Clet">let</span> string_set <span class="Cnonalphakeyword">=</span> vector_set <span class="Cstring">"string"</span> <span class="Cstring">"String"</span>
+
+<span class="Clet">let</span> print_ints _loc l <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> sformat <span class="Cnonalphakeyword">=</span>
+    <span class="Cstring">"("</span> ^ <span class="Cconstructor">String</span><span class="Cnonalphakeyword">.</span>concat <span class="Cstring">", "</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>map <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> id <span class="Cnonalphakeyword">-&gt;</span> <span class="Cstring">"%i"</span><span class="Cnonalphakeyword">)</span> l<span class="Cnonalphakeyword">)</span> ^ <span class="Cstring">")"</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> f <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Printf.sprintf $str:String.escaped sformat$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cin">in</span>
+  <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>fold_left <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> f e <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $f$ $e$ </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">)</span> f l
+
+<span class="Clet">let</span> print_int_array _loc len x <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> a <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Array</span><span class="Cnonalphakeyword">.</span>init len 
+            <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> i <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $lid:x$.($int:string_of_int i$) </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> l <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Array</span><span class="Cnonalphakeyword">.</span>to_list a <span class="Cin">in</span>
+  print_ints _loc l
+
+<span class="Clet">let</span> bigarray1_msg _loc i x <span class="Cnonalphakeyword">=</span>
+  1<span class="Cnonalphakeyword">,</span> <span class="Cstring">"i"</span><span class="Cnonalphakeyword">,</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $lid:i$ </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">,</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Bigarray.Array1.dim $lid:x$ </span><span class="Cconstructor">&gt;&gt;</span>
+
+<span class="Clet">let</span> bigarray2_msg _loc i j x <span class="Cnonalphakeyword">=</span>
+  2<span class="Cnonalphakeyword">,</span> <span class="Cstring">"s"</span><span class="Cnonalphakeyword">,</span> 
+  <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Printf.sprintf "(%i, %i)" $lid:i$ $lid:j$ </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">,</span> 
+  <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Printf.sprintf "(%i, %i)" </span>
+<span class="Cquotation">            (Bigarray.Array2.dim1 $lid:x$)</span>
+<span class="Cquotation">            (Bigarray.Array2.dim2 $lid:x$) </span><span class="Cconstructor">&gt;&gt;</span>
+
+<span class="Clet">let</span> bigarray3_msg _loc i j k x <span class="Cnonalphakeyword">=</span>
+  3<span class="Cnonalphakeyword">,</span> <span class="Cstring">"s"</span><span class="Cnonalphakeyword">,</span> 
+  <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Printf.sprintf "(%i, %i, %i)" $lid:i$ $lid:j$ $lid:k$ </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">,</span> 
+  <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Printf.sprintf "(%i, %i, %i)" </span>
+<span class="Cquotation"></span>        <span class="Cquotation">    (Bigarray.Array3.dim1 $lid:x$)</span>
+<span class="Cquotation"></span>        <span class="Cquotation">    (Bigarray.Array3.dim2 $lid:x$)</span>
+<span class="Cquotation"></span>        <span class="Cquotation">    (Bigarray.Array3.dim3 $lid:x$) </span><span class="Cconstructor">&gt;&gt;</span>
+
+<span class="Clet">let</span> bigarrayn_msg _loc len indices x <span class="Cnonalphakeyword">=</span>
+  len<span class="Cnonalphakeyword">,</span> <span class="Cstring">"s"</span><span class="Cnonalphakeyword">,</span>
+  print_int_array _loc len indices<span class="Cnonalphakeyword">,</span>
+  <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> let dims = Bigarray.Genarray.dims $lid:x$ in</span>
+<span class="Cquotation">          $print_int_array _loc len "dims"$ </span><span class="Cconstructor">&gt;&gt;</span>
+
+
+<span class="Clet">let</span> bigarray_set _loc f b args x <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> b_id <span class="Cnonalphakeyword">=</span> unique <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> arg_bindings <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>map <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> arg <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span>unique <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">,</span> arg<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span> args <span class="Cin">in</span>
+  <span class="Clet">let</span> x_id <span class="Cnonalphakeyword">=</span> unique <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> msg <span class="Cnonalphakeyword">=</span> 
+    <span class="Cmatch">match</span> arg_bindings <span class="Cwith">with</span>
+       <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">(</span>indices<span class="Cnonalphakeyword">,</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> [| $list:l$ |] </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span> 
+          <span class="Clet">let</span> len <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>length l <span class="Cin">in</span>
+          bigarrayn_msg _loc len indices b_id
+      <span class="Cbar">|</span>        <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">(</span>i<span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span> bigarray1_msg _loc i b_id
+      <span class="Cbar">|</span> <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">(</span>i<span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span> <span class="Cnonalphakeyword">(</span>j<span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span> bigarray2_msg _loc i j b_id
+      <span class="Cbar">|</span> <span class="Cnonalphakeyword">[</span> <span class="Cnonalphakeyword">(</span>i<span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span> <span class="Cnonalphakeyword">(</span>j<span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span> <span class="Cnonalphakeyword">(</span>k<span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span> bigarray3_msg _loc i j k b_id
+      <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cassert">assert</span> <span class="Cfalse">false</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> bindings <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span>b_id<span class="Cnonalphakeyword">,</span> b<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">::</span> <span class="Cnonalphakeyword">(</span>arg_bindings @ <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">(</span>x_id<span class="Cnonalphakeyword">,</span> x<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> app <span class="Cnonalphakeyword">=</span> 
+    <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>fold_left <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> f <span class="Cnonalphakeyword">(</span>id<span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $f$ $lid:id$ </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">)</span> f bindings <span class="Cin">in</span>
+  <span class="Clet">let</span> catch <span class="Cnonalphakeyword">=</span>
+    <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> </span>
+<span class="Cquotation">    try $app$</span>
+<span class="Cquotation">    with [ Invalid_argument _ -&gt; </span>
+<span class="Cquotation"></span>        <span class="Cquotation">     $locate "bigarray" _loc msg$ ] </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cin">in</span>
+  <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>fold_right 
+    <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span>id<span class="Cnonalphakeyword">,</span> arg<span class="Cnonalphakeyword">)</span> e <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> let $lid:id$ = $arg$ in $e$ </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">)</span>
+    bindings catch
+
+<span class="Clet">let</span> bigarray1_set _loc b c1 x <span class="Cnonalphakeyword">=</span>
+  bigarray_set _loc <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Bigarray.Array1.set </span><span class="Cconstructor">&gt;&gt;</span> b <span class="Cnonalphakeyword">[</span> c1 <span class="Cnonalphakeyword">]</span> x
+
+<span class="Clet">let</span> bigarray2_set _loc b c1 c2 x <span class="Cnonalphakeyword">=</span>
+  bigarray_set _loc <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Bigarray.Array2.set </span><span class="Cconstructor">&gt;&gt;</span> b <span class="Cnonalphakeyword">[</span> c1<span class="Cnonalphakeyword">;</span> c2 <span class="Cnonalphakeyword">]</span> x
+
+<span class="Clet">let</span> bigarray3_set _loc b c1 c2 c3 x <span class="Cnonalphakeyword">=</span>
+  bigarray_set _loc <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Bigarray.Array3.set </span><span class="Cconstructor">&gt;&gt;</span> b <span class="Cnonalphakeyword">[</span> c1<span class="Cnonalphakeyword">;</span> c2<span class="Cnonalphakeyword">;</span> c3 <span class="Cnonalphakeyword">]</span> x
+
+<span class="Clet">let</span> bigarrayn_set _loc b l x <span class="Cnonalphakeyword">=</span>
+  bigarray_set _loc <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Bigarray.Genarray.set </span><span class="Cconstructor">&gt;&gt;</span> 
+  b <span class="Cnonalphakeyword">[</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> [| $list:l$ |] </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">]</span> x
+
+
+<span class="Clet">let</span> vector_get initial name modul _loc e1 e2 <span class="Cnonalphakeyword">=</span> 
+  <span class="Clet">let</span> v <span class="Cnonalphakeyword">=</span> prefix ^ initial <span class="Cin">in</span>
+  <span class="Clet">let</span> i <span class="Cnonalphakeyword">=</span> prefix ^ <span class="Cstring">"i"</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> msg <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span>1<span class="Cnonalphakeyword">,</span> <span class="Cstring">"i"</span><span class="Cnonalphakeyword">,</span> 
+             <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $lid:i$ </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">,</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $uid:modul$.length $lid:v$ </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+  <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> </span>
+<span class="Cquotation">  let $lid:v$ = $e1$ in</span>
+<span class="Cquotation">  let $lid:i$ : int = $e2$ in </span>
+<span class="Cquotation">  if $lid:i$ &lt; 0 || $lid:i$ &gt;= $uid:modul$.length $lid:v$ then</span>
+<span class="Cquotation">    $locate name _loc msg$</span>
+<span class="Cquotation">  else</span>
+<span class="Cquotation">    $uid:modul$.unsafe_get $lid:v$ $lid:i$</span>
+<span class="Cquotation">  </span><span class="Cconstructor">&gt;&gt;</span>
+
+<span class="Clet">let</span> array_get <span class="Cnonalphakeyword">=</span> vector_get <span class="Cstring">"a"</span> <span class="Cstring">"array"</span> <span class="Cstring">"Array"</span>
+<span class="Clet">let</span> string_get <span class="Cnonalphakeyword">=</span> vector_get <span class="Cstring">"s"</span> <span class="Cstring">"string"</span> <span class="Cstring">"String"</span>
+
+<span class="Clet">let</span> bigarray_get _loc arr coords <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> b1 <span class="Cnonalphakeyword">=</span> prefix ^ <span class="Cstring">"b1"</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> b2 <span class="Cnonalphakeyword">=</span> prefix ^ <span class="Cstring">"b2"</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> b3 <span class="Cnonalphakeyword">=</span> prefix ^ <span class="Cstring">"b3"</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> bn <span class="Cnonalphakeyword">=</span> prefix ^ <span class="Cstring">"bn"</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> i <span class="Cnonalphakeyword">=</span> prefix ^ <span class="Cstring">"i"</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> j <span class="Cnonalphakeyword">=</span> prefix ^ <span class="Cstring">"j"</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> k <span class="Cnonalphakeyword">=</span> prefix ^ <span class="Cstring">"k"</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> indices <span class="Cnonalphakeyword">=</span> prefix ^ <span class="Cstring">"indices"</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> pi <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $lid:i$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cand">and</span> ei <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $lid:i$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> pj <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $lid:j$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cand">and</span> ej <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $lid:j$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> pk <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">&lt;:patt&lt;</span><span class="Cquotation"> $lid:k$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cand">and</span> ek <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $lid:k$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cin">in</span>
+  <span class="Cmatch">match</span> coords <span class="Cwith">with</span>
+      <span class="Cnonalphakeyword">[</span>c1<span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span> 
+        <span class="Cnonalphakeyword">(</span><span class="Clet">let</span> msg <span class="Cnonalphakeyword">=</span> bigarray1_msg _loc i b1 <span class="Cin">in</span>
+         <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> </span>
+<span class="Cquotation"></span>        <span class="Cquotation"> let $lid:b1$ = $arr$ in </span>
+<span class="Cquotation"></span>        <span class="Cquotation"> let $pi$ : int = $c1$ in </span>
+<span class="Cquotation"></span>        <span class="Cquotation"> try Bigarray.Array1.get $lid:b1$ $ei$</span>
+<span class="Cquotation"></span>        <span class="Cquotation"> with [ Invalid_argument _ -&gt; $locate "bigarray" _loc msg$ ] </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">)</span>
+    <span class="Cbar">|</span> <span class="Cnonalphakeyword">[</span>c1<span class="Cnonalphakeyword">;</span> c2<span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span>
+        <span class="Cnonalphakeyword">(</span><span class="Clet">let</span> msg <span class="Cnonalphakeyword">=</span> bigarray2_msg _loc i j b2 <span class="Cin">in</span>
+         <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> </span>
+<span class="Cquotation"></span>        <span class="Cquotation"> let $lid:b2$ = $arr$ in</span>
+<span class="Cquotation"></span>        <span class="Cquotation"> let $pi$ : int = $c1$ in</span>
+<span class="Cquotation"></span>        <span class="Cquotation"> let $pj$ : int = $c2$ in </span>
+<span class="Cquotation"></span>        <span class="Cquotation"> try Bigarray.Array2.get $lid:b2$ $ei$ $ej$</span>
+<span class="Cquotation"></span>        <span class="Cquotation"> with [ Invalid_argument _ -&gt; $locate "bigarray" _loc msg$ ] </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">)</span>
+    <span class="Cbar">|</span> <span class="Cnonalphakeyword">[</span>c1<span class="Cnonalphakeyword">;</span> c2<span class="Cnonalphakeyword">;</span> c3<span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span>
+        <span class="Cnonalphakeyword">(</span><span class="Clet">let</span> msg <span class="Cnonalphakeyword">=</span> bigarray3_msg _loc i j k b3 <span class="Cin">in</span>
+         <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> </span>
+<span class="Cquotation"></span>        <span class="Cquotation"> let $lid:b3$ = $arr$ in</span>
+<span class="Cquotation"></span>        <span class="Cquotation"> let $pi$ : int = $c1$ in</span>
+<span class="Cquotation"></span>        <span class="Cquotation"> let $pj$ : int = $c2$ in</span>
+<span class="Cquotation"></span>        <span class="Cquotation"> let $pk$ : int = $c3$ in </span>
+<span class="Cquotation"></span>        <span class="Cquotation"> try Bigarray.Array3.get $lid:b3$ $ei$ $ej$ $ek$</span>
+<span class="Cquotation"></span>        <span class="Cquotation"> with [ Invalid_argument _ -&gt; $locate "bigarray" _loc msg$ ] </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">)</span>
+    <span class="Cbar">|</span> coords <span class="Cnonalphakeyword">-&gt;</span>
+        <span class="Cnonalphakeyword">(</span><span class="Clet">let</span> len <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>length coords <span class="Cin">in</span>
+         <span class="Clet">let</span> msg <span class="Cnonalphakeyword">=</span> bigarrayn_msg _loc len indices bn <span class="Cin">in</span>
+         <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> </span>
+<span class="Cquotation"></span>        <span class="Cquotation"> let $lid:bn$ = $arr$ in</span>
+<span class="Cquotation"></span>        <span class="Cquotation"> let $lid:indices$ = [| $list:coords$ |] in</span>
+<span class="Cquotation"></span>        <span class="Cquotation"> try Bigarray.Genarray.get $lid:bn$ $lid:indices$</span>
+<span class="Cquotation"></span>        <span class="Cquotation"> with [ Invalid_argument _ -&gt; $locate "bigarray" _loc msg$ ] </span><span class="Cconstructor">&gt;&gt;</span><span class="Cnonalphakeyword">)</span>
+
+
+<span class="Clet">let</span> bigarray_native_get _loc arr coords <span class="Cnonalphakeyword">=</span>
+  <span class="Cmatch">match</span> coords <span class="Cwith">with</span>
+      <span class="Cnonalphakeyword">[</span>c1<span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Bigarray.Array1.get $arr$ $c1$ </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cnonalphakeyword">[</span>c1<span class="Cnonalphakeyword">;</span> c2<span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Bigarray.Array2.get $arr$ $c1$ $c2$ </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cnonalphakeyword">[</span>c1<span class="Cnonalphakeyword">;</span> c2<span class="Cnonalphakeyword">;</span> c3<span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Bigarray.Array3.get $arr$ $c1$ $c2$ $c3$ </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> coords <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Bigarray.Genarray.get $arr$ [| $list:coords$ |] </span><span class="Cconstructor">&gt;&gt;</span>
+
+<span class="Clet">let</span> bigarray_native_set _loc var newval <span class="Cnonalphakeyword">=</span>
+  <span class="Cmatch">match</span> var <span class="Cwith">with</span>
+      <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Bigarray.Array1.get $arr$ $c1$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>
+       <span class="Cconstructor">Some</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Bigarray.Array1.set $arr$ $c1$ $newval$ </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Bigarray.Array2.get $arr$ $c1$ $c2$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>
+       <span class="Cconstructor">Some</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Bigarray.Array2.set $arr$ $c1$ $c2$ $newval$ </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Bigarray.Array3.get $arr$ $c1$ $c2$ $c3$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>
+       <span class="Cconstructor">Some</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Bigarray.Array3.set $arr$ $c1$ $c2$ $c3$ $newval$ </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Bigarray.Genarray.get $arr$ [| $list:coords$ |] </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span>
+       <span class="Cconstructor">Some</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> Bigarray.Genarray.set $arr$ [| $list:coords$ |] $newval$ </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">None</span>
+
+<span class="Clet">let</span> native_set _loc e1 e2 <span class="Cnonalphakeyword">=</span>
+  <span class="Cmatch">match</span> bigarray_native_set _loc e1 e2 <span class="Cwith">with</span>
+      <span class="Cconstructor">None</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $e1$ := $e2$ </span><span class="Cconstructor">&gt;&gt;</span>
+    <span class="Cbar">|</span> <span class="Cconstructor">Some</span> e <span class="Cnonalphakeyword">-&gt;</span> e
+
+<span class="Clet">let</span> set _loc access e3 <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> _loc <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">MLast</span><span class="Cnonalphakeyword">.</span>loc_of_expr access <span class="Cin">in</span>
+  <span class="Cassert">assert</span> <span class="Cnonalphakeyword">(</span>prefix <span class="Cnonalphakeyword">=</span> <span class="Cstring">"__pa_bounds"</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cmatch">match</span> access <span class="Cwith">with</span>
+      <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> </span>
+<span class="Cquotation">      let __pa_boundsa = $e1$ in</span>
+<span class="Cquotation">      let __pa_boundsi = $e2$ in $_$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> array_set _loc e1 e2 e3
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> </span>
+<span class="Cquotation">      let __pa_boundss = $e1$ in</span>
+<span class="Cquotation">      let __pa_boundsi = $e2$ in $_$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> string_set _loc e1 e2 e3
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> </span>
+<span class="Cquotation">      let __pa_boundsb1 = $b$ in </span>
+<span class="Cquotation">      let __pa_boundsi = $c1$ in </span>
+<span class="Cquotation">      $_$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> bigarray1_set _loc b c1 e3
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> </span>
+<span class="Cquotation">      let __pa_boundsb2 = $b$ in</span>
+<span class="Cquotation">      let __pa_boundsi = $c1$ in</span>
+<span class="Cquotation">      let __pa_boundsj = $c2$ in </span>
+<span class="Cquotation">      $_$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> bigarray2_set _loc b c1 c2 e3
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> </span>
+<span class="Cquotation">      let __pa_boundsb3 = $b$ in</span>
+<span class="Cquotation">      let __pa_boundsi = $c1$ in</span>
+<span class="Cquotation">      let __pa_boundsj = $c2$ in</span>
+<span class="Cquotation">      let __pa_boundsk = $c3$ in </span>
+<span class="Cquotation">      $_$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> bigarray3_set _loc b c1 c2 c3 e3
+    <span class="Cbar">|</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> </span>
+<span class="Cquotation">      let __pa_boundsbn = $b$ in</span>
+<span class="Cquotation">      let __pa_boundsindices = [| $list:coords$ |] in</span>
+<span class="Cquotation">      $_$ </span><span class="Cconstructor">&gt;&gt;</span> <span class="Cnonalphakeyword">-&gt;</span> bigarrayn_set _loc b coords e3
+    <span class="Cbar">|</span> e <span class="Cnonalphakeyword">-&gt;</span> native_set _loc e e3
+
+
+<span class="Copen">open</span> <span class="Cconstructor">Pcaml</span>
+
+<span class="Clet">let</span> extend native regular <span class="Cnonalphakeyword">=</span>
+  <span class="Cif">if</span> regular <span class="Cthen">then</span>
+    <span class="Cbegin">begin</span>
+      <span class="Cnonalphakeyword">(</span><span class="Ctry">try</span> <span class="Cconstructor">DELETE_RULE</span> expr : <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"&lt;-"</span><span class="Cnonalphakeyword">;</span> expr <span class="Cconstructor">LEVEL</span> <span class="Cstring">"expr1"</span> <span class="Cconstructor">END</span>
+       <span class="Cwith">with</span> <span class="Cconstructor">Not_found</span> <span class="Cnonalphakeyword">-&gt;</span> eprintf <span class="Cstring">"Warning: cannot delete \"&lt;-\" rule\n%!"</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span>
+
+       <span class="Cconstructor">EXTEND</span>
+         expr: <span class="Cconstructor">LEVEL</span> <span class="Cstring">":="</span> <span class="Cnonalphakeyword">[</span>
+           <span class="Cnonalphakeyword">[</span> e1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"&lt;-"</span><span class="Cnonalphakeyword">;</span> e2 <span class="Cnonalphakeyword">=</span> expr <span class="Cconstructor">LEVEL</span> <span class="Cstring">"expr1"</span> <span class="Cnonalphakeyword">-&gt;</span> 
+               <span class="Cif">if</span> !native <span class="Cthen">then</span> native_set _loc e1 e2
+               <span class="Celse">else</span> set _loc e1 e2 <span class="Cnonalphakeyword">]</span>
+         <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+       <span class="Cconstructor">END</span>
+    <span class="Cend">end</span>
+  <span class="Celse">else</span>
+    <span class="Cbegin">begin</span>
+      <span class="Cconstructor">EXTEND</span>
+        expr: <span class="Cconstructor">LEVEL</span> <span class="Cstring">":="</span> <span class="Cnonalphakeyword">[</span>
+          <span class="Cnonalphakeyword">[</span> e1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">":="</span><span class="Cnonalphakeyword">;</span> e2 <span class="Cnonalphakeyword">=</span> expr <span class="Cconstructor">LEVEL</span> <span class="Cstring">"top"</span> <span class="Cnonalphakeyword">-&gt;</span>
+              <span class="Cif">if</span> !native <span class="Cthen">then</span> native_set _loc e1 e2
+              <span class="Celse">else</span> set _loc e1 e2 <span class="Cnonalphakeyword">]</span>
+        <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+      <span class="Cconstructor">END</span><span class="Cnonalphakeyword">;</span>
+    <span class="Cend">end</span><span class="Cnonalphakeyword">;</span>
+
+  <span class="Cconstructor">EXTEND</span>
+    expr: <span class="Cconstructor">LEVEL</span> <span class="Cstring">"."</span> <span class="Cnonalphakeyword">[</span>
+      <span class="Cnonalphakeyword">[</span> e1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"#"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"("</span><span class="Cnonalphakeyword">;</span> e2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">")"</span> <span class="Cnonalphakeyword">-&gt;</span> 
+          <span class="Cif">if</span> !native <span class="Cthen">then</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $e1$.($e2$) </span><span class="Cconstructor">&gt;&gt;</span>
+          <span class="Celse">else</span> array_get _loc e1 e2
+      <span class="Cbar">|</span> e1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"#"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"["</span><span class="Cnonalphakeyword">;</span> e2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"]"</span> <span class="Cnonalphakeyword">-&gt;</span> 
+          <span class="Cif">if</span> !native <span class="Cthen">then</span> <span class="Cconstructor">&lt;:expr&lt;</span><span class="Cquotation"> $e1$.[$e2$] </span><span class="Cconstructor">&gt;&gt;</span>
+          <span class="Celse">else</span> string_get _loc e1 e2
+      <span class="Cbar">|</span> e1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">SELF</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"#"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"{"</span><span class="Cnonalphakeyword">;</span> e2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">LIST1</span> expr <span class="Cconstructor">LEVEL</span> <span class="Cstring">":="</span> <span class="Cconstructor">SEP</span> <span class="Cstring">","</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"}"</span> <span class="Cnonalphakeyword">-&gt;</span>
+          <span class="Cif">if</span> !native <span class="Cthen">then</span> bigarray_native_get _loc e1 e2
+          <span class="Celse">else</span> bigarray_get _loc e1 e2 <span class="Cnonalphakeyword">]</span>
+    <span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+   <span class="Cconstructor">END</span>
+
+
+<span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> native <span class="Cnonalphakeyword">=</span> ref <span class="Cfalse">false</span> <span class="Cin">in</span>
+  <span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>add_option <span class="Cstring">"-native"</span> 
+    <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Arg</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Set</span> native<span class="Cnonalphakeyword">)</span>
+    <span class="Cstring">" use native array, string or bigarray access"</span><span class="Cnonalphakeyword">;</span>
+
+  extend native <span class="Cnonalphakeyword">(</span>!<span class="Cconstructor">Pcaml</span><span class="Cnonalphakeyword">.</span>syntax_name <span class="Cnonalphakeyword">=</span> <span class="Cstring">"OCaml"</span><span class="Cnonalphakeyword">)</span>
+</pre>
+</body>
+</html>

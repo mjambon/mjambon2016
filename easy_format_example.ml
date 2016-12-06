@@ -1,3 +1,5 @@
+(* $Id: simple_example.ml 19 2008-07-13 01:39:54Z mjambon $ *)
+
 (*
   A fairly complete demonstration of the features provided
   by Easy-format.
@@ -7,7 +9,7 @@
 open Easy_format
 
 
-let list =
+let list = 
   { list with
       list_style = Some "list";
       opening_style = Some "op";
@@ -20,14 +22,14 @@ let label = { label with label_style = Some "label" }
 
 
 
-let tuple_param =
+let tuple_param = 
   { list with
       space_after_opening = false;
       space_before_closing = false;
       align_closing = false
   }
 
-let operator_param =
+let operator_param = 
   { list with
       space_after_opening = false;
       space_before_closing = false;
@@ -72,19 +74,19 @@ let format_float x =
   Atom (Printf.sprintf "%.5f" x, atom)
 
 let format_sum ?(wrap = `Wrap_atoms) l =
-  List (("(", "+", ")", { operator_param with wrap_body = wrap }),
+  List (("(", "+", ")", { operator_param with wrap_body = wrap }), 
 	List.map format_int l)
 
 let format_array ~align_closing ~wrap f a =
   let l = Array.to_list (Array.map f a) in
-  List (("[|", ";", "|]",
+  List (("[|", ";", "|]", 
 	 { list with
 	     align_closing = align_closing;
 	     wrap_body = wrap }),
 	l)
 
-let format_matrix
-    ?(align_closing1 = true)
+let format_matrix 
+    ?(align_closing1 = true) 
     ?(align_closing2 = true)
     ?(wrap1 = `Wrap_atoms)
     ?(wrap2 = `Wrap_atoms)
@@ -94,15 +96,15 @@ let format_matrix
 
 
 let format_record f l0 =
-  let l =
-    List.map
-      (fun (s, x) -> Label ((Atom (s ^ ":", atom), label), f x))
+  let l = 
+    List.map 
+      (fun (s, x) -> Label ((Atom (s ^ ":", atom), label), f x)) 
       l0 in
   List (("{", ";", "}", list), l)
 
-let begin_style =
+let begin_style = 
   { label with indent_after_label = 0 },
-  ("begin", ";", "end",
+  ("begin", ";", "end", 
    { list with stick_to_label = false })
 
 let curly_style =
@@ -114,33 +116,12 @@ let format_function_definition (body_label, body_param) name param body =
     (
       Label (
 	(Atom ("function " ^ name, atom), label),
-	List (("(", ",", ")", tuple_param),
+	List (("(", ",", ")", tuple_param), 
 	      List.map (fun s -> Atom (s, atom)) param)
-      ),
+      ), 
       body_label
     ),
     List (body_param, List.map (fun s -> Atom (s, atom)) body)
-  )
-
-(*
-   Illustrate the difference between `Force_break and `Force_breaks_rec
-*)
-let make_heterogenous_list wrap =
-  List (
-    ("[", ",", "]", { list with wrap_body = `Always_wrap }),
-    [
-      Atom ("0", atom);
-      List (
-        ("[", ",", "]", { list with wrap_body = wrap }),
-        [
-          Atom ("1.23456", atom);
-          Atom ("9.87654", atom);
-        ]
-      );
-      Atom ("1", atom);
-      Atom ("2", atom);
-      Atom ("3", atom);
-    ]
   )
 
 let print_margin fmt () =
@@ -167,20 +148,17 @@ let print s =
 let print_tuple fmt l =
   Pretty.to_formatter fmt (format_tuple format_int l)
 
-let print_heterogenous_list fmt wrap =
-  Pretty.to_formatter fmt (make_heterogenous_list wrap)
-
 let print_sum ?wrap fmt l =
   Pretty.to_formatter fmt (format_sum ?wrap l)
 
 let print_matrix ?align_closing1 ?align_closing2 ?wrap1 ?wrap2 m fmt () =
-  Pretty.to_formatter fmt
+  Pretty.to_formatter fmt 
     (format_matrix ?align_closing1 ?align_closing2 ?wrap1 ?wrap2 m)
 
 let print_function_definition style name param fmt body =
   Pretty.to_formatter fmt (format_function_definition style name param body)
 
-let () =
+let _ =
   let ints = Array.to_list (Array.init 10 (fun i -> i)) in
 
   (* A simple tuple that fits on one line *)
@@ -193,14 +171,7 @@ let () =
   with_margin 20 (print_sum ~wrap:`Always_wrap) ints;
   with_margin 20 (print_sum ~wrap:`Never_wrap) ints;
 
-  (* Heterogenous list *)
-  print "wrappable outer list, inner list using `Force_breaks";
-  with_margin 80 print_heterogenous_list `Force_breaks;
-  with_margin 20 print_heterogenous_list `Force_breaks;
 
-  print "wrappable outer list, inner list using `Force_breaks_rec";
-  with_margin 80 print_heterogenous_list `Force_breaks_rec;
-  with_margin 20 print_heterogenous_list `Force_breaks_rec;
 
   (* Triangular array of arrays showing wrapping of lists of atoms *)
   let m = Array.init 20 (fun i -> Array.init i (fun i -> sqrt (float i))) in
@@ -211,22 +182,22 @@ let () =
 
   (* Other styles *)
   print "style 1";
-  with_margin 80 (print_matrix
+  with_margin 80 (print_matrix 
 		    ~align_closing1: false ~align_closing2: false m) ();
   print "style 2";
   with_margin 80 (print_matrix
 		    ~align_closing1: false ~align_closing2: false
 		    ~wrap2: `Never_wrap m) ();
   print "style 3";
-  with_margin 80 (print_matrix
+  with_margin 80 (print_matrix 
 		    ~align_closing1: false ~align_closing2: false
 		    ~wrap2: `Always_wrap m) ();
   print "style 4";
-  with_margin 80 (print_matrix
+  with_margin 80 (print_matrix 
 		    ~align_closing2: false
 		    ~wrap1: `Always_wrap ~wrap2: `Always_wrap m) ();
   print "style 5";
-  with_margin 80 (print_matrix
+  with_margin 80 (print_matrix 
 		    ~align_closing1: false
 		    ~wrap1: `Always_wrap ~wrap2: `Always_wrap m) ();
   print "style 6";
@@ -249,7 +220,7 @@ let () =
     with_margin ~html margin
       (print_function_definition
 	 style
-	 "hello" ["arg1";"arg2";"arg3"])
+	 "hello" ["arg1";"arg2";"arg3"]) 
       [
 	"print \"hello\"";
 	"return (1 < 2)"
@@ -263,6 +234,7 @@ let () =
 	  program true margin style
       ) [ 10; 20; 30; 40; 80 ]
   ) [ curly_style; begin_style ]
+
 (* Output: 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 (0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
@@ -292,45 +264,6 @@ let () =
   + 8
   + 9
 )
-
-*** wrappable outer list, inner list using `Force_breaks ***
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-[ 0, [
-       1.23456,
-       9.87654
-     ], 1, 2, 3 ]
-++++++++++++++++++++
-[
-  0,
-  [
-    1.23456,
-    9.87654
-  ], 1, 2, 3
-]
-
-*** wrappable outer list, inner list using `Force_breaks_rec ***
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-[
-  0,
-  [
-    1.23456,
-    9.87654
-  ],
-  1,
-  2,
-  3
-]
-++++++++++++++++++++
-[
-  0,
-  [
-    1.23456,
-    9.87654
-  ],
-  1,
-  2,
-  3
-]
 
 *** default style ***
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

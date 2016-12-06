@@ -48,7 +48,7 @@ polymorphic variants and optional syntax for tuples and variants.
 provided with the yojson package.
 
 <p>
-The program <a href="/mjambon2016/atdgen"><code>atdgen</code></a>
+The program <a href="/mjambon2016/mjambon2016/atdgen"><code>atdgen</code></a>
 can be used to derive OCaml-JSON serializers and deserializers
 from type definitions.
 
@@ -132,7 +132,7 @@ to check for the correctness of UTF-8 data when appropriate.
 This software was written by Martin Jambon. 
 It is distributed under a 
 <a href="yojson-license.txt">BSD license</a>.
-<a href="/mjambon2016/releases/yojson">Download it here</a>.
+<a href="/mjambon2016/mjambon2016/releases/yojson">Download it here</a>.
 </p>
 
 <p>

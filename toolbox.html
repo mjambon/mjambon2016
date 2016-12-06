@@ -1,0 +1,651 @@
+
+<!doctype html>
+
+<html>
+<head>
+<title>Toolbox for Camlmix</title>
+<meta http-equiv="content-Type" content="text/html; charset=utf-8">
+
+<link rel="stylesheet" href="/base.css" type="text/css">
+
+<link rel="stylesheet" href="/ocaml.css" type="text/css">
+
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+<link rel="home" href="/">
+<link rel="author" href="/people.html#martin">
+
+</head>
+<body>
+
+<div id="page">
+
+
+<div>
+<table id=top_menu cellspacing=0>
+<tr>
+  <td><a href="/">Main</a></td>
+  <td class="current_topic"><a href="/ocaml.html">Software</a></td>
+  <td><a href="/releases">Downloads</a></td>
+  <td><a href="/other.html">Other</a></td>
+</tr>
+</table>
+</div>
+
+<h1>Toolbox for Camlmix <img src="/1camel.png" 
+     title="difficulty = 1 camel (suitable for OCaml beginners)"
+     alt="[difficulty = 1 camel]">
+</h1>
+
+
+<p>
+This is a collection of useful tips and code for writing documents using  
+<a href="/camlmix">Camlmix</a> or
+its derivatives such as <a href="/camlremix.html">Camlremix</a>.
+Read the <a href="/camlmix">Camlmix tutorial</a> first.
+
+
+
+
+<div class=toc>
+<b>Table of contents</b><br>
+<a href="#ocaml" class=toc0>1. OCaml code samples</a><br>
+<a href="#files" class=toc1>1.1 File input</a><br>
+<a href="#programs" class=toc1>1.2 Calling external programs</a><br>
+<a href="#printer" class=toc1>1.3 Changing the default printer</a><br>
+<a href="#web" class=toc0>2. Tips and tricks for web documents</a><br>
+<a href="#css" class=toc1>2.1 Changing the colors in a stylesheet</a><br>
+<a href="#latex" class=toc1>2.2 Inserting LaTeX snippets</a><br>
+<a href="#ppocaml" class=toc0>3. Preprocessing OCaml files</a><br>
+</div>
+
+<p>
+Anyone is free to use, copy, modify or redistribute any 
+inlined example that may be found in the Camlmix Toolbox.
+<p>
+Disclaimer: No guarantee of any kind is given concerning the reliability 
+of this document.
+
+
+<h2 id=ocaml>1. OCaml code samples</h2>
+
+
+
+<p>
+The different samples are grouped by sections. Copy/paste them where
+you need them. They are not provided as a single library because they
+are too heterogenous and not complex enough too justify a library.
+However, if you are very impatient, you can 
+download <a href="toolbox.ml">toolbox.ml</a> and use it by editing the sample
+<a href="test.camlmix">test.camlmix</a>.
+You may also download <a href="toolbox.mli">toolbox.mli</a> for information.
+
+<p>
+The code samples are useful when using <a href="/camlmix">Camlmix</a>,
+but also probably in many other situations where 
+<a href="http://caml.inria.fr">OCaml</a> is used as a scripting language.
+They may also be useful for the OCaml beginner looking for short real-life
+examples rather than for Fibonacci numbers or the sieve of Eratosthenes.
+<code>;-)</code>
+
+<h3 id=files>1.1 File input</h3>
+
+<table class=ocamldoc cellspacing="0px">
+<tr>
+<td>
+<div class=descr>
+<b>Scanning a whole channel</b> -
+The function given as argument is 
+applied to each character of the channel, until the end is reached.
+</div>
+<div class=intf><pre><span class="Cval">val</span> read_chan : <span class="Cnonalphakeyword">(</span>char <span class="Cnonalphakeyword">-&gt;</span> 'a<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> in_channel <span class="Cnonalphakeyword">-&gt;</span> unit</pre></div>
+<pre><span class="Clet">let</span> read_chan f ic <span class="Cnonalphakeyword">=</span>
+  <span class="Ctry">try</span>
+    <span class="Cwhile">while</span> <span class="Ctrue">true</span> <span class="Cdo">do</span>
+      f <span class="Cnonalphakeyword">(</span>input_char ic<span class="Cnonalphakeyword">)</span>
+    <span class="Cdone">done</span>
+  <span class="Cwith">with</span> <span class="Cconstructor">End_of_file</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span></pre>
+</td>
+</tr>
+</table>
+
+
+<table class=ocamldoc cellspacing="0px">
+<tr>
+<td>
+<div class=descr>
+<b>Including a file</b> -
+The given file is inserted without any transformation.
+</div>
+<div class=intf><pre><span class="Cval">val</span> include_file : string <span class="Cnonalphakeyword">-&gt;</span> unit</pre></div>
+<pre><span class="Clet">let</span> include_file file <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> ic <span class="Cnonalphakeyword">=</span> open_in_bin file <span class="Cin">in</span>
+  read_chan print_char ic<span class="Cnonalphakeyword">;</span>
+  close_in ic</pre>
+</td>
+</tr>
+</table>
+
+
+<table class=ocamldoc cellspacing="0px">
+<tr>
+<td>
+<div class=descr>
+<b>Verbatim input in a HTML document</b> -
+Special characters are escaped so that the whole contents of the file
+is displayed.
+</div>
+<div class=intf><pre><span class="Cval">val</span> html_verbatim : string <span class="Cnonalphakeyword">-&gt;</span> unit</pre></div>
+<pre><span class="Clet">let</span> html_verbatim file <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> ic <span class="Cnonalphakeyword">=</span> open_in_bin file <span class="Cin">in</span>
+  print_string <span class="Cstring">"&lt;pre&gt;\n"</span><span class="Cnonalphakeyword">;</span>
+  read_chan 
+    <span class="Cnonalphakeyword">(</span><span class="Cfunction">function</span>
+         <span class="Cstring">'&lt;'</span> <span class="Cnonalphakeyword">-&gt;</span> print_string <span class="Cstring">"&amp;lt;"</span>
+       <span class="Cbar">|</span> <span class="Cstring">'&gt;'</span> <span class="Cnonalphakeyword">-&gt;</span> print_string <span class="Cstring">"&amp;gt;"</span>
+       <span class="Cbar">|</span> <span class="Cstring">'&amp;'</span> <span class="Cnonalphakeyword">-&gt;</span> print_string <span class="Cstring">"&amp;amp;"</span>
+       <span class="Cbar">|</span> c <span class="Cnonalphakeyword">-&gt;</span> print_char c<span class="Cnonalphakeyword">)</span>
+    ic<span class="Cnonalphakeyword">;</span>
+  print_string <span class="Cstring">"&lt;/pre&gt;"</span><span class="Cnonalphakeyword">;</span>
+  close_in ic</pre>
+</td>
+</tr>
+</table>
+
+
+
+<h3 id=programs>1.2 Calling external programs</h3>
+
+<table class=ocamldoc cellspacing="0px">
+<tr>
+<td>
+<div class=descr>
+<b>Calling an external program</b> -
+For example, on Unix systems <code>command "date"</code>
+will print the current date.
+</div>
+<div class=intf><pre><span class="Cval">val</span> command : string <span class="Cnonalphakeyword">-&gt;</span> unit</pre></div>
+<pre><span class="Clet">let</span> command s <span class="Cnonalphakeyword">=</span>
+  <span class="Cif">if</span> <span class="Cconstructor">Sys</span><span class="Cnonalphakeyword">.</span>command s <span class="Cnonalphakeyword">=</span> 0 <span class="Cthen">then</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+  <span class="Celse">else</span> invalid_arg <span class="Cnonalphakeyword">(</span><span class="Cstring">"command: "</span> ^ s<span class="Cnonalphakeyword">)</span></pre>
+</td>
+</tr>
+</table>
+
+
+<table class=ocamldoc cellspacing="0px">
+<tr>
+<td>
+<div class=descr>
+<b>Recursive call to Camlmix</b> -
+The insertion of a document that must be preprocessed with Camlmix
+without inheriting neither modifying the current environment
+is done by starting a new <code>camlmix</code> process.
+Most of the time, it is preferable to use the 
+<code>include</code> directive instead of this.
+</div>
+<div class=intf><pre><span class="Cval">val</span> camlmix : string <span class="Cnonalphakeyword">-&gt;</span> unit</pre></div>
+<pre><span class="Clet">let</span> camlmix file <span class="Cnonalphakeyword">=</span> command <span class="Cnonalphakeyword">(</span><span class="Cstring">"camlmix "</span> ^ file<span class="Cnonalphakeyword">)</span></pre>
+</td>
+</tr>
+</table>
+
+
+<table class=ocamldoc cellspacing="0px">
+<tr>
+<td>
+<div class=descr>
+<b>Catching the output of a command</b> -
+This function converts the output of a system command into an OCaml string.
+This is useful in order to avoid to call the command several times or
+if some further processing is required.
+For instance, <code>slurp_command "date"</code> is
+the equivalent of the Unix shell command <code>`date`</code>.
+Note that this function should work on <b>every
+system</b>, including Windows and MacOS.
+</div>
+<div class=intf><pre><span class="Cval">val</span> slurp_command : string <span class="Cnonalphakeyword">-&gt;</span> string</pre></div>
+<pre><span class="Cnonalphakeyword">#</span>load <span class="Cstring">"unix.cma"</span>
+
+<span class="Clet">let</span> read_command_output f s <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> ic <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Unix</span><span class="Cnonalphakeyword">.</span>open_process_in s <span class="Cin">in</span>
+  <span class="Cnonalphakeyword">(</span><span class="Ctry">try</span>
+     <span class="Cwhile">while</span> <span class="Ctrue">true</span> <span class="Cdo">do</span>
+       f <span class="Cnonalphakeyword">(</span>input_char ic<span class="Cnonalphakeyword">)</span>
+     <span class="Cdone">done</span>
+   <span class="Cwith">with</span> <span class="Cconstructor">End_of_file</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cmatch">match</span> <span class="Cconstructor">Unix</span><span class="Cnonalphakeyword">.</span>close_process_in ic <span class="Cwith">with</span>
+      <span class="Cconstructor">Unix</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">WEXITED</span> 0 <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+    <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> invalid_arg <span class="Cnonalphakeyword">(</span><span class="Cstring">"read_command_output: "</span> ^ s<span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> slurp_command s <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> buf <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Buffer</span><span class="Cnonalphakeyword">.</span>create 100 <span class="Cin">in</span>
+  read_command_output <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Buffer</span><span class="Cnonalphakeyword">.</span>add_char buf<span class="Cnonalphakeyword">)</span> s<span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">Buffer</span><span class="Cnonalphakeyword">.</span>contents buf</pre>
+</td>
+</tr>
+</table>
+
+
+<table class=ocamldoc cellspacing="0px">
+<tr>
+<td>
+<div class=descr>
+<b>Using an external filter or converter</b> -
+It is sometimes useful to process some text using a command that
+read its input from <code>stdin</code> and writes its output to
+<code>stdout</code>. <code>feed command data</code> calls
+<code>command</code>, tells it to read <code>data</code> as its
+standard input. <code>sfeed</code> is the same as <code>feed</code> except
+that the result is put into a string.
+<code>ffeed</code> prints the results to the
+specified out_channel. <code>bfeed</code> prints the result into the
+specified buffer.
+<code>kfeed</code> is the general function that
+expects a handler function that will treat each character successively
+and may raise an exception.
+</div>
+<div class=intf><pre><span class="Cval">val</span> kfeed : <span class="Cnonalphakeyword">(</span>char <span class="Cnonalphakeyword">-&gt;</span> 'a<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">-&gt;</span> unit
+<span class="Cval">val</span> feed : string <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">-&gt;</span> unit
+<span class="Cval">val</span> ffeed : out_channel <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">-&gt;</span> unit
+<span class="Cval">val</span> bfeed : <span class="Cconstructor">Buffer</span><span class="Cnonalphakeyword">.</span>t <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">-&gt;</span> unit
+<span class="Cval">val</span> sfeed : string <span class="Cnonalphakeyword">-&gt;</span> string <span class="Cnonalphakeyword">-&gt;</span> string</pre></div>
+<pre><span class="Ccomment">(* Warning: the following function crashes in OCaml 3.09.2,</span>
+<span class="Ccomment">   because of that bug: http://caml.inria.fr/mantis/view.php?id=4062</span>
+<span class="Ccomment">   (close_out is applied a second time during Unix.close_process) *)</span>
+<span class="Clet">let</span> kfeed f command data <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> <span class="Cnonalphakeyword">(</span>ic<span class="Cnonalphakeyword">,</span> oc<span class="Cnonalphakeyword">)</span> <span class="Cas">as</span> channels <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Unix</span><span class="Cnonalphakeyword">.</span>open_process command <span class="Cin">in</span>
+  output_string oc data<span class="Cnonalphakeyword">;</span>
+  close_out oc<span class="Cnonalphakeyword">;</span>
+  <span class="Clet">let</span> exn <span class="Cnonalphakeyword">=</span> ref <span class="Cconstructor">None</span> <span class="Cin">in</span>
+  <span class="Cnonalphakeyword">(</span><span class="Ctry">try</span>
+     <span class="Cwhile">while</span> <span class="Ctrue">true</span> <span class="Cdo">do</span>
+       f <span class="Cnonalphakeyword">(</span>input_char ic<span class="Cnonalphakeyword">)</span>
+     <span class="Cdone">done</span>
+   <span class="Cwith">with</span>
+       <span class="Cconstructor">End_of_file</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+     <span class="Cbar">|</span> e <span class="Cnonalphakeyword">-&gt;</span> exn <span class="Cnonalphakeyword">:=</span> <span class="Cconstructor">Some</span> e<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cnonalphakeyword">(</span><span class="Cmatch">match</span> <span class="Cconstructor">Unix</span><span class="Cnonalphakeyword">.</span>close_process channels <span class="Cwith">with</span>
+       <span class="Cconstructor">Unix</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">WEXITED</span> 0 <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+     <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> invalid_arg <span class="Cnonalphakeyword">(</span><span class="Cstring">"feed_command: "</span> ^ command<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cmatch">match</span> !exn <span class="Cwith">with</span>
+      <span class="Cconstructor">Some</span> e <span class="Cnonalphakeyword">-&gt;</span> raise e
+    <span class="Cbar">|</span> <span class="Cconstructor">None</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> feed <span class="Cnonalphakeyword">=</span> kfeed print_char
+
+<span class="Clet">let</span> ffeed oc command data <span class="Cnonalphakeyword">=</span> kfeed <span class="Cnonalphakeyword">(</span>output_char oc<span class="Cnonalphakeyword">)</span> command data
+
+<span class="Clet">let</span> bfeed buf command data <span class="Cnonalphakeyword">=</span> kfeed <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Buffer</span><span class="Cnonalphakeyword">.</span>add_char buf<span class="Cnonalphakeyword">)</span> command data
+
+<span class="Clet">let</span> sfeed command data <span class="Cnonalphakeyword">=</span> 
+  <span class="Clet">let</span> buf <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Buffer</span><span class="Cnonalphakeyword">.</span>create <span class="Cnonalphakeyword">(</span>2 <span class="Cnonalphakeyword">*</span> <span class="Cconstructor">String</span><span class="Cnonalphakeyword">.</span>length data<span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+  bfeed buf command data<span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">Buffer</span><span class="Cnonalphakeyword">.</span>contents buf</pre>
+</td>
+</tr>
+</table>
+
+
+<h3 id=printer>1.3 Changing the default printer</h3>
+
+<p>
+Normally Camlmix prints the document blocks without
+modifications and flushes the standard output. This behavior can
+be changed by using the <code>Camlmix.printer</code> hook.
+Note that <code>print_with</code> and <code>print_if</code> 
+are now predefined in the <code>Camlmix</code> module.
+
+<table class=ocamldoc cellspacing="0px">
+<tr>
+<td>
+<div class=descr>
+<b>Changing the printer only for the next block</b> -
+Here, we
+define a function <code>print_with</code> that will change the
+behavior of the printer only for the next block. For instance,
+<code>print_with ignore</code> will skip the next block.
+</div>
+<div class=intf><pre><span class="Cval">val</span> print_with : <span class="Cnonalphakeyword">(</span>string <span class="Cnonalphakeyword">-&gt;</span> unit<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> unit</pre></div>
+<pre><span class="Clet">let</span> print_with f <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> saved_printer <span class="Cnonalphakeyword">=</span> !<span class="Cconstructor">Camlmix</span><span class="Cnonalphakeyword">.</span>printer <span class="Cin">in</span>
+  <span class="Cconstructor">Camlmix</span><span class="Cnonalphakeyword">.</span>printer <span class="Cnonalphakeyword">:=</span> <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> s <span class="Cnonalphakeyword">-&gt;</span> f s<span class="Cnonalphakeyword">;</span> <span class="Cconstructor">Camlmix</span><span class="Cnonalphakeyword">.</span>printer <span class="Cnonalphakeyword">:=</span> saved_printer<span class="Cnonalphakeyword">)</span></pre>
+</td>
+</tr>
+</table>
+
+
+<table class=ocamldoc cellspacing="0px">
+<tr>
+<td>
+<div class=descr>
+<b>Conditional output of the next block</b> -
+Most of the time, pure OCaml code is convenient enough to display
+text under certain conditions as in 
+<code>print_string (if test then "hello" else "goodbye")</code>.
+However, when the text to display is long and contains many double
+quotes (<code>"</code>) or backslashes (<code>\</code>), 
+it becomes difficult to protect each of them by manually adding
+backslashes. The following <code>print_if</code> function will
+print the next block if its argument is <code>true</code> and ignore
+it otherwise.
+</div>
+<div class=intf><pre><span class="Cval">val</span> print_if : bool <span class="Cnonalphakeyword">-&gt;</span> unit</pre></div>
+<pre><span class="Clet">let</span> print_if test <span class="Cnonalphakeyword">=</span>
+  <span class="Cif">if</span> not test <span class="Cthen">then</span> print_with ignore</pre>
+</td>
+</tr>
+</table>
+
+
+
+
+
+<h2 id=web>2. Tips and tricks for web documents</h2>
+
+<p>
+All the examples that are given in this section require
+the standard distribution of OCaml and the OCaml functions that are
+defined in the previous section, and sometimes some external commands or
+utilities that may or may not be available for every OS.
+
+<h3 id=css>2.1 Changing the colors in a stylesheet</h3>
+
+<p>
+Place the definitions of the colors in several Camlmix files. Write a
+unique CSS using Camlmix insertions for the colors.
+For instance, file <code>orange_style.mlx</code> is the following:
+<pre>
+<span style="color:990000">##</span> <span class="Clet">let</span> main_color <span class="Cnonalphakeyword">=</span> <span class="Cstring">"orange"</span> <span style="color:990000">##</span>
+</pre>
+<p>File <code>blue_style.mlx</code> is the following:
+<pre>
+<span style="color:990000">##</span> <span class="Clet">let</span> main_color <span class="Cnonalphakeyword">=</span> <span class="Cstring">"blue"</span> <span style="color:990000">##</span>
+</pre>
+<p><code>style.css.mlx</code> looks like this:
+
+<pre>
+body {
+  color: <span style="color:990000">##</span> main_color <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span style="color:990000">##</span>;
+}
+...
+table {
+  border: solid <span style="color:990000">##</span> main_color <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span style="color:990000">##</span> 3px;
+}
+...
+</pre>
+
+<p>And Camlmix will generate 2 stylesheets for the price of one:
+<pre>
+camlmix -o orange.css orange_style.mlx style.css.mlx
+camlmix -o blue.css blue_style.mlx style.css.mlx
+</pre>
+
+
+<h3 id=latex>2.2 Inserting LaTeX snippets</h3>
+
+<p>
+For example, the following Camlmix/HTML/LaTeX code:
+<pre><span style="color:990000">##</span> print_with latex <span style="color:990000">##</span><span class=Ctoken>
+</span><span class=Cconstructor>\Huge</span><span class=Ctoken>
+This is a </span><span class=Cconstructor>\LaTeX</span><span class=Cconstructor>\ </span><span class=Ctoken>formula: </span><span class=Ccomment>% and that is a comment
+</span><span class=Cstring>$$</span><span class=Ctoken>
+x </span><span class=Cconstructor>\rightarrow</span><span class=Ctoken> </span><span class=Cconstructor>\frac</span><span class=Ctoken>{1}{</span><span class=Cconstructor>\sigma</span><span class=Cconstructor>\sqrt</span><span class=Ctoken>{2</span><span class=Cconstructor>\pi</span><span class=Ctoken>}} </span><span class=Cconstructor>\cdot</span><span class=Ctoken>
+              e^{-</span><span class=Cconstructor>\frac</span><span class=Ctoken>{(x-</span><span class=Cconstructor>\mu</span><span class=Ctoken>)^2}{2</span><span class=Cconstructor>\sigma</span><span class=Ctoken>^2}}
+</span><span class=Cstring>$$</span><span class=Ctoken>
+</span><span style="color:990000">##</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span style="color:990000">##</span><span class=Ctoken>
+</span></pre>
+
+<p>
+will be inserted into the HTML document just like this:
+<img src="toolbox.html.mlx-img1.png" alt="
+\Huge
+This is a \LaTeX\ formula: % and that is a comment
+$$
+x \rightarrow \frac{1}{\sigma\sqrt{2\pi}} \cdot
+              e^{-\frac{(x-\mu)^2}{2\sigma^2}}
+$$
+" style="vertical-align:middle">
+
+<p>
+For this, we will define one OCaml function of general purpose that 
+converts a piece of LaTeX into an image, and then some Camlmix-dependent 
+code that makes it convenient to use from a Camlmix/HTML file.
+
+<p>
+The following function <code>latex_image</code> 
+generates an image of the given LaTeX code and
+saves it under the given file name.
+It requires <code>latex</code>, <code>dvips</code> and 
+<code>convert</code> (ImageMagick) in a Unix environment.
+The format of the image is inferred from its extension.
+The size of the font can be changed with the usual LaTeX commands such as
+\large and \small.
+The <code>file_memo</code> class is defined in order 
+to recompute only the images that need to be recomputed.
+We put these functions in a file named <code>latex.ml</code>.
+<pre><span class="Copen">open</span> <span class="Cconstructor">Printf</span>
+
+<span class="Ccomment">(* The function that computes the image *)</span>
+
+<span class="Clet">let</span> latex_image <span class="Cnonalphakeyword">?</span><span class="Cnonalphakeyword">(</span>preamble <span class="Cnonalphakeyword">=</span> <span class="Cstring">""</span><span class="Cnonalphakeyword">)</span> code file <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> prefix <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Filename</span><span class="Cnonalphakeyword">.</span>chop_extension file <span class="Cin">in</span>
+  <span class="Clet">let</span> oc <span class="Cnonalphakeyword">=</span> open_out <span class="Cnonalphakeyword">(</span>prefix ^ <span class="Cstring">".tex"</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+  fprintf oc <span class="Cstring">"\</span>
+<span class="Cstring">\\batchmode</span>
+<span class="Cstring">\\documentclass{article}</span>
+<span class="Cstring">%s</span>
+<span class="Cstring">\\pagestyle{empty}</span>
+<span class="Cstring">\\begin{document}</span>
+<span class="Cstring">%s</span>
+<span class="Cstring">\\end{document}</span>
+<span class="Cstring">"</span>
+    preamble code<span class="Cnonalphakeyword">;</span>
+  close_out oc<span class="Cnonalphakeyword">;</span>
+
+  <span class="Cif">if</span> <span class="Cconstructor">Sys</span><span class="Cnonalphakeyword">.</span>command 
+    <span class="Cnonalphakeyword">(</span>sprintf <span class="Cstring">"latex %s.tex &gt; %s.log 2&gt;&amp;1"</span> prefix prefix<span class="Cnonalphakeyword">)</span> &lt;&gt; 0 <span class="Cthen">then</span>
+      invalid_arg <span class="Cstring">"latex_image (latex)"</span><span class="Cnonalphakeyword">;</span>
+
+  <span class="Cif">if</span> <span class="Cconstructor">Sys</span><span class="Cnonalphakeyword">.</span>command 
+    <span class="Cnonalphakeyword">(</span>sprintf <span class="Cstring">"dvips -S1 -i -E %s.dvi &gt;&gt; %s.log 2&gt;&amp;1"</span> 
+       prefix prefix<span class="Cnonalphakeyword">)</span> &lt;&gt; 0 <span class="Cthen">then</span>
+      invalid_arg <span class="Cstring">"latex_image (dvips)"</span><span class="Cnonalphakeyword">;</span>
+
+  <span class="Cconstructor">Sys</span><span class="Cnonalphakeyword">.</span>rename <span class="Cnonalphakeyword">(</span>prefix ^ <span class="Cstring">".001"</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">(</span>prefix ^ <span class="Cstring">".ps"</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span>
+
+  <span class="Cif">if</span> <span class="Cconstructor">Sys</span><span class="Cnonalphakeyword">.</span>command <span class="Cnonalphakeyword">(</span>sprintf <span class="Cstring">"convert %s.ps %s &gt;&gt; %s.log 2&gt;&amp;1"</span>
+                    prefix file prefix<span class="Cnonalphakeyword">)</span> &lt;&gt; 0 <span class="Cthen">then</span>
+    invalid_arg <span class="Cstring">"latex_image (convert)"</span>
+
+
+
+<span class="Ccomment">(* An almost reusable MD5-based dependency checker *)</span>
+
+<span class="Ctype">type</span> memo <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">(</span><span class="Cconstructor">Digest</span><span class="Cnonalphakeyword">.</span>t option <span class="Cnonalphakeyword">*</span> <span class="Cconstructor">Digest</span><span class="Cnonalphakeyword">.</span>t <span class="Cnonalphakeyword">*</span> string<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">,</span> <span class="Cconstructor">Digest</span><span class="Cnonalphakeyword">.</span>t<span class="Cnonalphakeyword">)</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>t
+
+<span class="Cclass">class</span> file_memo memo_file <span class="Cnonalphakeyword">=</span> 
+  <span class="Clet">let</span> memo <span class="Cnonalphakeyword">=</span>
+    <span class="Cif">if</span> <span class="Cconstructor">Sys</span><span class="Cnonalphakeyword">.</span>file_exists memo_file <span class="Cthen">then</span>
+      <span class="Clet">let</span> ic <span class="Cnonalphakeyword">=</span> open_in_bin memo_file <span class="Cin">in</span>
+      <span class="Ctry">try</span>
+        <span class="Clet">let</span> memo : memo <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Marshal</span><span class="Cnonalphakeyword">.</span>from_channel ic <span class="Cin">in</span>
+        close_in ic<span class="Cnonalphakeyword">;</span>
+        memo
+      <span class="Cwith">with</span> exn <span class="Cnonalphakeyword">-&gt;</span>
+        close_in ic<span class="Cnonalphakeyword">;</span>
+        <span class="Cconstructor">Sys</span><span class="Cnonalphakeyword">.</span>remove memo_file<span class="Cnonalphakeyword">;</span>
+        raise exn
+    <span class="Celse">else</span>
+      <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>create 100 <span class="Cin">in</span>
+<span class="Cobject">object</span> <span class="Cnonalphakeyword">(</span>self<span class="Cnonalphakeyword">)</span>
+  <span class="Cmethod">method</span> <span class="Cprivate">private</span> update <span class="Cnonalphakeyword">=</span>
+    <span class="Clet">let</span> to_remove <span class="Cnonalphakeyword">=</span> 
+      <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>fold 
+        <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">,</span> file<span class="Cnonalphakeyword">)</span> <span class="Cas">as</span> key<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">_</span> accu <span class="Cnonalphakeyword">-&gt;</span>
+           <span class="Cif">if</span> not <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Sys</span><span class="Cnonalphakeyword">.</span>file_exists file<span class="Cnonalphakeyword">)</span> <span class="Cthen">then</span>
+             key <span class="Cnonalphakeyword">::</span> accu
+           <span class="Celse">else</span> accu<span class="Cnonalphakeyword">)</span>
+        memo
+        <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span> <span class="Cin">in</span>
+    <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>iter <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>remove memo<span class="Cnonalphakeyword">)</span> to_remove
+
+  <span class="Cmethod">method</span> save <span class="Cnonalphakeyword">=</span>
+    self<span class="Cnonalphakeyword">#</span>update<span class="Cnonalphakeyword">;</span>
+    <span class="Clet">let</span> oc <span class="Cnonalphakeyword">=</span> open_out_bin memo_file <span class="Cin">in</span>
+    <span class="Cconstructor">Marshal</span><span class="Cnonalphakeyword">.</span>to_channel oc memo <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">;</span>
+    close_out oc
+
+  <span class="Cmethod">method</span> do_it <span class="Cnonalphakeyword">?</span>preamble <span class="Cnonalphakeyword">~</span>code <span class="Cnonalphakeyword">~</span>file f <span class="Cnonalphakeyword">=</span>
+    <span class="Clet">let</span> opt <span class="Cnonalphakeyword">=</span> <span class="Cmatch">match</span> preamble <span class="Cwith">with</span> 
+        <span class="Cconstructor">None</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">None</span>
+      <span class="Cbar">|</span> <span class="Cconstructor">Some</span> s <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">Some</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Digest</span><span class="Cnonalphakeyword">.</span>string s<span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+    <span class="Clet">let</span> key <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span>opt<span class="Cnonalphakeyword">,</span> <span class="Cconstructor">Digest</span><span class="Cnonalphakeyword">.</span>string code<span class="Cnonalphakeyword">,</span> file<span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+    <span class="Clet">let</span> do_nothing <span class="Cnonalphakeyword">=</span>
+      <span class="Ctry">try</span> 
+        <span class="Clet">let</span> digest <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>find memo key <span class="Cin">in</span>
+        <span class="Cconstructor">Sys</span><span class="Cnonalphakeyword">.</span>file_exists file <span class="Cnonalphakeyword">&amp;&amp;</span> digest <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Digest</span><span class="Cnonalphakeyword">.</span>file file      
+      <span class="Cwith">with</span> <span class="Cconstructor">Not_found</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cfalse">false</span> <span class="Cin">in</span>
+    <span class="Cif">if</span> do_nothing <span class="Cthen">then</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span>
+    <span class="Celse">else</span> 
+      <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">(</span>f <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> : unit<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span>
+       <span class="Cif">if</span> not <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Sys</span><span class="Cnonalphakeyword">.</span>file_exists file<span class="Cnonalphakeyword">)</span> <span class="Cthen">then</span>
+         invalid_arg
+           <span class="Cnonalphakeyword">(</span>sprintf <span class="Cstring">"#do_it: expected file %s was not created"</span> file<span class="Cnonalphakeyword">)</span>
+       <span class="Celse">else</span>
+         <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>replace memo key <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Digest</span><span class="Cnonalphakeyword">.</span>file file<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span>
+<span class="Cend">end</span></pre>
+
+<p>
+From a Camlmix/HTML file, we can define a <code>latex</code> function
+that will automatically choose a name for the file, insert the HTML
+code that displays the image and finally update a list of the images that
+were generated so that the right image files 
+can be uploaded to the public website.
+Recompilation of the images occurs only if needed.
+File <code>latex.mlx</code> can be written as follows:
+<pre><span style="color:990000">##</span>
+<span class="Cnonalphakeyword">#</span>load <span class="Cstring">"latex.cmo"</span><span class="Cnonalphakeyword">;;</span>
+<span class="Copen">open</span> <span class="Cconstructor">Printf</span>
+
+<span class="Clet">let</span> image_counter <span class="Cnonalphakeyword">=</span> ref 0
+<span class="Clet">let</span> images <span class="Cnonalphakeyword">=</span> ref <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span>
+
+<span class="Clet">let</span> memo <span class="Cnonalphakeyword">=</span> <span class="Cnew">new</span> <span class="Cconstructor">Latex</span><span class="Cnonalphakeyword">.</span>file_memo <span class="Cstring">"latex-memo"</span> <span class="Ccomment">(* shared by several documents *)</span>
+
+<span class="Clet">let</span> new_image <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">=</span>
+  incr image_counter<span class="Cnonalphakeyword">;</span>
+  <span class="Clet">let</span> src <span class="Cnonalphakeyword">=</span> !<span class="Cconstructor">Camlmix</span><span class="Cnonalphakeyword">.</span>source <span class="Cin">in</span>
+  <span class="Clet">let</span> name <span class="Cnonalphakeyword">=</span> sprintf <span class="Cstring">"%s-img%i.png"</span> src !image_counter <span class="Cin">in</span>
+  images <span class="Cnonalphakeyword">:=</span> <span class="Cnonalphakeyword">(</span>src<span class="Cnonalphakeyword">,</span> name<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">::</span> !images<span class="Cnonalphakeyword">;</span>
+  name
+
+<span class="Clet">let</span> list_images <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> tbl <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>create 100 <span class="Cin">in</span>
+  <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>iter
+    <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span>src<span class="Cnonalphakeyword">,</span> name<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> 
+       <span class="Clet">let</span> oc <span class="Cnonalphakeyword">=</span>
+         <span class="Ctry">try</span> <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>find tbl src
+         <span class="Cwith">with</span> <span class="Cconstructor">Not_found</span> <span class="Cnonalphakeyword">-&gt;</span>
+           <span class="Clet">let</span> oc <span class="Cnonalphakeyword">=</span> open_out <span class="Cnonalphakeyword">(</span>src ^ <span class="Cstring">".images"</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+           <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>add tbl src oc<span class="Cnonalphakeyword">;</span>
+           oc <span class="Cin">in</span>
+       fprintf oc <span class="Cstring">"%s\n"</span> name<span class="Cnonalphakeyword">)</span>
+    !images<span class="Cnonalphakeyword">;</span>
+  <span class="Cconstructor">Hashtbl</span><span class="Cnonalphakeyword">.</span>iter <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> src oc <span class="Cnonalphakeyword">-&gt;</span> close_out oc<span class="Cnonalphakeyword">)</span> tbl
+
+<span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span> 
+  at_exit list_images<span class="Cnonalphakeyword">;</span>
+  at_exit <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span> memo<span class="Cnonalphakeyword">#</span>save<span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> latex <span class="Cnonalphakeyword">?</span>preamble <span class="Cnonalphakeyword">?</span><span class="Cnonalphakeyword">(</span>valign <span class="Cnonalphakeyword">=</span> <span class="Cstring">"middle"</span><span class="Cnonalphakeyword">)</span> code <span class="Cnonalphakeyword">=</span>
+  <span class="Ctry">try</span>
+    <span class="Clet">let</span> file <span class="Cnonalphakeyword">=</span> new_image <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+    <span class="Clet">let</span> f <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Latex</span><span class="Cnonalphakeyword">.</span>latex_image <span class="Cnonalphakeyword">?</span>preamble code file <span class="Cin">in</span>
+    memo<span class="Cnonalphakeyword">#</span>do_it <span class="Cnonalphakeyword">?</span>preamble <span class="Cnonalphakeyword">~</span>code <span class="Cnonalphakeyword">~</span>file f<span class="Cnonalphakeyword">;</span>
+    printf <span class="Cstring">"&lt;img src=\"%s\" alt=\"%s\" style=\"vertical-align:%s\"&gt;"</span> 
+      file code valign
+  <span class="Cwith">with</span> exn <span class="Cnonalphakeyword">-&gt;</span>
+    <span class="Clet">let</span> c <span class="Cnonalphakeyword">=</span> !<span class="Cconstructor">Camlmix</span><span class="Cnonalphakeyword">.</span>char <span class="Cin">in</span>
+    eprintf <span class="Cstring">"File %S, line %i, characters %i-%i:\n"</span>
+    !<span class="Cconstructor">Camlmix</span><span class="Cnonalphakeyword">.</span>source !<span class="Cconstructor">Camlmix</span><span class="Cnonalphakeyword">.</span>line c <span class="Cnonalphakeyword">(</span>c <span class="Cnonalphakeyword">+</span> <span class="Cconstructor">String</span><span class="Cnonalphakeyword">.</span>length code <span class="Cnonalphakeyword">-</span> 1<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span>
+    flush stderr<span class="Cnonalphakeyword">;</span>
+    raise exn
+</pre>
+
+
+<h2 id=ppocaml>3. Preprocessing OCaml files</h2>
+
+<p>
+It is possible to use Camlmix as a preprocessor for OCaml files.
+This can be useful for merging or including files, or inserting
+characters at any point of the file, which is not possible with Camlp4.
+A command for compiling a file has the following form:
+<pre>
+$ ocamlc -c -pp 'camlmix ppocaml.mlx' -impl my_source_file.mlx
+</pre>
+<p>
+or simply
+<pre>
+$ ocamlc -c -pp 'camlmix ppocaml.mlx' my_source_file.ml
+</pre>
+<p>
+where <a href="ppocaml.mlx">ppocaml.mlx</a> is here to generate correct
+error reports whenever a compilation error occurs:
+<p>File <a href="ppocaml.mlx">ppocaml.mlx</a>:
+<pre>
+<span class="Cnonalphakeyword">#</span><span class="Cnonalphakeyword">#</span>
+<span class="Ccomment">(* File ppocaml.mlx: OCaml-style line directives for camlmix-processed files *)</span>
+
+<span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span> 
+  <span class="Clet">let</span> line_directive <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">=</span>
+    <span class="Cconstructor">Printf</span><span class="Cnonalphakeyword">.</span>sprintf <span class="Cstring">"# %i %S\n%s"</span> 
+      !<span class="Cconstructor">Camlmix</span><span class="Cnonalphakeyword">.</span>line !<span class="Cconstructor">Camlmix</span><span class="Cnonalphakeyword">.</span>source <span class="Cnonalphakeyword">(</span><span class="Cconstructor">String</span><span class="Cnonalphakeyword">.</span>make <span class="Cnonalphakeyword">(</span>!<span class="Cconstructor">Camlmix</span><span class="Cnonalphakeyword">.</span>char <span class="Cnonalphakeyword">-</span> 1<span class="Cnonalphakeyword">)</span> <span class="Cstring">' '</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+
+  <span class="Clet">let</span> default_printer <span class="Cnonalphakeyword">=</span> !<span class="Cconstructor">Camlmix</span><span class="Cnonalphakeyword">.</span>printer <span class="Cin">in</span>
+
+  <span class="Clet">let</span> new_printer s <span class="Cnonalphakeyword">=</span>
+    default_printer <span class="Cnonalphakeyword">(</span>line_directive <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span>
+    default_printer s <span class="Cin">in</span>
+
+  <span class="Cconstructor">Camlmix</span><span class="Cnonalphakeyword">.</span>printer <span class="Cnonalphakeyword">:=</span> new_printer
+</pre>
+<p>
+For instance, <code>my_source_file.mlx</code> could look like this:
+<pre><span class="Cnonalphakeyword">#</span><span class="Cnonalphakeyword">#</span> @<span class="Cinclude">include</span> <span class="Cstring">"some_definitions.mlx"</span> <span class="Cnonalphakeyword">#</span><span class="Cnonalphakeyword">#</span>
+
+<span class="Ccomment">(* some local OCaml code *)</span>
+<span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span>
+
+<span class="Cnonalphakeyword">#</span><span class="Cnonalphakeyword">#</span> @<span class="Cinclude">include</span> <span class="Cstring">"more_definitions.mlx"</span> <span class="Cnonalphakeyword">#</span><span class="Cnonalphakeyword">#</span>
+
+<span class="Ccomment">(* more local OCaml code *)</span>
+<span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">.</span></pre>
+<p>
+And the included files themselves can include other files.
+
+
+<div id=footer>
+&copy;&nbsp;2004&nbsp;Martin&nbsp;Jambon &lt;<a href="mailto:martin@mjambon.com">martin@mjambon.com</a>&gt;
+</div>
+
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-640255-1";
+urchinTracker();
+</script>
+<!-- Start of StatCounter Code -->
+<script type="text/javascript">
+<!-- 
+var sc_project=370325; 
+var sc_partition=1; 
+//-->
+</script>
+
+<script type="text/javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><p><a href="http://www.statcounter.com/"><img src="http://c2.statcounter.com/counter.php?sc_project=370325&amp;java=0" alt="counter"></a></p></noscript>
+<!-- End of StatCounter Code -->
+
+</body>
+</html>

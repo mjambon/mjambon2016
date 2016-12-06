@@ -1,1 +1,1 @@
-domains.ml.html
+/home/martin/scripts/domains

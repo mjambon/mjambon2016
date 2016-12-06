@@ -41,7 +41,7 @@ Camlmix is a generic preprocessor which converts text with embedded
 <a href="http://caml.inria.fr">OCaml</a> program with embedded text.
 It produces text documents from one or several templates.
 Camlmix is <span style="text-decoration: underline"><b>not</b> a 
-<a href="/mjambon2016/extend-ocaml-syntax.html">Camlp4 syntax extension</a></span>.
+<a href="/mjambon2016/mjambon2016/extend-ocaml-syntax.html">Camlp4 syntax extension</a></span>.
 
 <br>
 The basic syntaxic rules are:
@@ -59,10 +59,10 @@ Camlmix does not provide a library for text-processing, but
 all existing libraries and syntax extensions can be used, such
 as 
 <a href="http://www.eleves.ens.fr/home/frisch/soft.html#HereDoc">HereDoc</a>, 
-<a href="/mjambon2016/micmatch.html">Micmatch</a> or 
+<a href="/mjambon2016/mjambon2016/micmatch.html">Micmatch</a> or 
 <a href="http://www.ocaml-programming.de/packages/documentation/xstrp4/">xstrp4</a>. 
 You can also find some examples of code in the 
-<a href="/mjambon2016/toolbox.html">Camlmix Toolbox</a> if you are not familiar with
+<a href="/mjambon2016/mjambon2016/toolbox.html">Camlmix Toolbox</a> if you are not familiar with
 I/O in OCaml.
 
 

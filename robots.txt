@@ -1,12 +1,2 @@
-# Old directories
 User-agent: *
-Disallow: /images/
-Disallow: /cinema/
-Disallow: /photos/        
-Disallow: /enseignement/
-Disallow: /these/
-Disallow: /cv/
-Disallow: /extend-ocaml-syntax.html.mlx
-Disallow: /papers/
-
-Disallow: /sandbox
+Disallow:

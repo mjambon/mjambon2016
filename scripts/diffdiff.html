@@ -1,0 +1,277 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <title>
+scripts/diffdiff</title>
+  <meta name="GENERATOR" content="caml2html 1.4.2">
+<style type="text/css">
+code,pre { color:black;background-color:white }a.Cannot { color:black;text-decoration:none }.Cannot:hover { background-color: #b4eeb4; }
+.Cbar,
+.Cdo,
+.Cdone,
+.Cdownto,
+.Celse,
+.Cfor,
+.Cif,
+.Clazy,
+.Cmatch,
+.Cnew,
+.Cor,
+.Cthen,
+.Cto,
+.Ctry,
+.Cwhen,
+.Cwhile,
+.Cwith { color: #77aaaa; }
+.Cassert,
+.Cinclude,
+.Copen { color: #cc9900; }
+.Cstring { color: #aa4444; }
+.Cand,
+.Cas,
+.Cclass,
+.Cconstraint,
+.Cexception,
+.Cexternal,
+.Cfun,
+.Cfunction,
+.Cfunctor,
+.Cin,
+.Cinherit,
+.Cinitializer,
+.Clet,
+.Cmethod,
+.Cmodule,
+.Cmutable,
+.Cof,
+.Cprivate,
+.Crec,
+.Ctype,
+.Cval,
+.Cvirtual { color: green; }
+.Cbackground { background-color: white; }
+.Craise { color: red; }
+.Cconstructor { color: #0033cc; }
+.Ccomment { color: #990000; }
+.Calphakeyword,
+.Casr,
+.Cland,
+.Clor,
+.Clsl,
+.Clsr,
+.Clxor,
+.Cmod { color: #808080; }
+.Clinenum { color: black; background-color: silver; }
+.Cbegin,
+.Cend,
+.Cobject,
+.Csig,
+.Cstruct { color: #990099; }
+.Cfalse,
+.Cnonalphakeyword,
+.Cquotation,
+.Ctrue { }
+</style>
+</head>
+<body>
+
+<pre><span class="Cnonalphakeyword">#</span>! /usr/bin/env ocamlscript
+<span class="Ccomment">(*-*- tuareg -*-*)</span>
+<span class="Cconstructor">Ocaml</span><span class="Cnonalphakeyword">.</span>packs <span class="Cnonalphakeyword">:=</span> <span class="Cnonalphakeyword">[</span> <span class="Cstring">"unix"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"micmatch_pcre"</span><span class="Cnonalphakeyword">;</span> <span class="Cstring">"netstring"</span> <span class="Cnonalphakeyword">]</span>
+--
+<span class="Ccomment">(* Author: Martin Jambon &lt;martin_jambon@emailuser.net&gt; *)</span>
+
+<span class="Copen">open</span> <span class="Cconstructor">Printf</span>
+<span class="Copen">open</span> <span class="Cconstructor">Micmatch</span>
+
+<span class="Cconstructor">RE</span> loc1 <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span>int <span class="Cas">as</span> i:int <span class="Cas">as</span> j:int<span class="Cnonalphakeyword">)</span> <span class="Cbar">|</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">(</span>int <span class="Cas">as</span> i:int<span class="Cnonalphakeyword">)</span> <span class="Cstring">","</span> <span class="Cnonalphakeyword">(</span>int <span class="Cas">as</span> j:int<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span>
+<span class="Cconstructor">RE</span> loc2 <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span>int <span class="Cas">as</span> i':int <span class="Cas">as</span> j':int<span class="Cnonalphakeyword">)</span> <span class="Cbar">|</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">(</span>int <span class="Cas">as</span> i':int<span class="Cnonalphakeyword">)</span> <span class="Cstring">","</span> <span class="Cnonalphakeyword">(</span>int <span class="Cas">as</span> j':int<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> parse_annot kind <span class="Cnonalphakeyword">=</span> <span class="Cfunction">function</span>
+    / loc1 @kind loc2 eos / <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">Some</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">(</span>i<span class="Cnonalphakeyword">,</span> j<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">(</span>i'<span class="Cnonalphakeyword">,</span> j'<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span>
+  <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">None</span>
+
+<span class="Clet">let</span> view <span class="Cconstructor">Change</span> <span class="Cnonalphakeyword">=</span> parse_annot <span class="Cstring">"c"</span>
+<span class="Clet">let</span> view <span class="Cconstructor">Add</span> <span class="Cnonalphakeyword">=</span> parse_annot <span class="Cstring">"a"</span>
+<span class="Clet">let</span> view <span class="Cconstructor">Delete</span> <span class="Cnonalphakeyword">=</span> parse_annot <span class="Cstring">"d"</span>
+
+<span class="Clet">let</span> change_loc <span class="Cnonalphakeyword">(</span>i<span class="Cnonalphakeyword">,</span> j<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span>i <span class="Cnonalphakeyword">-</span> 1 <span class="Cnonalphakeyword">,</span> j <span class="Cnonalphakeyword">-</span> i <span class="Cnonalphakeyword">+</span> 1<span class="Cnonalphakeyword">)</span>
+<span class="Clet">let</span> position_loc <span class="Cnonalphakeyword">(</span>i<span class="Cnonalphakeyword">,</span> j<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">=</span> 
+  <span class="Cassert">assert</span> <span class="Cnonalphakeyword">(</span>i <span class="Cnonalphakeyword">=</span> j<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cnonalphakeyword">(</span>i<span class="Cnonalphakeyword">,</span> 0<span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> unquote_lines prefix <span class="Cnonalphakeyword">(</span>i<span class="Cnonalphakeyword">,</span> j<span class="Cnonalphakeyword">)</span> l <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> a <span class="Cnonalphakeyword">=</span> ref l <span class="Cin">in</span>
+  <span class="Clet">let</span> b <span class="Cnonalphakeyword">=</span> ref <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span> <span class="Cin">in</span>
+  <span class="Cfor">for</span> k <span class="Cnonalphakeyword">=</span> i <span class="Cto">to</span> j <span class="Cdo">do</span>
+    <span class="Cmatch">match</span> !a <span class="Cwith">with</span>
+        <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span> failwith <span class="Cstring">"syntax error: truncated diff"</span>
+      <span class="Cbar">|</span> / @prefix <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">*</span> <span class="Cas">as</span> s<span class="Cnonalphakeyword">)</span> eos / <span class="Cnonalphakeyword">::</span> tl <span class="Cnonalphakeyword">-&gt;</span> b <span class="Cnonalphakeyword">:=</span> s <span class="Cnonalphakeyword">::</span> !b<span class="Cnonalphakeyword">;</span> a <span class="Cnonalphakeyword">:=</span> tl
+      <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> failwith <span class="Cstring">"syntax error in diff"</span>
+  <span class="Cdone">done</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cnonalphakeyword">(</span><span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>rev !b<span class="Cnonalphakeyword">,</span> !a<span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> parse_change <span class="Cnonalphakeyword">(</span>loc1<span class="Cnonalphakeyword">,</span> loc2<span class="Cnonalphakeyword">)</span> l <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> lines1<span class="Cnonalphakeyword">,</span> l <span class="Cnonalphakeyword">=</span> unquote_lines <span class="Cstring">"&lt; "</span> loc1 l <span class="Cin">in</span>
+  <span class="Clet">let</span> l <span class="Cnonalphakeyword">=</span>
+    <span class="Cmatch">match</span> l <span class="Cwith">with</span>
+        <span class="Cstring">"---"</span> <span class="Cnonalphakeyword">::</span> l <span class="Cnonalphakeyword">-&gt;</span> l
+      <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> failwith <span class="Cstring">"syntax error"</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> lines2<span class="Cnonalphakeyword">,</span> l <span class="Cnonalphakeyword">=</span> unquote_lines <span class="Cstring">"&gt; "</span> loc2 l <span class="Cin">in</span>
+  <span class="Cnonalphakeyword">(</span>change_loc loc1<span class="Cnonalphakeyword">,</span> change_loc loc2<span class="Cnonalphakeyword">,</span> lines1<span class="Cnonalphakeyword">,</span> lines2<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">,</span> l
+
+<span class="Clet">let</span> parse_add <span class="Cnonalphakeyword">(</span>loc1<span class="Cnonalphakeyword">,</span> loc2<span class="Cnonalphakeyword">)</span> l <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> lines<span class="Cnonalphakeyword">,</span> l <span class="Cnonalphakeyword">=</span> unquote_lines <span class="Cstring">"&gt; "</span> loc2 l <span class="Cin">in</span>
+  <span class="Cnonalphakeyword">(</span>position_loc loc1<span class="Cnonalphakeyword">,</span> change_loc loc2<span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">,</span> lines<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">,</span> l
+
+<span class="Clet">let</span> parse_delete <span class="Cnonalphakeyword">(</span>loc1<span class="Cnonalphakeyword">,</span> loc2<span class="Cnonalphakeyword">)</span> l <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> lines<span class="Cnonalphakeyword">,</span> l <span class="Cnonalphakeyword">=</span> unquote_lines <span class="Cstring">"&lt; "</span> loc1 l <span class="Cin">in</span>
+  <span class="Cnonalphakeyword">(</span>change_loc loc1<span class="Cnonalphakeyword">,</span> position_loc loc2<span class="Cnonalphakeyword">,</span> lines<span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">,</span> l
+
+<span class="Clet">let</span> <span class="Crec">rec</span> parse_diffs l <span class="Cnonalphakeyword">=</span> 
+  <span class="Cmatch">match</span> l <span class="Cwith">with</span>
+      <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">[</span><span class="Cnonalphakeyword">]</span>
+    <span class="Cbar">|</span> %<span class="Cconstructor">Change</span> x <span class="Cnonalphakeyword">::</span> tl <span class="Cnonalphakeyword">-&gt;</span>
+        <span class="Clet">let</span> y<span class="Cnonalphakeyword">,</span> tl' <span class="Cnonalphakeyword">=</span> parse_change x tl <span class="Cin">in</span> 
+        y <span class="Cnonalphakeyword">::</span> parse_diffs tl'
+    <span class="Cbar">|</span> %<span class="Cconstructor">Add</span> x <span class="Cnonalphakeyword">::</span> tl <span class="Cnonalphakeyword">-&gt;</span>
+        <span class="Clet">let</span> y<span class="Cnonalphakeyword">,</span> tl' <span class="Cnonalphakeyword">=</span> parse_add x tl <span class="Cin">in</span>
+        y <span class="Cnonalphakeyword">::</span> parse_diffs tl'
+    <span class="Cbar">|</span> %<span class="Cconstructor">Delete</span> x <span class="Cnonalphakeyword">::</span> tl <span class="Cnonalphakeyword">-&gt;</span>
+        <span class="Clet">let</span> y<span class="Cnonalphakeyword">,</span> tl' <span class="Cnonalphakeyword">=</span> parse_delete x tl <span class="Cin">in</span>
+        y <span class="Cnonalphakeyword">::</span> parse_diffs tl'
+    <span class="Cbar">|</span> other <span class="Cnonalphakeyword">::</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span>
+        failwith <span class="Cnonalphakeyword">(</span><span class="Cstring">"syntax error: "</span> ^ other<span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> esc <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> html_esc <span class="Cnonalphakeyword">=</span> 
+    <span class="Cconstructor">Netencoding</span><span class="Cnonalphakeyword">.</span><span class="Cconstructor">Html</span><span class="Cnonalphakeyword">.</span>encode <span class="Cnonalphakeyword">~</span>in_enc:<span class="Cconstructor">`</span><span class="Cconstructor">Enc_utf8</span> <span class="Cnonalphakeyword">~</span>out_enc:<span class="Cconstructor">`</span><span class="Cconstructor">Enc_utf8</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> subst_tabs <span class="Cnonalphakeyword">=</span> 
+    <span class="Cconstructor">REPLACE</span> bos <span class="Cstring">"\t"</span><span class="Cnonalphakeyword">+</span> <span class="Cas">as</span> s <span class="Cnonalphakeyword">-&gt;</span> <span class="Cconstructor">String</span><span class="Cnonalphakeyword">.</span>make <span class="Cnonalphakeyword">(</span><span class="Cconstructor">String</span><span class="Cnonalphakeyword">.</span>length s <span class="Cnonalphakeyword">*</span> 8<span class="Cnonalphakeyword">)</span> <span class="Cstring">' '</span> <span class="Cin">in</span>
+  <span class="Cfun">fun</span> s <span class="Cnonalphakeyword">-&gt;</span> html_esc <span class="Cnonalphakeyword">(</span>subst_tabs s<span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> nothing <span class="Cnonalphakeyword">=</span> 
+  sprintf <span class="Cstring">"&lt;span class=\"nothing\"&gt;%s&lt;/span&gt;\n"</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">String</span><span class="Cnonalphakeyword">.</span>make 80 <span class="Cstring">' '</span><span class="Cnonalphakeyword">)</span>
+
+<span class="Clet">let</span> output_left oc a start <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">(</span>start1<span class="Cnonalphakeyword">,</span> len1<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">,</span> len2<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">,</span> lines1<span class="Cnonalphakeyword">,</span> lines2<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">=</span>
+  <span class="Cfor">for</span> i <span class="Cnonalphakeyword">=</span> start <span class="Cto">to</span> start1 <span class="Cnonalphakeyword">-</span> 1 <span class="Cdo">do</span>
+    fprintf oc <span class="Cstring">"%s\n"</span> <span class="Cnonalphakeyword">(</span>esc a<span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">(</span>i<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cdone">done</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cfor">for</span> i <span class="Cnonalphakeyword">=</span> start1 <span class="Cto">to</span> start1 <span class="Cnonalphakeyword">+</span> len1 <span class="Cnonalphakeyword">-</span> 1 <span class="Cdo">do</span>
+    flush oc<span class="Cnonalphakeyword">;</span>
+    fprintf oc <span class="Cstring">"&lt;span class=\"deleted\"&gt;%s&lt;/span&gt;\n"</span> <span class="Cnonalphakeyword">(</span>esc a<span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">(</span>i<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span>
+  <span class="Cdone">done</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cfor">for</span> i <span class="Cnonalphakeyword">=</span> len1 <span class="Cto">to</span> len2 <span class="Cnonalphakeyword">-</span> 1 <span class="Cdo">do</span>
+    output_string oc nothing
+  <span class="Cdone">done</span><span class="Cnonalphakeyword">;</span>
+  start1 <span class="Cnonalphakeyword">+</span> len1
+
+<span class="Clet">let</span> output_right oc a start <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">,</span> len1<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">(</span>start2<span class="Cnonalphakeyword">,</span> len2<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">,</span> lines1<span class="Cnonalphakeyword">,</span> lines2<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">=</span>
+  <span class="Cfor">for</span> i <span class="Cnonalphakeyword">=</span> start <span class="Cto">to</span> start2 <span class="Cnonalphakeyword">-</span> 1 <span class="Cdo">do</span>
+    fprintf oc <span class="Cstring">"%s\n"</span> <span class="Cnonalphakeyword">(</span>esc a<span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">(</span>i<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cdone">done</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cfor">for</span> i <span class="Cnonalphakeyword">=</span> start2 <span class="Cto">to</span> start2 <span class="Cnonalphakeyword">+</span> len2 <span class="Cnonalphakeyword">-</span> 1 <span class="Cdo">do</span>
+    fprintf oc <span class="Cstring">"&lt;span class=\"added\"&gt;%s&lt;/span&gt;\n"</span> <span class="Cnonalphakeyword">(</span>esc a<span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">(</span>i<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span>
+  <span class="Cdone">done</span><span class="Cnonalphakeyword">;</span>
+  <span class="Cfor">for</span> i <span class="Cnonalphakeyword">=</span> len2 <span class="Cto">to</span> len1 <span class="Cnonalphakeyword">-</span> 1 <span class="Cdo">do</span>
+    output_string oc nothing
+  <span class="Cdone">done</span><span class="Cnonalphakeyword">;</span>
+  start2 <span class="Cnonalphakeyword">+</span> len2
+    
+<span class="Clet">let</span> finish oc a start <span class="Cnonalphakeyword">=</span>
+  <span class="Cfor">for</span> i <span class="Cnonalphakeyword">=</span> start <span class="Cto">to</span> <span class="Cconstructor">Array</span><span class="Cnonalphakeyword">.</span>length a <span class="Cnonalphakeyword">-</span> 1 <span class="Cdo">do</span>
+    fprintf oc <span class="Cstring">"%s\n"</span> <span class="Cnonalphakeyword">(</span>esc a<span class="Cnonalphakeyword">.</span><span class="Cnonalphakeyword">(</span>i<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">)</span>
+  <span class="Cdone">done</span>
+
+<span class="Clet">let</span> print_diffs l <span class="Cnonalphakeyword">=</span>
+  <span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>iter 
+    <span class="Cnonalphakeyword">(</span><span class="Cfun">fun</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">(</span>i<span class="Cnonalphakeyword">,</span> len<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">(</span>i'<span class="Cnonalphakeyword">,</span> len'<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">,</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">-&gt;</span>
+       printf <span class="Cstring">"&lt;p&gt;pos %i, len %i | pos %i, len %i&lt;/p&gt;\n"</span> i len i' len'<span class="Cnonalphakeyword">)</span> l
+
+<span class="Clet">let</span> output_diffs <span class="Cnonalphakeyword">~</span>title oc l1 l2 l <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> a1 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Array</span><span class="Cnonalphakeyword">.</span>of_list l1 <span class="Cin">in</span>
+  <span class="Clet">let</span> a2 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Array</span><span class="Cnonalphakeyword">.</span>of_list l2 <span class="Cin">in</span>
+  fprintf oc <span class="Cstring">"\</span>
+<span class="Cstring">&lt;?xml version=\"1.0\"?&gt;</span>
+<span class="Cstring">&lt;!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"</span>
+<span class="Cstring">    \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"&gt;</span>
+<span class="Cstring">&lt;html&gt;</span>
+<span class="Cstring">&lt;head&gt;</span>
+<span class="Cstring">&lt;meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" /&gt;</span>
+<span class="Cstring">&lt;meta name=\"generator\" </span>
+<span class="Cstring">      content=\"diffdiff: http://martin.jambon.free.fr/scripts/\" /&gt;</span>
+<span class="Cstring">&lt;title&gt;%s&lt;/title&gt;</span>
+<span class="Cstring">&lt;style type=\"text/css\"&gt;</span>
+<span class="Cstring">body { </span>
+<span class="Cstring">  background-color: white;</span>
+<span class="Cstring">  color: black;</span>
+<span class="Cstring">}</span>
+<span class="Cstring"></span>
+<span class="Cstring">.nothing { background-color: #505050; }</span>
+<span class="Cstring">.deleted { background-color: #ff8080; }</span>
+<span class="Cstring">.added { background-color: #80ff80; }</span>
+<span class="Cstring"></span>
+<span class="Cstring">table.diff { </span>
+<span class="Cstring">  border-width: 1px;</span>
+<span class="Cstring">  border-collapse: collapse;</span>
+<span class="Cstring">}</span>
+<span class="Cstring"></span>
+<span class="Cstring">td.diff {</span>
+<span class="Cstring"> vertical-align: top;</span>
+<span class="Cstring"> border-style: solid;</span>
+<span class="Cstring"> border-color: black;</span>
+<span class="Cstring"> border-width: 1px;</span>
+<span class="Cstring">}</span>
+<span class="Cstring"></span>
+<span class="Cstring">pre.diff { font-size: 80%%; }</span>
+<span class="Cstring">&lt;/style&gt;</span>
+<span class="Cstring">&lt;/head&gt;</span>
+<span class="Cstring"></span>
+<span class="Cstring">&lt;body&gt;</span>
+<span class="Cstring">&lt;h1&gt;%s&lt;/h1&gt;</span>
+<span class="Cstring">&lt;table class=\"diff\"&gt;</span>
+<span class="Cstring">&lt;tr class=\"diff\"&gt;</span>
+<span class="Cstring">&lt;td class=\"diff\"&gt;&lt;pre class=\"diff\"&gt;</span>
+<span class="Cstring">"</span>
+  title title<span class="Cnonalphakeyword">;</span>
+  
+  <span class="Clet">let</span> start1 <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>fold_left <span class="Cnonalphakeyword">(</span>output_left oc a1<span class="Cnonalphakeyword">)</span> 0 l<span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+  finish oc a1 start1<span class="Cnonalphakeyword">;</span>
+  fprintf oc <span class="Cstring">"&lt;/pre&gt;&lt;/td&gt;&lt;td class=\"diff\"&gt;&lt;pre class=\"diff\"&gt;\n"</span><span class="Cnonalphakeyword">;</span>
+  <span class="Clet">let</span> start2 <span class="Cnonalphakeyword">=</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">List</span><span class="Cnonalphakeyword">.</span>fold_left <span class="Cnonalphakeyword">(</span>output_right oc a2<span class="Cnonalphakeyword">)</span> 0 l<span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+  finish oc a2 start2<span class="Cnonalphakeyword">;</span>
+  fprintf oc <span class="Cstring">"&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</span>
+<span class="Cstring">&lt;/body&gt;</span>
+<span class="Cstring">&lt;/html&gt;</span>
+<span class="Cstring">"</span>
+
+<span class="Clet">let</span> diff file1 file2 <span class="Cnonalphakeyword">=</span>
+  <span class="Clet">let</span> file3 <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Filename</span><span class="Cnonalphakeyword">.</span>temp_file <span class="Cstring">""</span> <span class="Cstring">".diff"</span> <span class="Cin">in</span>
+  <span class="Clet">let</span> cmd <span class="Cnonalphakeyword">=</span> sprintf <span class="Cstring">"diff '%s' '%s' &gt; %s"</span> file1 file2 file3 <span class="Cin">in</span>
+  <span class="Clet">let</span> status <span class="Cnonalphakeyword">=</span> <span class="Cconstructor">Sys</span><span class="Cnonalphakeyword">.</span>command cmd <span class="Cin">in</span>
+  <span class="Clet">let</span> clean <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">=</span> <span class="Ctry">try</span> <span class="Cconstructor">Sys</span><span class="Cnonalphakeyword">.</span>remove file3 <span class="Cwith">with</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+  <span class="Cif">if</span> status &lt;&gt; 0 <span class="Cnonalphakeyword">&amp;&amp;</span> status &lt;&gt; 1 <span class="Cthen">then</span>
+    <span class="Cnonalphakeyword">(</span>clean <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span>
+     eprintf <span class="Cstring">"The following command failed:\n%s\n"</span> cmd<span class="Cnonalphakeyword">;</span>
+     exit status<span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span>
+  <span class="Clet">let</span> diffs <span class="Cnonalphakeyword">=</span> parse_diffs <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Text</span><span class="Cnonalphakeyword">.</span>lines_of_file file3<span class="Cnonalphakeyword">)</span> <span class="Cin">in</span>
+  clean <span class="Cnonalphakeyword">(</span><span class="Cnonalphakeyword">)</span><span class="Cnonalphakeyword">;</span>
+  <span class="Ccomment">(*print_diffs diffs;*)</span>
+  <span class="Clet">let</span> title <span class="Cnonalphakeyword">=</span> esc file1 ^ <span class="Cstring">" &amp;rarr; "</span> ^ esc file2 <span class="Cin">in</span>
+  output_diffs <span class="Cnonalphakeyword">~</span>title stdout
+    <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Text</span><span class="Cnonalphakeyword">.</span>lines_of_file file1<span class="Cnonalphakeyword">)</span> <span class="Cnonalphakeyword">(</span><span class="Cconstructor">Text</span><span class="Cnonalphakeyword">.</span>lines_of_file file2<span class="Cnonalphakeyword">)</span> diffs
+
+<span class="Clet">let</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">=</span>
+  <span class="Cmatch">match</span> <span class="Cconstructor">Sys</span><span class="Cnonalphakeyword">.</span>argv <span class="Cwith">with</span>
+      <span class="Cnonalphakeyword">[|</span> <span class="Cnonalphakeyword">_</span><span class="Cnonalphakeyword">;</span> file1<span class="Cnonalphakeyword">;</span> file2 <span class="Cnonalphakeyword">|]</span> <span class="Cnonalphakeyword">-&gt;</span> diff file1 file2
+    <span class="Cbar">|</span> <span class="Cnonalphakeyword">_</span> <span class="Cnonalphakeyword">-&gt;</span> 
+        eprintf <span class="Cstring">"\</span>
+<span class="Cstring">Diffdiff takes two files and shows the differences side-by-side, </span>
+<span class="Cstring">in an HTML format which makes copy-pasting easy.</span>
+<span class="Cstring"></span>
+<span class="Cstring">Usage: diffdiff oldfile newfile\n%!"</span><span class="Cnonalphakeyword">;</span>
+        exit 1
+</pre>
+</body>
+</html>
